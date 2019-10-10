@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import fr.tristiisch.olympa.api.objects.OlympaGroup;
 import fr.tristiisch.olympa.api.objects.OlympaPlayer;
+import fr.tristiisch.olympa.api.provider.AccountProvider;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public enum OlympaPermission {
@@ -22,8 +23,19 @@ public enum OlympaPermission {
 	CHAT_BYPASS(OlympaGroup.MODP),
 	CHAT_MUTEDBYPASS(OlympaGroup.MOD),
 
-	BAN_COMMAND(OlympaGroup.MOD),
-	CHAT_COLOR(OlympaGroup.DEV);
+	BAN_BAN_COMMAND(OlympaGroup.MOD),
+	BAN_BANIP_COMMAND(OlympaGroup.MODP),
+	BAN_DELBAN_COMMAND(OlympaGroup.DEV),
+	BAN_UNBAN_COMMAND(OlympaGroup.MODP),
+	BAN_UNMUTE_COMMAND(OlympaGroup.MOD),
+	BAN_BANHIST_COMMAND(OlympaGroup.MOD),
+	BAN_SEEBANMSG(OlympaGroup.BUILDER),
+	BAN_BYPASS_BAN(OlympaGroup.BUILDER),
+	BAN_BYPASS_MAXTIME(OlympaGroup.DEV),
+	BAN_BYPASS_MINTIME(OlympaGroup.DEV),
+	BAN_DEF(OlympaGroup.MODP),
+
+	CHAT_COLOR(OlympaGroup.MODP);
 
 	OlympaGroup group;
 
@@ -36,7 +48,7 @@ public enum OlympaPermission {
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
-		Set<Player> players = Bukkit.getOnlinePlayers().stream().filter(player -> this.hasPermission(new OlympaAccountObject(player.getUniqueId()).getFromCache())).collect(Collectors.toSet());
+		Set<Player> players = Bukkit.getOnlinePlayers().stream().filter(player -> this.hasPermission(AccountProvider.get(player))).collect(Collectors.toSet());
 		if (!players.isEmpty()) {
 			success.accept(players);
 		}
@@ -58,7 +70,7 @@ public enum OlympaPermission {
 	}
 
 	public boolean hasPermission(Player player) {
-		return this.hasPermission(new OlympaAccountObject(player.getUniqueId()).getFromCache());
+		return this.hasPermission(AccountProvider.get(player));
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {

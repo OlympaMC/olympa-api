@@ -14,11 +14,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.tristiisch.olympa.api.objects.OlympaPlayer;
-import fr.tristiisch.olympa.api.permission.OlympaAccountObject;
 import fr.tristiisch.olympa.api.permission.OlympaPermission;
+import fr.tristiisch.olympa.api.provider.AccountProvider;
 import fr.tristiisch.olympa.api.utils.Prefix;
 import fr.tristiisch.olympa.api.utils.SpigotUtils;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 
@@ -86,7 +86,7 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 	}
 
 	public OlympaPlayer getOlympaPlayer() {
-		return new OlympaAccountObject(this.player.getUniqueId()).getFromCache();
+		return AccountProvider.get(this.player);
 	}
 
 	public Player getPlayer() {
@@ -138,6 +138,10 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 		this.sendErreur("Une erreur est survenu avec vos donnés.");
 	}
 
+	public void sendMessage(final BaseComponent... text) {
+		this.player.spigot().sendMessage(text);
+	}
+
 	public void sendMessage(final CommandSender sender, final Prefix prefix, final String text) {
 		this.sendMessage(sender, prefix + SpigotUtils.color(text));
 	}
@@ -154,16 +158,12 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 		this.sendMessage(this.sender, SpigotUtils.color(text));
 	}
 
-	public void sendMessage(final TextComponent text) {
-		this.player.spigot().sendMessage(text);
-	}
-
 	public void sendMessageToAll(final Prefix prefix, final String text) {
 		this.sendMessageToAll(prefix + text);
 	}
 
 	public void sendMessageToAll(final String text) {
-		Bukkit.getOnlinePlayers().forEach(player -> this.sendMessage(player, text));
+		Bukkit.broadcastMessage(text);
 		this.sendMessage(Bukkit.getConsoleSender(), text);
 	}
 
