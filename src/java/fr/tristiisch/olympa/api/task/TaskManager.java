@@ -4,50 +4,64 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 public class TaskManager {
-	private static HashMap<String, Integer> taskList = new HashMap<>();
-	public static BukkitScheduler scheduler;
-	static Plugin plugin;
-
-	public static void addTask(final String name, final int id) {
-		TaskManager.taskList.put(name, id);
+	public static BukkitScheduler scheduler = Bukkit.getScheduler();
+	
+	private Plugin plugin;
+	private HashMap<String, Integer> taskList = new HashMap<>();
+	
+	public TaskManager(Plugin plugin){
+		this.plugin = plugin;
 	}
 
-	public static void cancelAllTask() {
-		for (final int taskId : TaskManager.taskList.values()) {
-			TaskManager.scheduler.cancelTask(taskId);
+	public void addTask(final String name, final int id){
+		taskList.put(name, id);
+	}
+
+	public void cancelAllTask(){
+		for (final int taskId : taskList.values()) {
+			scheduler.cancelTask(taskId);
 		}
 		scheduler.cancelAllTasks();
 	}
 
-	public static void cancelTaskById(final int id) {
-		TaskManager.scheduler.cancelTask(id);
+	public void cancelTaskById(final int id){
+		scheduler.cancelTask(id);
 	}
 
-	public static boolean cancelTaskByName(final String taskName) {
+	public boolean cancelTaskByName(final String taskName){
 		if (taskExist(taskName)) {
 			final int taskId = getTaskId(taskName);
-			TaskManager.taskList.remove(taskName);
-			TaskManager.scheduler.cancelTask(taskId);
+			taskList.remove(taskName);
+			scheduler.cancelTask(taskId);
 			return true;
 		}
 		return false;
 	}
 
-	public static void checkIfExist(final String taskName) {
+	public void removeTaskByName(final String taskName){
+		taskList.remove(taskName);
+	}
+	
+	public boolean taskExist(final String taskName){
+		return taskList.containsKey(taskName);
+	}
+	
+	public void checkIfExist(final String taskName){
 		if (taskExist(taskName)) {
 			cancelTaskByName(taskName);
 		}
 	}
 
-	public static BukkitTask getTask(final int id) {
+	public BukkitTask getTask(final int id){
 		final BukkitTask task = null;
 		if (id > 0) {
-			for (final BukkitTask pendingTask : TaskManager.scheduler.getPendingTasks()) {
+			for (final BukkitTask pendingTask : scheduler.getPendingTasks()) {
 				if (pendingTask.getTaskId() == id) {
 					return task;
 				}
@@ -56,26 +70,26 @@ public class TaskManager {
 		return null;
 	}
 
-	public static BukkitTask getTask(final String taskName) {
+	public BukkitTask getTask(final String taskName){
 		return getTask(getTaskId(taskName));
 	}
 
-	public static int getTaskId(final String taskName) {
+	public int getTaskId(final String taskName){
 		if (taskExist(taskName)) {
-			return TaskManager.taskList.get(taskName);
+			return taskList.get(taskName);
 		}
 		return 0;
 	}
 
-	public static String getTaskName(final String string) {
+	public String getTaskName(final String string){
 		String taskName;
 		for (taskName = string + "_" + new Random().nextInt(99999); taskExist(taskName); taskName = string + "_" + new Random().nextInt(99999)) {
 		}
 		return taskName;
 	}
 
-	public static String getTaskNameById(final int id) {
-		for (final Map.Entry<String, Integer> entry : TaskManager.taskList.entrySet()) {
+	public String getTaskNameById(final int id){
+		for (final Map.Entry<String, Integer> entry : taskList.entrySet()) {
 			if (entry.getValue() == id) {
 				return entry.getKey();
 			}
@@ -83,20 +97,16 @@ public class TaskManager {
 		return null;
 	}
 
-	public static void removeTaskByName(final String taskName) {
-		TaskManager.taskList.remove(taskName);
+	public BukkitTask runTask(final Runnable runnable){
+		return scheduler.runTask(plugin, runnable);
 	}
 
-	public static BukkitTask runTask(final Runnable runnable) {
-		return TaskManager.scheduler.runTask(TaskManager.plugin, runnable);
+	public BukkitTask runTaskAsynchronously(final Runnable runnable){
+		return scheduler.runTaskAsynchronously(plugin, runnable);
 	}
 
-	public static BukkitTask runTaskAsynchronously(final Runnable runnable) {
-		return TaskManager.scheduler.runTaskAsynchronously(TaskManager.plugin, runnable);
-	}
-
-	public static BukkitTask runTaskAsynchronously(String taskName, Runnable runnable) {
-		Integer oldTask = TaskManager.taskList.get(taskName);
+	public BukkitTask runTaskAsynchronously(String taskName, Runnable runnable){
+		Integer oldTask = taskList.get(taskName);
 		if (oldTask != null) {
 			getTask(oldTask).cancel();
 		}
@@ -105,39 +115,30 @@ public class TaskManager {
 		return bukkitTask;
 	}
 
-	public static BukkitTask runTaskLater(final Runnable runnable, final int tick) {
-		return TaskManager.scheduler.runTaskLater(TaskManager.plugin, runnable, tick);
+	public BukkitTask runTaskLater(final Runnable runnable, final int tick){
+		return scheduler.runTaskLater(plugin, runnable, tick);
 	}
 
-	public static BukkitTask runTaskLater(final String taskName, final Runnable task, final int duration) {
-		Integer oldTask = TaskManager.taskList.get(taskName);
+	public BukkitTask runTaskLater(final String taskName, final Runnable task, final int duration){
+		Integer oldTask = taskList.get(taskName);
 		if (oldTask != null) {
 			getTask(oldTask).cancel();
 		}
-		final BukkitTask bukkitTask = TaskManager.scheduler.runTaskLater(TaskManager.plugin, task, duration);
+		final BukkitTask bukkitTask = scheduler.runTaskLater(plugin, task, duration);
 		final int id = bukkitTask.getTaskId();
 		addTask(taskName, id);
 		runTaskLater(() -> {
-			if (TaskManager.taskList.get(taskName) != null && TaskManager.taskList.get(taskName) == id) {
-				TaskManager.taskList.remove(taskName);
+			if (taskList.get(taskName) != null && taskList.get(taskName) == id) {
+				taskList.remove(taskName);
 			}
 		}, duration);
 		return bukkitTask;
 	}
 
-	public static BukkitTask scheduleSyncRepeatingTask(final String taskName, final Runnable runnable, final long delay, final long refresh) {
+	public BukkitTask scheduleSyncRepeatingTask(final String taskName, final Runnable runnable, final long delay, final long refresh){
 		cancelTaskByName(taskName);
-		final BukkitTask task = TaskManager.scheduler.runTaskTimer(TaskManager.plugin, runnable, delay, refresh);
-		TaskManager.taskList.put(taskName, task.getTaskId());
+		final BukkitTask task = scheduler.runTaskTimer(plugin, runnable, delay, refresh);
+		taskList.put(taskName, task.getTaskId());
 		return task;
-	}
-
-	public static boolean taskExist(final String taskName) {
-		return TaskManager.taskList.containsKey(taskName);
-	}
-
-	public TaskManager(Plugin plugin) {
-		TaskManager.plugin = plugin;
-		TaskManager.scheduler = plugin.getServer().getScheduler();
 	}
 }
