@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 
 public class ExempleCommand extends OlympaCommand {
 
+	// NOTE: you didn't need to add the command in plugin.yml
 	public ExempleCommand(Plugin plugin) {
 		super(plugin, "exemple", OlympaPermission.CHAT_COMMAND, "alias1", "alias2");
 
@@ -28,9 +29,6 @@ public class ExempleCommand extends OlympaCommand {
 		// Allows Console and Command Block to use the command
 		this.setAllowConsole(true);
 
-		// Don't foget this
-		// NOTE: you didn't need to add the command in plugin.yml
-		this.register();
 	}
 
 	@Override
