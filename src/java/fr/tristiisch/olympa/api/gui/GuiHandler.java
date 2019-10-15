@@ -30,7 +30,7 @@ public class GuiHandler {
 		Inventory clickedInventory = event.getClickedInventory();
 
 		event.getClickedInventory().setItem(event.getSlot(), cancelItemBuild.lore("", "&c" + msg, "").build());
-		player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1, 1);
+		player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 
 		plugin.getTaskManager().runTaskLater(player.getUniqueId() + String.valueOf(event.getSlot()), () -> {
 			if (clickedInventory.equals(player.getOpenInventory().getTopInventory())) {

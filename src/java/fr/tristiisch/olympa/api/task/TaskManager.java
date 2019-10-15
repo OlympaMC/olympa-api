@@ -27,7 +27,7 @@ public class TaskManager {
 		for (final int taskId : taskList.values()) {
 			scheduler.cancelTask(taskId);
 		}
-		scheduler.cancelAllTasks();
+		scheduler.cancelTasks(plugin);
 	}
 
 	public void cancelTaskById(final int id){
