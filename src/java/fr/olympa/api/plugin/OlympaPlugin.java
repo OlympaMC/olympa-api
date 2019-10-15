@@ -16,6 +16,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		instance = this;
 		this.task = new TaskManager(this);
 		this.config = new CustomConfig(this, "config");
+		this.config.load();
 	}
 
 	@Override
