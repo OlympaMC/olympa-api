@@ -1,25 +1,13 @@
 package exemple;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.tristiisch.olympa.api.objects.OlympaPlugin;
-import fr.tristiisch.olympa.api.task.TaskManager;
+import fr.olympa.api.plugin.OlympaPlugin;
 
-public class Main extends JavaPlugin implements OlympaPlugin {
+public class Main extends OlympaPlugin {
 
-	private static Plugin instance;
-
-	public static Plugin getInstance() {
-		return instance;
-	}
-
-	private TaskManager taskManager = new TaskManager(this);
-
-	@Override
-	public TaskManager getTaskManager() {
-		return this.taskManager;
+	public static Main getInstance() {
+		return (Main) instance;
 	}
 
 	@Override

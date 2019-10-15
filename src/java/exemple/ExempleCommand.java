@@ -7,10 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import fr.tristiisch.olympa.api.command.OlympaCommand;
-import fr.tristiisch.olympa.api.objects.OlympaPlayer;
-import fr.tristiisch.olympa.api.permission.OlympaPermission;
-import fr.tristiisch.olympa.api.utils.Prefix;
+import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
