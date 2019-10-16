@@ -1,5 +1,9 @@
 package fr.olympa.api.permission;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -8,38 +12,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.olympa.OlympaCore;
 import fr.olympa.api.objects.OlympaGroup;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public enum OlympaPermission {
-
-	// TODO change to OlympaGroup.ADMIN
-	GROUP_COMMAND(OlympaGroup.DEV),
-
-	CHAT_COMMAND(OlympaGroup.MOD),
-	CHAT_SEEINSULTS(OlympaGroup.MOD),
-	CHAT_BYPASS(OlympaGroup.MODP),
-	CHAT_MUTEDBYPASS(OlympaGroup.MOD),
-
-	BAN_BAN_COMMAND(OlympaGroup.MOD),
-	BAN_BANIP_COMMAND(OlympaGroup.MODP),
-	BAN_DELBAN_COMMAND(OlympaGroup.DEV),
-	BAN_UNBAN_COMMAND(OlympaGroup.MODP),
-	BAN_UNMUTE_COMMAND(OlympaGroup.MOD),
-	BAN_BANHIST_COMMAND(OlympaGroup.MOD),
-	BAN_SEEBANMSG(OlympaGroup.BUILDER),
-	BAN_BYPASS_BAN(OlympaGroup.BUILDER),
-	BAN_BYPASS_MAXTIME(OlympaGroup.DEV),
-	BAN_BYPASS_MINTIME(OlympaGroup.DEV),
-	BAN_DEF(OlympaGroup.MODP),
-
-	CHAT_COLOR(OlympaGroup.MODP);
+public class OlympaPermission{
+	public static final List<OlympaPermission> permissions = new ArrayList<>();
 
 	OlympaGroup group;
 
-	private OlympaPermission(OlympaGroup group) {
+	public OlympaPermission(OlympaGroup group){
 		this.group = group;
 	}
 
@@ -80,4 +64,16 @@ public enum OlympaPermission {
 	public void sendMessage(String message) {
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)));
 	}
+	
+	public static void registerPermissions(Class<?> clazz){
+		try {
+			for (Field f : clazz.getDeclaredFields()) {
+				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) permissions.add((OlympaPermission) f.get(null));
+			}
+		}catch (ReflectiveOperationException ex) {
+			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
+			ex.printStackTrace();
+		}
+	}
+	
 }

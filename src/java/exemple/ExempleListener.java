@@ -3,9 +3,9 @@ package exemple;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import fr.olympa.OlympaCorePermissions;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.provider.AccountProvider;
 
 public class ExempleListener implements Listener {
@@ -16,7 +16,7 @@ public class ExempleListener implements Listener {
 		// ==
 		olympaPlayer = AccountProvider.get(event.getPlayer());
 
-		if (OlympaPermission.CHAT_COMMAND.hasPermission(olympaPlayer)) {
+		if (OlympaCorePermissions.CHAT_COMMAND.hasPermission(olympaPlayer)) {
 			// si le joueur a la permission d'utiliser la commande /chat alors ...
 		}
 
