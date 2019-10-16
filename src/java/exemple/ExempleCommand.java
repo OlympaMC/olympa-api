@@ -41,14 +41,14 @@ public class ExempleCommand extends OlympaCommand {
 		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
 
 		// send messages
-		this.sendMessage("");
-		this.sendMessageToAll(""); // include Console
+		this.sendMessage("To you only");
+		this.sendMessageToAll("[ALL] Hello everyone & Console"); // include Console
 		this.sendMessage(sender, "");
 		this.sendMessage(new ComponentBuilder("Hello ").color(ChatColor.RED).bold(true).append("world").color(ChatColor.DARK_RED).append("!").color(ChatColor.RED).create());
-		this.broadcast(""); // Broadcast to players only
+		this.broadcast("[ALL] Hello players"); // Broadcast to players only
 
 		// send pre-made messages
-		this.sendMessage(Prefix.DEFAULT, "");
+		this.sendMessage(Prefix.DEFAULT, "This is the default prefix.");
 		this.sendDoNotHavePermission();
 		this.sendErreur("You can't blabla");
 		// useful to avoid making an error if the message is sent to Gui, or

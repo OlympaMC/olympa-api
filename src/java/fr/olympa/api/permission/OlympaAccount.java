@@ -7,19 +7,9 @@ import fr.olympa.api.objects.OlympaPlayer;
 
 public interface OlympaAccount {
 
-	void accountExpire(OlympaPlayer olympaPlayer);
-
-	boolean createNew(OlympaPlayer olympaPlayer, String name, String ip);
-
-	OlympaPlayer fromDb() throws SQLException;
+	OlympaPlayer createOlympaPlayer(String name, String ip);
 
 	OlympaPlayer get() throws SQLException;
-
-	OlympaPlayer getFromCache();
-
-	void removeFromCache();
-
-	void saveToCache(OlympaPlayer olympaPlayer);
 
 	void saveToDb(OlympaPlayer olympaPlayer);
 
@@ -30,5 +20,4 @@ public interface OlympaAccount {
 	void sendModifications(OlympaPlayer olympaPlayer, Consumer<? super Boolean> done);
 
 	void sendModificationsReceive();
-
 }
