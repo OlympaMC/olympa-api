@@ -40,7 +40,7 @@ public class OlympaItemBuild implements Cloneable {
 			this.itemFlags = flags.toArray(new ItemFlag[0]);
 		}
 
-		if (itemMeta.spigot().isUnbreakable()) {
+		if (itemMeta.isUnbreakable()) {
 			this.unbreakable = true;
 		}
 	}
@@ -76,7 +76,7 @@ public class OlympaItemBuild implements Cloneable {
 		}
 
 		if (this.unbreakable != null) {
-			itemMeta.spigot().setUnbreakable(true);
+			itemMeta.setUnbreakable(true);
 		}
 		itemStack.setItemMeta(itemMeta);
 		return itemStack;

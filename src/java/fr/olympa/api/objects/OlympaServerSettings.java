@@ -1,5 +1,7 @@
 package fr.olympa.api.objects;
 
+import org.bukkit.Location;
+
 public class OlympaServerSettings {
 
 	private final static OlympaServerSettings instance = new OlympaServerSettings();
@@ -8,6 +10,7 @@ public class OlympaServerSettings {
 		return instance;
 	}
 
+	private Location spawn = null;
 	private boolean chatSlow = true;
 	private boolean chatMute = false;
 	private int timeCooldown = 2;
@@ -20,6 +23,10 @@ public class OlympaServerSettings {
 
 	public int getMaxCaps() {
 		return this.maxCaps;
+	}
+
+	public Location getSpawn() {
+		return this.spawn;
 	}
 
 	public int getTimeCooldown() {
@@ -48,6 +55,10 @@ public class OlympaServerSettings {
 
 	public void setMaxCaps(int maxCaps) {
 		this.maxCaps = maxCaps;
+	}
+
+	public void setSpawn(Location spawn) {
+		this.spawn = spawn;
 	}
 
 	public void setTimeCooldown(int timecooldown) {

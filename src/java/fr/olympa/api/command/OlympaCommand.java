@@ -86,7 +86,7 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 	}
 
 	public OlympaPlayer getOlympaPlayer() {
-		return AccountProvider.get(this.player.getUniqueId());
+		return AccountProvider.get(this.player);
 	}
 
 	public Player getPlayer() {

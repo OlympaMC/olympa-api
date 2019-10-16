@@ -109,6 +109,7 @@ public class OlympaGuiBuild {
 		return this.getMiddleSlot() + i * 9;
 	}
 
+	@Deprecated
 	public String getName() {
 		return this.inventory.getName();
 	}

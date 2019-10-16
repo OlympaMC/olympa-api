@@ -1,4 +1,5 @@
 name: OlympaAPI
 main: exemple.Main
 authors: [Tristiisch, SkytAsul]
+api-version: 1.13
 version: 0.1

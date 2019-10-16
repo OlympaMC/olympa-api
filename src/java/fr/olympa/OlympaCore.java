@@ -5,7 +5,7 @@ import org.bukkit.plugin.PluginManager;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.plugin.OlympaPlugin;
 
-// Use to getInstance in API ONLY
+// Ceci est un faux ficher qui récupère quelques donnés du Core dans l'API
 public class OlympaCore extends OlympaPlugin {
 
 	public static OlympaCore getInstance() {
@@ -14,12 +14,14 @@ public class OlympaCore extends OlympaPlugin {
 
 	@Override
 	public void onDisable() {
+		this.disable();
 		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
 	@Override
 	public void onEnable() {
-		final PluginManager pluginManager = this.getServer().getPluginManager();
+		this.enable(this);
+		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
 		// pluginManager.registerEvents(new DataManagmentListener(), this);
 

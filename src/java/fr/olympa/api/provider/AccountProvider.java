@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.objects.OlympaPlayerObject;
 import fr.olympa.api.permission.OlympaAccount;
 
 public class AccountProvider implements OlympaAccount {
@@ -31,14 +32,15 @@ public class AccountProvider implements OlympaAccount {
 		return null;
 	}
 
-	public AccountProvider(UUID playerUniqueId) {
-		super();
+	private UUID uuid;
+
+	public AccountProvider(UUID uuid) {
+		this.uuid = uuid;
 	}
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		// TODO Auto-generated method stub
-		return null;
+		return new OlympaPlayerObject(this.uuid, name, ip);
 	}
 
 	@Override

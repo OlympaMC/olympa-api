@@ -1,0 +1,8 @@
+# Utilisatable sur tous les plugins qui extends OlympaPlugin
+database:
+   default:
+      host: localhost
+      port: 3306
+      user: ''
+      password: ''
+      database: ''

@@ -19,6 +19,15 @@ import fr.olympa.api.utils.SpigotUtils;
 
 public class SmallDataManagmentListener implements Listener {
 
+	{
+		Bukkit.getOnlinePlayers().forEach(player -> this.init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
+	}
+
+	private void init(OlympaPlayer olympaPlayer) {
+		olympaPlayer.setGroup(OlympaGroup.DEV);
+		AccountProvider.cache.put(olympaPlayer.getUniqueId(), olympaPlayer);
+	}
+
 	@EventHandler
 	public void onPlayerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
@@ -42,10 +51,7 @@ public class SmallDataManagmentListener implements Listener {
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
-
-		OlympaPlayer olympaPlayer = new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress());
-		olympaPlayer.setGroup(OlympaGroup.DEV);
-		AccountProvider.cache.put(uuid, olympaPlayer);
+		this.init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

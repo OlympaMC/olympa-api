@@ -24,6 +24,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	private InputStream resource;
 	private File file;
+
 	private String filename;
 
 	public CustomConfig() {
@@ -87,6 +88,10 @@ public class CustomConfig extends YamlConfiguration {
 			}
 		}
 		return null;
+	}
+
+	public boolean hasResource() {
+		return this.resource != null;
 	}
 
 	public void load() {

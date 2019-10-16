@@ -31,6 +31,7 @@ public class ExempleCommand extends OlympaCommand {
 
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		// null if sender = Console or Command Block
