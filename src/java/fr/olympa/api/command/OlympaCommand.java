@@ -18,7 +18,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.SpigotUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class OlympaCommand{
+public abstract class OlympaCommand {
 
 	protected static CommandMap cmap;
 
@@ -27,15 +27,15 @@ public abstract class OlympaCommand{
 	protected List<String> alias;
 	protected String command;
 	protected String description;
-	protected OlympaPermission permission;
+	public OlympaPermission permission;
 
 	public Player player;
 
-	protected CommandSender sender;
+	public CommandSender sender;
 
 	protected String usageString;
-	protected Integer minArg = 0;
-	protected boolean allowConsole = true;
+	public Integer minArg = 0;
+	public boolean allowConsole = true;
 
 	public boolean isAsynchronous = false;
 
@@ -91,12 +91,7 @@ public abstract class OlympaCommand{
 		return this.player;
 	}
 
-	public boolean hasPermission(String perm){
-		if (perm == null || perm.isEmpty()) return true;
-		return hasPermission(OlympaPermission.permissions.get(perm));
-	}
-	
-	public boolean hasPermission(OlympaPermission perm){
+	public boolean hasPermission(OlympaPermission perm) {
 		if (this.player == null) {
 			return true;
 		}
@@ -104,6 +99,13 @@ public abstract class OlympaCommand{
 			return false;
 		}
 		return this.permission.hasPermission(this.getOlympaPlayer());
+	}
+
+	public boolean hasPermission(String perm) {
+		if (perm == null || perm.isEmpty()) {
+			return true;
+		}
+		return this.hasPermission(OlympaPermission.permissions.get(perm));
 	}
 
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
@@ -123,29 +125,24 @@ public abstract class OlympaCommand{
 		this.getCommandMap().register("", reflectCommand);
 	}
 
-	public void sendError(String message){
-		this.sendMessage(Prefix.DEFAULT_BAD, message);
+	public void sendDoNotHavePermission() {
+		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
 	}
 
-	public void sendDoNotHavePermission(){
-		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
+	public void sendError(String message) {
+		this.sendMessage(Prefix.DEFAULT_BAD, message);
 	}
 
 	public void sendImpossibleWithConsole() {
 		this.sendError("Impossible avec la console.");
 	}
 
-	public void sendIncorrectSyntax(){
-		this.sendError("Syntaxe incorrecte.");
-	}
-	
 	public void sendImpossibleWithOlympaPlayer() {
 		this.sendError("Une erreur est survenu avec vos donnés.");
 	}
-	
-	public void sendUnknownPlayer(String name){
-		this.sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
-		// TODO check historique player
+
+	public void sendIncorrectSyntax() {
+		this.sendError("Syntaxe incorrecte.");
 	}
 
 	public void sendMessage(BaseComponent... text) {
@@ -175,6 +172,11 @@ public abstract class OlympaCommand{
 	public void sendMessageToAll(String text) {
 		Bukkit.getOnlinePlayers().forEach(player -> this.sendMessage(player, text));
 		this.sendMessage(Bukkit.getConsoleSender(), text);
+	}
+
+	public void sendUnknownPlayer(String name) {
+		this.sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
+		// TODO check historique player
 	}
 
 	public void sendUsage(String label) {
