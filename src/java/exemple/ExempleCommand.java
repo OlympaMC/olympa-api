@@ -51,7 +51,7 @@ public class ExempleCommand extends OlympaCommand {
 		// send pre-made messages
 		this.sendMessage(Prefix.DEFAULT, "This is the default prefix.");
 		this.sendDoNotHavePermission();
-		this.sendErreur("You can't blabla");
+		this.sendError("You can't blabla");
 		// useful to avoid making an error if the message is sent to Gui, or
 		// BaseComponent (JSON) messages
 		this.sendImpossibleWithConsole();

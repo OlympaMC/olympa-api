@@ -6,10 +6,8 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -20,7 +18,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.SpigotUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
+public abstract class OlympaCommand{
 
 	protected static CommandMap cmap;
 
@@ -93,21 +91,23 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 		return this.player;
 	}
 
-	public boolean hasPermission() {
+	public boolean hasPermission(String perm){
+		if (perm == null || perm.isEmpty()) return true;
+		return hasPermission(OlympaPermission.permissions.get(perm));
+	}
+	
+	public boolean hasPermission(OlympaPermission perm){
 		if (this.player == null) {
 			return true;
 		}
-
-		if (this.getOlympaPlayer() == null) {
+		if (this.getOlympaPlayer() == null || perm == null) {
 			return false;
 		}
 		return this.permission.hasPermission(this.getOlympaPlayer());
 	}
 
-	@Override
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
 
-	@Override
 	public abstract List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args);
 
 	public void register() {
@@ -123,20 +123,29 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 		this.getCommandMap().register("", reflectCommand);
 	}
 
-	public void sendDoNotHavePermission() {
-		this.sendErreur("Vous n'avez pas la permission &l(◑_◑)");
-	}
-
-	public void sendErreur(String message) {
+	public void sendError(String message){
 		this.sendMessage(Prefix.DEFAULT_BAD, message);
 	}
 
-	public void sendImpossibleWithConsole() {
-		this.sendErreur("Impossible avec la console.");
+	public void sendDoNotHavePermission(){
+		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
 	}
 
+	public void sendImpossibleWithConsole() {
+		this.sendError("Impossible avec la console.");
+	}
+
+	public void sendIncorrectSyntax(){
+		this.sendError("Syntaxe incorrecte.");
+	}
+	
 	public void sendImpossibleWithOlympaPlayer() {
-		this.sendErreur("Une erreur est survenu avec vos donnés.");
+		this.sendError("Une erreur est survenu avec vos donnés.");
+	}
+	
+	public void sendUnknownPlayer(String name){
+		this.sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
+		// TODO check historique player
 	}
 
 	public void sendMessage(BaseComponent... text) {
@@ -166,11 +175,6 @@ public abstract class OlympaCommand implements CommandExecutor, TabExecutor {
 	public void sendMessageToAll(String text) {
 		Bukkit.getOnlinePlayers().forEach(player -> this.sendMessage(player, text));
 		this.sendMessage(Bukkit.getConsoleSender(), text);
-	}
-
-	public void sendUnknownPlayer(String name) {
-		this.sendErreur("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
-		// TODO check historique player
 	}
 
 	public void sendUsage(String label) {

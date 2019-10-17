@@ -2,8 +2,8 @@ package fr.olympa.api.permission;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import fr.olympa.api.provider.AccountProvider;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission{
-	public static final List<OlympaPermission> permissions = new ArrayList<>();
+	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
 
 	OlympaGroup group;
 
@@ -65,11 +65,13 @@ public class OlympaPermission{
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)));
 	}
 	
-	public static void registerPermissions(Class<?> clazz){
+	public static synchronized void registerPermissions(Class<?> clazz){
 		try {
+			int initialSize = permissions.size();
 			for (Field f : clazz.getDeclaredFields()) {
-				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) permissions.add((OlympaPermission) f.get(null));
+				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) permissions.put(f.getName(), (OlympaPermission) f.get(null));
 			}
+			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
 		}catch (ReflectiveOperationException ex) {
 			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
 			ex.printStackTrace();

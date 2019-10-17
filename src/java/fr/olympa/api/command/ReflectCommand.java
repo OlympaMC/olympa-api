@@ -32,7 +32,7 @@ public class ReflectCommand extends Command {
 					return false;
 				}
 
-				if (!this.exe.hasPermission()) {
+				if (!this.exe.hasPermission(exe.permission)) {
 					this.exe.sendDoNotHavePermission();
 					return false;
 				}
