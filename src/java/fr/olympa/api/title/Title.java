@@ -5,9 +5,14 @@ import java.lang.reflect.Constructor;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.utils.Reflection;
-import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Reflection.ClassEnum;
+import fr.olympa.api.utils.SpigotUtils;
 
+/**
+ * @see Player#sendTitle(String, String, int, int, int)
+ * @deprecated Spigot dispose d'une méthode pour envoyer des titles
+ */
+@Deprecated
 public class Title {
 
 	public static void clearTitle(final Player player) {

@@ -125,12 +125,16 @@ public abstract class OlympaCommand {
 		this.getCommandMap().register("", reflectCommand);
 	}
 
-	public void sendDoNotHavePermission() {
-		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
+	public void sendSuccess(String message) {
+		this.sendMessage(Prefix.DEFAULT_GOOD, message);
 	}
 
 	public void sendError(String message) {
 		this.sendMessage(Prefix.DEFAULT_BAD, message);
+	}
+
+	public void sendDoNotHavePermission() {
+		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
 	}
 
 	public void sendImpossibleWithConsole() {

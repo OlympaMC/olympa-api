@@ -4,11 +4,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Player.Spigot;
 
 import fr.olympa.api.utils.Reflection;
-import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Reflection.ClassEnum;
+import fr.olympa.api.utils.SpigotUtils;
 
+/**
+ * @see Player#spigot()
+ * @see Spigot#sendMessage(net.md_5.bungee.api.ChatMessageType, net.md_5.bungee.api.chat.BaseComponent)
+ * @deprecated Spigot dispose d'une méthode pour envoyer un message en action bar
+ */
+@Deprecated
 public class ActionBar {
 
 	/**
