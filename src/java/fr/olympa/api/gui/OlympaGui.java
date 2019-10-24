@@ -10,55 +10,43 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.SpigotUtils;
 
-public class OlympaGuiBuild {
+public class OlympaGui {
 
 	private static int columns = 9;
 
-	private String id;
-
-	private String data;
+	private Object data;
 	private Inventory inventory;
 	private Player player;
-	private boolean canClick = false;
 
-	public OlympaGuiBuild(String name, String id, int column) {
+	public OlympaGui(String name, int column) {
 		int size = columns * column;
 		this.inventory = Bukkit.createInventory(null, size, SpigotUtils.color(name));
-		this.id = id;
-		this.data = "";
 	}
 
-	public OlympaGuiBuild(String name, String id, int size, String data) {
-		if (size % columns != 0) {
-			size = size + columns - size % columns;
-		}
-		this.inventory = Bukkit.createInventory(null, size, SpigotUtils.color(name));
-		this.id = id;
-		this.data = data;
-	}
-
-	public OlympaGuiBuild(String name, String id, InventoryType type) {
+	public OlympaGui(String name, InventoryType type) {
 		this.inventory = Bukkit.createInventory(null, type, SpigotUtils.color(name));
-		this.id = id;
 		this.data = "";
 	}
 
-	public OlympaGuiBuild(String name, String id, long size) {
+	public OlympaGui(String name, String id, long size) {
 		if (size % columns != 0) {
 			size = size + columns - size % columns;
 		}
 		this.inventory = Bukkit.createInventory(null, (int) size, SpigotUtils.color(name));
-		this.id = id;
 		this.data = "";
+	}
+
+	public OlympaGui(String name, String id, long size, Object data) {
+		if (size % columns != 0) {
+			size = size + columns - size % columns;
+		}
+		this.inventory = Bukkit.createInventory(null, (int) size, SpigotUtils.color(name));
+		this.data = data;
 	}
 
 	public void addItem(ItemStack item) {
 		int index = IntStream.range(0, this.inventory.getContents().length).filter(i -> this.inventory.getContents()[i] == null).findFirst().orElse(-1);
 		this.inventory.setItem(index, item);
-	}
-
-	public boolean canClick() {
-		return this.canClick;
 	}
 
 	public int getColumn() {
@@ -69,16 +57,12 @@ public class OlympaGuiBuild {
 		return this.getSlot(1, i);
 	}
 
-	public String getData() {
+	public Object getData() {
 		return this.data;
 	}
 
 	public int getFirstSlot() {
 		return 0;
-	}
-
-	public String getId() {
-		return this.id;
 	}
 
 	public Inventory getInventory() {
@@ -128,22 +112,14 @@ public class OlympaGuiBuild {
 	}
 
 	public void openInventory(Player player) {
-		this.player = player;
 		player.openInventory(this.inventory);
-		if (this.id != null) {
-			GuiHandler.setGui(this, player);
-		}
 	}
 
 	public void removeItem(int index) {
 		this.inventory.setItem(index, null);
 	}
 
-	public void setCanClick(boolean canClick) {
-		this.canClick = canClick;
-	}
-
-	public void setData(String data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 

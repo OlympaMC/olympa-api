@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerEvent;
 
-import fr.olympa.api.gui.OlympaGuiBuild;
+import fr.olympa.api.gui.OlympaGui;
 
 public class GuiClickEvent extends PlayerEvent {
 
@@ -16,9 +16,9 @@ public class GuiClickEvent extends PlayerEvent {
 	}
 
 	private final InventoryClickEvent inventoryClickEvent;
-	private final OlympaGuiBuild gui;
+	private final OlympaGui gui;
 
-	public GuiClickEvent(Player who, InventoryClickEvent inventoryClickEvent, OlympaGuiBuild gui) {
+	public GuiClickEvent(Player who, InventoryClickEvent inventoryClickEvent, OlympaGui gui) {
 		super(who);
 		this.inventoryClickEvent = inventoryClickEvent;
 		this.gui = gui;
@@ -33,7 +33,7 @@ public class GuiClickEvent extends PlayerEvent {
 		return this.inventoryClickEvent;
 	}
 
-	public OlympaGuiBuild getGui() {
+	public OlympaGui getGui() {
 		return gui;
 	}
 

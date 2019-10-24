@@ -17,7 +17,7 @@ import fr.olympa.api.utils.SpigotUtils;
 public class GuiHandler {
 
 	public static OlympaItemBuild cancelItemBuild = new OlympaItemBuild(Material.REDSTONE_BLOCK, "&4✖ &lImpossible");
-	private static List<OlympaGuiBuild> guis = new ArrayList<>();
+	private static List<OlympaGui> guis = new ArrayList<>();
 
 	public static void cancelInDev(InventoryClickEvent event) {
 		cancelItem(event, "En développement");
@@ -39,11 +39,11 @@ public class GuiHandler {
 		}, 30);
 	}
 
-	public static OlympaGuiBuild getGui(Player player) {
+	public static OlympaGui getGui(Player player) {
 		return guis.stream().filter(data -> SpigotUtils.isSamePlayer(player, data.getPlayer())).findFirst().orElse(null);
 	}
 
-	public static void removeGui(OlympaGuiBuild guiData) {
+	public static void removeGui(OlympaGui guiData) {
 		guis.remove(guiData);
 	}
 
@@ -52,8 +52,8 @@ public class GuiHandler {
 
 	}
 
-	protected static void setGui(OlympaGuiBuild guiData, Player player) {
-		OlympaGuiBuild guiDataOld = getGui(player);
+	protected static void setGui(OlympaGui guiData, Player player) {
+		OlympaGui guiDataOld = getGui(player);
 		if (guiDataOld != null) {
 			removeGui(guiDataOld);
 		}

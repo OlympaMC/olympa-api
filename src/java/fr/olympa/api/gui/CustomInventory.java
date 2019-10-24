@@ -12,7 +12,7 @@ public abstract interface CustomInventory {
 	 * @param p Player to open
 	 * @return inventory opened
 	 */
-	public abstract Inventory open(Player p);
+	public abstract OlympaGui open(Player p);
 	
 	/**
 	 * Called when clicking on an item
@@ -23,7 +23,7 @@ public abstract interface CustomInventory {
 	 * @param click Type of click
 	 * @return Cancel click
 	 */
-	public abstract boolean onClick(Player p, Inventory inv, ItemStack current, int slot, ClickType click);
+	public abstract boolean onClick(Player p, OlympaGui inv, ItemStack current, int slot, ClickType click);
 	
 	/**
 	 * Called when clicking on an item <b>with something on the cursor</b>
@@ -34,7 +34,7 @@ public abstract interface CustomInventory {
 	 * @param slot Slot of item clicked
 	 * @return Cancel click
 	 */
-	public default boolean onClickCursor(Player p, Inventory inv, ItemStack current, ItemStack cursor, int slot){return true;}
+	public default boolean onClickCursor(Player p, OlympaGui inv, ItemStack current, ItemStack cursor, int slot){return true;}
 	
 	/**
 	 * Called when closing the inventory
@@ -42,7 +42,7 @@ public abstract interface CustomInventory {
 	 * @param inv Inventory closed
 	 * @return Remove player from inventories system
 	 */
-	public default boolean onClose(Player p, Inventory inv){
+	public default boolean onClose(Player p, OlympaGui inv){
 		return true;
 	}
 

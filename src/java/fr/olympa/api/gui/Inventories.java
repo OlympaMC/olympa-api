@@ -16,13 +16,13 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class Inventories implements Listener{ // TODO listener à enregistrer au moment du lancement du Core
+public class Inventories implements Listener{
 
-	private static Map<Player, Map.Entry<CustomInventory, Inventory>> g = new HashMap<>();
+	private static Map<Player, Map.Entry<CustomInventory, OlympaGui>> g = new HashMap<>();
 
 	private static boolean close = false;
 
-	public static Inventory createGetInv(Player p, CustomInventory inv){
+	public static OlympaGui createGetInv(Player p, CustomInventory inv){
 		put(p, inv, inv.open(p));
 		return g.get(p).getValue();
 	}
@@ -36,7 +36,7 @@ public class Inventories implements Listener{ // TODO listener à enregistrer au
 	 */
 	public static <T extends CustomInventory> T create(Player p, T inv) {
 		closeWithoutExit(p);
-		Inventory tinv = inv.open(p);
+		OlympaGui tinv = inv.open(p);
 		if (tinv == null) return inv;
 		put(p, inv, tinv);
 		return inv;
@@ -58,13 +58,13 @@ public class Inventories implements Listener{ // TODO listener à enregistrer au
 			return;
 		}
 
-		if (!inv.equals(g.get(p).getValue())) return;
+		if (!inv.equals(g.get(p).getValue().getInventory())) return;
 		
 		if (e.getCursor().getType() == Material.AIR) {
 			if (current == null || current.getType() == Material.AIR) return;
-			if (g.get(p).getKey().onClick(p, inv, current, e.getSlot(), e.getClick())) e.setCancelled(true);
+			if (g.get(p).getKey().onClick(p, g.get(p).getValue(), current, e.getSlot(), e.getClick())) e.setCancelled(true);
 		}else {
-			if (g.get(p).getKey().onClickCursor(p, inv, current, e.getCursor(), e.getSlot()))
+			if (g.get(p).getKey().onClickCursor(p, g.get(p).getValue(), current, e.getCursor(), e.getSlot()))
 				e.setCancelled(true);
 		}
 	}
@@ -77,8 +77,8 @@ public class Inventories implements Listener{ // TODO listener à enregistrer au
 			return;
 		}
 		if (g.containsKey(p)) {
-			Entry<CustomInventory, Inventory> inv = g.get(p);
-			if (!e.getInventory().equals(inv.getValue())) return;
+			Entry<CustomInventory, OlympaGui> inv = g.get(p);
+			if (!e.getInventory().equals(inv.getValue().getInventory())) return;
 			if (inv.getKey().onClose(p, inv.getValue())) g.remove(p);
 		}
 	}
@@ -106,8 +106,8 @@ public class Inventories implements Listener{ // TODO listener à enregistrer au
 		}
 	}
 	
-	public static void put(Player p, CustomInventory cinv, Inventory inv){
-		g.put(p, new AbstractMap.SimpleEntry<CustomInventory, Inventory>(cinv, inv));
+	public static void put(Player p, CustomInventory cinv, OlympaGui inv){
+		g.put(p, new AbstractMap.SimpleEntry<CustomInventory, OlympaGui>(cinv, inv));
 	}
 	
 	public static boolean isInSystem(Player p){
@@ -115,7 +115,7 @@ public class Inventories implements Listener{ // TODO listener à enregistrer au
 	}
 	
 	public static void openInventory(Player p){
-		p.openInventory(g.get(p).getValue());
+		p.openInventory(g.get(p).getValue().getInventory());
 	}
 
 }
