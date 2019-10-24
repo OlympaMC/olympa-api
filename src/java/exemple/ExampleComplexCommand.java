@@ -26,7 +26,7 @@ public class ExampleComplexCommand extends ComplexCommand {
 
 	@Cmd (player = true)
 	public void gui(CommandContext cmd) {
-		new ExempleGUI().create(cmd.player);
+		new ExempleGUI().open(cmd.player);
 	}
 
 }

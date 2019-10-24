@@ -33,8 +33,7 @@ public class ExempleGUI implements CustomInventory {
 		return true; // les events de click etc. ne sont plus écoutés pour le joueur
 	}
 
-	@Override
-	public OlympaGui open(Player p) {
+	public void open(Player p) {
 		OlympaGui gui = new OlympaGui("Name", 3);
 
 		gui.setItem(0, ItemUtils.item(Material.GOLD_INGOT, "§eCeci est un item que tu ne peux pas prendre", "lore1", "lore2"));
@@ -42,8 +41,7 @@ public class ExempleGUI implements CustomInventory {
 		gui.setItem(2, ItemUtils.item(Material.SALMON, "§aCeci est un item que tu peux prendre", "et tu peux poser quelque chose à la place"));
 
 		gui.openInventory(p);
-
-		return gui;
+		this.create(p, gui);
 	}
 
 }

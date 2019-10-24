@@ -11,8 +11,8 @@ public abstract interface CustomInventory {
 	 * Called when opening inventory
 	 * @param p Player to open
 	 * @return inventory opened
-	 */
-	public abstract OlympaGui open(Player p);
+	 
+	public abstract OlympaGui open(Player p);*/
 	
 	/**
 	 * Called when clicking on an item
@@ -47,12 +47,13 @@ public abstract interface CustomInventory {
 	}
 
 	/**
-	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, CustomInventory)}
+	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, CustomInventory, OlympaGui)}
 	 * @param p Player
+	 * @param gui OlympaGui
 	 * @see Inventories#create(Player, CustomInventory)
 	 */
-	public default void create(Player p){
-		Inventories.create(p, this);
+	public default void create(Player p, OlympaGui gui){
+		Inventories.create(p, this, gui);
 	}
 	
 }

@@ -22,10 +22,10 @@ public class Inventories implements Listener{
 
 	private static boolean close = false;
 
-	public static OlympaGui createGetInv(Player p, CustomInventory inv){
+	/**public static OlympaGui createGetInv(Player p, CustomInventory inv){
 		put(p, inv, inv.open(p));
 		return g.get(p).getValue();
-	}
+	}*/
 	
 	/**
 	 * Open a CustomInventory to player, and insert it to the Inventories system.
@@ -34,9 +34,8 @@ public class Inventories implements Listener{
 	 * @param <T> Class who implements the CustomInventory interface
 	 * @return Same CustomInventory
 	 */
-	public static <T extends CustomInventory> T create(Player p, T inv) {
+	public static <T extends CustomInventory> T create(Player p, T inv, OlympaGui tinv) {
 		closeWithoutExit(p);
-		OlympaGui tinv = inv.open(p);
 		if (tinv == null) return inv;
 		put(p, inv, tinv);
 		return inv;

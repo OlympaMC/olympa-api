@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.olympa.api.utils.SpigotUtils;
 
@@ -20,6 +22,7 @@ public class OlympaItemBuild implements Cloneable {
 	private List<String> lore;
 	private ItemFlag[] itemFlags;
 	private Boolean unbreakable;
+	private OfflinePlayer player;
 
 	public OlympaItemBuild(ItemStack itemStack) {
 		this.material = itemStack.getType();
@@ -50,6 +53,22 @@ public class OlympaItemBuild implements Cloneable {
 		this.name = name;
 	}
 
+	public OlympaItemBuild(String name) {
+		this.name = name;
+	}
+
+	public OlympaItemBuild addLore(int i, String lore) {
+		OlympaItemBuild olympaItemBuild = this.clone();
+		olympaItemBuild.lore.set(i, olympaItemBuild.lore.get(i) + lore);
+		return olympaItemBuild;
+	}
+
+	public OlympaItemBuild addName(String name) {
+		OlympaItemBuild olympaItemBuild = this.clone();
+		olympaItemBuild.name += name;
+		return olympaItemBuild;
+	}
+
 	public OlympaItemBuild breakable() {
 		OlympaItemBuild olympaItemBuild = this.clone();
 		olympaItemBuild.unbreakable = true;
@@ -73,6 +92,10 @@ public class OlympaItemBuild implements Cloneable {
 
 		if (this.itemFlags != null) {
 			itemMeta.addItemFlags(this.itemFlags);
+		}
+
+		if (this.player != null) {
+			((SkullMeta) itemMeta).setOwningPlayer(this.player);
 		}
 
 		if (this.unbreakable != null) {
@@ -113,6 +136,13 @@ public class OlympaItemBuild implements Cloneable {
 	public OlympaItemBuild name(String name) {
 		OlympaItemBuild olympaItemBuild = this.clone();
 		olympaItemBuild.name = name;
+		return olympaItemBuild;
+	}
+
+	public OlympaItemBuild skullowner(OfflinePlayer player) {
+		OlympaItemBuild olympaItemBuild = this.clone();
+		this.player = player;
+		this.material = Material.PLAYER_HEAD;
 		return olympaItemBuild;
 	}
 
