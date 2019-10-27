@@ -1,4 +1,4 @@
-package fr.olympa.api.gui;
+package fr.olympa.api.gui.old;
 
 import java.util.stream.IntStream;
 
@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.utils.SpigotUtils;
 
+@Deprecated
 public class OlympaGui {
 
 	private static int columns = 9;

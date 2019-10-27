@@ -5,7 +5,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerEvent;
 
-import fr.olympa.api.gui.OlympaGui;
+import fr.olympa.api.gui.old.OlympaGui;
 
 public class GuiClickEvent extends PlayerEvent {
 

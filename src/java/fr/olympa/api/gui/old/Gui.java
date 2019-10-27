@@ -1,5 +1,6 @@
-package fr.olympa.api.gui;
+package fr.olympa.api.gui.old;
 
+@Deprecated
 public class Gui {
 
 	private final String name;

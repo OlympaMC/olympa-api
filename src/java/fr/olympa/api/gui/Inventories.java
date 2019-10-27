@@ -1,10 +1,8 @@
 package fr.olympa.api.gui;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,30 +12,19 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class Inventories implements Listener{
 
-	private static Map<Player, Map.Entry<CustomInventory, OlympaGui>> g = new HashMap<>();
+	private static Map<Player, OlympaGUI> g = new HashMap<>();
 
 	private static boolean close = false;
-
-	/**public static OlympaGui createGetInv(Player p, CustomInventory inv){
-		put(p, inv, inv.open(p));
-		return g.get(p).getValue();
-	}*/
 	
-	/**
-	 * Open a CustomInventory to player, and insert it to the Inventories system.
-	 * @param p Player to open
-	 * @param inv CustomInventory instance to open
-	 * @param <T> Class who implements the CustomInventory interface
-	 * @return Same CustomInventory
-	 */
-	public static <T extends CustomInventory> T create(Player p, T inv, OlympaGui tinv) {
+	public static <T extends OlympaGUI> T create(Player p, T inv) {
 		closeWithoutExit(p);
-		if (tinv == null) return inv;
-		put(p, inv, tinv);
+		p.openInventory(inv.getInventory());
+		g.put(p, inv);
 		return inv;
 	}
 	
@@ -47,8 +34,8 @@ public class Inventories implements Listener{
 		Inventory inv = e.getClickedInventory();
 		ItemStack current = e.getCurrentItem();
 
-		if (g.get(p) == null) return;
-		if (inv == null) return;
+		OlympaGUI gui = getGUI(inv);
+		if (gui == null) return;
 		
 		e.setCancelled(false);
 		
@@ -56,15 +43,12 @@ public class Inventories implements Listener{
 			if (e.isShiftClick()) e.setCancelled(true);
 			return;
 		}
-
-		if (!inv.equals(g.get(p).getValue().getInventory())) return;
 		
 		if (e.getCursor().getType() == Material.AIR) {
 			if (current == null || current.getType() == Material.AIR) return;
-			if (g.get(p).getKey().onClick(p, g.get(p).getValue(), current, e.getSlot(), e.getClick())) e.setCancelled(true);
+			if (gui.onClick(p, current, e.getSlot(), e.getClick())) e.setCancelled(true);
 		}else {
-			if (g.get(p).getKey().onClickCursor(p, g.get(p).getValue(), current, e.getCursor(), e.getSlot()))
-				e.setCancelled(true);
+			if (gui.onClickCursor(p, current, e.getCursor(), e.getSlot())) e.setCancelled(true);
 		}
 	}
 
@@ -76,12 +60,18 @@ public class Inventories implements Listener{
 			return;
 		}
 		if (g.containsKey(p)) {
-			Entry<CustomInventory, OlympaGui> inv = g.get(p);
-			if (!e.getInventory().equals(inv.getValue().getInventory())) return;
-			if (inv.getKey().onClose(p, inv.getValue())) g.remove(p);
+			OlympaGUI gui = g.get(p);
+			if (!e.getInventory().equals(gui.getInventory())) return;
+			if (gui.onClose(p)) g.remove(p);
 		}
 	}
 	
+	private static OlympaGUI getGUI(Inventory inv) {
+		if (inv == null) return null;
+		InventoryHolder holder = inv.getHolder();
+		if (holder != null && holder instanceof OlympaGUI) return (OlympaGUI) holder;
+		return null;
+	}
 	
 	public static void closeWithoutExit(Player p){
 		if (!g.containsKey(p)) return;
@@ -105,16 +95,8 @@ public class Inventories implements Listener{
 		}
 	}
 	
-	public static void put(Player p, CustomInventory cinv, OlympaGui inv){
-		g.put(p, new AbstractMap.SimpleEntry<CustomInventory, OlympaGui>(cinv, inv));
-	}
-	
 	public static boolean isInSystem(Player p){
 		return g.containsKey(p);
-	}
-	
-	public static void openInventory(Player p){
-		p.openInventory(g.get(p).getValue().getInventory());
 	}
 
 }
