@@ -1,5 +1,5 @@
-name: OlympaAPI
-main: exemple.Main
+name: OlympaCore
+main: fr.olympa.OlympaCore
 authors: [Tristiisch, SkytAsul]
 api-version: 1.13
-version: 0.1
+version: 0.0.1

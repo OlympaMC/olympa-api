@@ -14,7 +14,6 @@ import fr.olympa.api.utils.SpigotUtils;
 
 public abstract class OlympaPlugin extends JavaPlugin {
 
-	protected static OlympaPlugin instance;
 	private TaskManager task;
 	private CustomConfig config;
 	protected DbConnection database = null;
@@ -25,8 +24,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		}
 	}
 
-	protected void enable(OlympaPlugin plugin) {
-		instance = plugin;
+	public void onEnable() {
 		this.task = new TaskManager(this);
 
 		this.config = new CustomConfig(this, "config");

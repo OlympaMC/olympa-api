@@ -8,22 +8,17 @@ import fr.olympa.api.plugin.OlympaPlugin;
 
 public class Main extends OlympaPlugin {
 
+	private static Main instance;
 	public static Main getInstance() {
 		return (Main) instance;
-	}
-
-	@Override
-	public void onDisable() {
-		this.disable();
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
 	@Override
 	public void onEnable() {
 		OlympaPermission.registerPermissions(ExemplePermissions.class);
 		
-		this.enable(this);
 		instance = this;
+		super.onEnable();
 		
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
@@ -34,6 +29,12 @@ public class Main extends OlympaPlugin {
 		pluginManager.registerEvents(new Inventories(), this);
 
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
+	}
+
+	@Override
+	public void onDisable() {
+		this.disable();
+		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
 }
