@@ -13,7 +13,7 @@ public abstract class AbstractRandomizedPicker<T extends Chanced> {
 	public List<T> pick() {
 		List<T> objects = new ArrayList<>(getMaxItems());
 
-		int itemAmount = getMinItems() + random.nextInt(getMaxItems() - getMinItems());
+		int itemAmount = getMinItems() + random.nextInt(getMaxItems() - getMinItems() + 1);
 		for (T obj : getAlwaysObjectList()) {
 			objects.add(obj);
 			itemAmount--;

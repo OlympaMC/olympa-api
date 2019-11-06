@@ -154,7 +154,7 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendMessage(CommandSender sender, Prefix prefix, String text) {
-		this.sendMessage(sender, prefix + SpigotUtils.color(text));
+		this.sendMessage(sender, prefix + text);
 	}
 
 	public void sendMessage(CommandSender sender, String text) {
@@ -166,7 +166,7 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendMessage(String text) {
-		this.sendMessage(this.sender, SpigotUtils.color(text));
+		this.sendMessage(this.sender, text);
 	}
 
 	public void sendMessageToAll(Prefix prefix, String text) {
