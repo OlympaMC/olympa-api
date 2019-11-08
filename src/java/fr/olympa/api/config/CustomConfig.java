@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -69,11 +68,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	@Override
 	public String getString(String path) {
-		return SpigotUtils.color(this.getStringDefault(path));
-	}
-
-	public String getStringDefault(String path) {
-		return ((MemoryConfiguration) this).getString(path);
+		return SpigotUtils.color(super.getString(path));
 	}
 
 	public Double getVersion() {

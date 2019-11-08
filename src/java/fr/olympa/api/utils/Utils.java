@@ -277,6 +277,10 @@ public class Utils {
 		return (double) tmp / factor;
 	}
 
+	public static String formatDouble(double value, int digits) {
+		return String.format("%." + digits + "f", value);
+	}
+
 	public static String secondsToCalendar(final int s) {
 		return LocalTime.ofSecondOfDay(s).toString();
 	}
