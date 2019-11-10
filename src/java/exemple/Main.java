@@ -1,10 +1,14 @@
 package exemple;
 
+import java.util.Arrays;
+
 import org.bukkit.plugin.PluginManager;
 
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaPlugin;
+import fr.olympa.api.scoreboard.ScoreboardLine;
+import fr.olympa.api.scoreboard.ScoreboardManager;
 
 public class Main extends OlympaPlugin {
 
@@ -12,6 +16,8 @@ public class Main extends OlympaPlugin {
 	public static Main getInstance() {
 		return (Main) instance;
 	}
+
+	private ScoreboardManager scoreboards;
 
 	@Override
 	public void onEnable() {
@@ -23,6 +29,8 @@ public class Main extends OlympaPlugin {
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
 		
+		scoreboards = new ScoreboardManager(this, "Exemple scoreboard", Arrays.asList(new ScoreboardLine("Yo"), new ScoreboardLine("ligne très très longue qui sera coupée en deux tous les 15 caractères", 0, 15)));
+
 		final PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(new ExempleListener(), this);
 		pluginManager.registerEvents(new SmallDataManagmentListener(), this);
@@ -34,6 +42,9 @@ public class Main extends OlympaPlugin {
 	@Override
 	public void onDisable() {
 		this.disable();
+
+		scoreboards.unload();
+
 		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
