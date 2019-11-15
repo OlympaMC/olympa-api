@@ -1,27 +1,18 @@
 package fr.olympa.api.scoreboard;
 
-import org.apache.commons.lang.Validate;
+import fr.olympa.api.objects.OlympaPlayer;
 
-public class ScoreboardLine {
+public abstract class ScoreboardLine {
 
-	public String value;
-	public int refresh = 0;
-	public int length = 0;
-	
-	public ScoreboardLine(String value) {
-		this(value, 0, 0);
-	}
+	public int refresh;
+	public int length;
 
-	public ScoreboardLine(String value, int refresh, int length) {
-		Validate.notNull(value);
-		this.value = value;
+	public ScoreboardLine(int refresh, int length) {
 		this.refresh = refresh;
 		this.length = length;
 	}
 	
-	public String getValue(){
-		return value;
-	}
+	public abstract String getValue(OlympaPlayer player);
 	
 	public int getRefreshTime(){
 		return refresh;

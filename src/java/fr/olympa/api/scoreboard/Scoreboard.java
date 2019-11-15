@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.scoreboard.ScoreboardSigns.VirtualTeam;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 
 public class Scoreboard {
 
-	private Player p;
+	private OlympaPlayer p;
 	private ScoreboardManager manager;
 
 	private ScoreboardSigns sb;
 	private LinkedList<Line> lines = new LinkedList<>();
 	private BukkitRunnable runnable;
 	
-	Scoreboard(Player player, ScoreboardManager manager) {
+	Scoreboard(OlympaPlayer player, ScoreboardManager manager) {
 		this.p = player;
 		this.manager = manager;
 		
@@ -32,7 +32,7 @@ public class Scoreboard {
 		
 		runnable = new BukkitRunnable() {
 			public void run(){
-				if (!player.isOnline()) return;
+				if (p.getPlayer() == null) return;
 				for (Line line : lines){
 					if (line.tryRefresh()) line.refreshLines();
 				}
@@ -51,7 +51,7 @@ public class Scoreboard {
 	}
 	
 	public void initScoreboard(){
-		sb = new ScoreboardSigns(p, manager.scoreboardsName);
+		sb = new ScoreboardSigns(p.getPlayer(), manager.scoreboardsName);
 		sb.create();
 		for (int i = 0; i < lines.size(); i++) {
 			Line line = lines.get(i);
@@ -91,7 +91,7 @@ public class Scoreboard {
 		 * @param firstLine Scoreboard line where the first line will be placed
 		 */
 		public void setLines(int firstLine){
-			String text = param.value;
+			String text = param.getValue(p);
 			text = SpigotUtils.color(text);
 			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);
 			if (lastAmount > ls.size()){
@@ -121,11 +121,11 @@ public class Scoreboard {
 		
 		private boolean tryRefresh(){
 			if (param.refresh == 0) return false;
+			timeLeft--;
 			if (timeLeft == 0){
 				timeLeft = param.refresh;
 				return true;
 			}
-			timeLeft--;
 			return false;
 		}
 		

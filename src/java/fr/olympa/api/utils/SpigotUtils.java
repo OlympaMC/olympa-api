@@ -60,6 +60,10 @@ public class SpigotUtils {
 		return world + " " + x + " " + y + " " + z;
 	}
 
+	public static String convertBlockLocationToString(final Location loc) {
+		return loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+	}
+
 	public static Location convertStringToLocation(final String loc) {
 		if (loc != null) {
 			final String[] coords = loc.split(" ");

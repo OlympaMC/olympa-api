@@ -5,18 +5,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.plugin.OlympaPlugin;
+import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager implements Listener {
 	
-	private Map<Player, Scoreboard> scoreboards = new HashMap<>();
+	private Map<OlympaPlayer, Scoreboard> scoreboards = new HashMap<>();
 	
 	OlympaPlugin plugin;
 	String scoreboardsName;
@@ -30,27 +31,27 @@ public class ScoreboardManager implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
-	public Scoreboard getPlayerScoreboard(Player p){
+	public Scoreboard getPlayerScoreboard(OlympaPlayer p) {
 		return scoreboards.get(p);
 	}
 	
-	public void removePlayerScoreboard(Player p){
+	public void removePlayerScoreboard(OlympaPlayer p) {
 		if (scoreboards.containsKey(p)) scoreboards.remove(p).unload();
 	}
 	
-	public void create(Player p){
+	public void create(OlympaPlayer p) {
 		removePlayerScoreboard(p);
 		scoreboards.put(p, new Scoreboard(p, this));
 	}
 	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		create(e.getPlayer());
+	public void onJoin(OlympaPlayerLoadEvent e) {
+		create(e.getOlympaPlayer());
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		removePlayerScoreboard(e.getPlayer());
+		removePlayerScoreboard(AccountProvider.get(e.getPlayer()));
 	}
 
 	public void unload(){
