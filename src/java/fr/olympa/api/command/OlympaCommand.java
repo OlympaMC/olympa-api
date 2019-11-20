@@ -149,6 +149,10 @@ public abstract class OlympaCommand {
 		this.sendError("Syntaxe incorrecte.");
 	}
 
+	public void sendIncorrectSyntax(String correctSyntax) {
+		this.sendError("Syntaxe attendue : §o" + correctSyntax);
+	}
+
 	public void sendMessage(BaseComponent... text) {
 		this.player.spigot().sendMessage(text);
 	}

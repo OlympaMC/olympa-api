@@ -38,6 +38,11 @@ public @interface Cmd {
 	public String[] args() default {};
 	
 	/**
+	 * @return syntaxe attendue
+	 */
+	public String syntax() default "";
+
+	/**
 	 * Required permission to execute this command (if empty, no permission will be required)<br>
 	 * Final permission will be fetched in {@link OlympaPermission#permissions}
 	 * @return name of the permission

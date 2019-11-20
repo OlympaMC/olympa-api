@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -23,12 +23,12 @@ import fr.olympa.api.permission.OlympaPermission;
 public class ComplexCommand extends OlympaCommand{
 
 	public final Map<String, InternalCommand> commands = new HashMap<>();
-	private Consumer<CommandSender> noArgs;
+	private Predicate<CommandSender> noArgs;
 	
 	/**
-	 * @param noArgs RunnableObj(player) who'll be ran if the command is executed without any arguments <i>(can be null)</i>
+	 * @param noArgs Predicate(CommandSender) who'll be ran if the command is executed without any arguments. If is null or return <tt>false</tt>, "incorrect syntax" will be sent to the player
 	 */
-	public ComplexCommand(Consumer<CommandSender> noArgs, Plugin plugin, String command, String description, OlympaPermission permission, String... alias){
+	public ComplexCommand(Predicate<CommandSender> noArgs, Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
 		this.noArgs = noArgs;
 		
@@ -56,9 +56,9 @@ public class ComplexCommand extends OlympaCommand{
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		if (args.length == 0){
-			if (noArgs != null){
-				noArgs.accept(sender);
-			}else sendIncorrectSyntax();
+			if (noArgs == null || !noArgs.test(sender)) {
+				sendIncorrectSyntax();
+			}
 			return true;
 		}
 		
@@ -80,7 +80,9 @@ public class ComplexCommand extends OlympaCommand{
 		}
 		
 		if (args.length - 1 < cmd.min()){
-			sendIncorrectSyntax();
+			if (cmd.syntax() == "") {
+				sendIncorrectSyntax();
+			}else sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());
 			return true;
 		}
 		
