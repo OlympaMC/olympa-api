@@ -1,20 +1,33 @@
 package fr.olympa.api.item;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 public class ItemUtils {
 	
+	public static ItemStack none = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c");
+	public static ItemStack done = ItemUtils.item(Material.DIAMOND, "§a");
+
+	public static ItemStack nextPage = ItemUtils.item(Material.ARROW, "§ePage suivante →");
+	public static ItemStack previousPage = ItemUtils.item(Material.ARROW, "§e← Page précédente");
+
 	/**
 	 * Create an ItemStack instance
 	 * @param type material type
@@ -50,6 +63,34 @@ public class ItemUtils {
 	}
 
 	/**
+	 * Create an ItemStack instance of a skull item
+	 * @param name name of the item
+	 * @param value texture value
+	 * @param lore lore of the item, formatted as a String array
+	 * @return the ItemStack instance
+	 */
+	public static ItemStack skullCustom(String name, String value, String... lore) {
+		ItemStack is = new ItemStack(Material.PLAYER_HEAD);
+		SkullMeta im = (SkullMeta) is.getItemMeta();
+		im.setDisplayName(name);
+
+		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+		profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString(("{textures:[{Value:\"" + value + "\"}]}"))));
+		Field profileField = null;
+		try {
+			profileField = im.getClass().getDeclaredField("profile");
+			profileField.setAccessible(true);
+			profileField.set(im, profile);
+		}catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		is.setItemMeta(im);
+		if (lore != null && lore.length != 0) lore(is, lore);
+		return is;
+	}
+
+	/**
 	 * Set the lore of an item (override old lore)
 	 * @param is ItemStack instance to edit
 	 * @param lore new lore of the item, formatted as a String array
@@ -61,7 +102,6 @@ public class ItemUtils {
 		if (lore != null && lore.length != 0){
 			for (String s : lore){
 				if (s == null) {
-					ls.add("");
 					continue;
 				}
 				List<String> lss = new ArrayList<>();
@@ -182,6 +222,9 @@ public class ItemUtils {
 	}
 	
 
+	public static ItemStack itemSeparator(DyeColor color) {
+		return item(Material.valueOf(color.name() + "_STAINED_GLASS_PANE"), "§a");
+	}
 
 	/**
 	 * Get a "switch" item : ink sack

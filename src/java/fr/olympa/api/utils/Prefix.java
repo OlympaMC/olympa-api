@@ -1,6 +1,7 @@
 package fr.olympa.api.utils;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 public enum Prefix {
 
@@ -8,6 +9,7 @@ public enum Prefix {
 	DEFAULT_BAD("&6%serverName &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED),
 	DEFAULT_GOOD("&6%serverName &7%symbole &a", ChatColor.GREEN, ChatColor.DARK_GREEN),
 	BAD("&c✕ ", ChatColor.RED, ChatColor.DARK_RED),
+	ERROR("&c⚠ ", ChatColor.RED, ChatColor.DARK_RED),
 	INFO("&6INFO &6%symbole &e", ChatColor.YELLOW, ChatColor.GOLD),
 	USAGE("&6Usage &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED);
 
@@ -55,5 +57,9 @@ public enum Prefix {
 
 	public String toStringWithoutFormat() {
 		return this.prefix;
+	}
+
+	public void sendMessage(CommandSender sender, String msg) {
+		sender.sendMessage(SpigotUtils.color(prefix + msg));
 	}
 }
