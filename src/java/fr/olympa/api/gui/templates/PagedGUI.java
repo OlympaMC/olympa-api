@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
@@ -20,8 +20,9 @@ import fr.olympa.api.item.ItemUtils;
  */
 public abstract class PagedGUI<T> extends OlympaGUI {
 
-	protected Player p;
-	protected Inventory inv;
+	public static ItemStack previousPage = ItemUtils.item(Material.ARROW, "§e↑ Page précédente");
+	public static ItemStack nextPage = ItemUtils.item(Material.ARROW, "§e↓ Page suivante");
+
 	private int page = 0;
 	private int maxPage;
 	
@@ -33,13 +34,13 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	}
 	
 	protected PagedGUI(String name, DyeColor color, List<T> objects, Consumer<List<T>> validate){
-		super(name, 45);
+		super(name, 5);
 		this.objects = objects;
 		this.validate = validate;
 		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
 		
-		setBarItem(0, ItemUtils.previousPage);
-		setBarItem(4, ItemUtils.nextPage);
+		setBarItem(0, previousPage);
+		setBarItem(4, nextPage);
 		if (validate != null) setBarItem(2, ItemUtils.done);
 
 		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
@@ -109,7 +110,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		default:
 			int line = (int) Math.floor(slot * 1D / 9D);
 			int objectSlot = slot - line*2 + page*35;
-			click(objects.get(objectSlot));
+			click(objects.get(objectSlot), p);
 			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 		return true;
@@ -124,7 +125,8 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	/**
 	 * Called when an object is clicked
 	 * @param existing clicked object
+	 * @param p
 	 */
-	public abstract void click(T existing);
+	public abstract void click(T existing, Player p);
 
 }

@@ -1,7 +1,9 @@
 package fr.olympa.api.gui;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 public class Inventories implements Listener{
 
 	private static Map<Player, OlympaGUI> g = new HashMap<>();
+	private static List<InventoryType> notHoldable = Arrays.asList(InventoryType.DISPENSER, InventoryType.DROPPER, InventoryType.FURNACE, InventoryType.BREWING, InventoryType.HOPPER);
 
 	private static boolean close = false;
 	
@@ -43,7 +46,6 @@ public class Inventories implements Listener{
 			if (e.isShiftClick()) e.setCancelled(true);
 			return;
 		}
-		
 		if (e.getCursor().getType() == Material.AIR) {
 			if (current == null || current.getType() == Material.AIR) return;
 			if (gui.onClick(p, current, e.getSlot(), e.getClick())) e.setCancelled(true);
@@ -70,6 +72,11 @@ public class Inventories implements Listener{
 		if (inv == null) return null;
 		InventoryHolder holder = inv.getHolder();
 		if (holder != null && holder instanceof OlympaGUI) return (OlympaGUI) holder;
+		if (notHoldable.contains(inv.getType())) {
+			for (OlympaGUI gui : g.values()) {
+				if (gui.getInventory().equals(inv)) return gui;
+			}
+		}
 		return null;
 	}
 	

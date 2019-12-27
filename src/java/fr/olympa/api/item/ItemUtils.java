@@ -25,9 +25,6 @@ public class ItemUtils {
 	public static ItemStack none = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c");
 	public static ItemStack done = ItemUtils.item(Material.DIAMOND, "§a");
 
-	public static ItemStack nextPage = ItemUtils.item(Material.ARROW, "§ePage suivante →");
-	public static ItemStack previousPage = ItemUtils.item(Material.ARROW, "§e← Page précédente");
-
 	/**
 	 * Create an ItemStack instance
 	 * @param type material type
