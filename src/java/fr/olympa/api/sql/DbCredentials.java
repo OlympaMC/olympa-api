@@ -8,8 +8,8 @@ public class DbCredentials {
 	private String host;
 	private String user = null;
 	private String password;
-	private String database;
 	private int port = 3306;
+	private String database;
 
 	public DbCredentials(FileConfiguration config) {
 		ConfigurationSection databaseDefault = config.getConfigurationSection("database.default");
@@ -26,11 +26,10 @@ public class DbCredentials {
 		}
 	}
 
-	public DbCredentials(String host, String user, String password, String dbName) {
+	public DbCredentials(String host, String user, String password) {
 		this.host = host;
 		this.user = user;
 		this.password = password;
-		this.database = dbName;
 	}
 
 	public DbCredentials(String host, String user, String password, String dbName, int port) {

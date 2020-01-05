@@ -16,9 +16,9 @@ import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager implements Listener {
-	
+
 	private Map<OlympaPlayer, Scoreboard> scoreboards = new HashMap<>();
-	
+
 	OlympaPlugin plugin;
 	String scoreboardsName;
 	List<ScoreboardLine> lines;
@@ -30,36 +30,42 @@ public class ScoreboardManager implements Listener {
 
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
-	
-	public Scoreboard getPlayerScoreboard(OlympaPlayer p) {
-		return scoreboards.get(p);
-	}
-	
-	public void removePlayerScoreboard(OlympaPlayer p) {
-		if (scoreboards.containsKey(p)) scoreboards.remove(p).unload();
-	}
-	
+
 	public void create(OlympaPlayer p) {
-		removePlayerScoreboard(p);
-		scoreboards.put(p, new Scoreboard(p, this));
+		this.removePlayerScoreboard(p);
+		this.scoreboards.put(p, new Scoreboard(p, this));
 	}
-	
+
+	public Scoreboard getPlayerScoreboard(OlympaPlayer p) {
+		return this.scoreboards.get(p);
+	}
+
 	@EventHandler
 	public void onJoin(OlympaPlayerLoadEvent e) {
-		create(e.getOlympaPlayer());
+		this.create(e.getOlympaPlayer());
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		removePlayerScoreboard(AccountProvider.get(e.getPlayer()));
+		this.removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
 	}
 
-	public void unload(){
+	public void removePlayerScoreboard(OlympaPlayer p) {
+		if (this.scoreboards.containsKey(p)) {
+			this.scoreboards.remove(p).unload();
+		}
+	}
+
+	public void unload() {
 		HandlerList.unregisterAll(this);
 
-		for (Scoreboard s : scoreboards.values()) s.unload();
-		if (!scoreboards.isEmpty()) plugin.sendMessage(scoreboards.size() + " scoreboards deleted.");
-		scoreboards.clear();
+		for (Scoreboard s : this.scoreboards.values()) {
+			s.unload();
+		}
+		if (!this.scoreboards.isEmpty()) {
+			this.plugin.sendMessage(this.scoreboards.size() + " scoreboards deleted.");
+		}
+		this.scoreboards.clear();
 	}
-	
+
 }

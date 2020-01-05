@@ -15,6 +15,8 @@ public interface OlympaPlayer {
 
 	OlympaPlayer clone();
 
+	String getEmail();
+
 	long getFirstConnection();
 
 	OlympaGroup getGroup();
@@ -33,6 +35,8 @@ public interface OlympaPlayer {
 
 	String getName();
 
+	String getPassword();
+
 	Player getPlayer();
 
 	UUID getPremiumUniqueId();
@@ -44,6 +48,8 @@ public interface OlympaPlayer {
 	boolean hasPower(OlympaGroup group2);
 
 	boolean hasPower(OlympaGroup[] groups2);
+
+	boolean isSamePassword(String password);
 
 	boolean isSamePower(OlympaGroup group2);
 
@@ -60,6 +66,8 @@ public interface OlympaPlayer {
 	void setLastConnection(long lastConnection);
 
 	void setName(String name);
+
+	void setPassword(String password);
 
 	void setPremiumUniqueId(UUID premium_uuid);
 

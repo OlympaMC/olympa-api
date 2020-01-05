@@ -1,7 +1,6 @@
 package fr.olympa.api.permission;
 
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 import fr.olympa.api.objects.OlympaPlayer;
 
@@ -14,10 +13,4 @@ public interface OlympaAccount {
 	void saveToDb(OlympaPlayer olympaPlayer);
 
 	void saveToRedis(OlympaPlayer olympaPlayer);
-
-	void sendModifications(OlympaPlayer olympaPlayer);
-
-	void sendModifications(OlympaPlayer olympaPlayer, Consumer<? super Boolean> done);
-
-	void sendModificationsReceive();
 }

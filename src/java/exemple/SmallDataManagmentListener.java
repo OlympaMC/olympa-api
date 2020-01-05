@@ -31,7 +31,7 @@ public class SmallDataManagmentListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProvider.get(player);
+		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
 
 		if (olympaPlayer == null) {
 			player.kickPlayer("§cUne erreur de données est survenu, merci de réessayer.");
@@ -63,7 +63,7 @@ public class SmallDataManagmentListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuitLow(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProvider.get(player);
+		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
 		if (olympaPlayer != null) {
 			event.setQuitMessage(SpigotUtils.color("&7[&c-&7] %prefix%name"
 					.replaceAll("%group", olympaPlayer.getGroup().getName())

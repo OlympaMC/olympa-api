@@ -84,7 +84,7 @@ public abstract class OlympaCommand {
 	}
 
 	public OlympaPlayer getOlympaPlayer() {
-		return AccountProvider.get(this.player);
+		return AccountProvider.get(this.player.getUniqueId());
 	}
 
 	public Player getPlayer() {
@@ -125,16 +125,12 @@ public abstract class OlympaCommand {
 		this.getCommandMap().register("", reflectCommand);
 	}
 
-	public void sendSuccess(String message) {
-		this.sendMessage(Prefix.DEFAULT_GOOD, message);
+	public void sendDoNotHavePermission() {
+		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
 	}
 
 	public void sendError(String message) {
 		this.sendMessage(Prefix.DEFAULT_BAD, message);
-	}
-
-	public void sendDoNotHavePermission() {
-		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
 	}
 
 	public void sendImpossibleWithConsole() {
@@ -180,6 +176,10 @@ public abstract class OlympaCommand {
 	public void sendMessageToAll(String text) {
 		Bukkit.getOnlinePlayers().forEach(player -> this.sendMessage(player, text));
 		this.sendMessage(Bukkit.getConsoleSender(), text);
+	}
+
+	public void sendSuccess(String message) {
+		this.sendMessage(Prefix.DEFAULT_GOOD, message);
 	}
 
 	public void sendUnknownPlayer(String name) {

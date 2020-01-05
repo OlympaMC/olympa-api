@@ -44,41 +44,31 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Utils {
 
-	private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
+	private static Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
 		Collections.shuffle(list);
 		return list;
 	});
 
-	public static long addTimeToCurrentTime(final int field, final int amount) {
-		final Calendar calendar = Calendar.getInstance();
+	public static long addTimeToCurrentTime(int field, int amount) {
+		Calendar calendar = Calendar.getInstance();
 		calendar.add(field, amount);
 		return calendar.getTimeInMillis() / 1000;
 	}
 
-	public static int booleanToBinary(final Boolean b) {
+	public static int booleanToBinary(Boolean b) {
 		return b.booleanValue() ? 1 : 0;
 	}
 
-	public static String capitalize(final String name) {
+	public static String capitalize(String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
-
-	public static List<String> splitOnSpace(String string, int lineLength) {
-		if (string == null) return null;
-		List<String> ls = new ArrayList<>();
-		if (string.isEmpty()) {
-			ls.add("");
-			return ls;
-		}
-		return new ArrayList<>(Arrays.asList(ChatPaginator.wordWrap(string.replace("{nl}", "\n"), lineLength)));
 	}
 
 	/**
 	 * Permet de colorier chaque lettre une à une dans un mot pour faire une
 	 * animation Pour BungeeCord
 	 */
-	public static List<String> colorString(final String string, final net.md_5.bungee.api.ChatColor color1, final net.md_5.bungee.api.ChatColor color2) {
-		final List<String> dyn = new ArrayList<>();
+	public static List<String> colorString(String string, net.md_5.bungee.api.ChatColor color1, net.md_5.bungee.api.ChatColor color2) {
+		List<String> dyn = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
 		}
@@ -90,8 +80,8 @@ public class Utils {
 	 * Permet de colorier chaque lettre une à une dans un mot pour faire une
 	 * animation Pour Spigot
 	 */
-	public static List<String> colorString(final String string, final org.bukkit.ChatColor color1, final org.bukkit.ChatColor color2) {
-		final List<String> dyn = new ArrayList<>();
+	public static List<String> colorString(String string, org.bukkit.ChatColor color1, org.bukkit.ChatColor color2) {
+		List<String> dyn = new ArrayList<>();
 		for (int i = 0; i < string.length(); i++) {
 			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
 
@@ -108,17 +98,17 @@ public class Utils {
 	 * @return Boolean true/false
 	 */
 
-	public static boolean containsIgnoreCase(final String s, final List<String> l) {
+	public static boolean containsIgnoreCase(String s, List<String> l) {
 		return l.stream().filter(Ls -> Ls.equalsIgnoreCase(s)).findFirst().isPresent();
 	}
 
-	public static void copyFile(final File source, final File dest) throws IOException {
+	public static void copyFile(File source, File dest) throws IOException {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
 			is = new FileInputStream(source);
 			os = new FileOutputStream(dest);
-			final byte[] buffer = new byte[1024];
+			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = is.read(buffer)) > 0) {
 				os.write(buffer, 0, length);
@@ -129,8 +119,8 @@ public class Utils {
 		}
 	}
 
-	public static boolean equalsIgnoreAccents(final String a, final String b) {
-		final Collator insenstiveStringComparator = Collator.getInstance();
+	public static boolean equalsIgnoreAccents(String a, String b) {
+		Collator insenstiveStringComparator = Collator.getInstance();
 		insenstiveStringComparator.setStrength(Collator.PRIMARY);
 		return insenstiveStringComparator.compare(a, b) == 0;
 	}
@@ -139,13 +129,17 @@ public class Utils {
 		return removeAccents(text.toLowerCase()).equalsIgnoreCase(removeAccents(text2.toLowerCase()));
 	}
 
+	public static String formatDouble(double value, int digits) {
+		return String.format("%." + digits + "f", value);
+	}
+
 	/**
 	 * Récupère le String après un caratère dans un String
 	 *
 	 * @param s     String
 	 * @param after Caratère contenu dans s
 	 */
-	public static String getAfterFirst(final String s, final String after) {
+	public static String getAfterFirst(String s, String after) {
 		return s.substring(s.indexOf(after) + 1).trim();
 	}
 
@@ -160,18 +154,18 @@ public class Utils {
 	 * @param l List<String>
 	 * @return List<String>
 	 */
-	public static List<String> getIgnoreCase(final String s, final List<String> l) {
+	public static List<String> getIgnoreCase(String s, List<String> l) {
 		return l.stream().filter(Ls -> Ls.equalsIgnoreCase(s)).collect(Collectors.toList());
 	}
 
-	public static JsonElement getJsonObject(final String url) {
+	public static JsonElement getJsonObject(String url) {
 		try {
 			JsonElement obj;
-			final URL url2 = new URL(url);
-			final InputStreamReader reader = new InputStreamReader(url2.openStream());
+			URL url2 = new URL(url);
+			InputStreamReader reader = new InputStreamReader(url2.openStream());
 			obj = new JsonParser().parse(reader);
 			return obj;
-		} catch (final IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -182,7 +176,7 @@ public class Utils {
 	 *
 	 * @param i 0 < i < 27
 	 */
-	public static String getLetterOfNumber(final int i) {
+	public static String getLetterOfNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) (i + 64 + 32)) : null;
 	}
 
@@ -192,8 +186,8 @@ public class Utils {
 	 * @return temps en milliseconds
 	 */
 	public static long getMillisBeforeNextMin() {
-		final Calendar calendar = Calendar.getInstance();
-		final long startTime = calendar.getTimeInMillis();
+		Calendar calendar = Calendar.getInstance();
+		long startTime = calendar.getTimeInMillis();
 		calendar.add(Calendar.MINUTE, 1);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -205,16 +199,16 @@ public class Utils {
 	 *
 	 * @param i 0 < i < 27
 	 */
-	public static String getOppositeCharForNumber(final int i) {
+	public static String getOppositeCharForNumber(int i) {
 		return i > 0 && i < 27 ? String.valueOf((char) ('Z' - (Character.toUpperCase((char) (i + 64)) - 'A'))) : null;
 	}
 
-	public static Object getRandom(final List<?> list) {
+	public static Object getRandom(List<?> list) {
 		return list.get(new Random().nextInt(list.size()));
 	}
 
-	public static String insertChar(final String string, final String insert) {
-		final StringBuilder builder = new StringBuilder(string);
+	public static String insertChar(String string, String insert) {
+		StringBuilder builder = new StringBuilder(string);
 		int index = 0;
 		for (int i = 0; i < string.length() + 1; i++) {
 			builder.insert(index, insert);
@@ -223,7 +217,7 @@ public class Utils {
 		return builder.toString();
 	}
 
-	public static String intToSymbole(final int i) {
+	public static String intToSymbole(int i) {
 		return String.valueOf(i)
 				.replaceAll("10", "➓")
 				.replaceAll("0", "")
@@ -238,20 +232,20 @@ public class Utils {
 				.replaceAll("9", "➒");
 	}
 
-	public static boolean isJSONValid(final String jsonInString) {
+	public static boolean isJSONValid(String jsonInString) {
 		try {
 			new Gson().fromJson(jsonInString, Object.class);
 			return true;
-		} catch (final JsonSyntaxException ex) {
+		} catch (JsonSyntaxException ex) {
 			return false;
 		}
 	}
 
-	public static float nextFloat(final float min, final float max) {
+	public static float nextFloat(float min, float max) {
 		return nextFloat(new Random(), min, max);
 	}
 
-	public static float nextFloat(final Random random, final float min, final float max) {
+	public static float nextFloat(Random random, float min, float max) {
 		return min + random.nextFloat() * (max - min);
 	}
 
@@ -261,15 +255,15 @@ public class Utils {
 						.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
-	public static List<String> replaceInList(List<String> list, final HashMap<String, String> replace) {
-		for (final Entry<String, String> Ereplace : replace.entrySet()) {
+	public static List<String> replaceInList(List<String> list, HashMap<String, String> replace) {
+		for (Entry<String, String> Ereplace : replace.entrySet()) {
 			list = replaceInList(list, Ereplace.getKey(), Ereplace.getValue());
 		}
 		return list;
 	}
 
-	public static List<String> replaceInList(final List<String> list, final String toReplace, final String replaced) {
-		final List<String> list2 = new ArrayList<>(list);
+	public static List<String> replaceInList(List<String> list, String toReplace, String replaced) {
+		List<String> list2 = new ArrayList<>(list);
 		for (int i = 0; i < list2.size(); i++) {
 			list2.set(i, list2.get(i).replaceAll(toReplace, replaced));
 		}
@@ -279,23 +273,31 @@ public class Utils {
 	/**
 	 * Permet d'arrondir un double avec x nombre après la virgule
 	 */
-	public static double round(double value, final int x) {
+	public static double round(double value, int x) {
 		if (x < 0) {
 			throw new IllegalArgumentException();
 		}
 
-		final long factor = (long) Math.pow(10, x);
+		long factor = (long) Math.pow(10, x);
 		value = value * factor;
-		final long tmp = Math.round(value);
+		long tmp = Math.round(value);
 		return (double) tmp / factor;
 	}
 
-	public static String formatDouble(double value, int digits) {
-		return String.format("%." + digits + "f", value);
+	public static String secondsToCalendar(int s) {
+		return LocalTime.ofSecondOfDay(s).toString();
 	}
 
-	public static String secondsToCalendar(final int s) {
-		return LocalTime.ofSecondOfDay(s).toString();
+	public static List<String> splitOnSpace(String string, int lineLength) {
+		if (string == null) {
+			return null;
+		}
+		List<String> ls = new ArrayList<>();
+		if (string.isEmpty()) {
+			ls.add("");
+			return ls;
+		}
+		return new ArrayList<>(Arrays.asList(ChatPaginator.wordWrap(string.replace("{nl}", "\n"), lineLength)));
 	}
 
 	public static List<String> startWords(String word, Set<String> allWords) {
@@ -308,23 +310,23 @@ public class Utils {
 		return new ArrayList<>(startWordList);
 	}
 
-	public static String timestampToDate(final long timestamp) {
-		final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+	public static String timestampToDate(long timestamp) {
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 		format.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return format.format(new Date(timestamp * 1000));
 	}
 
-	public static String timestampToDateAndHour(final long timestamp) {
-		final SimpleDateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+	public static String timestampToDateAndHour(long timestamp) {
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 		format.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return format.format(new Date(timestamp * 1000));
 	}
 
-	public static String timestampToDuration(final long timestamp) {
+	public static String timestampToDuration(long timestamp) {
 
-		final long now = Utils.getCurrentTimeinSeconds();
-		final LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
-		final LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
+		long now = Utils.getCurrentTimeinSeconds();
+		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
+		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
 
 		LocalDateTime start;
 		LocalDateTime end;
@@ -343,16 +345,16 @@ public class Utils {
 			dur = dur.plusDays(1);
 			e = e.minusDays(1);
 		}
-		final Period per = Period.between(start.toLocalDate(), e);
+		Period per = Period.between(start.toLocalDate(), e);
 
-		final long year = per.getYears();
-		final long month = per.getMonths();
-		final long day = per.getDays();
-		final long hour = dur.toHours();
-		final long minute = dur.toMinutes() - 60 * dur.toHours();
-		final long second = dur.getSeconds() - 60 * dur.toMinutes();
+		long year = per.getYears();
+		long month = per.getMonths();
+		long day = per.getDays();
+		long hour = dur.toHours();
+		long minute = dur.toMinutes() - 60 * dur.toHours();
+		long second = dur.getSeconds() - 60 * dur.toMinutes();
 
-		final List<String> msg = new ArrayList<>();
+		List<String> msg = new ArrayList<>();
 		if (year > 1) {
 			msg.add(year + " ans");
 		} else if (year == 1) {
@@ -386,8 +388,8 @@ public class Utils {
 		// "month " + day + "day " + hour + "hour " + minute + "minute " + second +
 		// "second ");
 
-		final List<String> msgs = new ArrayList<>();
-		for (final String message : msg) {
+		List<String> msgs = new ArrayList<>();
+		for (String message : msg) {
 			if (message != null) {
 				msgs.add(message);
 			}
@@ -398,7 +400,7 @@ public class Utils {
 		return String.join(", ", msgs);
 	}
 
-	public static int toField(final String field) {
+	public static int toField(String field) {
 		switch (field) {
 
 		case "year":
@@ -425,12 +427,12 @@ public class Utils {
 		return (Collector<T, ?, List<T>>) SHUFFLER;
 	}
 
-	public static void toTextComponent(final TextComponent msg, final List<TextComponent> list, final String separator, final String end) {
+	public static void toTextComponent(TextComponent msg, List<TextComponent> list, String separator, String end) {
 		if (list.size() == 0) {
 			return;
 		}
 		int i = 1;
-		for (final TextComponent targetAccountsText : list) {
+		for (TextComponent targetAccountsText : list) {
 			msg.addExtra(targetAccountsText);
 			if (i == list.size()) {
 				targetAccountsText.addExtra(end);
@@ -447,7 +449,7 @@ public class Utils {
 	 * @param i Nombre d'object
 	 * @return Un s si le nombre est supérieur à 1, sinon un string vide.
 	 */
-	public static String withOrWithoutS(final int i) {
+	public static String withOrWithoutS(int i) {
 		return i < 2 ? "" : "s";
 	}
 }

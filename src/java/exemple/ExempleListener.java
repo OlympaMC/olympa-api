@@ -13,7 +13,7 @@ public class ExempleListener implements Listener {
 	public void onOlympaPlayerLoad(OlympaPlayerLoadEvent event) {
 		OlympaPlayer olympaPlayer = event.getOlympaPlayer();
 		// ==
-		olympaPlayer = AccountProvider.get(event.getPlayer());
+		olympaPlayer = AccountProvider.get(event.getPlayer().getUniqueId());
 
 		if (ExemplePermissions.EXEMPLE_COMMAND.hasPermission(olympaPlayer)) {
 			// si le joueur a la permission d'utiliser la commande /exemple alors ...

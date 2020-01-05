@@ -18,12 +18,27 @@ import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public class OlympaPermission{
+public class OlympaPermission {
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
+
+	public static synchronized void registerPermissions(Class<?> clazz) {
+		try {
+			int initialSize = permissions.size();
+			for (Field f : clazz.getDeclaredFields()) {
+				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) {
+					permissions.put(f.getName(), (OlympaPermission) f.get(null));
+				}
+			}
+			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
+		} catch (ReflectiveOperationException ex) {
+			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
+			ex.printStackTrace();
+		}
+	}
 
 	OlympaGroup group;
 
-	public OlympaPermission(OlympaGroup group){
+	public OlympaPermission(OlympaGroup group) {
 		this.group = group;
 	}
 
@@ -32,7 +47,7 @@ public class OlympaPermission{
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
-		Set<Player> players = Bukkit.getOnlinePlayers().stream().filter(player -> this.hasPermission(AccountProvider.get(player))).collect(Collectors.toSet());
+		Set<Player> players = Bukkit.getOnlinePlayers().stream().filter(player -> this.hasPermission(AccountProvider.get(player.getUniqueId()))).collect(Collectors.toSet());
 		if (!players.isEmpty()) {
 			success.accept(players);
 		}
@@ -54,7 +69,7 @@ public class OlympaPermission{
 	}
 
 	public boolean hasPermission(Player player) {
-		return this.hasPermission(AccountProvider.get(player));
+		return this.hasPermission(AccountProvider.get(player.getUniqueId()));
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {
@@ -64,18 +79,5 @@ public class OlympaPermission{
 	public void sendMessage(String message) {
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)));
 	}
-	
-	public static synchronized void registerPermissions(Class<?> clazz){
-		try {
-			int initialSize = permissions.size();
-			for (Field f : clazz.getDeclaredFields()) {
-				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) permissions.put(f.getName(), (OlympaPermission) f.get(null));
-			}
-			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
-		}catch (ReflectiveOperationException ex) {
-			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
-			ex.printStackTrace();
-		}
-	}
-	
+
 }
