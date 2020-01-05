@@ -22,6 +22,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		if (this.database != null) {
 			this.database.close();
 		}
+		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
 	public void enable() {
@@ -45,6 +46,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		} else {
 			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible");
 		}
+		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is enabling.");
 	}
 
 	@Override

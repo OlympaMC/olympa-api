@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -51,11 +50,6 @@ public class ConfirmGUI extends OlympaGUI {
 			}
 		}.runTask(OlympaCore.getInstance());
 		return false;
-	}
-
-	public Inventory open(Player p) {
-
-		return p.openInventory(this.inv).getTopInventory();
 	}
 
 }

@@ -24,7 +24,7 @@ public class Main extends OlympaPlugin {
 		OlympaPermission.registerPermissions(ExemplePermissions.class);
 		
 		instance = this;
-		super.onEnable();
+		super.enable();
 		
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
@@ -35,17 +35,13 @@ public class Main extends OlympaPlugin {
 		pluginManager.registerEvents(new ExempleListener(), this);
 		pluginManager.registerEvents(new SmallDataManagmentListener(), this);
 		pluginManager.registerEvents(new Inventories(), this);
-
-		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 	}
 
 	@Override
 	public void onDisable() {
-		this.disable();
-
 		scoreboards.unload();
 
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
+		this.disable();
 	}
 
 }
