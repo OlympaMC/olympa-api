@@ -24,7 +24,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		}
 	}
 
-	public void onEnable() {
+	public void enable() {
 		this.task = new TaskManager(this);
 
 		this.config = new CustomConfig(this, "config");

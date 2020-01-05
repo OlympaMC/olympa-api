@@ -96,7 +96,7 @@ public class OlympaGui {
 
 	@Deprecated
 	public String getName() {
-		return this.inventory.getName();
+		return null;
 	}
 
 	public Player getPlayer() {

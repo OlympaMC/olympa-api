@@ -16,43 +16,46 @@ import fr.olympa.api.item.ItemUtils;
 public class ConfirmGUI extends OlympaGUI {
 
 	private Runnable yes, no;
-	
+
 	public ConfirmGUI(Runnable yes, Runnable no, String indication) {
 		this(yes, no, indication, null);
 	}
-	
+
 	public ConfirmGUI(Runnable yes, Runnable no, String indication, String lore) {
 		super("Confirmer ?", InventoryType.HOPPER);
 		this.yes = yes;
 		this.no = no;
-		
-		inv.setItem(1, ItemUtils.item(Material.LIME_DYE, "§aOui"));
-		inv.setItem(2, ItemUtils.item(Material.PAPER, indication, lore));
-		inv.setItem(3, ItemUtils.item(Material.ROSE_RED, "§cNon"));
+
+		this.inv.setItem(1, ItemUtils.item(Material.LIME_DYE, "§aOui"));
+		this.inv.setItem(2, ItemUtils.item(Material.PAPER, indication, lore));
+		this.inv.setItem(3, ItemUtils.item(Material.RED_DYE, "§cNon"));
 	}
 
-	public Inventory open(Player p) {
-		
-		return p.openInventory(inv).getTopInventory();
-	}
-
+	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		Inventories.closeAndExit(p);
 		if (slot == 1) {
-			yes.run();
-		}else if (slot == 3) {
-			no.run();
+			this.yes.run();
+		} else if (slot == 3) {
+			this.no.run();
 		}
 		return true;
 	}
 
+	@Override
 	public boolean onClose(Player p) {
 		new BukkitRunnable() {
+			@Override
 			public void run() {
-				no.run();
+				ConfirmGUI.this.no.run();
 			}
 		}.runTask(OlympaCore.getInstance());
 		return false;
+	}
+
+	public Inventory open(Player p) {
+
+		return p.openInventory(this.inv).getTopInventory();
 	}
 
 }

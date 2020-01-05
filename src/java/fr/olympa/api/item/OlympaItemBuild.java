@@ -57,7 +57,7 @@ public class OlympaItemBuild implements Cloneable {
 		this.name = name;
 	}
 
-	public OlympaItemBuild addLore(int i, String lore) {
+	public OlympaItemBuild setLore(int i, String lore) {
 		OlympaItemBuild olympaItemBuild = this.clone();
 		olympaItemBuild.lore.set(i, olympaItemBuild.lore.get(i) + lore);
 		return olympaItemBuild;
