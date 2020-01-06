@@ -25,12 +25,14 @@ public class CustomConfig extends YamlConfiguration {
 	private File file;
 
 	private String filename;
+	private Plugin plugin;
 
 	public CustomConfig() {
 		super();
 	}
 
 	public CustomConfig(Plugin plugin, String filename) {
+		this.plugin = plugin;
 		if (!filename.toLowerCase().endsWith(".yml")) {
 			filename += ".yml";
 		}
@@ -49,7 +51,6 @@ public class CustomConfig extends YamlConfiguration {
 	}
 
 	public Cuboid getCuboid(String path) {
-
 		Location pos1 = this.getLocation(path + ".pos1");
 		Location pos2 = this.getLocation(path + ".pos2");
 		if (pos1 == null || pos2 == null) {
@@ -134,6 +135,12 @@ public class CustomConfig extends YamlConfiguration {
 		} catch (IOException e) {
 			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + this.filename);
 			e.printStackTrace();
+		}
+	}
+
+	public void saveIfNotExists() {
+		if (!file.exists()) {
+			plugin.saveResource(filename, true);
 		}
 	}
 

@@ -19,12 +19,12 @@
 	<build>
 		<defaultGoal>clean package</defaultGoal>
 		<sourceDirectory>${basedir}/src/java/</sourceDirectory>
-		<resources>
+		<!-- <resources>
 			<resource>
 				<directory>src/resources</directory>
 				<filtering>true</filtering>
 			</resource>
-		</resources>
+		</resources> -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
