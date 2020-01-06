@@ -2,9 +2,11 @@ package fr.olympa.api.permission;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,7 @@ import fr.olympa.api.provider.AccountProvider;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
+
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
 
 	public static synchronized void registerPermissions(Class<?> clazz) {
@@ -36,14 +39,19 @@ public class OlympaPermission {
 		}
 	}
 
-	OlympaGroup group;
+	OlympaGroup min_group;
+	OlympaGroup[] groups_allow;
 
-	public OlympaPermission(OlympaGroup group) {
-		this.group = group;
+	public OlympaPermission(OlympaGroup min_group) {
+		this.min_group = min_group;
+	}
+
+	public OlympaPermission(OlympaGroup... groups_allowGroup) {
+		this.groups_allow = groups_allowGroup;
 	}
 
 	public OlympaGroup getGroup() {
-		return this.group;
+		return this.min_group;
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
@@ -61,15 +69,23 @@ public class OlympaPermission {
 	}
 
 	public boolean hasPermission(OlympaGroup group) {
-		return group.getPower() >= this.group.getPower();
+		if (this.min_group != null) {
+			return group.getPower() >= this.min_group.getPower();
+		} else {
+			return Arrays.stream(this.groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
+		}
 	}
 
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
-		return olympaPlayer != null && olympaPlayer.hasPower(this.group);
+		return olympaPlayer != null && this.hasPermission(olympaPlayer);
 	}
 
 	public boolean hasPermission(Player player) {
-		return this.hasPermission(AccountProvider.get(player.getUniqueId()));
+		return this.hasPermission(player.getUniqueId());
+	}
+
+	public boolean hasPermission(UUID uniqueId) {
+		return this.hasPermission(AccountProvider.get(uniqueId));
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {

@@ -11,9 +11,7 @@ public class Passwords {
 
 	/**
 	 * Generates a random password of a given length, using letters and digits.
-	 *
 	 * @param length the length of the password
-	 *
 	 * @return a random password
 	 */
 	public static String generateRandomPassword(int length) {

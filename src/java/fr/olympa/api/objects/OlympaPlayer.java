@@ -45,13 +45,7 @@ public interface OlympaPlayer {
 
 	boolean hasPermission(OlympaPermission permission);
 
-	boolean hasPower(OlympaGroup group2);
-
-	boolean hasPower(OlympaGroup[] groups2);
-
 	boolean isSamePassword(String password);
-
-	boolean isSamePower(OlympaGroup group2);
 
 	void setGroup(OlympaGroup group);
 

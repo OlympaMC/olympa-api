@@ -23,57 +23,57 @@ import fr.olympa.api.provider.AccountProvider;
 
 public class SpigotUtils {
 
-	public static Location addYToLocation(final Location location, final float y) {
+	public static Location addYToLocation(Location location, float y) {
 		return new Location(location.getWorld(), location.getX(), location.getY() + 1, location.getZ(), location.getYaw(), location.getPitch());
 	}
 
-	public static int clearPlayer(final Player player) {
-		final PlayerInventory inventory = player.getInventory();
-		final int size = (int) (Arrays.stream(inventory.getContents()).filter(item -> item != null).count() + Arrays.stream(inventory.getArmorContents()).filter(item -> item != null).count());
+	public static int clearPlayer(Player player) {
+		PlayerInventory inventory = player.getInventory();
+		int size = (int) (Arrays.stream(inventory.getContents()).filter(item -> item != null).count() + Arrays.stream(inventory.getArmorContents()).filter(item -> item != null).count());
 		inventory.clear();
 		inventory.setArmorContents(new ItemStack[inventory.getArmorContents().length]);
 		return size;
 	}
 
-	public static List<String> color(final List<String> l) {
+	public static List<String> color(List<String> l) {
 		return l.stream().map(s -> SpigotUtils.color(s)).collect(Collectors.toList());
 	}
 
-	public static String color(final String s) {
+	public static String color(String s) {
 		return s != null ? ChatColor.translateAlternateColorCodes('&', s) : "";
 	}
 
-	public static String connectScreen(final String s) {
-		return color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
+	public static String connectScreen(String s) {
+		return SpigotUtils.color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
 	}
 
-	public static String convertLocationToString(final Location loc) {
-		final String world = loc.getWorld().getName();
-		final double x = loc.getX();
-		final double y = loc.getY();
-		final double z = loc.getZ();
+	public static String convertBlockLocationToString(Location loc) {
+		return loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+	}
+
+	public static String convertLocationToString(Location loc) {
+		String world = loc.getWorld().getName();
+		double x = loc.getX();
+		double y = loc.getY();
+		double z = loc.getZ();
 		if ((int) loc.getPitch() != 0) {
-			final int pitch = (int) loc.getPitch();
-			final int yaw = (int) loc.getYaw();
+			int pitch = (int) loc.getPitch();
+			int yaw = (int) loc.getYaw();
 			return world + " " + x + " " + y + " " + z + " " + pitch + " " + yaw;
 		}
 		return world + " " + x + " " + y + " " + z;
 	}
 
-	public static String convertBlockLocationToString(final Location loc) {
-		return loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-	}
-
-	public static Location convertStringToLocation(final String loc) {
+	public static Location convertStringToLocation(String loc) {
 		if (loc != null) {
-			final String[] coords = loc.split(" ");
-			final World w = Bukkit.getWorld(coords[0]);
-			final double x = Double.parseDouble(coords[1]);
-			final double y = Double.parseDouble(coords[2]);
-			final double z = Double.parseDouble(coords[3]);
+			String[] coords = loc.split(" ");
+			World w = Bukkit.getWorld(coords[0]);
+			double x = Double.parseDouble(coords[1]);
+			double y = Double.parseDouble(coords[2]);
+			double z = Double.parseDouble(coords[3]);
 			if (coords.length == 6) {
-				final float pitch = Float.parseFloat(coords[4]);
-				final float yaw = Float.parseFloat(coords[5]);
+				float pitch = Float.parseFloat(coords[4]);
+				float yaw = Float.parseFloat(coords[5]);
 				return new Location(w, x, y, z, pitch, yaw);
 			}
 			return new Location(w, x, y, z);
@@ -81,8 +81,8 @@ public class SpigotUtils {
 		return null;
 	}
 
-	public static List<Location> getBlockAround(final Location location, final int raduis) {
-		final List<Location> locations = new ArrayList<>();
+	public static List<Location> getBlockAround(Location location, int raduis) {
+		List<Location> locations = new ArrayList<>();
 		for (int x = raduis; x >= -raduis; x--) {
 			for (int y = raduis; y >= -raduis; y--) {
 				for (int z = raduis; z >= -raduis; z--) {
@@ -103,7 +103,7 @@ public class SpigotUtils {
 		return null;
 	}
 
-	public static Location getFirstBlockUnderPlayer(final Player player) {
+	public static Location getFirstBlockUnderPlayer(Player player) {
 		Location location = player.getLocation();
 		do {
 			if (location.getBlockY() == 0) {
@@ -114,7 +114,7 @@ public class SpigotUtils {
 		return location;
 	}
 
-	public static ChatColor getIntervalChatColor(final int i, final int min, final int max) {
+	public static ChatColor getIntervalChatColor(int i, int min, int max) {
 		if (i == 0) {
 			return ChatColor.GRAY;
 		}
@@ -127,7 +127,7 @@ public class SpigotUtils {
 		return ChatColor.RED;
 	}
 
-	public static short getIntervalGlassPaneColor(final int i, final int min, final int max) {
+	public static short getIntervalGlassPaneColor(int i, int min, int max) {
 		if (i == 0) {
 			return 0;
 		}
@@ -156,9 +156,9 @@ public class SpigotUtils {
 		return "";
 	}
 
-	public static Player getNearestPlayer(final Player checkNear) {
+	public static Player getNearestPlayer(Player checkNear) {
 		Player nearest = null;
-		for (final Player p : checkNear.getWorld().getPlayers()) {
+		for (Player p : checkNear.getWorld().getPlayers()) {
 			if (nearest == null) {
 				nearest = p;
 			} else if (p.getLocation().distance(checkNear.getLocation()) < nearest.getLocation().distance(checkNear.getLocation())) {
@@ -168,26 +168,26 @@ public class SpigotUtils {
 		return nearest;
 	}
 
-	public static boolean hasEnoughPlace(final Inventory inventory, final ItemStack... items) {
-		final Inventory inventory2 = Bukkit.createInventory(null, inventory.getSize());
+	public static boolean hasEnoughPlace(Inventory inventory, ItemStack... items) {
+		Inventory inventory2 = Bukkit.createInventory(null, inventory.getSize());
 		inventory2.setContents(inventory.getContents());
 		int amount1 = 0;
-		for (final ItemStack item : inventory2.getContents()) {
+		for (ItemStack item : inventory2.getContents()) {
 			if (item != null) {
 				amount1 += item.getAmount();
 			}
 		}
 
 		int amount2 = 0;
-		for (final ItemStack item : items) {
+		for (ItemStack item : items) {
 			amount2 += item.getAmount();
 		}
 
-		final int amount3 = amount1 + amount2;
+		int amount3 = amount1 + amount2;
 		inventory2.addItem(items);
 
 		int amount4 = 0;
-		for (final ItemStack item : inventory2.getContents()) {
+		for (ItemStack item : inventory2.getContents()) {
 			if (item != null) {
 				amount4 += item.getAmount();
 			}
@@ -200,33 +200,26 @@ public class SpigotUtils {
 		return false;
 	}
 
-	public static boolean isIn(final Location loc, final Location playerLoc) {
+	public static boolean isIn(Location loc, Location playerLoc) {
 		return playerLoc.getWorld() == loc.getWorld() && loc.getBlockX() == playerLoc.getBlockX() && loc.getBlockY() == playerLoc.getBlockY() && loc.getBlockZ() == playerLoc.getBlockZ();
 	}
 
-	/*
-	 * public static EmeraldPlayer getPlayer(final Player player) { final
-	 * EmeraldPlayer emeraldPlayer = EmeraldPlayers.getPlayer(player.getUniqueId());
-	 * if(emeraldPlayer != null) { return emeraldPlayer; } return
-	 * MySQL.getPlayer(player.getUniqueId()); }
-	 */
-
-	public static boolean isOnGround(final Player player) {
+	public static boolean isOnGround(Player player) {
 		Location location = player.getLocation();
 		location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
 		return location.getBlock().getType() == Material.AIR;
 	}
 
-	public static boolean isSameLocation(final Location location1, final Location location2) {
+	public static boolean isSameLocation(Location location1, Location location2) {
 		return location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
 	}
 
-	public static boolean isSamePlayer(final Player player, final Player target) {
+	public static boolean isSamePlayer(Player player, Player target) {
 		return player.getUniqueId().equals(target.getUniqueId());
 	}
 
-	public static boolean playerisIn(final Player player, final Location location) {
-		final Location playerLocation = player.getLocation();
+	public static boolean playerisIn(Player player, Location location) {
+		Location playerLocation = player.getLocation();
 		return playerLocation.getBlockX() == location.getBlockX() && (playerLocation.getBlockY() == location.getBlockY() || playerLocation.getBlockY() + 1 == location.getBlockY()) && playerLocation.getBlockZ() == location.getBlockZ();
 	}
 

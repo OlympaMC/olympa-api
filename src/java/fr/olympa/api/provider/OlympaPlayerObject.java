@@ -134,25 +134,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public boolean hasPower(OlympaGroup group2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean hasPower(OlympaGroup[] groups2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean isSamePassword(String password) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isSamePower(OlympaGroup group2) {
 		// TODO Auto-generated method stub
 		return false;
 	}

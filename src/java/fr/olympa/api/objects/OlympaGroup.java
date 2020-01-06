@@ -7,22 +7,25 @@ import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
 
-	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "&4%rank ", ":&c"),
-	CO_FONDA(2, 95, OlympaServer.ALL, "Co-Fondateur", "&4%rank ", ":&c"),
-	ADMIN(3, 90, OlympaServer.ALL, "Admin", "&4%rank ", ":&r"),
-	DEV(4, 80, OlympaServer.ALL, "Développeur", "&b%rank ", ":&r"),
-	MODP(5, 75, OlympaServer.ALL, "Modérateur+", "&6%rank ", ":&r"),
-	MOD(6, 70, OlympaServer.ALL, "Modérateur", "&6%rank ", ":&r"),
-	ASSISTANT(7, 60, OlympaServer.ALL, "Assistant", "&a%rank ", ":&r"),
-	ANIMATEUR(8, 55, OlympaServer.ALL, "Animateur", "&a%rank ", ":&r"),
-	BUILDER(8, 50, OlympaServer.ALL, "Builder", "&b%rank ", ":&r"),
-	FRIEND(9, 40, OlympaServer.ALL, "Ami", "&a%rank ", ":&r"),
-	YOUTUBER(10, 35, OlympaServer.ALL, "Youtuber", "&e%rank ", ":&r"),
-	MINI_YOUTUBER(11, 30, OlympaServer.ALL, "Mini-Youtuber", "&e%rank ", ":&r"),
-
-	MAFIEUX(12, 10, OlympaServer.GTA, "Mafieux", "&d%rank ", ":&r"),
-
-	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "&7", ":");
+	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c"),
+	ADMIN(2, 95, OlympaServer.ALL, "Admin", "Admine", "&4%rank ", ":&r"),
+	ADMIN_SYS(4, 90, OlympaServer.ALL, "SysAdmin", "SysAdmin", "&c%rank ", ":&r"),
+	RESP_TECH(5, 85, OlympaServer.ALL, "RespTech", "RespTech", "&c%rank ", ":&r"),
+	MODP(6, 80, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
+	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
+	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
+	RESP_STAFF(9, 65, OlympaServer.ALL, "RespStaff", "RespStaff", "&3%rank ", ":&r"),
+	RESP_ANIM(10, 60, OlympaServer.ALL, "RespAnim", "RespAnim", "&3%rank ", ":&r"),
+	RESP_BUILDER(11, 55, OlympaServer.ALL, "RespBuildeur", "RespBuildeur", "&3%rank ", ":&r"),
+	DEV(12, 50, OlympaServer.ALL, "Développeur", "Développeuse", "&b%rank ", ":&r"),
+	ANIMATEUR(13, 48, OlympaServer.ALL, "Animateur", "Animatrice", "&b%rank ", ":&r"),
+	BUILDER(14, 46, OlympaServer.ALL, "Buildeur", "Buildeuse", "&b%rank ", ":&r"),
+	GRAPHISTE(15, 44, OlympaServer.ALL, "Graphiste", "Graphiste", "&b%rank ", ":&r"),
+	FRIEND(16, 42, OlympaServer.ALL, "Ami", "Amie", "&e%rank ", ":&r"),
+	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&e%rank ", ":&r"),
+	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&e%rank ", ":&r"),
+	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":"),
+	MAFIEUX(21, 10, OlympaServer.GTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
 
 	/**
 	 * Get {@link #OlympaGroup}
@@ -48,14 +51,16 @@ public enum OlympaGroup {
 	final int power;
 	final OlympaServer server;
 	final String name;
+	final String nameFem;
 	final String prefix;
 	final String chatSufix;
 
-	private OlympaGroup(int id, int power, OlympaServer server, String name, String prefix, String chatSufix) {
+	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix) {
 		this.id = id;
 		this.power = power;
 		this.server = server;
 		this.name = name;
+		this.nameFem = nameFem;
 		this.prefix = SpigotUtils.color(prefix.replaceFirst("%rank", this.name));
 		this.chatSufix = SpigotUtils.color(chatSufix);
 	}
