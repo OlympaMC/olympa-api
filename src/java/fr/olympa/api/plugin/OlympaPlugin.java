@@ -32,22 +32,25 @@ public abstract class OlympaPlugin extends JavaPlugin {
 			this.config.load();
 			this.config.saveIfNotExists();
 
-			DbCredentials dbcredentials = new DbCredentials(this.config);
-			if (dbcredentials.getUser() == null) {
-				return;
-			}
-			this.database = new DbConnection(dbcredentials);
-			if (this.database.connect()) {
-				sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie");
-			}else {
-				sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible");
-			}
+			setupDatabase();
 		} else {
 			this.config = null;
-			return;
 		}
 
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is enabling.");
+		this.sendMessage("§6" + this.getDescription().getName() + "§e (" + this.getDescription().getVersion() + ") is enabling.");
+	}
+
+	private void setupDatabase() {
+		DbCredentials dbcredentials = new DbCredentials(this.config);
+		if (dbcredentials.getUser() == null) {
+			return;
+		}
+		this.database = new DbConnection(dbcredentials);
+		if (this.database.connect()) {
+			sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie.");
+		}else {
+			sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
+		}
 	}
 
 	@Override
