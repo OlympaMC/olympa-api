@@ -69,7 +69,7 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		if (this.database.connect()) {
 			this.sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie.");
 		} else {
-			("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
+			this.sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
 		}
 	}
 }
