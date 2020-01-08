@@ -1,7 +1,8 @@
-package fr.olympa.api.objects;
+package fr.olympa.api.groups;
 
 import java.util.Arrays;
 
+import fr.olympa.api.objects.OlympaServer;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 

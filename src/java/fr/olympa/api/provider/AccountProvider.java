@@ -24,15 +24,12 @@ public class AccountProvider implements OlympaAccount {
 		return null;
 	}
 
-	private UUID uuid;
-
 	public AccountProvider(UUID uuid) {
-		this.uuid = uuid;
 	}
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		return new OlympaPlayerObject(this.uuid, name, ip);
+		return null;
 	}
 
 	@Override

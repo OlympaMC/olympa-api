@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.OlympaCore;
 import fr.olympa.api.item.OlympaItemBuild;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class GuiHandler {
 

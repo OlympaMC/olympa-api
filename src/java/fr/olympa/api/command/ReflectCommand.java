@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.olympa.OlympaCore;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class ReflectCommand extends Command {
 
@@ -32,7 +32,7 @@ public class ReflectCommand extends Command {
 					return false;
 				}
 
-				if (!this.exe.hasPermission(exe.permission)) {
+				if (!this.exe.hasPermission(this.exe.permission)) {
 					this.exe.sendDoNotHavePermission();
 					return false;
 				}

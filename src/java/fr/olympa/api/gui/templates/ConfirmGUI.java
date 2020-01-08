@@ -7,10 +7,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.OlympaCore;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class ConfirmGUI extends OlympaGUI {
 

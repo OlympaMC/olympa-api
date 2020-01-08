@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.objects.OlympaGroup;
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
 
@@ -33,6 +33,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void addGroup(OlympaGroup group, long time) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addMoney(double money) {
 		// TODO Auto-generated method stub
 
 	}
@@ -98,6 +104,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public double getMoney() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return null;
@@ -134,9 +146,39 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public boolean isAfk() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public boolean isSamePassword(String password) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean isVanish() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isVerifMode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeMoney(double money) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setAfk(boolean afk) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -176,6 +218,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void setMoney(double money) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void setName(String name) {
 		// TODO Auto-generated method stub
 
@@ -195,6 +243,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setUniqueId(UUID uuid) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setVanish(boolean vanish) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setVerifMode(boolean verifMode) {
 		// TODO Auto-generated method stub
 
 	}

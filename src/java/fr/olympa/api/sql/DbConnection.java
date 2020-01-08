@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.Executors;
 
+import com.mysql.jdbc.Driver;
+
 public class DbConnection {
 
 	final DbCredentials dbcredentials;
@@ -29,9 +31,10 @@ public class DbConnection {
 	public boolean connect() {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
+			Driver.class.getName();
 			this.connection = DriverManager.getConnection(this.dbcredentials.toURI(), this.dbcredentials.getUser(), this.dbcredentials.getPassword());
 			this.connection.setNetworkTimeout(Executors.newSingleThreadExecutor(), 28800);
-			return true;
+			return !this.connection.isClosed();
 		} catch (final SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}

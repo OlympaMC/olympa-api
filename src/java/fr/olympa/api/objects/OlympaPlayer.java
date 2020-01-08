@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.permission.OlympaPermission;
 
 public interface OlympaPlayer {
@@ -12,6 +13,8 @@ public interface OlympaPlayer {
 	void addGroup(OlympaGroup group);
 
 	void addGroup(OlympaGroup group, long time);
+
+	void addMoney(double money);
 
 	OlympaPlayer clone();
 
@@ -33,6 +36,8 @@ public interface OlympaPlayer {
 
 	long getLastConnection();
 
+	double getMoney();
+
 	String getName();
 
 	String getPassword();
@@ -45,7 +50,17 @@ public interface OlympaPlayer {
 
 	boolean hasPermission(OlympaPermission permission);
 
+	boolean isAfk();
+
 	boolean isSamePassword(String password);
+
+	boolean isVanish();
+
+	boolean isVerifMode();
+
+	void removeMoney(double money);
+
+	void setAfk(boolean afk);
 
 	void setGroup(OlympaGroup group);
 
@@ -59,6 +74,8 @@ public interface OlympaPlayer {
 
 	void setLastConnection(long lastConnection);
 
+	void setMoney(double money);
+
 	void setName(String name);
 
 	void setPassword(String password);
@@ -66,5 +83,9 @@ public interface OlympaPlayer {
 	void setPremiumUniqueId(UUID premium_uuid);
 
 	void setUniqueId(UUID uuid);
+
+	void setVanish(boolean vanish);
+
+	void setVerifMode(boolean verifMode);
 
 }

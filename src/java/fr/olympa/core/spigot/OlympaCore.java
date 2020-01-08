@@ -1,4 +1,4 @@
-package fr.olympa;
+package fr.olympa.core.spigot;
 
 import org.bukkit.plugin.PluginManager;
 

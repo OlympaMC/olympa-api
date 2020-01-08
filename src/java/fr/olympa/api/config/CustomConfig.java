@@ -62,6 +62,7 @@ public class CustomConfig extends YamlConfiguration {
 		return this.file;
 	}
 
+	@Override
 	public Location getLocation(String path) {
 		return SpigotUtils.convertStringToLocation(this.getString(path));
 	}

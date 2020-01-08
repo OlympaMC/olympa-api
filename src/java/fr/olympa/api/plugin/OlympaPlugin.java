@@ -5,12 +5,12 @@ import java.sql.SQLException;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.olympa.OlympaCore;
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.sql.DbConnection;
 import fr.olympa.api.sql.DbCredentials;
 import fr.olympa.api.task.TaskManager;
 import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.core.spigot.OlympaCore;
 
 public abstract class OlympaPlugin extends JavaPlugin {
 
@@ -22,17 +22,17 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		if (this.database != null) {
 			this.database.close();
 		}
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
 	}
 
 	public void enable() {
 		this.task = new TaskManager(this);
 
 		this.config = new CustomConfig(this, "config");
-		if (this.config.hasResource()) {
+		if (this.config.hasResource() || this.config.getFile().exists()) {
 			this.config.load();
 		} else {
 			this.config = null;
+			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée impossible, il n'y a pas de config.");
 			return;
 		}
 
@@ -42,11 +42,10 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		}
 		this.database = new DbConnection(dbcredentials);
 		if (this.database.connect()) {
-			OlympaCore.getInstance().sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie");
+			OlympaCore.getInstance().sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie.");
 		} else {
-			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible");
+			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
 		}
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is enabling.");
 	}
 
 	@Override
