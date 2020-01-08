@@ -10,7 +10,6 @@ import fr.olympa.api.sql.DbConnection;
 import fr.olympa.api.sql.DbCredentials;
 import fr.olympa.api.task.TaskManager;
 import fr.olympa.api.utils.SpigotUtils;
-import fr.olympa.core.spigot.OlympaCore;
 
 public abstract class OlympaPlugin extends JavaPlugin {
 
@@ -30,22 +29,14 @@ public abstract class OlympaPlugin extends JavaPlugin {
 		this.config = new CustomConfig(this, "config");
 		if (this.config.hasResource() || this.config.getFile().exists()) {
 			this.config.load();
+			this.config.saveIfNotExists();
+
+			this.setupDatabase();
 		} else {
 			this.config = null;
-			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée impossible, il n'y a pas de config.");
-			return;
 		}
 
-		DbCredentials dbcredentials = new DbCredentials(this.config);
-		if (dbcredentials.getUser() == null) {
-			return;
-		}
-		this.database = new DbConnection(dbcredentials);
-		if (this.database.connect()) {
-			OlympaCore.getInstance().sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie.");
-		} else {
-			OlympaCore.getInstance().sendMessage("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
-		}
+		this.sendMessage("§6" + this.getDescription().getName() + "§e (" + this.getDescription().getVersion() + ") is enabling.");
 	}
 
 	@Override
@@ -67,5 +58,18 @@ public abstract class OlympaPlugin extends JavaPlugin {
 
 	public void sendMessage(final String message) {
 		this.getServer().getConsoleSender().sendMessage(SpigotUtils.color(this.getPrefixConsole() + message));
+	}
+
+	private void setupDatabase() {
+		DbCredentials dbcredentials = new DbCredentials(this.config);
+		if (dbcredentials.getUser() == null) {
+			return;
+		}
+		this.database = new DbConnection(dbcredentials);
+		if (this.database.connect()) {
+			this.sendMessage("&aConnexion à la base de donnée &2" + dbcredentials.getDatabase() + "&a établie.");
+		} else {
+			("&cConnexion à la base de donnée &4" + dbcredentials.getDatabase() + "&c impossible.");
+		}
 	}
 }
