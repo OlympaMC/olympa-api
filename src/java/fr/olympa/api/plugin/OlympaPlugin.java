@@ -10,12 +10,14 @@ import fr.olympa.api.sql.DbConnection;
 import fr.olympa.api.sql.DbCredentials;
 import fr.olympa.api.task.TaskManager;
 import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.Utils;
 
 public abstract class OlympaPlugin extends JavaPlugin {
 
 	private TaskManager task;
 	private CustomConfig config;
 	protected DbConnection database = null;
+	protected long uptime = Utils.getCurrentTimeInSeconds();
 
 	protected void disable() {
 		if (this.database != null) {
@@ -54,6 +56,14 @@ public abstract class OlympaPlugin extends JavaPlugin {
 
 	public TaskManager getTask() {
 		return this.task;
+	}
+
+	public String getUptime() {
+		return Utils.timestampToDuration(this.uptime);
+	}
+
+	public long getUptimeLong() {
+		return this.uptime;
 	}
 
 	public void sendMessage(final String message) {

@@ -1,7 +1,8 @@
 package fr.olympa.api.utils;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import net.md_5.bungee.api.ChatColor;
 
 public enum Prefix {
 
@@ -46,6 +47,10 @@ public enum Prefix {
 		return this.color2;
 	}
 
+	public void sendMessage(CommandSender sender, String msg) {
+		sender.sendMessage(SpigotUtils.color(this.prefix + msg));
+	}
+
 	private void setPrefix(final String prefix) {
 		this.prefix = prefix;
 	}
@@ -57,9 +62,5 @@ public enum Prefix {
 
 	public String toStringWithoutFormat() {
 		return this.prefix;
-	}
-
-	public void sendMessage(CommandSender sender, String msg) {
-		sender.sendMessage(SpigotUtils.color(prefix + msg));
 	}
 }

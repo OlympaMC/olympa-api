@@ -10,7 +10,7 @@ public interface OlympaAccount {
 
 	OlympaPlayer get() throws SQLException;
 
-	void saveToDb(OlympaPlayer olympaPlayer);
+	void saveToDb(OlympaPlayer olympaPlayer) throws SQLException;
 
 	void saveToRedis(OlympaPlayer olympaPlayer);
 }

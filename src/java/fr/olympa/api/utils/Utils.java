@@ -143,7 +143,7 @@ public class Utils {
 		return s.substring(s.indexOf(after) + 1).trim();
 	}
 
-	public static long getCurrentTimeinSeconds() {
+	public static long getCurrentTimeInSeconds() {
 		return System.currentTimeMillis() / 1000L;
 	}
 
@@ -324,7 +324,7 @@ public class Utils {
 
 	public static String timestampToDuration(long timestamp) {
 
-		long now = Utils.getCurrentTimeinSeconds();
+		long now = Utils.getCurrentTimeInSeconds();
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
 

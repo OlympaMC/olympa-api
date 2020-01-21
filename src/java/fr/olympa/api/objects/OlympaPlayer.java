@@ -16,6 +16,8 @@ public interface OlympaPlayer {
 
 	void addMoney(double money);
 
+	void addNewName(String name);
+
 	OlympaPlayer clone();
 
 	String getEmail();
@@ -29,6 +31,8 @@ public interface OlympaPlayer {
 	String getGroupsToHumainString();
 
 	String getGroupsToString();
+
+	TreeMap<Long, String> getHistHame();
 
 	int getId();
 
