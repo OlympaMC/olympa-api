@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.stream.Collector;
@@ -300,7 +299,7 @@ public class Utils {
 		return new ArrayList<>(Arrays.asList(ChatPaginator.wordWrap(string.replace("{nl}", "\n"), lineLength)));
 	}
 
-	public static List<String> startWords(String word, Set<String> allWords) {
+	public static List<String> startWords(String word, List<String> allWords) {
 		TreeSet<String> startWordList = new TreeSet<>(Collator.getInstance());
 		for (String currentWord : allWords) {
 			if (removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase()))) {

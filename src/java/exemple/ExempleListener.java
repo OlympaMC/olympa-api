@@ -15,7 +15,7 @@ public class ExempleListener implements Listener {
 		// ==
 		olympaPlayer = AccountProvider.get(event.getPlayer().getUniqueId());
 
-		if (ExemplePermissions.EXEMPLE_COMMAND.hasPermission(olympaPlayer)) {
+		if (OlympaAPIPermission.EXEMPLE_COMMAND.hasPermission(olympaPlayer)) {
 			// si le joueur a la permission d'utiliser la commande /exemple alors ...
 		}
 

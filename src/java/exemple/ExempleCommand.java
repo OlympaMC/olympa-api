@@ -17,7 +17,7 @@ public class ExempleCommand extends OlympaCommand {
 
 	// NOTE: you didn't need to add the command in plugin.yml
 	public ExempleCommand(Plugin plugin) {
-		super(plugin, "exemple", ExemplePermissions.EXEMPLE_COMMAND, "alias1", "alias2");
+		super(plugin, "exemple", OlympaAPIPermission.EXEMPLE_COMMAND, "alias1", "alias2");
 
 		// Use to create the usage message. This will be prefixed by "Usage: /%command%"
 		this.setUsageString("<arg1> <arg2> [arg3]");

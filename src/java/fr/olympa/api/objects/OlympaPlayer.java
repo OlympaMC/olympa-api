@@ -24,6 +24,8 @@ public interface OlympaPlayer {
 
 	long getFirstConnection();
 
+	Gender getGender();
+
 	OlympaGroup getGroup();
 
 	TreeMap<OlympaGroup, Long> getGroups();
@@ -34,7 +36,7 @@ public interface OlympaPlayer {
 
 	TreeMap<Long, String> getHistHame();
 
-	int getId();
+	long getId();
 
 	String getIp();
 
@@ -66,13 +68,15 @@ public interface OlympaPlayer {
 
 	void setAfk(boolean afk);
 
+	void setGender(Gender gender);
+
 	void setGroup(OlympaGroup group);
 
 	void setGroup(OlympaGroup group, long time);
 
 	void setGroupsFromString(String groupsString);
 
-	void setId(int id);
+	void setId(long id);
 
 	void setIp(String ip);
 

@@ -54,6 +54,6 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 	}
 
 	public Player getPlayer() {
-		return player;
+		return this.player;
 	}
 }

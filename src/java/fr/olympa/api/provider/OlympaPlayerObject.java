@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
+import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
 
@@ -44,6 +45,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void addNewName(String name) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public OlympaPlayer clone() {
 		// TODO Auto-generated method stub
 		return null;
@@ -59,6 +66,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public long getFirstConnection() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public Gender getGender() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -86,7 +99,13 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public int getId() {
+	public TreeMap<Long, String> getHistHame() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long getId() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -182,6 +201,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void setGender(Gender gender) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void setGroup(OlympaGroup group) {
 		// TODO Auto-generated method stub
 
@@ -200,7 +225,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void setId(int id) {
+	public void setId(long id) {
 		// TODO Auto-generated method stub
 
 	}

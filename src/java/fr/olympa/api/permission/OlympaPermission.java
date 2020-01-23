@@ -1,7 +1,9 @@
 package fr.olympa.api.permission;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -42,8 +44,8 @@ public class OlympaPermission {
 		}*/
 	}
 
-	OlympaGroup min_group;
-	OlympaGroup[] groups_allow;
+	OlympaGroup min_group = null;
+	OlympaGroup[] groups_allow = null;
 
 	public OlympaPermission(OlympaGroup min_group) {
 		this.min_group = min_group;
@@ -53,14 +55,39 @@ public class OlympaPermission {
 		this.groups_allow = groups_allowGroup;
 	}
 
+	public OlympaPermission(OlympaGroup[] groups_allowGroup, OlympaGroup min_group) {
+		this.min_group = min_group;
+		this.groups_allow = groups_allowGroup;
+	}
+
 	public OlympaGroup getGroup() {
 		return this.min_group;
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
-		Set<Player> players = Bukkit.getOnlinePlayers().stream().filter(player -> this.hasPermission(AccountProvider.get(player.getUniqueId()))).collect(Collectors.toSet());
-		if (!players.isEmpty()) {
-			success.accept(players);
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProvider.get(player.getUniqueId()))).collect(Collectors.toSet());
+		if (!playerswithPerm.isEmpty()) {
+			success.accept(playerswithPerm);
+		}
+	}
+
+	public void getPlayers(Consumer<? super Set<Player>> success, Consumer<? super Set<Player>> noPerm) {
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		Set<Player> playersWithNoPerm = new HashSet<>();
+		Set<Player> playersWithPerm = new HashSet<>();
+		players.stream().forEach(player -> {
+			if (this.hasPermission(AccountProvider.get(player.getUniqueId()))) {
+				playersWithPerm.add(player);
+			} else {
+				playersWithNoPerm.add(player);
+			}
+		});
+		if (!playersWithPerm.isEmpty()) {
+			success.accept(playersWithPerm);
+		}
+		if (!playersWithNoPerm.isEmpty()) {
+			noPerm.accept(playersWithPerm);
 		}
 	}
 
@@ -72,11 +99,9 @@ public class OlympaPermission {
 	}
 
 	public boolean hasPermission(OlympaGroup group) {
-		if (this.min_group != null) {
-			return group.getPower() >= this.min_group.getPower();
-		} else {
-			return Arrays.stream(this.groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
-		}
+		return this.min_group != null && group.getPower() >= this.min_group.getPower()
+				|| this.groups_allow != null && Arrays.stream(this.groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
+
 	}
 
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
@@ -96,11 +121,11 @@ public class OlympaPermission {
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {
-		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponent)));
+		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponent)), null);
 	}
 
 	public void sendMessage(String message) {
-		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)));
+		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)), null);
 	}
 
 }
