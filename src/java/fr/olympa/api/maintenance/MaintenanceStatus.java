@@ -11,11 +11,12 @@ import net.md_5.bungee.api.ChatColor;
 public enum MaintenanceStatus {
 
 	OPEN("Ouvert", ChatColor.GREEN, null, "off"),
-	MAINTENANCE("Maintenance", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVER_MAINTENANCE, "on"),
-	DEV("Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermission.CONNECT_SERVER_DEV, "dev"),
-	BETA("Beta", ChatColor.GOLD, OlympaAPIPermission.CONNECT_SERVER_BETA, "beta"),
-	SOON("Bientôt", ChatColor.YELLOW, OlympaAPIPermission.CONNECT_SERVER_SOON, "soon"),
-	CLOSE("Fermer", ChatColor.DARK_RED, null, null);
+	MAINTENANCE("Maintenance", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
+	DEV("Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, "dev"),
+	BETA("Beta", ChatColor.GOLD, OlympaAPIPermission.CONNECT_SERVERSTATUS_BETA, "beta"),
+	SOON("Bientôt", ChatColor.YELLOW, OlympaAPIPermission.CONNECT_SERVERSTATUS_SOON, "soon"),
+	CLOSE("Fermer", ChatColor.DARK_RED, null, null),
+	UNKNOWN("Inconnu", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
 
 	public static MaintenanceStatus get(String name) {
 		return Arrays.stream(values()).filter(status -> status.name.equalsIgnoreCase(name)).findFirst().orElse(null);
