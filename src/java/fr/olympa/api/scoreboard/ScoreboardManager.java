@@ -9,21 +9,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.plugin.OlympaPlugin;
 import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager implements Listener {
 
 	private Map<OlympaPlayer, Scoreboard> scoreboards = new HashMap<>();
 
-	OlympaPlugin plugin;
+	Plugin plugin;
 	String scoreboardsName;
 	List<ScoreboardLine> lines;
 
-	public ScoreboardManager(OlympaPlugin plugin, String scoreboardsName, List<ScoreboardLine> lines) {
+	public ScoreboardManager(Plugin plugin, String scoreboardsName, List<ScoreboardLine> lines) {
 		this.plugin = plugin;
 		this.scoreboardsName = scoreboardsName;
 		this.lines = lines;
@@ -63,7 +63,7 @@ public class ScoreboardManager implements Listener {
 			s.unload();
 		}
 		if (!this.scoreboards.isEmpty()) {
-			this.plugin.sendMessage(this.scoreboards.size() + " scoreboards deleted.");
+			this.plugin.getServer().getConsoleSender().sendMessage(this.scoreboards.size() + " scoreboards deleted.");
 		}
 		this.scoreboards.clear();
 	}

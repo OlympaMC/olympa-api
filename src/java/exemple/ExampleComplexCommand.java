@@ -1,15 +1,15 @@
 package exemple;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.plugin.OlympaPlugin;
 
 public class ExampleComplexCommand extends ComplexCommand {
 
-	public ExampleComplexCommand(OlympaPlugin plugin) {
+	public ExampleComplexCommand(Plugin plugin) {
 		super(null, plugin, "complex", "Exemple de commande complexe", OlympaAPIPermission.EXEMPLE_COMMAND);
 	}
 

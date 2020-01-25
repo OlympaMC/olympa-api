@@ -40,7 +40,7 @@ public class TaskManager implements OlympaTask {
 	@Override
 	public boolean cancelTaskByName(String taskName) {
 		if (this.taskExist(taskName)) {
-			int taskId = this.getTaskId(taskName);
+			int taskId = this.getBukkitTaskId(taskName);
 			this.taskList.remove(taskName);
 			Bukkit.getScheduler().cancelTask(taskId);
 			return true;
@@ -55,8 +55,7 @@ public class TaskManager implements OlympaTask {
 		}
 	}
 
-	@Override
-	public BukkitTask getTask(int id) {
+	public BukkitTask getBukkitTask(int id) {
 		BukkitTask task = null;
 		if (id > 0) {
 			for (BukkitTask pendingTask : Bukkit.getScheduler().getPendingTasks()) {
@@ -68,20 +67,17 @@ public class TaskManager implements OlympaTask {
 		return null;
 	}
 
-	@Override
-	public BukkitTask getTask(String taskName) {
-		return this.getTask(this.getTaskId(taskName));
+	public BukkitTask getBukkitTask(String taskName) {
+		return this.getBukkitTask(this.getBukkitTaskId(taskName));
 	}
 
-	@Override
-	public int getTaskId(String taskName) {
+	public int getBukkitTaskId(String taskName) {
 		if (this.taskExist(taskName)) {
 			return this.taskList.get(taskName);
 		}
 		return 0;
 	}
 
-	@Override
 	public String getTaskName(String string) {
 		String taskName;
 		for (taskName = string + "_" + new Random().nextInt(99999); this.taskExist(taskName); taskName = string + "_" + new Random().nextInt(99999)) {
@@ -89,7 +85,6 @@ public class TaskManager implements OlympaTask {
 		return taskName;
 	}
 
-	@Override
 	public String getTaskNameById(int id) {
 		for (Map.Entry<String, Integer> entry : this.taskList.entrySet()) {
 			if (entry.getValue() == id) {
@@ -105,36 +100,36 @@ public class TaskManager implements OlympaTask {
 	}
 
 	@Override
-	public BukkitTask runTask(Runnable runnable) {
-		return Bukkit.getScheduler().runTask(this.plugin, runnable);
+	public int runTask(Runnable runnable) {
+		return Bukkit.getScheduler().runTask(this.plugin, runnable).getTaskId();
 	}
 
 	@Override
-	public BukkitTask runTaskAsynchronously(Runnable runnable) {
-		return Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
+	public int runTaskAsynchronously(Runnable runnable) {
+		return Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable).getTaskId();
 	}
 
 	@Override
-	public BukkitTask runTaskAsynchronously(String taskName, Runnable runnable) {
+	public int runTaskAsynchronously(String taskName, Runnable runnable) {
 		Integer oldTask = this.taskList.get(taskName);
 		if (oldTask != null) {
-			this.getTask(oldTask).cancel();
+			this.getBukkitTask(oldTask).cancel();
 		}
-		BukkitTask bukkitTask = this.runTaskAsynchronously(runnable);
-		this.addTask(taskName, bukkitTask.getTaskId());
+		int bukkitTask = this.runTaskAsynchronously(runnable);
+		this.addTask(taskName, bukkitTask);
 		return bukkitTask;
 	}
 
 	@Override
-	public BukkitTask runTaskLater(Runnable runnable, int tick) {
-		return Bukkit.getScheduler().runTaskLater(this.plugin, runnable, tick);
+	public int runTaskLater(Runnable runnable, int tick) {
+		return Bukkit.getScheduler().runTaskLater(this.plugin, runnable, tick).getTaskId();
 	}
 
 	@Override
-	public BukkitTask runTaskLater(String taskName, Runnable task, int duration) {
+	public int runTaskLater(String taskName, Runnable task, int duration) {
 		Integer oldTask = this.taskList.get(taskName);
 		if (oldTask != null) {
-			this.getTask(oldTask).cancel();
+			this.getBukkitTask(oldTask).cancel();
 		}
 		BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(this.plugin, task, duration);
 		int id = bukkitTask.getTaskId();
@@ -144,15 +139,15 @@ public class TaskManager implements OlympaTask {
 				this.taskList.remove(taskName);
 			}
 		}, duration);
-		return bukkitTask;
+		return bukkitTask.getTaskId();
 	}
 
 	@Override
-	public BukkitTask scheduleSyncRepeatingTask(String taskName, Runnable runnable, long delay, long refresh) {
+	public int scheduleSyncRepeatingTask(String taskName, Runnable runnable, long delay, long refresh) {
 		this.cancelTaskByName(taskName);
 		BukkitTask task = Bukkit.getScheduler().runTaskTimer(this.plugin, runnable, delay, refresh);
 		this.taskList.put(taskName, task.getTaskId());
-		return task;
+		return task.getTaskId();
 	}
 
 	@Override
