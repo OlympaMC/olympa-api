@@ -189,9 +189,16 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void removeMoney(double money) {
-		// TODO Auto-generated method stub
+	public void giveMoney(double money) {}
 
+	@Override
+	public boolean hasMoney(double money) {
+		return false;
+	}
+
+	@Override
+	public boolean withdrawMoney(double money) {
+		return false;
 	}
 
 	@Override

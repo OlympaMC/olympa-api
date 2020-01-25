@@ -64,8 +64,6 @@ public interface OlympaPlayer {
 
 	boolean isVerifMode();
 
-	void removeMoney(double money);
-
 	void setAfk(boolean afk);
 
 	void setGender(Gender gender);
@@ -83,6 +81,12 @@ public interface OlympaPlayer {
 	void setLastConnection(long lastConnection);
 
 	void setMoney(double money);
+
+	void giveMoney(double money);
+
+	boolean hasMoney(double money);
+
+	boolean withdrawMoney(double money);
 
 	void setName(String name);
 
