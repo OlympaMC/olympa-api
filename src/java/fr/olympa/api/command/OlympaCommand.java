@@ -2,7 +2,9 @@ package fr.olympa.api.command;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -21,23 +23,18 @@ import net.md_5.bungee.api.chat.BaseComponent;
 public abstract class OlympaCommand {
 
 	protected static CommandMap cmap;
-
 	protected Plugin plugin;
-
 	protected List<String> alias;
+	protected LinkedHashMap<Boolean, List<String>> args = new LinkedHashMap<>();
 	protected String command;
 	protected String description;
-	public OlympaPermission permission;
-
-	public Player player;
-
-	public CommandSender sender;
-
+	protected OlympaPermission permission;
+	protected Player player;
+	protected CommandSender sender;
 	protected String usageString;
-	public Integer minArg = 0;
-	public boolean allowConsole = true;
-
-	public boolean isAsynchronous = false;
+	protected Integer minArg = 0;
+	protected boolean allowConsole = true;
+	protected boolean isAsynchronous = false;
 
 	public OlympaCommand(Plugin plugin, String command, OlympaPermission permission, String... alias) {
 		this.plugin = plugin;
@@ -58,6 +55,10 @@ public abstract class OlympaCommand {
 		this.command = command;
 		this.description = description;
 		this.alias = Arrays.asList(alias);
+	}
+
+	public void addArgs(boolean isMandatory, String... args) {
+		this.args.put(isMandatory, Arrays.asList(args));
 	}
 
 	public void broadcast(String message) {
@@ -91,21 +92,30 @@ public abstract class OlympaCommand {
 		return this.player;
 	}
 
-	public boolean hasPermission(OlympaPermission perm) {
-		if (this.player == null) {
-			return true;
-		}
-		if (this.getOlympaPlayer() == null || perm == null) {
-			return false;
-		}
-		return this.permission.hasPermission(this.getOlympaPlayer());
+	public boolean hasPermission() {
+		return this.hasPermission(this.permission);
 	}
 
-	public boolean hasPermission(String perm) {
-		if (perm == null || perm.isEmpty()) {
+	public boolean hasPermission(OlympaPermission perm) {
+		if (perm == null || this.player == null) {
 			return true;
 		}
-		return this.hasPermission(OlympaPermission.permissions.get(perm));
+		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
+		if (olympaPlayer == null) {
+			return false;
+		}
+		return perm.hasPermission(olympaPlayer);
+	}
+
+	public boolean hasPermission(String permName) {
+		if (permName == null || permName.isEmpty()) {
+			return true;
+		}
+		OlympaPermission perm = OlympaPermission.permissions.get(permName);
+		if (perm == null) {
+			return false;
+		}
+		return this.hasPermission(perm);
 	}
 
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
@@ -113,6 +123,8 @@ public abstract class OlympaCommand {
 	public abstract List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args);
 
 	public void register() {
+		this.usageString = this.args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[") + String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
+		this.minArg = (int) this.args.entrySet().stream().filter(entry -> entry.getKey()).count();
 		ReflectCommand reflectCommand = new ReflectCommand(this.command);
 		if (this.alias != null) {
 			reflectCommand.setAliases(this.alias);
@@ -122,11 +134,11 @@ public abstract class OlympaCommand {
 		}
 		reflectCommand.setExecutor(this);
 		// TODO test null instanceof ""
-		this.getCommandMap().register("", reflectCommand);
+		this.getCommandMap().register(null, reflectCommand);
 	}
 
 	public void sendDoNotHavePermission() {
-		this.sendError("Vous n'avez pas la permission &l(◑_◑)");
+		this.sendError("Tu n'as pas la permission &l(◑_◑)");
 	}
 
 	public void sendError(String message) {
@@ -138,7 +150,7 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendImpossibleWithOlympaPlayer() {
-		this.sendError("Une erreur est survenu avec vos donnés.");
+		this.sendError("Une erreur est survenu avec tes donnés.");
 	}
 
 	public void sendIncorrectSyntax() {
@@ -146,7 +158,7 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendIncorrectSyntax(String correctSyntax) {
-		this.sendError("Syntaxe attendue : §o" + correctSyntax);
+		this.sendError("Syntaxe attendue : &o" + correctSyntax);
 	}
 
 	public void sendMessage(BaseComponent... text) {
@@ -193,20 +205,5 @@ public abstract class OlympaCommand {
 
 	public void setAllowConsole(boolean allowConsole) {
 		this.allowConsole = allowConsole;
-	}
-
-	/**
-	 * Don't foget to set {@link OlympaCommand#usageString}
-	 */
-	public void setMinArg(Integer minArg) {
-		this.minArg = minArg;
-	}
-
-	/**
-	 * Format: <%obligatory%|%obligatory%> [%optional%]
-	 * Other like 'Usage : /command' is autofill.
-	 */
-	public void setUsageString(String usageString) {
-		this.usageString = usageString;
 	}
 }

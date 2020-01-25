@@ -19,11 +19,12 @@ public class ExempleCommand extends OlympaCommand {
 	public ExempleCommand(Plugin plugin) {
 		super(plugin, "exemple", OlympaAPIPermission.EXEMPLE_COMMAND, "alias1", "alias2");
 
-		// Use to create the usage message. This will be prefixed by "Usage: /%command%"
-		this.setUsageString("<arg1> <arg2> [arg3]");
-
+		// Use to create the usage message like "Usage: /%command% <arg1Mandatory|arg1MandatoryAgain|arg1MandatoryAgainAgain> [arg2|arg2Again|arg2AgainAgain]"
+		// isMandatory = if args is required
+		this.addArgs(true, "arg1Mandatory", "arg1MandatoryAgain", "arg1MandatoryAgainAgain");
+		this.addArgs(false, "arg2", "arg2Again", "arg2AgainAgain");
 		// if sendr enter less than x args, the sender will receive the usage message
-		this.setMinArg(2);
+		// this.setMinArg(1); not needed now it detect auto with this.addArgs(true, ...)
 
 		// Allows Console and Command Block to use the command
 		this.setAllowConsole(true);
