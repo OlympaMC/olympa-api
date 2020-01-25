@@ -22,7 +22,7 @@ public enum MaintenanceStatus {
 	}
 
 	public static MaintenanceStatus getByCommandArg(String commandArg) {
-		return Arrays.stream(values()).filter(status -> status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.commandArg != null && status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
 	}
 
 	public static List<String> getNames() {

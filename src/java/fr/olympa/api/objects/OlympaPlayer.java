@@ -1,5 +1,6 @@
 package fr.olympa.api.objects;
 
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -20,6 +21,8 @@ public interface OlympaPlayer {
 
 	OlympaPlayer clone();
 
+	Map<String, String> getData();
+
 	String getEmail();
 
 	long getFirstConnection();
@@ -35,6 +38,8 @@ public interface OlympaPlayer {
 	String getGroupsToString();
 
 	TreeMap<Long, String> getHistHame();
+
+	TreeMap<Long, String> getHistIp();
 
 	long getId();
 
@@ -73,8 +78,6 @@ public interface OlympaPlayer {
 	void setGroup(OlympaGroup group);
 
 	void setGroup(OlympaGroup group, long time);
-
-	void setGroupsFromString(String groupsString);
 
 	void setId(long id);
 

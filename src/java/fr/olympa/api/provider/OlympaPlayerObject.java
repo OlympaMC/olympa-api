@@ -1,5 +1,6 @@
 package fr.olympa.api.provider;
 
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -57,6 +58,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public Map<String, String> getData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String getEmail() {
 		// TODO Auto-generated method stub
 		return null;
@@ -100,6 +107,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public TreeMap<Long, String> getHistHame() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TreeMap<Long, String> getHistIp() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -214,12 +227,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setGroup(OlympaGroup group, long time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setGroupsFromString(String groupsString) {
 		// TODO Auto-generated method stub
 
 	}
