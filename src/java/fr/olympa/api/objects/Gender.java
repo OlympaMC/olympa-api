@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum Gender {
 
 	MALE(0, "", "il", "garçon"),
-	FAMELE(1, "e", "elle", "fille");
+	FEMALE(1, "e", "elle", "fille");
 
 	public static Gender get(int int1) {
 		return Arrays.stream(values()).filter(i -> int1 == i.getId()).findFirst().orElse(null);

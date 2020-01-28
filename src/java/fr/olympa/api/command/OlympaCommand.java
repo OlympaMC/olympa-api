@@ -133,8 +133,7 @@ public abstract class OlympaCommand {
 			reflectCommand.setDescription(this.description);
 		}
 		reflectCommand.setExecutor(this);
-		// TODO test null instanceof ""
-		this.getCommandMap().register(null, reflectCommand);
+		this.getCommandMap().register(new String(), reflectCommand);
 	}
 
 	public void sendDoNotHavePermission() {

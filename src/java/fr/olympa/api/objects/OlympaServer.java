@@ -7,6 +7,8 @@ public enum OlympaServer {
 	LOBBY,
 	DEV,
 	BUILD,
-	GTA,
+	ZTA,
+	CREATIF,
+	DRAWBATTLE,
 	PVPFAC;
 }

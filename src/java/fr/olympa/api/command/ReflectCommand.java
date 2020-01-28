@@ -1,5 +1,6 @@
 package fr.olympa.api.command;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -78,17 +79,22 @@ public class ReflectCommand extends Command {
 		Collection<List<String>> defaultArgs = this.exe.args.values();
 		if (!defaultArgs.isEmpty()) {
 			Iterator<List<String>> iterator = defaultArgs.iterator();
-			List<String> postentielArgs;
+			List<String> getArgs;
+			List<String> potentialArgs = new ArrayList<>();
 			int i = 1;
 			do {
-				postentielArgs = iterator.next();
+				getArgs = iterator.next();
 			} while (++i < args.length && defaultArgs.size() <= i);
 			if (args.length == i) {
-				if (postentielArgs.contains("joueur")) {
-					postentielArgs.remove("joueur");
-					postentielArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+				for (String argss : getArgs) {
+					if (argss.equalsIgnoreCase("joueur")) {
+						potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+					} else {
+						potentialArgs.add(argss);
+					}
 				}
-				return Utils.startWords(args[i - 1], postentielArgs);
+
+				return Utils.startWords(args[i - 1], getArgs);
 			}
 		}
 		return this.exe.onTabComplete(sender, this, alias, args);

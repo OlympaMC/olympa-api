@@ -26,7 +26,7 @@ public enum OlympaGroup {
 	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&e%rank ", ":&r"),
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&e%rank ", ":&r"),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":"),
-	MAFIEUX(21, 10, OlympaServer.GTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
+	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
 
 	/**
 	 * Get {@link #OlympaGroup}

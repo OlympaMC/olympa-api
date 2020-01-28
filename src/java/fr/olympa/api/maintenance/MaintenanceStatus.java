@@ -27,7 +27,7 @@ public enum MaintenanceStatus {
 	}
 
 	public static List<String> getNames() {
-		return Arrays.stream(values()).map(MaintenanceStatus::getName).collect(Collectors.toList());
+		return Arrays.stream(values()).filter(status -> status != UNKNOWN).map(MaintenanceStatus::getName).collect(Collectors.toList());
 	}
 
 	private String name;

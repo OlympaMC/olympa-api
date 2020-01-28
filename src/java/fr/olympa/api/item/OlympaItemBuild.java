@@ -2,10 +2,12 @@ package fr.olympa.api.item;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +22,8 @@ public class OlympaItemBuild implements Cloneable {
 	private Short durability;
 	private String name;
 	private List<String> lore;
+	private Map<Enchantment, Integer> enchantments;
+	private Boolean enchantmentsUnsafe;
 	private ItemFlag[] itemFlags;
 	private Boolean unbreakable;
 	private OfflinePlayer player;
@@ -28,6 +32,14 @@ public class OlympaItemBuild implements Cloneable {
 		this.material = itemStack.getType();
 		this.size = itemStack.getAmount();
 		this.durability = itemStack.getDurability();
+		this.enchantments = itemStack.getEnchantments();
+		if (this.enchantments != null && this.enchantments.isEmpty()) {
+			if (this.enchantments.isEmpty()) {
+				this.enchantments = null;
+			} else if (this.enchantments.entrySet().stream().anyMatch(entry -> entry.getValue() > 10)) {
+				this.enchantmentsUnsafe = true;
+			}
+		}
 
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (itemMeta.hasDisplayName()) {
@@ -57,12 +69,6 @@ public class OlympaItemBuild implements Cloneable {
 		this.name = name;
 	}
 
-	public OlympaItemBuild setLore(int i, String lore) {
-		OlympaItemBuild olympaItemBuild = this.clone();
-		olympaItemBuild.lore.set(i, olympaItemBuild.lore.get(i) + lore);
-		return olympaItemBuild;
-	}
-
 	public OlympaItemBuild addName(String name) {
 		OlympaItemBuild olympaItemBuild = this.clone();
 		olympaItemBuild.name += name;
@@ -79,6 +85,14 @@ public class OlympaItemBuild implements Cloneable {
 		ItemStack itemStack = new ItemStack(this.material, this.size);
 		if (this.durability != null) {
 			itemStack.setDurability(this.durability);
+		}
+
+		if (this.enchantments != null && !this.enchantments.isEmpty()) {
+			if (this.enchantmentsUnsafe != null && this.enchantmentsUnsafe) {
+				itemStack.addUnsafeEnchantments(this.enchantments);
+			} else {
+				itemStack.addEnchantments(this.enchantments);
+			}
 		}
 
 		ItemMeta itemMeta = itemStack.getItemMeta();
@@ -136,6 +150,12 @@ public class OlympaItemBuild implements Cloneable {
 	public OlympaItemBuild name(String name) {
 		OlympaItemBuild olympaItemBuild = this.clone();
 		olympaItemBuild.name = name;
+		return olympaItemBuild;
+	}
+
+	public OlympaItemBuild setLore(int i, String lore) {
+		OlympaItemBuild olympaItemBuild = this.clone();
+		olympaItemBuild.lore.set(i, olympaItemBuild.lore.get(i) + lore);
 		return olympaItemBuild;
 	}
 

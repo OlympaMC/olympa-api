@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.messaging.Messenger;
 
+import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 
@@ -33,7 +35,10 @@ public class OlympaCore extends OlympaAPIPlugin {
 
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
-		// pluginManager.registerEvents(new DataManagmentListener(), this);
+
+		Messenger messenger = this.getServer().getMessenger();
+		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+		new SpigotBPMCEvent().register(this);
 
 		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
 	}

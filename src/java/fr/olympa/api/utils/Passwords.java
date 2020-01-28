@@ -33,7 +33,9 @@ public class Passwords {
 		String generatedPassword = null;
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-512");
-			md.update(salt);
+			if (salt != null) {
+				md.update(salt);
+			}
 			byte[] bytes = md.digest(passwordToHash.getBytes());
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < bytes.length; i++) {
