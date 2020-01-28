@@ -1,8 +1,5 @@
 package fr.olympa.core.spigot;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
@@ -17,11 +14,6 @@ public class OlympaCore extends OlympaAPIPlugin {
 
 	public static OlympaCore getInstance() {
 		return instance;
-	}
-
-	@Override
-	public Connection getDatabase() throws SQLException {
-		return null;
 	}
 
 	@Override
