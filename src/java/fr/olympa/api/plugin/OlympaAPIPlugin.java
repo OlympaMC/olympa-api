@@ -4,12 +4,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.task.OlympaTask;
+import fr.olympa.api.task.TaskManager;
 import fr.olympa.api.utils.SpigotUtils;
 
 public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPluginInterface {
 
-	protected OlympaTask task;
+	protected final OlympaTask task;
 	protected CustomConfig config;
+
+	public OlympaAPIPlugin() {
+		this.task = new TaskManager(this);
+	}
 
 	@Override
 	public CustomConfig getConfig() {

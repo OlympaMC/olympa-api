@@ -1,5 +1,8 @@
 package fr.olympa.api.item;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +18,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.mojang.authlib.GameProfile;
@@ -260,4 +265,32 @@ public class ItemUtils {
 		return enable;
 	}
 	
+	public static byte[] serializeItemsArray(ItemStack[] items) throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+		dataOutput.writeInt(items.length);
+
+		for (int i = 0; i < items.length; i++) {
+			dataOutput.writeObject(items[i]);
+		}
+
+		dataOutput.close();
+		return outputStream.toByteArray();
+	}
+
+	public static ItemStack[] deserializeItemsArray(byte[] bytes) throws IOException, ClassNotFoundException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+		BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+		ItemStack[] items = new ItemStack[dataInput.readInt()];
+
+		// Read the serialized inventory
+		for (int i = 0; i < items.length; i++) {
+			items[i] = (ItemStack) dataInput.readObject();
+		}
+
+		dataInput.close();
+		return items;
+	}
+
 }
