@@ -46,6 +46,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void addNewIp(String ip) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void addNewName(String name) {
 		// TODO Auto-generated method stub
 
@@ -172,6 +178,15 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void giveMoney(double money) {
+	}
+
+	@Override
+	public boolean hasMoney(double money) {
+		return false;
+	}
+
+	@Override
 	public boolean hasPermission(OlympaPermission permission) {
 		// TODO Auto-generated method stub
 		return false;
@@ -198,19 +213,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public boolean isVerifMode() {
 		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void giveMoney(double money) {}
-
-	@Override
-	public boolean hasMoney(double money) {
-		return false;
-	}
-
-	@Override
-	public boolean withdrawMoney(double money) {
 		return false;
 	}
 
@@ -296,6 +298,11 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void setVerifMode(boolean verifMode) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean withdrawMoney(double money) {
+		return false;
 	}
 
 }

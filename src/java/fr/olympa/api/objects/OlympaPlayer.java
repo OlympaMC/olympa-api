@@ -17,6 +17,8 @@ public interface OlympaPlayer {
 
 	void addMoney(double money);
 
+	void addNewIp(String ip);
+
 	void addNewName(String name);
 
 	OlympaPlayer clone();
@@ -59,6 +61,10 @@ public interface OlympaPlayer {
 
 	UUID getUniqueId();
 
+	void giveMoney(double money);
+
+	boolean hasMoney(double money);
+
 	boolean hasPermission(OlympaPermission permission);
 
 	boolean isAfk();
@@ -85,12 +91,6 @@ public interface OlympaPlayer {
 
 	void setMoney(double money);
 
-	void giveMoney(double money);
-
-	boolean hasMoney(double money);
-
-	boolean withdrawMoney(double money);
-
 	void setName(String name);
 
 	void setPassword(String password);
@@ -102,5 +102,7 @@ public interface OlympaPlayer {
 	void setVanish(boolean vanish);
 
 	void setVerifMode(boolean verifMode);
+
+	boolean withdrawMoney(double money);
 
 }
