@@ -1,6 +1,8 @@
 package fr.olympa.api.objects;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -13,7 +15,9 @@ public interface OlympaPlayer {
 
 	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson);
 
-	void loadDatas(ResultSet resultSet);
+	void loadDatas(ResultSet resultSet) throws SQLException;
+
+	void saveDatas(PreparedStatement statement) throws SQLException;
 
 	void addGroup(OlympaGroup group);
 

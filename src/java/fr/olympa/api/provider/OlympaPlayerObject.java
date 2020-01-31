@@ -1,5 +1,6 @@
 package fr.olympa.api.provider;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -24,6 +25,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void loadDatas(ResultSet resultSet) {}
+
+	@Override
+	public void saveDatas(PreparedStatement statement) {}
 
 	@Override
 	public void addGroup(OlympaGroup group) {
