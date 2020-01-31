@@ -1,6 +1,5 @@
 package fr.olympa.api.provider;
 
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -13,18 +12,13 @@ import fr.olympa.api.permission.OlympaPermission;
 
 public class OlympaPlayerObject implements OlympaPlayer {
 
-	private UUID uuid;
-	private String name;
-	private String ip;
-
-	public OlympaPlayerObject(int int1, UUID fromString, String string, String string2, String string3, long l, long m, String string4, String string5) {
+	public OlympaPlayerObject(UUID uuid, String name, String ip) {
 		// TODO Auto-generated constructor stub
 	}
 
-	public OlympaPlayerObject(UUID uuid, String name, String ip) {
-		this.uuid = uuid;
-		this.name = name;
-		this.ip = ip;
+	@Override
+	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson) {
+
 	}
 
 	@Override
@@ -59,12 +53,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaPlayer clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, String> getData() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -278,12 +266,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setPremiumUniqueId(UUID premium_uuid) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setUniqueId(UUID uuid) {
 		// TODO Auto-generated method stub
 
 	}

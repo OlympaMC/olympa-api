@@ -1,6 +1,5 @@
 package fr.olympa.api.objects;
 
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -10,6 +9,8 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.permission.OlympaPermission;
 
 public interface OlympaPlayer {
+
+	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson);
 
 	void addGroup(OlympaGroup group);
 
@@ -22,8 +23,6 @@ public interface OlympaPlayer {
 	void addNewName(String name);
 
 	OlympaPlayer clone();
-
-	Map<String, String> getData();
 
 	String getEmail();
 
@@ -75,6 +74,8 @@ public interface OlympaPlayer {
 
 	boolean isVerifMode();
 
+	void setId(long id);
+
 	void setAfk(boolean afk);
 
 	void setGender(Gender gender);
@@ -82,8 +83,6 @@ public interface OlympaPlayer {
 	void setGroup(OlympaGroup group);
 
 	void setGroup(OlympaGroup group, long time);
-
-	void setId(long id);
 
 	void setIp(String ip);
 
@@ -96,8 +95,6 @@ public interface OlympaPlayer {
 	void setPassword(String password);
 
 	void setPremiumUniqueId(UUID premium_uuid);
-
-	void setUniqueId(UUID uuid);
 
 	void setVanish(boolean vanish);
 
