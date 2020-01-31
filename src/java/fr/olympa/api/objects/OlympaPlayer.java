@@ -1,5 +1,6 @@
 package fr.olympa.api.objects;
 
+import java.sql.ResultSet;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -11,6 +12,8 @@ import fr.olympa.api.permission.OlympaPermission;
 public interface OlympaPlayer {
 
 	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson);
+
+	void loadDatas(ResultSet resultSet);
 
 	void addGroup(OlympaGroup group);
 

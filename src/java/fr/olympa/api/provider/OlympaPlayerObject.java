@@ -1,5 +1,6 @@
 package fr.olympa.api.provider;
 
+import java.sql.ResultSet;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -20,6 +21,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson) {
 
 	}
+
+	@Override
+	public void loadDatas(ResultSet resultSet) {}
 
 	@Override
 	public void addGroup(OlympaGroup group) {
@@ -284,6 +288,11 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public boolean withdrawMoney(double money) {
+		return false;
+	}
+
+	@Override
+	public boolean isPremium() {
 		return false;
 	}
 
