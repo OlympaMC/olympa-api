@@ -30,7 +30,7 @@ public class OlympaPlayerLoadEvent extends PlayerEvent {
 	}
 
 	public String getJoinMessage() {
-		return SpigotUtils.color(this.joinMessage);
+		return this.joinMessage;
 	}
 
 	public OlympaPlayer getOlympaPlayer() {
@@ -42,9 +42,13 @@ public class OlympaPlayerLoadEvent extends PlayerEvent {
 	 * @param joinMessage %group %prefix %name are variables
 	 */
 	public void setJoinMessage(String joinMessage) {
-		this.joinMessage = SpigotUtils.color(joinMessage
-				.replaceAll("%group", this.olympaPlayer.getGroup().getName())
-				.replaceAll("%prefix", this.olympaPlayer.getGroup().getPrefix())
-				.replaceAll("%name", this.player.getName()));
+		if (joinMessage == null) {
+			this.joinMessage = null;
+		} else {
+			this.joinMessage = SpigotUtils.color(joinMessage
+					.replaceAll("%group", this.olympaPlayer.getGroup().getName())
+					.replaceAll("%prefix", this.olympaPlayer.getGroup().getPrefix())
+					.replaceAll("%name", this.player.getName()));
+		}
 	}
 }

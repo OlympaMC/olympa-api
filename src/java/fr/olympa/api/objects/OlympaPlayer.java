@@ -68,6 +68,8 @@ public interface OlympaPlayer {
 
 	boolean isAfk();
 
+	boolean isPremium();
+
 	boolean isSamePassword(String password);
 
 	boolean isVanish();
