@@ -4,20 +4,20 @@ import java.util.function.Function;
 
 import fr.olympa.api.objects.OlympaPlayer;
 
-public class DynamicLine extends ScoreboardLine {
+public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 
-	private Function<OlympaPlayer, String> value;
+	private Function<T, String> value;
 
-	public DynamicLine(Function<OlympaPlayer, String> value) {
+	public DynamicLine(Function<T, String> value) {
 		this(value, 0, 0);
 	}
 
-	public DynamicLine(Function<OlympaPlayer, String> value, int refresh, int length) {
+	public DynamicLine(Function<T, String> value, int refresh, int length) {
 		super(refresh, length);
 		this.value = value;
 	}
 
-	public String getValue(OlympaPlayer player) {
+	public String getValue(T player) {
 		return value.apply(player);
 	}
 

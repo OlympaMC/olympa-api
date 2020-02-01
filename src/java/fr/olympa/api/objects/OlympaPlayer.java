@@ -23,8 +23,6 @@ public interface OlympaPlayer {
 
 	void addGroup(OlympaGroup group, long time);
 
-	void addMoney(double money);
-
 	void addNewIp(String ip);
 
 	void addNewName(String name);
@@ -55,7 +53,7 @@ public interface OlympaPlayer {
 
 	long getLastConnection();
 
-	double getMoney();
+	OlympaMoney getStoreMoney();
 
 	String getName();
 
@@ -66,10 +64,6 @@ public interface OlympaPlayer {
 	UUID getPremiumUniqueId();
 
 	UUID getUniqueId();
-
-	void giveMoney(double money);
-
-	boolean hasMoney(double money);
 
 	boolean hasPermission(OlympaPermission permission);
 
@@ -97,8 +91,6 @@ public interface OlympaPlayer {
 
 	void setLastConnection(long lastConnection);
 
-	void setMoney(double money);
-
 	void setName(String name);
 
 	void setPassword(String password);
@@ -108,7 +100,5 @@ public interface OlympaPlayer {
 	void setVanish(boolean vanish);
 
 	void setVerifMode(boolean verifMode);
-
-	boolean withdrawMoney(double money);
 
 }

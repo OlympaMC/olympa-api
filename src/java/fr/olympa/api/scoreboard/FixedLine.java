@@ -2,7 +2,7 @@ package fr.olympa.api.scoreboard;
 
 import fr.olympa.api.objects.OlympaPlayer;
 
-public class FixedLine extends ScoreboardLine {
+public class FixedLine extends ScoreboardLine<OlympaPlayer> {
 
 	private String value;
 

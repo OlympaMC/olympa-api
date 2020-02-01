@@ -2,7 +2,7 @@ package fr.olympa.api.scoreboard;
 
 import fr.olympa.api.objects.OlympaPlayer;
 
-public abstract class ScoreboardLine {
+public abstract class ScoreboardLine<T extends OlympaPlayer> {
 
 	public int refresh;
 	public int length;
@@ -12,7 +12,7 @@ public abstract class ScoreboardLine {
 		this.length = length;
 	}
 	
-	public abstract String getValue(OlympaPlayer player);
+	public abstract String getValue(T player);
 	
 	public int getRefreshTime(){
 		return refresh;

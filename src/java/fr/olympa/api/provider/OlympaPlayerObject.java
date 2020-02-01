@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.Gender;
+import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
 
@@ -37,12 +38,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void addGroup(OlympaGroup group, long time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addMoney(double money) {
 		// TODO Auto-generated method stub
 
 	}
@@ -138,9 +133,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public double getMoney() {
+	public OlympaMoney getStoreMoney() {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 	@Override
@@ -171,15 +166,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void giveMoney(double money) {
-	}
-
-	@Override
-	public boolean hasMoney(double money) {
-		return false;
 	}
 
 	@Override
@@ -255,12 +241,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void setMoney(double money) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setName(String name) {
 		// TODO Auto-generated method stub
 
@@ -288,11 +268,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void setVerifMode(boolean verifMode) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public boolean withdrawMoney(double money) {
-		return false;
 	}
 
 	@Override

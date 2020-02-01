@@ -21,9 +21,9 @@ public class ScoreboardManager implements Listener {
 
 	Plugin plugin;
 	String scoreboardsName;
-	List<ScoreboardLine> lines;
+	List<ScoreboardLine<?>> lines;
 
-	public ScoreboardManager(Plugin plugin, String scoreboardsName, List<ScoreboardLine> lines) {
+	public ScoreboardManager(Plugin plugin, String scoreboardsName, List<ScoreboardLine<?>> lines) {
 		this.plugin = plugin;
 		this.scoreboardsName = scoreboardsName;
 		this.lines = lines;

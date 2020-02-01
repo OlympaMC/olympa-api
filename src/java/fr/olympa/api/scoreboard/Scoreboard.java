@@ -17,15 +17,15 @@ public class Scoreboard {
 	private ScoreboardManager manager;
 
 	private ScoreboardSigns sb;
-	private LinkedList<Line> lines = new LinkedList<>();
+	private LinkedList<Line<?>> lines = new LinkedList<>();
 	private BukkitRunnable runnable;
 	
 	Scoreboard(OlympaPlayer player, ScoreboardManager manager) {
 		this.p = player;
 		this.manager = manager;
 		
-		for (ScoreboardLine line : manager.lines) {
-			lines.add(new Line(line));
+		for (ScoreboardLine<?> line : manager.lines) {
+			lines.add(new Line<>(line));
 		}
 		
 		initScoreboard();
@@ -33,7 +33,7 @@ public class Scoreboard {
 		runnable = new BukkitRunnable() {
 			public void run(){
 				if (p.getPlayer() == null) return;
-				for (Line line : lines){
+				for (Line<?> line : lines) {
 					if (line.tryRefresh()) line.refreshLines();
 				}
 			}
@@ -54,18 +54,18 @@ public class Scoreboard {
 		sb = new ScoreboardSigns(p.getPlayer(), manager.scoreboardsName);
 		sb.create();
 		for (int i = 0; i < lines.size(); i++) {
-			Line line = lines.get(i);
+			Line<?> line = lines.get(i);
 			line.setLines(i == 0 ? 0 : lines.get(i - 1).lastLineIndex() + 1);
 		}
 	}
 
-	class Line{
-		ScoreboardLine param;
+	class Line<T extends OlympaPlayer> {
+		ScoreboardLine<T> param;
 		int timeLeft = 1;
 		int lastAmount = 0;
 		List<VirtualTeam> teams = new ArrayList<>();
 		
-		Line(ScoreboardLine param){
+		Line(ScoreboardLine<T> param) {
 			this.param = param;
 			timeLeft = param.refresh;
 		}
@@ -91,7 +91,7 @@ public class Scoreboard {
 		 * @param firstLine Scoreboard line where the first line will be placed
 		 */
 		public void setLines(int firstLine){
-			String text = param.getValue(p);
+			String text = param.getValue((T) p);
 			text = SpigotUtils.color(text);
 			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);
 			if (lastAmount > ls.size()){
