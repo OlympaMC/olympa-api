@@ -3,6 +3,7 @@ package fr.olympa.api.bpmc;
 import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.ChannelNotRegisteredException;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -59,7 +60,7 @@ public class SpigotBPMC {
 	/*
 	 * Send player to a server name like in bungeecord config
 	 */
-	public static void sendPlayer(Player player, String serverName) {
+	public static void sendPlayer(Player player, String serverName) throws ChannelNotRegisteredException {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("Connect");
 		out.writeUTF(serverName);
