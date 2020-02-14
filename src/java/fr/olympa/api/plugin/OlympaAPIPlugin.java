@@ -17,6 +17,16 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	}
 
 	@Override
+	public void onEnable() {
+		super.onEnable();
+		this.config = new CustomConfig(this, "config");
+		if (this.config.hasResource() || this.config.getFile().exists()) {
+			this.config.load();
+			this.config.saveIfNotExists();
+		}else this.config = null;
+	}
+
+	@Override
 	public CustomConfig getConfig() {
 		return this.config;
 	}
