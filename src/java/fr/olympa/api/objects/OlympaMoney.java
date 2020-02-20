@@ -4,24 +4,28 @@ public class OlympaMoney {
 
 	private double money;
 
-	public OlympaMoney(double money) {
-		this.money = money;
-	}
-
-	public double get() {
-		return money;
+	public OlympaMoney(double base) {
+		this.money = base;
 	}
 
 	public String getFormatted() {
 		return money + "Ω";
 	}
 
-	public void give(double money) {
-		this.money += money;
+	public double get() {
+		return money;
 	}
 
 	public boolean has(double money) {
 		return this.money >= money;
+	}
+
+	public void set(double money) {
+		this.money = money;
+	}
+
+	public void give(double money) {
+		this.money += money;
 	}
 
 	public boolean withdraw(double money) {

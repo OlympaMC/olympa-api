@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ComplexCommand extends OlympaCommand {
 
 	public final Map<String, InternalCommand> commands = new HashMap<>();
 
-	private Predicate<CommandSender> noArgs;
+	protected Predicate<CommandSender> noArgs;
 
 	/**
 	 * @param noArgs Predicate(CommandSender) who'll be ran if the command is executed without any arguments. If is null or return <tt>false</tt>, "incorrect syntax" will be sent to the player
@@ -87,16 +88,24 @@ public class ComplexCommand extends OlympaCommand {
 		for (int i = 1; i < args.length; i++) {
 			String arg = args[i];
 			String type = i > cmd.args().length ? "" : cmd.args()[i - 1];
+			Object result = null;
 			if (type.equals("PLAYERS")) {
 				Player target = Bukkit.getPlayerExact(arg);
 				if (target == null) {
 					this.sendUnknownPlayer(arg);
 					return true;
 				}
-				argsCmd[i - 1] = target;
+				result = target;
+			}else if (type.equals("DOUBLE")) {
+				try {
+					result = Double.parseDouble(arg);
+				}catch (NumberFormatException e) {
+					sendError(arg + " doit être un nombre.");
+				}
 			} else {
-				argsCmd[i - 1] = arg;
+				result = arg;
 			}
+			argsCmd[i - 1] = result;
 		}
 
 		try {
@@ -139,6 +148,8 @@ public class ComplexCommand extends OlympaCommand {
 			String key = needed[index];
 			if (key.equals("PLAYERS")) {
 				return null;
+			}else if (key.equals("DOUBLE")) {
+				return Collections.EMPTY_LIST;
 			} else {
 				find.addAll(Arrays.asList(key.split("\\|")));
 			}
