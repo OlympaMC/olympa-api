@@ -11,6 +11,7 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.permission.OlympaPermission;
 
 public class OlympaPlayerObject implements OlympaPlayer {
@@ -273,6 +274,11 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public boolean isPremium() {
 		return false;
+	}
+
+	@Override
+	public OlympaPlayerInformations getInformation() {
+		return null;
 	}
 
 }

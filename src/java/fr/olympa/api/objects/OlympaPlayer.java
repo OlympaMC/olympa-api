@@ -61,6 +61,8 @@ public interface OlympaPlayer {
 
 	Player getPlayer();
 
+	OlympaPlayerInformations getInformation();
+
 	UUID getPremiumUniqueId();
 
 	UUID getUniqueId();

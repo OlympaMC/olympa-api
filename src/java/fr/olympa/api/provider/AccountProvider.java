@@ -6,14 +6,19 @@ import java.util.Map;
 import java.util.UUID;
 
 import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.permission.OlympaAccount;
 
 public class AccountProvider implements OlympaAccount {
 
 	public static Map<UUID, OlympaPlayer> cache = new HashMap<>();
 
-	public static OlympaPlayer get(UUID uuid) {
-		return cache.get(uuid);
+	public static <T extends OlympaPlayer> T get(UUID uuid) {
+		return (T) cache.get(uuid);
+	}
+
+	public static OlympaPlayerInformations getPlayerInformations(long id) {
+		return null;
 	}
 
 	public static OlympaPlayer getFromDatabase(String name) throws SQLException {

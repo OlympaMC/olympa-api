@@ -64,7 +64,7 @@ public class OlympaPermission {
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProvider.get(player.getUniqueId()))).collect(Collectors.toSet());
+		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProvider.<OlympaPlayer>get(player.getUniqueId()))).collect(Collectors.toSet());
 		if (!playerswithPerm.isEmpty()) {
 			success.accept(playerswithPerm);
 		}
@@ -75,7 +75,7 @@ public class OlympaPermission {
 		Set<Player> playersWithNoPerm = new HashSet<>();
 		Set<Player> playersWithPerm = new HashSet<>();
 		players.stream().forEach(player -> {
-			if (this.hasPermission(AccountProvider.get(player.getUniqueId()))) {
+			if (this.hasPermission(AccountProvider.<OlympaPlayer>get(player.getUniqueId()))) {
 				playersWithPerm.add(player);
 			} else {
 				playersWithNoPerm.add(player);
@@ -115,7 +115,7 @@ public class OlympaPermission {
 	}
 
 	public boolean hasPermission(UUID uniqueId) {
-		return this.hasPermission(AccountProvider.get(uniqueId));
+		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {

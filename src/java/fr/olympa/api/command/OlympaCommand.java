@@ -84,7 +84,7 @@ public abstract class OlympaCommand {
 		return cmap;
 	}
 
-	public OlympaPlayer getOlympaPlayer() {
+	public <T extends OlympaPlayer> T getOlympaPlayer() {
 		return AccountProvider.get(this.player.getUniqueId());
 	}
 
