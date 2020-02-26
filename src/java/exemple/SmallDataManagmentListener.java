@@ -38,7 +38,7 @@ public class SmallDataManagmentListener implements Listener {
 			return;
 		}
 
-		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer);
+		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer, false);
 		loginevent.setJoinMessage("&7[&a+&7] %prefix%name");
 		Bukkit.getPluginManager().callEvent(loginevent);
 

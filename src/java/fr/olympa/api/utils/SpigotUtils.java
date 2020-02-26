@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
@@ -221,6 +222,16 @@ public class SpigotUtils {
 	public static boolean playerisIn(Player player, Location location) {
 		Location playerLocation = player.getLocation();
 		return playerLocation.getBlockX() == location.getBlockX() && (playerLocation.getBlockY() == location.getBlockY() || playerLocation.getBlockY() + 1 == location.getBlockY()) && playerLocation.getBlockZ() == location.getBlockZ();
+	}
+
+	private static char[] arrows = new char[] { '→', '↗', '↑', '↖', '←', '←', '↙', '↓', '↘', '→' };
+	public static char getDirectionToLocation(Player player, Location target) {
+		if (player.getWorld() != target.getWorld()) return 'x';
+		Vector vector = target.toVector().subtract(player.getLocation().toVector());
+		Vector playerDirection = player.getEyeLocation().getDirection();
+		double angle = vector.angle(playerDirection);
+		int angleOverPI5 = (int) Math.floor(angle / (Math.PI / 5));
+		return arrows[angleOverPI5];
 	}
 
 }

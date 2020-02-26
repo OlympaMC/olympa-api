@@ -45,6 +45,14 @@ public class Scoreboard {
 		return sb;
 	}
 	
+	public void addLine(ScoreboardLine<?> line) {
+		Line<?> sline = new Line<>(line);
+		lines.add(sline);
+		int lastLineIndex = 0;
+		if (lines.size() != 1) lastLineIndex = lines.get(lines.size() - 2).lastLineIndex() + 1;
+		sline.setLines(lastLineIndex);
+	}
+
 	public void unload(){
 		if (sb != null) sb.destroy();
 		if (runnable != null) runnable.cancel();

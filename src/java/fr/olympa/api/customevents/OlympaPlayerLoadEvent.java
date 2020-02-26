@@ -1,13 +1,13 @@
 package fr.olympa.api.customevents;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.utils.SpigotUtils;
 
-public class OlympaPlayerLoadEvent extends PlayerEvent {
+public class OlympaPlayerLoadEvent extends Event {
 
 	public static final HandlerList handlers = new HandlerList();
 
@@ -16,11 +16,13 @@ public class OlympaPlayerLoadEvent extends PlayerEvent {
 	}
 
 	final private OlympaPlayer olympaPlayer;
+	final private Player player;
 
 	private String joinMessage;
 
-	public OlympaPlayerLoadEvent(Player who, OlympaPlayer olympaPlayer) {
-		super(who);
+	public OlympaPlayerLoadEvent(Player who, OlympaPlayer olympaPlayer, boolean async) {
+		super(async);
+		this.player = who;
 		this.olympaPlayer = olympaPlayer;
 	}
 
@@ -33,8 +35,12 @@ public class OlympaPlayerLoadEvent extends PlayerEvent {
 		return this.joinMessage;
 	}
 
-	public OlympaPlayer getOlympaPlayer() {
-		return this.olympaPlayer;
+	public Player getPlayer() {
+		return player;
+	}
+
+	public <T extends OlympaPlayer> T getOlympaPlayer() {
+		return (T) this.olympaPlayer;
 	}
 
 	/**

@@ -4,6 +4,8 @@ import fr.olympa.api.objects.OlympaPlayer;
 
 public class FixedLine extends ScoreboardLine<OlympaPlayer> {
 
+	public static final FixedLine EMPTY_LINE = new FixedLine("");
+
 	private String value;
 
 	public FixedLine(String value) {

@@ -8,7 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.gui.old.OlympaGui;
 import fr.olympa.api.utils.SpigotUtils;
 
 public abstract class OlympaGUI implements InventoryHolder {
@@ -60,9 +59,9 @@ public abstract class OlympaGUI implements InventoryHolder {
 	}
 
 	/**
-	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, CustomInventory, OlympaGui)}
+	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, OlympaGUI)}
 	 * @param p Player
-	 * @see Inventories#create(Player, CustomInventory)
+	 * @see Inventories#create(Player, OlympaGUI)
 	 */
 	public final void create(Player p) {
 		Inventories.create(p, this);
