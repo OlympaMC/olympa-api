@@ -81,10 +81,10 @@ public class OlympaPermission {
 				playersWithNoPerm.add(player);
 			}
 		});
-		if (!playersWithPerm.isEmpty()) {
+		if (!playersWithPerm.isEmpty() && success != null) {
 			success.accept(playersWithPerm);
 		}
-		if (!playersWithNoPerm.isEmpty()) {
+		if (!playersWithNoPerm.isEmpty() && noPerm != null) {
 			noPerm.accept(playersWithPerm);
 		}
 	}

@@ -81,7 +81,7 @@ public class Reflection {
 	}
 
 	// Get a Fields who is an Array
-	public static ArrayList<Field> getArraysFields(Object instance, Class<?> fieldType) throws Exception {
+	public static ArrayList<Field> getArraysFields(Object instance, Class<?> fieldType) throws ReflectiveOperationException {
 		String[] values = fieldType.toString().split(" ");
 		String fieldName = values[values.length - 1];
 		Field[] fields = instance.getClass().getDeclaredFields();
@@ -137,7 +137,7 @@ public class Reflection {
 		return field;
 	}
 
-	public static ArrayList<Field> getFields(Object instance, Class<?> fieldType) throws Exception {
+	public static ArrayList<Field> getFields(Object instance, Class<?> fieldType) throws ReflectiveOperationException {
 		Field[] fields = instance.getClass().getDeclaredFields();
 		ArrayList<Field> fieldArrayList = new ArrayList<>();
 		for (Field field : fields) {
@@ -161,13 +161,13 @@ public class Reflection {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Object getFieldValue(Object instance, Class clazz, String fieldName) throws Exception {
+	public static Object getFieldValue(Object instance, Class clazz, String fieldName) throws ReflectiveOperationException {
 		Field field = clazz.getDeclaredField(fieldName);
 		field.setAccessible(true);
 		return field.get(instance);
 	}
 
-	public static Object getFieldValue(Object instance, String fieldName) throws Exception {
+	public static Object getFieldValue(Object instance, String fieldName) throws ReflectiveOperationException {
 		Field field = instance.getClass().getDeclaredField(fieldName);
 		field.setAccessible(true);
 		return field.get(instance);
@@ -191,12 +191,12 @@ public class Reflection {
 		return getTypedMethod(getClass(className), methodName, null, params);
 	}
 
-	public static Object getNmsPlayer(Player p) throws Exception {
+	public static Object getNmsPlayer(Player p) throws ReflectiveOperationException {
 		Method getHandle = p.getClass().getMethod("getHandle");
 		return getHandle.invoke(p);
 	}
 
-	public static Object getNmsScoreboard(Scoreboard s) throws Exception {
+	public static Object getNmsScoreboard(Scoreboard s) throws ReflectiveOperationException {
 		Method getHandle = s.getClass().getMethod("getHandle");
 		return getHandle.invoke(s);
 	}
@@ -205,7 +205,7 @@ public class Reflection {
 		return Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 	}
 
-	public static Object getPlayerConnection(Player player) throws Exception {
+	public static Object getPlayerConnection(Player player) throws ReflectiveOperationException {
 		Object nmsPlayer = getNmsPlayer(player);
 		return nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
 	}
@@ -261,11 +261,11 @@ public class Reflection {
 		}
 	}
 
-	public static void sendMessage(Player p, Object message) throws Exception {
+	/*public static void sendMessage(Player p, Object message) throws Exception { // quel intérêt ??
 		Object nmsPlayer = getNmsPlayer(p);
 		nmsPlayer.getClass().getMethod("sendMessage", Reflection.getClass(ClassEnum.NMS, "IChatBaseComponent")).invoke(nmsPlayer, message);
-
-	}
+	
+	}*/
 
 	public static void sendPacket(Collection<? extends Player> players, Object packet) {
 		if (packet == null) {

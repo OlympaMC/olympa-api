@@ -224,14 +224,20 @@ public class SpigotUtils {
 		return playerLocation.getBlockX() == location.getBlockX() && (playerLocation.getBlockY() == location.getBlockY() || playerLocation.getBlockY() + 1 == location.getBlockY()) && playerLocation.getBlockZ() == location.getBlockZ();
 	}
 
-	private static char[] arrows = new char[] { '→', '↗', '↑', '↖', '←', '←', '↙', '↓', '↘', '→' };
+	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
+	private static final double piOver16 = Math.PI / 16D;
+	private static final double pi2 = Math.PI * 2;
 	public static char getDirectionToLocation(Player player, Location target) {
 		if (player.getWorld() != target.getWorld()) return 'x';
-		Vector vector = target.toVector().subtract(player.getLocation().toVector());
-		Vector playerDirection = player.getEyeLocation().getDirection();
-		double angle = vector.angle(playerDirection);
-		int angleOverPI5 = (int) Math.floor(angle / (Math.PI / 5));
-		return arrows[angleOverPI5];
+		Location source = player.getLocation();
+		Vector inBetween = target.clone().subtract(source).toVector();
+		Vector lookVec = source.getDirection();
+
+		double angleDir = (Math.atan2(inBetween.getZ(), inBetween.getX()));
+		double angleLook = (Math.atan2(lookVec.getZ(), lookVec.getX()));
+
+		double angle = ((angleDir - angleLook + pi2) % pi2) / 2;
+		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
 }
