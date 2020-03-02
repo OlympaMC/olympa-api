@@ -20,6 +20,8 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.region.Cuboid;
+import fr.olympa.api.region.Region;
 import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
@@ -94,11 +96,11 @@ public class SpigotUtils {
 		return locations;
 	}
 
-	public static Cuboid getCuboid(ConfigurationSection section, String key) {
+	public static Region getCuboid(ConfigurationSection section, String key) {
 		if (section != null) {
 			Location loc1 = convertStringToLocation(section.getString(key + ".pos1"));
 			Location loc2 = convertStringToLocation(section.getString(key + ".pos2"));
-			Cuboid cuboid = new Cuboid(loc1, loc2);
+			Region cuboid = new Cuboid(loc1, loc2);
 			return cuboid;
 		}
 		return null;
