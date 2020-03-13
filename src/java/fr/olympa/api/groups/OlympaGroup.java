@@ -1,13 +1,15 @@
 package fr.olympa.api.groups;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import fr.olympa.api.objects.OlympaServer;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
-
+	
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c"),
 	ADMIN(2, 95, OlympaServer.ALL, "Admin", "Admine", "&4%rank ", ":&r"),
 	ADMIN_SYS(4, 90, OlympaServer.ALL, "SysAdmin", "SysAdmin", "&3%rank ", ":&r"),
@@ -27,7 +29,7 @@ public enum OlympaGroup {
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&e%rank ", ":&r"),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":"),
 	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
-
+	
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -37,7 +39,7 @@ public enum OlympaGroup {
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
 	}
-
+	
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -47,7 +49,7 @@ public enum OlympaGroup {
 	public static OlympaGroup getByName(String name) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> Utils.equalsIgnoreCase(group.getName(), name)).findFirst().orElse(null);
 	}
-
+	
 	final int id;
 	final int power;
 	final OlympaServer server;
@@ -55,7 +57,7 @@ public enum OlympaGroup {
 	final String nameFem;
 	final String prefix;
 	final String chatSufix;
-
+	
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix) {
 		this.id = id;
 		this.power = power;
@@ -65,19 +67,23 @@ public enum OlympaGroup {
 		this.prefix = SpigotUtils.color(prefix.replaceFirst("%rank", this.name));
 		this.chatSufix = SpigotUtils.color(chatSufix);
 	}
-
+	
+	public Set<OlympaGroup> getAllGroups() {
+		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= this.getPower()).collect(Collectors.toSet());
+	}
+	
 	public String getChatSufix() {
 		return this.chatSufix;
 	}
-
+	
 	public int getId() {
 		return this.id;
 	}
-
+	
 	public String getName() {
 		return this.name;
 	}
-
+	
 	public int getPower() {
 		return this.power;
 	}
@@ -85,7 +91,7 @@ public enum OlympaGroup {
 	public String getPrefix() {
 		return this.prefix;
 	}
-
+	
 	public OlympaServer getServer() {
 		return this.server;
 	}
