@@ -1,4 +1,4 @@
-package fr.olympa.api.localdata;
+package fr.olympa.api.utils;
 
 import java.io.File;
 
