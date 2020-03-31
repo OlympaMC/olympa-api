@@ -11,9 +11,9 @@ public class PlayerLocalData {
 		String worldName = Bukkit.getWorlds().get(0).getName();
 		String playerUuid = player.getUniqueId().toString();
 		String path = Bukkit.getServer().getWorldContainer().getPath() + "/" + worldName;
-		new File(path + "/" + worldName + "/playerdata/" + playerUuid + ".dat").delete();
-		new File(path + "/" + worldName + "/advancements/" + playerUuid + ".json").delete();
-		File stats = new File(path + "/" + worldName + "/stats/" + playerUuid + ".json");
+		new File(path + "/playerdata/" + playerUuid + ".dat").delete();
+		new File(path + "/advancements/" + playerUuid + ".json").delete();
+		File stats = new File(path + "/stats/" + playerUuid + ".json");
 		if (stats.exists()) {
 			stats.delete();
 		}

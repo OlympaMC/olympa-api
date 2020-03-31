@@ -28,31 +28,32 @@ public class ReflectCommand extends Command {
 
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
-		this.exe.sender = sender;
+		exe.sender = sender;
 		if (sender instanceof Player) {
-			this.exe.player = (Player) sender;
-			if (this.exe.permission != null) {
-				if (!this.exe.hasPermission()) {
-					if (this.exe.getOlympaPlayer() == null) {
-						this.exe.sendImpossibleWithOlympaPlayer();
+			exe.player = (Player) sender;
+			if (exe.permission != null) {
+				if (!exe.hasPermission()) {
+					if (exe.getOlympaPlayer() == null) {
+						exe.sendImpossibleWithOlympaPlayer();
 					} else {
-						this.exe.sendDoNotHavePermission();
+						exe.sendDoNotHavePermission();
 					}
 					return false;
 				}
 			}
-		} else if (!this.exe.allowConsole) {
-			this.exe.sendImpossibleWithConsole();
+		} else if (!exe.allowConsole) {
+			exe.sendImpossibleWithConsole();
 			return false;
 		}
-		if (args.length < this.exe.minArg) {
-			this.exe.sendUsage(label);
+		if (args.length < exe.minArg) {
+			exe.sendUsage(label);
 			return false;
 		}
-		if (!this.exe.isAsynchronous) {
-			return this.exe.onCommand(sender, this, label, args);
+		if (!exe.isAsynchronous) {
+			return exe.onCommand(sender, this, label, args);
 		} else {
-			OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> this.exe.onCommand(sender, this, label, args));
+			OlympaCore.getInstance().getTask()
+					.runTaskAsynchronously(() -> exe.onCommand(sender, this, label, args));
 			return true;
 		}
 	}
@@ -64,31 +65,33 @@ public class ReflectCommand extends Command {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
 		if (sender instanceof Player) {
-			if (!this.exe.hasPermission()) {
-				if (this.exe.getOlympaPlayer() == null) {
-					this.exe.sendImpossibleWithOlympaPlayer();
+			if (!exe.hasPermission()) {
+				if (exe.getOlympaPlayer() == null) {
+					exe.sendImpossibleWithOlympaPlayer();
 				} else {
-					this.exe.sendDoNotHavePermission();
+					exe.sendDoNotHavePermission();
 				}
 				return null;
 			}
-		} else if (!this.exe.allowConsole) {
-			this.exe.sendImpossibleWithConsole();
+		} else if (!exe.allowConsole) {
+			exe.sendImpossibleWithConsole();
 			return null;
 		}
-		Collection<List<String>> defaultArgs = this.exe.args.values();
+		Collection<List<String>> defaultArgs = exe.args.values();
 		if (!defaultArgs.isEmpty()) {
 			Iterator<List<String>> iterator = defaultArgs.iterator();
-			List<String> getArgs;
+			List<String> getArgs = null;
 			List<String> potentialArgs = new ArrayList<>();
-			int i = 1;
-			do {
+			int i = 0;
+			while (iterator.hasNext()) {
 				getArgs = iterator.next();
-			} while (++i < args.length && defaultArgs.size() <= i);
-			if (args.length == i) {
+				i++;
+			}
+			if (args.length == i && getArgs != null) {
 				for (String argss : getArgs) {
 					if (argss.equalsIgnoreCase("joueur")) {
-						potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+						potentialArgs.addAll(
+								Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 					} else {
 						potentialArgs.add(argss);
 					}
@@ -97,7 +100,7 @@ public class ReflectCommand extends Command {
 				return Utils.startWords(args[i - 1], getArgs);
 			}
 		}
-		return this.exe.onTabComplete(sender, this, alias, args);
+		return exe.onTabComplete(sender, this, alias, args);
 	}
 
 }

@@ -85,19 +85,19 @@ public abstract class OlympaCommand {
 	}
 
 	public <T extends OlympaPlayer> T getOlympaPlayer() {
-		return AccountProvider.get(this.player.getUniqueId());
+		return AccountProvider.get(player.getUniqueId());
 	}
 
 	public Player getPlayer() {
-		return this.player;
+		return player;
 	}
 
 	public boolean hasPermission() {
-		return this.hasPermission(this.permission);
+		return this.hasPermission(permission);
 	}
 
 	public boolean hasPermission(OlympaPermission perm) {
-		if (perm == null || this.player == null) {
+		if (perm == null || player == null) {
 			return true;
 		}
 		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
@@ -123,21 +123,22 @@ public abstract class OlympaCommand {
 	public abstract List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args);
 
 	public void register() {
-		this.usageString = this.args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[") + String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
-		this.minArg = (int) this.args.entrySet().stream().filter(entry -> entry.getKey()).count();
-		ReflectCommand reflectCommand = new ReflectCommand(this.command);
-		if (this.alias != null) {
-			reflectCommand.setAliases(this.alias);
+		usageString = args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[")
+				+ String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
+		minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
+		ReflectCommand reflectCommand = new ReflectCommand(command);
+		if (alias != null) {
+			reflectCommand.setAliases(alias);
 		}
-		if (this.description != null) {
-			reflectCommand.setDescription(this.description);
+		if (description != null) {
+			reflectCommand.setDescription(description);
 		}
 		reflectCommand.setExecutor(this);
-		this.getCommandMap().register(new String(), reflectCommand);
+		getCommandMap().register("Olympa", reflectCommand);
 	}
 
 	public void sendDoNotHavePermission() {
-		this.sendError("Tu n'as pas la permission &l(◑_◑)");
+		sendError("Tu n'as pas la permission &l(◑_◑)");
 	}
 
 	public void sendError(String message) {
@@ -145,23 +146,23 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendImpossibleWithConsole() {
-		this.sendError("Impossible avec la console.");
+		sendError("Impossible avec la console.");
 	}
 
 	public void sendImpossibleWithOlympaPlayer() {
-		this.sendError("Une erreur est survenu avec tes donnés.");
+		sendError("Une erreur est survenu avec tes donnés.");
 	}
 
 	public void sendIncorrectSyntax() {
-		this.sendError("Syntaxe incorrecte.");
+		sendError("Syntaxe incorrecte.");
 	}
 
 	public void sendIncorrectSyntax(String correctSyntax) {
-		this.sendError("Syntaxe attendue : &o" + correctSyntax);
+		sendError("Syntaxe attendue : &o" + correctSyntax);
 	}
 
 	public void sendMessage(BaseComponent... text) {
-		this.player.spigot().sendMessage(text);
+		player.spigot().sendMessage(text);
 	}
 
 	public void sendMessage(CommandSender sender, Prefix prefix, String text) {
@@ -172,12 +173,19 @@ public abstract class OlympaCommand {
 		sender.sendMessage(SpigotUtils.color(text));
 	}
 
+	public void sendMessage(List<? extends CommandSender> senders, Prefix prefix, String text) {
+		text = SpigotUtils.color(text);
+		for (CommandSender sender : senders) {
+			sender.sendMessage(text);
+		}
+	}
+
 	public void sendMessage(Prefix prefix, String text) {
-		this.sendMessage(this.sender, prefix, text);
+		this.sendMessage(sender, prefix, text);
 	}
 
 	public void sendMessage(String text) {
-		this.sendMessage(this.sender, text);
+		this.sendMessage(sender, text);
 	}
 
 	public void sendMessageToAll(Prefix prefix, String text) {
@@ -194,12 +202,17 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendUnknownPlayer(String name) {
-		this.sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
+		sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
 		// TODO check historique player
 	}
 
 	public void sendUsage(String label) {
-		this.sendMessage(Prefix.USAGE, "/" + label + " " + this.usageString);
+		this.sendMessage(Prefix.USAGE, "/" + label + " " + usageString);
+	}
+
+	public void sendUsage(String label, String arg0) {
+		// TODO add usage arg0
+		this.sendMessage(Prefix.USAGE, "/" + label + " " + arg0 + " " + "");
 	}
 
 	public void setAllowConsole(boolean allowConsole) {
