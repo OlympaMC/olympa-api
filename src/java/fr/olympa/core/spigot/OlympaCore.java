@@ -5,10 +5,10 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.plugin.OlympaAPIPlugin;
+import fr.olympa.api.plugin.OlympaSpigot;
 
 // Ceci est un faux ficher qui récupère quelques donnés du Core dans l'API
-public class OlympaCore extends OlympaAPIPlugin {
+public class OlympaCore extends OlympaSpigot {
 
 	private static OlympaCore instance;
 
