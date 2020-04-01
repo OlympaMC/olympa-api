@@ -19,11 +19,11 @@ public enum MaintenanceStatus {
 	UNKNOWN("Inconnu", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
 
 	public static MaintenanceStatus get(String name) {
-		return Arrays.stream(values()).filter(status -> status.name.equalsIgnoreCase(name)).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
 	}
 
 	public static MaintenanceStatus getByCommandArg(String commandArg) {
-		return Arrays.stream(values()).filter(status -> status.commandArg != null && status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.getCommandArg() != null && status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
 	}
 
 	public static List<String> getNames() {
@@ -43,22 +43,22 @@ public enum MaintenanceStatus {
 	}
 
 	public ChatColor getColor() {
-		return this.color;
+		return color;
 	}
 
 	public String getCommandArg() {
-		return this.commandArg;
+		return commandArg;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public String getNameColored() {
-		return this.color + this.name;
+		return color + name;
 	}
 
 	public OlympaPermission getPermission() {
-		return this.permission;
+		return permission;
 	}
 }

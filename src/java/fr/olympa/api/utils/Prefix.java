@@ -9,6 +9,7 @@ public enum Prefix {
 	DEFAULT("&6%serverName &7%symbole "),
 	DEFAULT_BAD("&6%serverName &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED),
 	DEFAULT_GOOD("&6%serverName &7%symbole &a", ChatColor.GREEN, ChatColor.DARK_GREEN),
+	FACTION("&6Faction &7%symbole &a", ChatColor.YELLOW, ChatColor.GREEN),
 	BAD("&c✕ ", ChatColor.RED, ChatColor.DARK_RED),
 	ERROR("&c⚠ ", ChatColor.RED, ChatColor.DARK_RED),
 	INFO("&6INFO &6%symbole &e", ChatColor.YELLOW, ChatColor.GOLD),
@@ -40,15 +41,15 @@ public enum Prefix {
 	}
 
 	public ChatColor getColor() {
-		return this.color;
+		return color;
 	}
 
 	public ChatColor getColor2() {
-		return this.color2;
+		return color2;
 	}
 
 	public void sendMessage(CommandSender sender, String msg) {
-		sender.sendMessage(SpigotUtils.color(this.prefix + msg));
+		sender.sendMessage(SpigotUtils.color(prefix + msg));
 	}
 
 	private void setPrefix(final String prefix) {
@@ -57,10 +58,10 @@ public enum Prefix {
 
 	@Override
 	public String toString() {
-		return SpigotUtils.color(this.prefix);
+		return SpigotUtils.color(prefix);
 	}
 
 	public String toStringWithoutFormat() {
-		return this.prefix;
+		return prefix;
 	}
 }

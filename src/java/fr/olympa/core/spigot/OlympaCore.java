@@ -10,28 +10,28 @@ import fr.olympa.api.plugin.OlympaSpigot;
 // Ceci est un faux ficher qui récupère quelques donnés du Core dans l'API
 public class OlympaCore extends OlympaSpigot {
 
-	private static OlympaCore instance;
+    private static OlympaCore instance;
 
-	public static OlympaCore getInstance() {
-		return instance;
-	}
+    public static OlympaCore getInstance() {
+	return instance;
+    }
 
-	@Override
-	public void onDisable() {
-		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
-	}
+    @Override
+    public void onDisable() {
+	this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion()+ ") is disabled.");
+    }
 
-	@Override
-	public void onEnable() {
-		instance = this;
+    @Override
+    public void onEnable() {
+	instance = this;
 
-		PluginManager pluginManager = this.getServer().getPluginManager();
-		pluginManager.registerEvents(new Inventories(), this);
+	PluginManager pluginManager = this.getServer().getPluginManager();
+	pluginManager.registerEvents(new Inventories(), this);
 
-		Messenger messenger = this.getServer().getMessenger();
-		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
-		new SpigotBPMCEvent().register(this);
+	Messenger messenger = this.getServer().getMessenger();
+	messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+	new SpigotBPMCEvent().register(this);
 
-		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is activated.");
-	}
+	this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion()+ ") is activated.");
+    }
 }
