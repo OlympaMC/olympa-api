@@ -10,4 +10,7 @@ public interface OlympaPlayerInformations {
 
 	public UUID getUUID();
 
+	@Override
+	public boolean equals(Object obj);
+	
 }
