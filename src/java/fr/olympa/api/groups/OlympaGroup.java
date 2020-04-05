@@ -9,12 +9,11 @@ import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
-	
+
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c"),
 	ADMIN(2, 95, OlympaServer.ALL, "Admin", "Admine", "&4%rank ", ":&r"),
-	ADMIN_SYS(4, 90, OlympaServer.ALL, "SysAdmin", "SysAdmin", "&3%rank ", ":&r"),
-	RESP_TECH(5, 85, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
-	MODP(6, 80, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
+	MODP(6, 85, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
+	RESP_TECH(5, 80, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
 	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
 	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
 	RESP_STAFF(9, 65, OlympaServer.ALL, "RespStaff", "RespStaff", "&c%rank ", ":&r"),
@@ -29,7 +28,7 @@ public enum OlympaGroup {
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&e%rank ", ":&r"),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":"),
 	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
-	
+
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -39,7 +38,7 @@ public enum OlympaGroup {
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
 	}
-	
+
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -49,7 +48,7 @@ public enum OlympaGroup {
 	public static OlympaGroup getByName(String name) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> Utils.equalsIgnoreCase(group.getName(), name)).findFirst().orElse(null);
 	}
-	
+
 	final int id;
 	final int power;
 	final OlympaServer server;
@@ -57,7 +56,7 @@ public enum OlympaGroup {
 	final String nameFem;
 	final String prefix;
 	final String chatSufix;
-	
+
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix) {
 		this.id = id;
 		this.power = power;
@@ -67,32 +66,32 @@ public enum OlympaGroup {
 		this.prefix = SpigotUtils.color(prefix.replaceFirst("%rank", this.name));
 		this.chatSufix = SpigotUtils.color(chatSufix);
 	}
-	
+
 	public Set<OlympaGroup> getAllGroups() {
-		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= this.getPower()).collect(Collectors.toSet());
+		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= getPower()).collect(Collectors.toSet());
 	}
-	
+
 	public String getChatSufix() {
-		return this.chatSufix;
+		return chatSufix;
 	}
-	
+
 	public int getId() {
-		return this.id;
+		return id;
 	}
-	
+
 	public String getName() {
-		return this.name;
+		return name;
 	}
-	
+
 	public int getPower() {
-		return this.power;
+		return power;
 	}
 
 	public String getPrefix() {
-		return this.prefix;
+		return prefix;
 	}
-	
+
 	public OlympaServer getServer() {
-		return this.server;
+		return server;
 	}
 }

@@ -1,6 +1,7 @@
 package fr.olympa.api.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +78,11 @@ public class ReflectCommand extends Command {
 			exe.sendImpossibleWithConsole();
 			return null;
 		}
+		List<String> customResponse = exe.onTabComplete(sender, this, alias, args);
+		if (customResponse != null) {
+			return customResponse;
+		}
+
 		Collection<List<String>> defaultArgs = exe.args.values();
 		if (!defaultArgs.isEmpty()) {
 			Iterator<List<String>> iterator = defaultArgs.iterator();
@@ -89,18 +95,23 @@ public class ReflectCommand extends Command {
 			}
 			if (args.length == i && getArgs != null) {
 				for (String argss : getArgs) {
-					if (argss.equalsIgnoreCase("joueur")) {
-						potentialArgs.addAll(
-								Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
-					} else {
+					switch (argss.toLowerCase()) {
+					case "joueur":
+						potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+						break;
+					case "time":
+						potentialArgs.addAll(Arrays.asList("1h", "2h", "4h", "6h", "12h", "1jour", "2jours", "3jours", "1semaine", "2semaines", "1mois", "1an"));
+						break;
+					default:
 						potentialArgs.add(argss);
+						break;
 					}
 				}
 
-				return Utils.startWords(args[i - 1], getArgs);
+				return Utils.startWords(args[i - 1], potentialArgs);
 			}
 		}
-		return exe.onTabComplete(sender, this, alias, args);
+		return null;
 	}
 
 }

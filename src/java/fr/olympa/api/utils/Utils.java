@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -50,11 +51,6 @@ public class Utils {
 		Collections.shuffle(list);
 		return list;
 	});
-
-	public static void registerConfigurationSerializable() {
-		ConfigurationSerialization.registerClass(Cuboid.class);
-		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
-	}
 
 	public static long addTimeToCurrentTime(int field, int amount) {
 		Calendar calendar = Calendar.getInstance();
@@ -214,6 +210,14 @@ public class Utils {
 		return list.get(new Random().nextInt(list.size()));
 	}
 
+	public static UUID getUUID(String uuid) {
+		return UUID.fromString(uuid.contains("-") ? uuid : uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+	}
+
+	public static String getUUIDString(UUID uuid) {
+		return uuid.toString().replaceAll("-", "");
+	}
+
 	public static String insertChar(String string, String insert) {
 		StringBuilder builder = new StringBuilder(string);
 		int index = 0;
@@ -254,6 +258,11 @@ public class Utils {
 
 	public static float nextFloat(Random random, float min, float max) {
 		return min + random.nextFloat() * (max - min);
+	}
+
+	public static void registerConfigurationSerializable() {
+		ConfigurationSerialization.registerClass(Cuboid.class);
+		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
 	}
 
 	public static String removeAccents(String text) {

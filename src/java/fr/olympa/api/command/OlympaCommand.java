@@ -123,8 +123,7 @@ public abstract class OlympaCommand {
 	public abstract List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args);
 
 	public void register() {
-		usageString = args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[")
-				+ String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
+		usageString = args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[") + String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
 		minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
 		ReflectCommand reflectCommand = new ReflectCommand(command);
 		if (alias != null) {

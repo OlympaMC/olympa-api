@@ -12,6 +12,6 @@ public class OlympaAPIPermission {
 	public static final OlympaPermission CONNECT_SERVER_BUILDER = new OlympaPermission(new OlympaGroup[] { OlympaGroup.BUILDER }, OlympaGroup.RESP_TECH);
 	public static final OlympaPermission EXEMPLE_NYAN = new OlympaPermission(OlympaGroup.FRIEND);
 
-	public static final OlympaPermission EXEMPLE_COMMAND = new OlympaPermission(OlympaGroup.ADMIN_SYS);
+	public static final OlympaPermission EXEMPLE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
 
 }
