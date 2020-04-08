@@ -51,6 +51,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public long getDiscordId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public String getEmail() {
 		// TODO Auto-generated method stub
 		return null;
@@ -158,6 +164,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public long getTeamspeakId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
 		return null;
@@ -236,6 +248,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public void setDiscordId(long discordId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void setEmail(String email) {
 		// TODO Auto-generated method stub
 
@@ -291,6 +309,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setPremiumUniqueId(UUID premium_uuid) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setTeamspeakId(long teamspeakId) {
 		// TODO Auto-generated method stub
 
 	}

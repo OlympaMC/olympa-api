@@ -23,6 +23,8 @@ public interface OlympaPlayer {
 
 	OlympaPlayer clone();
 
+	long getDiscordId();
+
 	String getEmail();
 
 	long getFirstConnection();
@@ -59,6 +61,8 @@ public interface OlympaPlayer {
 
 	OlympaMoney getStoreMoney();
 
+	long getTeamspeakId();
+
 	UUID getUniqueId();
 
 	boolean hasPermission(OlympaPermission permission);
@@ -87,6 +91,8 @@ public interface OlympaPlayer {
 
 	void setConnected(boolean connected);
 
+	void setDiscordId(long discordId);
+
 	void setEmail(String email);
 
 	void setGender(Gender gender);
@@ -106,6 +112,8 @@ public interface OlympaPlayer {
 	void setPassword(String password);
 
 	void setPremiumUniqueId(UUID premium_uuid);
+
+	void setTeamspeakId(long teamspeakId);
 
 	void setVanish(boolean vanish);
 

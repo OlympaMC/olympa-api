@@ -50,16 +50,16 @@ public class OlympaPermission {
 	}
 
 	public OlympaPermission(OlympaGroup... groups_allowGroup) {
-		this.groups_allow = groups_allowGroup;
+		groups_allow = groups_allowGroup;
 	}
 
 	public OlympaPermission(OlympaGroup[] groups_allowGroup, OlympaGroup min_group) {
 		this.min_group = min_group;
-		this.groups_allow = groups_allowGroup;
+		groups_allow = groups_allowGroup;
 	}
 
 	public OlympaGroup getGroup() {
-		return this.min_group;
+		return min_group;
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
@@ -91,23 +91,19 @@ public class OlympaPermission {
 
 	public boolean hasPermission(CommandSender sender) {
 		if (sender instanceof Player) {
-			return this.hasPermission((Player) sender);
+			return this.hasPermission(((Player) sender).getUniqueId());
 		}
 		return true;
 	}
 
 	public boolean hasPermission(OlympaGroup group) {
-		return this.min_group != null && group.getPower() >= this.min_group.getPower()
-				|| this.groups_allow != null && Arrays.stream(this.groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
+		return min_group != null && group.getPower() >= min_group.getPower()
+				|| groups_allow != null && Arrays.stream(groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
 
 	}
 
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups());
-	}
-
-	public boolean hasPermission(Player player) {
-		return this.hasPermission(player.getUniqueId());
 	}
 
 	public boolean hasPermission(TreeMap<OlympaGroup, Long> groups) {
