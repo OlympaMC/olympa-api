@@ -2,6 +2,7 @@ package fr.olympa.api.provider;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -217,7 +218,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void loadDatas(ResultSet resultSet) {
+	public void loadDatas(ResultSet resultSet) throws SQLException {
 	}
 
 	@Override
@@ -232,7 +233,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void saveDatas(PreparedStatement statement) {
+	public void saveDatas(PreparedStatement statement) throws SQLException {
 	}
 
 	@Override

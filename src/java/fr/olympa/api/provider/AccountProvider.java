@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.objects.OlympaPlayerProvider;
 import fr.olympa.api.permission.OlympaAccount;
 
 public class AccountProvider implements OlympaAccount {
@@ -29,6 +30,10 @@ public class AccountProvider implements OlympaAccount {
 
 	public static OlympaPlayer getFromDatabase(UUID uuid) throws SQLException {
 		return null;
+	}
+
+	public static void setPlayerProvider(Class<? extends OlympaPlayerObject> playerClass, OlympaPlayerProvider supplier, String pluginName, Map<String, String> columns) {
+
 	}
 
 	public AccountProvider(UUID uuid) {
