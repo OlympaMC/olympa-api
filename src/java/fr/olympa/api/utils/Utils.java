@@ -41,6 +41,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import fr.olympa.api.region.ChunkCuboid;
 import fr.olympa.api.region.Cuboid;
 import fr.olympa.api.region.ExpandedCuboid;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -263,6 +264,7 @@ public class Utils {
 	public static void registerConfigurationSerializable() {
 		ConfigurationSerialization.registerClass(Cuboid.class);
 		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
+		ConfigurationSerialization.registerClass(ChunkCuboid.class);
 	}
 
 	public static String removeAccents(String text) {
