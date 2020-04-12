@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.NumberConversions;
 
@@ -25,8 +24,8 @@ public class ExpandedCuboid extends Cuboid {
 	}
 
 	@Override
-	public boolean isIn(Location loc) {
-		return loc.getWorld() == this.world && loc.getBlockX() >= this.xMin && loc.getBlockX() <= this.xMax && loc.getBlockZ() >= this.zMin && loc.getBlockZ() <= this.zMax;
+	public boolean isIn(World world, int x, int y, int z) {
+		return world == this.world && x >= this.xMin && x <= this.xMax && z >= this.zMin && z <= this.zMax;
 	}
 
 	@Override

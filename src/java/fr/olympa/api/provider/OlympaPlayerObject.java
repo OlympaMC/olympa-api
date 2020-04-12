@@ -21,6 +21,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private String name;
 	private String ip;
 	private long id;
+	private OlympaGroup group;
 
 	public OlympaPlayerObject(UUID uuid, String name, String ip, long id) {
 		this.uuid = uuid;
@@ -85,8 +86,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaGroup getGroup() {
-		// TODO Auto-generated method stub
-		return null;
+		return group;
 	}
 
 	@Override
@@ -276,8 +276,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setGroup(OlympaGroup group) {
-		// TODO Auto-generated method stub
-
+		this.group = group;
 	}
 
 	@Override

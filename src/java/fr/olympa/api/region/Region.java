@@ -9,15 +9,25 @@ import org.bukkit.entity.Player;
 
 public interface Region {
 
-	Iterator<Block> blockList();
+	Location getMin();
+
+	Location getMax();
 
 	Location getRandomLocation();
 
-	int getTotalBlockSize();
+	default Iterator<Block> blockList() {
+		return new RegionIterator(this);
+	}
 
-	boolean isIn(Location loc);
+	boolean isIn(World world, int x, int y, int z);
 
-	boolean isIn(Player player);
+	default boolean isIn(Location loc) {
+		return isIn(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+	}
+
+	default boolean isIn(Player player) {
+		return isIn(player.getLocation());
+	}
 
 	boolean isInWithMarge(Location loc, double marge);
 
