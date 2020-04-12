@@ -7,9 +7,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-public class ChunkCuboid extends ExpandedCuboid{
+public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 
-	private int xMaxExcluded, zMaxExcluded;
+	private int chunkXMin;
+	private int chunkZMin;
+	private int chunkXMax;
+	private int chunkZMax;
 	
 	/**
 	 * Region containing chunks from (xMin, zMin) to (xMax, zMax), chunk coordinates, included.
@@ -21,22 +24,24 @@ public class ChunkCuboid extends ExpandedCuboid{
 	 */
 	public ChunkCuboid(World world, int x1, int z1, int x2, int z2) {
 		super(world, x1*16, z1*16, x2*16, z2*16);
-		this.xMaxExcluded = super.xMax + 16;
-		this.zMaxExcluded = super.zMax + 16;
+		this.chunkXMin = super.xMin / 16;
+		this.chunkZMin = super.zMin / 16;
+		this.chunkXMax = super.xMax / 16;
+		this.chunkZMax = super.zMax / 16;
 	}
 	
 	public boolean isIn(Chunk chunk) {
-		return chunk.getWorld() == super.world && chunk.getX() >= super.xMin && chunk.getX() < xMaxExcluded && chunk.getZ() >= super.zMin && chunk.getZ() < zMaxExcluded;
+		return chunk.getWorld() == super.world && chunk.getX() >= chunkXMin && chunk.getX() <= chunkXMax && chunk.getZ() >= chunkZMin && chunk.getZ() <= chunkZMax;
 	}
 
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("world", world.getName());
-		map.put("chunkXMin", xMin);
-		map.put("chunkXMax", xMax);
-		map.put("chunkZMin", zMin);
-		map.put("chunkZMax", zMax);
+		map.put("chunkXMin", chunkXMin);
+		map.put("chunkXMax", chunkXMax);
+		map.put("chunkZMin", chunkZMin);
+		map.put("chunkZMax", chunkZMax);
 		return map;
 	}
 
