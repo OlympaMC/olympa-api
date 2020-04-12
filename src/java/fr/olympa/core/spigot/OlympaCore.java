@@ -6,6 +6,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.plugin.OlympaSpigot;
+import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
 
 // Ceci est un faux ficher qui récupère quelques donnés du Core dans l'API
 public class OlympaCore extends OlympaSpigot {
@@ -27,6 +28,7 @@ public class OlympaCore extends OlympaSpigot {
 
 	PluginManager pluginManager = this.getServer().getPluginManager();
 	pluginManager.registerEvents(new Inventories(), this);
+	pluginManager.registerEvents(new DataManagmentListener(), this);
 
 	Messenger messenger = this.getServer().getMessenger();
 	messenger.registerOutgoingPluginChannel(this, "BungeeCord");

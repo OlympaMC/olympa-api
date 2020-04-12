@@ -9,9 +9,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
 public class Cuboid implements Region, ConfigurationSerializable {
@@ -29,7 +27,7 @@ public class Cuboid implements Region, ConfigurationSerializable {
 	protected final double zMinCentered;
 	protected final double zMaxCentered;
 	protected final World world;
-	protected final Location center;
+	protected final Location center, min, max;
 
 	public Cuboid(final Location point1, final Location point2) {
 		this(point1.getWorld(), point1.getBlockX(), point1.getBlockY(), point1.getBlockZ(), point2.getBlockX(), point2.getBlockY(), point2.getBlockZ());
@@ -50,24 +48,22 @@ public class Cuboid implements Region, ConfigurationSerializable {
 		this.zMinCentered = this.zMin + 0.5;
 		this.zMaxCentered = this.zMax + 0.5;
 		this.center = new Location(this.world, (this.xMax - this.xMin) / 2 + this.xMin, (this.yMax - this.yMin) / 2 + this.yMin, (this.zMax - this.zMin) / 2 + this.zMin);
-	}
-
-	@Override
-	public Iterator<Block> blockList() {
-		final ArrayList<Block> bL = new ArrayList<>(this.getTotalBlockSize());
-		for(int x = this.xMin; x <= this.xMax; ++x) {
-			for(int y = this.yMin; y <= this.yMax; ++y) {
-				for(int z = this.zMin; z <= this.zMax; ++z) {
-					final Block b = this.world.getBlockAt(x, y, z);
-					bL.add(b);
-				}
-			}
-		}
-		return bL.iterator();
+		this.min = new Location(world, xMin, yMin, zMin);
+		this.max = new Location(world, xMax, yMax, zMax);
 	}
 
 	public Location getCenter() {
 		return center;
+	}
+
+	@Override
+	public Location getMin() {
+		return min;
+	}
+
+	@Override
+	public Location getMax() {
+		return max;
 	}
 
 	@Override
@@ -116,7 +112,6 @@ public class Cuboid implements Region, ConfigurationSerializable {
 		return new Location(this.world, x, y, z);
 	}
 
-	@Override
 	public int getTotalBlockSize() {
 		return this.getHeight() * this.getXWidth() * this.getZWidth();
 	}
@@ -130,14 +125,8 @@ public class Cuboid implements Region, ConfigurationSerializable {
 	}
 
 	@Override
-	public boolean isIn(final Location loc) {
-		return loc.getWorld() == this.world && loc.getBlockX() >= this.xMin && loc.getBlockX() <= this.xMax && loc.getBlockY() >= this.yMin && loc.getBlockY() <= this.yMax && loc
-				.getBlockZ() >= this.zMin && loc.getBlockZ() <= this.zMax;
-	}
-
-	@Override
-	public boolean isIn(final Player player) {
-		return this.isIn(player.getLocation());
+	public boolean isIn(World world, int x, int y, int z) {
+		return world == this.world && x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax && z >= this.zMin && z <= this.zMax;
 	}
 
 	@Override

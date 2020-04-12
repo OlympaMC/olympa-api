@@ -7,18 +7,21 @@ import java.util.UUID;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.objects.OlympaPlayerProvider;
 import fr.olympa.api.permission.OlympaAccount;
 
 public class AccountProvider implements OlympaAccount {
 
 	public static Map<UUID, OlympaPlayer> cache = new HashMap<>();
+	public static Map<Long, OlympaPlayerInformations> cachedInformations = new HashMap<>();
+	private UUID uuid;
 
 	public static <T extends OlympaPlayer> T get(UUID uuid) {
 		return (T) cache.get(uuid);
 	}
 
 	public static OlympaPlayerInformations getPlayerInformations(long id) {
-		return null;
+		return (OlympaPlayerInformations) cachedInformations.get(id);
 	}
 
 	public static OlympaPlayer getFromDatabase(String name) throws SQLException {
@@ -29,18 +32,22 @@ public class AccountProvider implements OlympaAccount {
 		return null;
 	}
 
+	public static void setPlayerProvider(Class<? extends OlympaPlayerObject> playerClass, OlympaPlayerProvider supplier, String pluginName, Map<String, String> columns) {
+
+	}
+
 	public AccountProvider(UUID uuid) {
+		this.uuid = uuid;
 	}
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		return null;
+		return new OlympaPlayerObject(uuid, name, ip, cache.size());
 	}
 
 	@Override
 	public OlympaPlayer get() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return AccountProvider.get(uuid);
 	}
 
 	@Override

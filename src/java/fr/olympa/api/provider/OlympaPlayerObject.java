@@ -2,6 +2,7 @@ package fr.olympa.api.provider;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -16,8 +17,17 @@ import fr.olympa.api.permission.OlympaPermission;
 
 public class OlympaPlayerObject implements OlympaPlayer {
 
-	public OlympaPlayerObject(UUID uuid, String name, String ip) {
-		// TODO Auto-generated constructor stub
+	private UUID uuid;
+	private String name;
+	private String ip;
+	private long id;
+	private OlympaGroup group;
+
+	public OlympaPlayerObject(UUID uuid, String name, String ip, long id) {
+		this.uuid = uuid;
+		this.name = name;
+		this.ip = ip;
+		this.id = id;
 	}
 
 	@Override
@@ -76,8 +86,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaGroup getGroup() {
-		// TODO Auto-generated method stub
-		return null;
+		return group;
 	}
 
 	@Override
@@ -125,7 +134,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public long getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return id;
 	}
 
 	@Override
@@ -136,7 +145,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public String getIp() {
 		// TODO Auto-generated method stub
-		return null;
+		return ip;
 	}
 
 	@Override
@@ -148,7 +157,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
@@ -166,7 +175,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getPremiumUniqueId() {
 		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
@@ -184,7 +193,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
@@ -229,7 +238,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void loadDatas(ResultSet resultSet) {
+	public void loadDatas(ResultSet resultSet) throws SQLException {
 	}
 
 	@Override
@@ -244,7 +253,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void saveDatas(PreparedStatement statement) {
+	public void saveDatas(PreparedStatement statement) throws SQLException {
 	}
 
 	@Override
@@ -279,8 +288,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setGroup(OlympaGroup group) {
-		// TODO Auto-generated method stub
-
+		this.group = group;
 	}
 
 	@Override
