@@ -17,8 +17,16 @@ import fr.olympa.api.permission.OlympaPermission;
 
 public class OlympaPlayerObject implements OlympaPlayer {
 
-	public OlympaPlayerObject(UUID uuid, String name, String ip) {
-		// TODO Auto-generated constructor stub
+	private UUID uuid;
+	private String name;
+	private String ip;
+	private long id;
+
+	public OlympaPlayerObject(UUID uuid, String name, String ip, long id) {
+		this.uuid = uuid;
+		this.name = name;
+		this.ip = ip;
+		this.id = id;
 	}
 
 	@Override
@@ -114,7 +122,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public long getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return id;
 	}
 
 	@Override
@@ -125,7 +133,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public String getIp() {
 		// TODO Auto-generated method stub
-		return null;
+		return ip;
 	}
 
 	@Override
@@ -137,7 +145,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
@@ -155,7 +163,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getPremiumUniqueId() {
 		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override
@@ -173,7 +181,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
-		return null;
+		return uuid;
 	}
 
 	@Override

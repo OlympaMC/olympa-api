@@ -26,7 +26,7 @@ public class DataManagmentListener implements Listener {
 
 	private void init(OlympaPlayer olympaPlayer) {
 		olympaPlayer.setGroup(OlympaGroup.DEV);
-		AccountProvider.cache.put(olympaPlayer.getPremiumUniqueId(), olympaPlayer);
+		AccountProvider.cache.put(olympaPlayer.getUniqueId(), olympaPlayer);
 		AccountProvider.cachedInformations.put(olympaPlayer.getId(), new OlympaPlayerInformationsObject(olympaPlayer.getId(), olympaPlayer.getName(), olympaPlayer.getUniqueId()));
 	}
 

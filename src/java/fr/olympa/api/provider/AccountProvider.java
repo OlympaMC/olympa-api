@@ -42,7 +42,7 @@ public class AccountProvider implements OlympaAccount {
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		return new OlympaPlayerObject(uuid, name, ip);
+		return new OlympaPlayerObject(uuid, name, ip, cache.size());
 	}
 
 	@Override
