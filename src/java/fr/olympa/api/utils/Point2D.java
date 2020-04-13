@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.utils;
 
 import org.bukkit.Location;
 

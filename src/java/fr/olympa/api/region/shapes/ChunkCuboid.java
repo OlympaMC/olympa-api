@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,8 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+
+import fr.olympa.api.region.ChunkRegion;
 
 public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 

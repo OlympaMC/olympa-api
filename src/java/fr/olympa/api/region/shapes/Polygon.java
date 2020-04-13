@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.List;
 import java.util.Random;
@@ -7,6 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.google.common.collect.ImmutableList;
+
+import fr.olympa.api.region.Region;
+import fr.olympa.api.utils.Point2D;
 
 public class Polygon implements Region {
 

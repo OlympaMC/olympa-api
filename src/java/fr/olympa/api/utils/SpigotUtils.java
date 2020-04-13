@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.region.Cuboid;
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.shapes.Cuboid;
 import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {

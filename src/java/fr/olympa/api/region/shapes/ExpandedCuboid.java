@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.HashMap;
 import java.util.Map;

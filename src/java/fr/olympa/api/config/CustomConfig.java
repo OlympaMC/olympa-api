@@ -16,8 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
-import fr.olympa.api.region.Cuboid;
-import fr.olympa.api.region.Region;
+import fr.olympa.api.region.shapes.Cuboid;
 import fr.olympa.api.utils.SpigotUtils;
 
 public class CustomConfig extends YamlConfiguration {
@@ -51,7 +50,7 @@ public class CustomConfig extends YamlConfiguration {
 		}
 	}
 
-	public Region getCuboid(String path) {
+	public Cuboid getCuboid(String path) {
 		Location pos1 = this.getLocation(path + ".pos1");
 		Location pos2 = this.getLocation(path + ".pos2");
 		if (pos1 == null || pos2 == null) {

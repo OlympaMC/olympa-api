@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.NumberConversions;
+
+import fr.olympa.api.region.Region;
 
 public class Cuboid implements Region, ConfigurationSerializable {
 

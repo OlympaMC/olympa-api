@@ -1,4 +1,4 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+
+import fr.olympa.api.region.ChunkRegion;
+import fr.olympa.api.utils.Point2D;
 
 public class ChunkPolygon extends Polygon implements ChunkRegion {
 
