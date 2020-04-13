@@ -3,6 +3,7 @@ package fr.olympa.api.region;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -13,23 +14,15 @@ public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 	private int chunkZMin;
 	private int chunkXMax;
 	private int chunkZMax;
-	
-	/**
-	 * Region containing chunks from (xMin, zMin) to (xMax, zMax), chunk coordinates, included.
-	 * @param world
-	 * @param x1
-	 * @param z1
-	 * @param x2
-	 * @param z2
-	 */
-	public ChunkCuboid(World world, int x1, int z1, int x2, int z2) {
-		super(world, x1*16, z1*16, x2*16, z2*16);
-		this.chunkXMin = super.xMin / 16;
-		this.chunkZMin = super.zMin / 16;
-		this.chunkXMax = super.xMax / 16;
-		this.chunkZMax = super.zMax / 16;
+
+	public ChunkCuboid(World world, int xMin, int zMin, int xMax, int zMax) {
+		super(world, xMin * 16, zMin * 16, (xMax + 1) * 16 - 1, (zMax + 1) * 16 - 1);
+		this.chunkXMin = xMin;
+		this.chunkZMin = zMin;
+		this.chunkXMax = xMax;
+		this.chunkZMax = zMax;
 	}
-	
+
 	public boolean isIn(Chunk chunk) {
 		return chunk.getWorld() == super.world && chunk.getX() >= chunkXMin && chunk.getX() <= chunkXMax && chunk.getZ() >= chunkZMin && chunk.getZ() <= chunkZMax;
 	}
@@ -47,6 +40,15 @@ public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 
 	public static ExpandedCuboid deserialize(Map<String, Object> map) {
 		return new ExpandedCuboid(Bukkit.getWorld((String) map.get("world")), (int) map.get("chunkXMin"), (int) map.get("chunkZMin"), (int) map.get("chunkXMax"), (int) map.get("chunkZMax"));
+	}
+
+	public static ChunkCuboid create(Chunk c1, Chunk c2) {
+		Validate.isTrue(c1.getWorld() == c2.getWorld(), "Chunks must be in the same world");
+		int xMin = Math.min(c1.getX(), c2.getX());
+		int xMax = Math.max(c1.getX(), c2.getX());
+		int zMin = Math.min(c1.getZ(), c2.getZ());
+		int zMax = Math.max(c1.getZ(), c2.getZ());
+		return new ChunkCuboid(c1.getWorld(), xMin, zMin, xMax, zMax);
 	}
 
 }

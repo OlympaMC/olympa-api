@@ -23,6 +23,8 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private long id;
 	private OlympaGroup group;
 
+	private OlympaPlayerInformations cachedInfos = null;
+
 	public OlympaPlayerObject(UUID uuid, String name, String ip, long id) {
 		this.uuid = uuid;
 		this.name = name;
@@ -121,18 +123,16 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public long getId() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 
 	@Override
 	public OlympaPlayerInformations getInformation() {
-		return null;
+		return cachedInfos == null ? cachedInfos = AccountProvider.getPlayerInformations(id) : cachedInfos;
 	}
 
 	@Override
 	public String getIp() {
-		// TODO Auto-generated method stub
 		return ip;
 	}
 
