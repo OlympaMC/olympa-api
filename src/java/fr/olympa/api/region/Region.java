@@ -29,8 +29,6 @@ public interface Region {
 		return isIn(player.getLocation());
 	}
 
-	boolean isInWithMarge(Location loc, double marge);
-
 	World getWorld();
 
 }

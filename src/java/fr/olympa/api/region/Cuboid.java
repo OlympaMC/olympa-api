@@ -129,7 +129,6 @@ public class Cuboid implements Region, ConfigurationSerializable {
 		return world == this.world && x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax && z >= this.zMin && z <= this.zMax;
 	}
 
-	@Override
 	public boolean isInWithMarge(final Location loc, final double marge) {
 		return loc.getWorld() == this.world && loc.getX() >= this.xMinCentered - marge && loc.getX() <= this.xMaxCentered + marge && loc.getY() >= this.yMinCentered - marge && loc
 				.getY() <= this.yMaxCentered + marge && loc.getZ() >= this.zMinCentered - marge && loc.getZ() <= this.zMaxCentered + marge;

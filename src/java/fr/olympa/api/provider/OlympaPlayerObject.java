@@ -25,11 +25,10 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	private OlympaPlayerInformations cachedInfos = null;
 
-	public OlympaPlayerObject(UUID uuid, String name, String ip, long id) {
+	public OlympaPlayerObject(UUID uuid, String name, String ip) {
 		this.uuid = uuid;
 		this.name = name;
 		this.ip = ip;
-		this.id = id;
 	}
 
 	@Override
@@ -299,8 +298,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setId(long id) {
-		// TODO Auto-generated method stub
-
+		this.id = id;
 	}
 
 	@Override

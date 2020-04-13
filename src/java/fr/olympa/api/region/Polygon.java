@@ -5,7 +5,6 @@ import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
@@ -68,46 +67,7 @@ public class Polygon implements Region {
 		if (y < minY || y > maxY) return false;
 		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
 
-		Point2D point = new Point2D(x, z);
-
-		// Create a point for line segment from p to infinite 
-		Point2D extreme = new Point2D(max.getBlockX() + 1, z);
-
-		// Count intersections of the above line  
-		// with sides of polygon 
-		int count = 0, i = 0;
-		do {
-			int next = (i + 1) % points.size();
-
-			// Check if the line segment from 'p' to  
-			// 'extreme' intersects with the line  
-			// segment from 'polygon[i]' to 'polygon[next]' 
-			if (doIntersect(points.get(i), points.get(next), point, extreme)) {
-				// If the point 'p' is colinear with line  
-				// segment 'i-next', then check if it lies  
-				// on segment. If it lies, return true, otherwise false 
-				if (orientation(points.get(i), point, points.get(next)) == 0) {
-					return onSegment(points.get(i), point,
-							points.get(next));
-				}
-
-				count++;
-			}
-			i = next;
-		}while (i != 0);
-
-		// Return true if count is odd, false otherwise 
-		return (count % 2 == 1);
-	}
-
-	@Override
-	public boolean isIn(Player player) {
-		return isIn(player.getLocation());
-	}
-
-	@Override
-	public boolean isInWithMarge(Location loc, double marge) {
-		return false;
+		return isInside(points, max.getBlockX(), new Point2D(x, z));
 	}
 
 	@Override
@@ -185,6 +145,37 @@ public class Polygon implements Region {
 
 		// Doesn't fall in any of the above cases 
 		return false;
+	}
+
+	public static boolean isInside(List<Point2D> points, int maxX, Point2D point) {
+		// Create a point for line segment from p to infinite 
+		Point2D extreme = new Point2D(maxX + 1, point.z);
+
+		// Count intersections of the above line  
+		// with sides of polygon 
+		int count = 0, i = 0;
+		do {
+			int next = (i + 1) % points.size();
+
+			// Check if the line segment from 'p' to  
+			// 'extreme' intersects with the line  
+			// segment from 'polygon[i]' to 'polygon[next]' 
+			if (doIntersect(points.get(i), points.get(next), point, extreme)) {
+				// If the point 'p' is colinear with line  
+				// segment 'i-next', then check if it lies  
+				// on segment. If it lies, return true, otherwise false 
+				if (orientation(points.get(i), point, points.get(next)) == 0) {
+					return onSegment(points.get(i), point,
+							points.get(next));
+				}
+
+				count++;
+			}
+			i = next;
+		}while (i != 0);
+
+		// Return true if count is odd, false otherwise 
+		return (count % 2 == 1);
 	}
 
 }
