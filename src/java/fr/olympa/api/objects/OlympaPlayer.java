@@ -33,6 +33,10 @@ public interface OlympaPlayer {
 
 	OlympaGroup getGroup();
 
+	String getGroupName();
+
+	String getGroupPrefix();
+
 	TreeMap<OlympaGroup, Long> getGroups();
 
 	String getGroupsToHumainString();

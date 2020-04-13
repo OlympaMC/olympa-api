@@ -318,7 +318,7 @@ public class Utils {
 		return new ArrayList<>(Arrays.asList(ChatPaginator.wordWrap(string.replace("{nl}", "\n"), lineLength)));
 	}
 
-	public static List<String> startWords(String word, List<String> allWords) {
+	public static List<String> startWords(String word, Iterable<String> allWords) {
 		TreeSet<String> startWordList = new TreeSet<>(Collator.getInstance());
 		for (String currentWord : allWords) {
 			if (removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase()))) {

@@ -92,6 +92,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public String getGroupName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getGroupPrefix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public TreeMap<OlympaGroup, Long> getGroups() {
 		// TODO Auto-generated method stub
 		return null;

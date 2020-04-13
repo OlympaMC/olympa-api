@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaServer;
 import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
@@ -79,7 +80,15 @@ public enum OlympaGroup {
 		return id;
 	}
 
+	@Deprecated
 	public String getName() {
+		return name;
+	}
+
+	public String getName(Gender gender) {
+		if (gender == Gender.FEMALE) {
+			return nameFem;
+		}
 		return name;
 	}
 
@@ -87,8 +96,13 @@ public enum OlympaGroup {
 		return power;
 	}
 
+	@Deprecated
 	public String getPrefix() {
-		return prefix;
+		return getPrefix(Gender.MALE);
+	}
+
+	public String getPrefix(Gender gender) {
+		return SpigotUtils.color(prefix.replaceFirst("%rank", getName(gender)));
 	}
 
 	public OlympaServer getServer() {
