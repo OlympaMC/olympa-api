@@ -9,12 +9,11 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.NumberConversions;
 
 import fr.olympa.api.region.Region;
 
-public class Cuboid implements Region, ConfigurationSerializable {
+public class Cuboid extends Region {
 
 	protected final int xMin;
 	protected final int xMax;

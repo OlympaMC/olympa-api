@@ -16,4 +16,13 @@ public class Point2D {
 		this.z = loc.getBlockZ();
 	}
 
+	public String toString() {
+		return x + "|" + z;
+	}
+
+	public static Point2D fromString(String string) {
+		int index = string.indexOf('|');
+		return new Point2D(Integer.parseInt(string.substring(0, index)), Integer.parseInt(string.substring(index + 1)));
+	}
+
 }

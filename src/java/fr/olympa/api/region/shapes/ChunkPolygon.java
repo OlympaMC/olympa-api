@@ -1,8 +1,11 @@
 package fr.olympa.api.region.shapes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,8 +17,8 @@ public class ChunkPolygon extends Polygon implements ChunkRegion {
 
 	private Location minReal, maxReal;
 
-	public ChunkPolygon(World world, List<Chunk> points) {
-		super(world, points.stream().map(x -> new Point2D(x.getX(), x.getZ())).collect(Collectors.toList()), 0, 256);
+	private ChunkPolygon(World world, List<Point2D> points) {
+		super(world, points, 0, 256);
 		minReal = new Location(world, super.getMin().getBlockX() * 16, 0, super.getMin().getBlockZ() * 16);
 		maxReal = new Location(world, super.getMax().getBlockX() * 16, 256, super.getMax().getBlockZ() * 16);
 	}
@@ -43,6 +46,26 @@ public class ChunkPolygon extends Polygon implements ChunkRegion {
 	@Override
 	public boolean isIn(Chunk chunk) {
 		return super.isIn(chunk.getWorld(), chunk.getX(), 0, chunk.getZ());
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("world", world.getName());
+		map.put("points", points.stream().map(Point2D::toString).collect(Collectors.toList()));
+
+		return map;
+	}
+
+	public static ChunkPolygon deserialize(Map<String, Object> map) {
+		return new ChunkPolygon(
+				Bukkit.getWorld((String) map.get("world")),
+				((List<String>) map.get("points")).stream().map(x -> Point2D.fromString(x)).collect(Collectors.toList()));
+	}
+
+	public static ChunkPolygon create(World world, List<Chunk> chunks) {
+		return new ChunkPolygon(world, chunks.stream().map(x -> new Point2D(x.getX(), x.getZ())).collect(Collectors.toList()));
 	}
 
 }

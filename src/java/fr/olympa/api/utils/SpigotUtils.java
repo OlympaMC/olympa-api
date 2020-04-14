@@ -203,10 +203,6 @@ public class SpigotUtils {
 		return false;
 	}
 
-	public static boolean isIn(Location loc, Location playerLoc) {
-		return playerLoc.getWorld() == loc.getWorld() && loc.getBlockX() == playerLoc.getBlockX() && loc.getBlockY() == playerLoc.getBlockY() && loc.getBlockZ() == playerLoc.getBlockZ();
-	}
-
 	public static boolean isOnGround(Player player) {
 		Location location = player.getLocation();
 		location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
@@ -214,7 +210,7 @@ public class SpigotUtils {
 	}
 
 	public static boolean isSameLocation(Location location1, Location location2) {
-		return location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
+		return location1.getWorld() == location2.getWorld() && location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
 	}
 
 	public static boolean isSamePlayer(Player player, Player target) {

@@ -1,8 +1,12 @@
 package fr.olympa.api.region.shapes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -11,12 +15,12 @@ import com.google.common.collect.ImmutableList;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.utils.Point2D;
 
-public class Polygon implements Region {
+public class Polygon extends Region {
 
-	private final ImmutableList<Point2D> points;
+	protected final ImmutableList<Point2D> points;
 	private final int minY, maxY;
 	private final Location min, max;
-	private World world;
+	protected World world;
 
 	public Polygon(World world, List<Point2D> points, int minY, int maxY) {
 		this.world = world;
@@ -179,6 +183,26 @@ public class Polygon implements Region {
 
 		// Return true if count is odd, false otherwise 
 		return (count % 2 == 1);
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("world", world.getName());
+		map.put("minY", minY);
+		map.put("maxY", maxY);
+		map.put("points", points.stream().map(Point2D::toString).collect(Collectors.toList()));
+
+		return map;
+	}
+
+	public static Polygon deserialize(Map<String, Object> map) {
+		return new Polygon(
+				Bukkit.getWorld((String) map.get("world")),
+				((List<String>) map.get("points")).stream().map(x -> Point2D.fromString(x)).collect(Collectors.toList()),
+				(int) map.get("minY"),
+				(int) map.get("maxY"));
 	}
 
 }

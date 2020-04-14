@@ -1,34 +1,57 @@
 package fr.olympa.api.region;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-public interface Region {
+public abstract class Region implements ConfigurationSerializable {
 
-	Location getMin();
+	private static final Predicate<Player> FALSE_PREDICATE = x -> false;
 
-	Location getMax();
+	private Predicate<Player> enterPredicate;
+	private Predicate<Player> exitPredicate;
 
-	Location getRandomLocation();
+	public abstract Location getMin();
 
-	default Iterator<Block> blockList() {
+	public abstract Location getMax();
+
+	public abstract Location getRandomLocation();
+
+	public Iterator<Block> blockList() {
 		return new RegionIterator(this);
 	}
 
-	boolean isIn(World world, int x, int y, int z);
+	public abstract boolean isIn(World world, int x, int y, int z);
 
-	default boolean isIn(Location loc) {
+	public boolean isIn(Location loc) {
 		return isIn(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
 
-	default boolean isIn(Player player) {
+	public boolean isIn(Player player) {
 		return isIn(player.getLocation());
 	}
 
-	World getWorld();
+	public abstract World getWorld();
+
+	public Predicate<Player> getEnterPredicate() {
+		return enterPredicate == null ? FALSE_PREDICATE : enterPredicate;
+	}
+
+	public void setEnterPredicate(Predicate<Player> enterPredicate) {
+		this.enterPredicate = enterPredicate;
+	}
+
+	public Predicate<Player> getExitPredicate() {
+		return exitPredicate == null ? FALSE_PREDICATE : exitPredicate;
+	}
+
+	public void setExitPredicate(Predicate<Player> exitPredicate) {
+		this.exitPredicate = exitPredicate;
+	}
 
 }

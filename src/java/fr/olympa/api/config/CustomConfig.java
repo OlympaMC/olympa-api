@@ -12,14 +12,27 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
+import fr.olympa.api.region.shapes.ChunkCuboid;
+import fr.olympa.api.region.shapes.ChunkPolygon;
 import fr.olympa.api.region.shapes.Cuboid;
+import fr.olympa.api.region.shapes.ExpandedCuboid;
+import fr.olympa.api.region.shapes.Polygon;
 import fr.olympa.api.utils.SpigotUtils;
 
 public class CustomConfig extends YamlConfiguration {
+
+	{
+		ConfigurationSerialization.registerClass(Cuboid.class);
+		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
+		ConfigurationSerialization.registerClass(ChunkCuboid.class);
+		ConfigurationSerialization.registerClass(Polygon.class);
+		ConfigurationSerialization.registerClass(ChunkPolygon.class);
+	}
 
 	private InputStream resource;
 	private File file;
