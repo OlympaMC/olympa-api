@@ -16,7 +16,7 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerInformationsObject;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 
 public class DataManagmentListener implements Listener {
 
@@ -68,7 +68,7 @@ public class DataManagmentListener implements Listener {
 		Player player = event.getPlayer();
 		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
 		if (olympaPlayer != null) {
-			event.setQuitMessage(SpigotUtils.color("&7[&c-&7] %prefix%name"
+			event.setQuitMessage(ColorUtils.color("&7[&c-&7] %prefix%name"
 					.replaceAll("%group", olympaPlayer.getGroup().getName())
 					.replaceAll("%prefix", olympaPlayer.getGroup().getPrefix())
 					.replaceAll("%name", player.getName())));

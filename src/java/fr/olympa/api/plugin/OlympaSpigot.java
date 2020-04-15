@@ -33,7 +33,4 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public void setStatus(MaintenanceStatus status) {
 		this.status = status;
 	}
-
-	private void setupDatabase() {
-	}
 }

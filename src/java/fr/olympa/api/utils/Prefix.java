@@ -49,7 +49,7 @@ public enum Prefix {
 	}
 
 	public void sendMessage(CommandSender sender, String msg) {
-		sender.sendMessage(SpigotUtils.color(prefix + msg));
+		sender.sendMessage(ColorUtils.color(prefix + msg));
 	}
 
 	private void setPrefix(final String prefix) {
@@ -58,7 +58,7 @@ public enum Prefix {
 
 	@Override
 	public String toString() {
-		return SpigotUtils.color(prefix);
+		return ColorUtils.color(prefix);
 	}
 
 	public String toStringWithoutFormat() {

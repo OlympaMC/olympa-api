@@ -1,8 +1,10 @@
 package fr.olympa.api.region.shapes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -11,9 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.NumberConversions;
 
-import fr.olympa.api.region.Region;
+import fr.olympa.api.region.AbstractRegion;
 
-public class Cuboid extends Region {
+public class Cuboid extends AbstractRegion {
 
 	protected final int xMin;
 	protected final int xMax;
@@ -95,13 +97,10 @@ public class Cuboid extends Region {
 		}
 		return locations.iterator();
 	}
-
-	public Location getPoint1() {
-		return new Location(this.world, this.xMin, this.yMin, this.zMin);
-	}
-
-	public Location getPoint2() {
-		return new Location(this.world, this.xMax, this.yMax, this.zMax);
+	
+	@Override
+	public List<Location> getLocations() {
+		return Arrays.asList(min, max);
 	}
 
 	@Override

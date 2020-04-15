@@ -12,14 +12,14 @@ import org.bukkit.World;
 
 import com.google.common.collect.ImmutableList;
 
-import fr.olympa.api.region.Region;
+import fr.olympa.api.region.AbstractRegion;
 import fr.olympa.api.utils.Point2D;
 
-public class Polygon extends Region {
+public class Polygon extends AbstractRegion {
 
 	protected final ImmutableList<Point2D> points;
-	private final int minY, maxY;
-	private final Location min, max;
+	protected final int minY, maxY;
+	protected final Location min, max;
 	protected World world;
 
 	public Polygon(World world, List<Point2D> points, int minY, int maxY) {
@@ -70,6 +70,11 @@ public class Polygon extends Region {
 	}
 
 	@Override
+	public List<Location> getLocations() {
+		return points.stream().map(this::pointToLocation).collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean isIn(World world, int x, int y, int z) {
 		if (y < minY || y > maxY) return false;
 		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
@@ -80,6 +85,10 @@ public class Polygon extends Region {
 	@Override
 	public World getWorld() {
 		return world;
+	}
+
+	protected Location pointToLocation(Point2D point) {
+		return new Location(world, point.x, minY, point.z);
 	}
 
 	// Given three colinear points p, q, r,  

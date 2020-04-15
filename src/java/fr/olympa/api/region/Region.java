@@ -1,57 +1,44 @@
 package fr.olympa.api.region;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-public abstract class Region implements ConfigurationSerializable {
+public interface Region extends ConfigurationSerializable {
 
-	private static final Predicate<Player> FALSE_PREDICATE = x -> false;
+	Location getMin();
 
-	private Predicate<Player> enterPredicate;
-	private Predicate<Player> exitPredicate;
+	Location getMax();
 
-	public abstract Location getMin();
+	Location getRandomLocation();
 
-	public abstract Location getMax();
+	Iterator<Block> blockList();
 
-	public abstract Location getRandomLocation();
+	List<Location> getLocations();
 
-	public Iterator<Block> blockList() {
-		return new RegionIterator(this);
-	}
+	boolean isIn(World world, int x, int y, int z);
 
-	public abstract boolean isIn(World world, int x, int y, int z);
+	boolean isIn(Location loc);
 
-	public boolean isIn(Location loc) {
-		return isIn(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-	}
+	boolean isIn(Player player);
 
-	public boolean isIn(Player player) {
-		return isIn(player.getLocation());
-	}
+	boolean isIn(Chunk chunk);
 
-	public abstract World getWorld();
+	World getWorld();
 
-	public Predicate<Player> getEnterPredicate() {
-		return enterPredicate == null ? FALSE_PREDICATE : enterPredicate;
-	}
+	Predicate<Player> getEnterPredicate();
 
-	public void setEnterPredicate(Predicate<Player> enterPredicate) {
-		this.enterPredicate = enterPredicate;
-	}
+	Predicate<Player> getExitPredicate();
 
-	public Predicate<Player> getExitPredicate() {
-		return exitPredicate == null ? FALSE_PREDICATE : exitPredicate;
-	}
+	void setExitPredicate(Predicate<Player> exitPredicate);
 
-	public void setExitPredicate(Predicate<Player> exitPredicate) {
-		this.exitPredicate = exitPredicate;
-	}
+	void setEnterPredicate(Predicate<Player> enterPredicate);
 
 }

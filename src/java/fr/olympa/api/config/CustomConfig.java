@@ -22,6 +22,7 @@ import fr.olympa.api.region.shapes.ChunkPolygon;
 import fr.olympa.api.region.shapes.Cuboid;
 import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.SpigotUtils;
 
 public class CustomConfig extends YamlConfiguration {
@@ -63,15 +64,6 @@ public class CustomConfig extends YamlConfiguration {
 		}
 	}
 
-	public Cuboid getCuboid(String path) {
-		Location pos1 = this.getLocation(path + ".pos1");
-		Location pos2 = this.getLocation(path + ".pos2");
-		if (pos1 == null || pos2 == null) {
-			return null;
-		}
-		return new Cuboid(pos1, pos2);
-	}
-
 	public File getFile() {
 		return this.file;
 	}
@@ -83,7 +75,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	@Override
 	public String getString(String path) {
-		return SpigotUtils.color(super.getString(path));
+		return ColorUtils.color(super.getString(path));
 	}
 
 	public Double getVersion() {
@@ -156,11 +148,6 @@ public class CustomConfig extends YamlConfiguration {
 		if (!file.exists()) {
 			plugin.saveResource(filename, true);
 		}
-	}
-
-	public void set(String path, Cuboid cuboid) {
-		this.set(path + ".pos1", cuboid.getPoint1());
-		this.set(path + ".pos2", cuboid.getPoint2());
 	}
 
 	public void set(String path, Location location) {

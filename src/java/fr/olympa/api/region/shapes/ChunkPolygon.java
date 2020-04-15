@@ -10,10 +10,9 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import fr.olympa.api.region.ChunkRegion;
 import fr.olympa.api.utils.Point2D;
 
-public class ChunkPolygon extends Polygon implements ChunkRegion {
+public class ChunkPolygon extends Polygon {
 
 	private Location minReal, maxReal;
 
@@ -46,6 +45,11 @@ public class ChunkPolygon extends Polygon implements ChunkRegion {
 	@Override
 	public boolean isIn(Chunk chunk) {
 		return super.isIn(chunk.getWorld(), chunk.getX(), 0, chunk.getZ());
+	}
+
+	@Override
+	protected Location pointToLocation(Point2D point) {
+		return new Location(world, point.x * 16, minY, point.z * 16);
 	}
 
 	@Override

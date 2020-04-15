@@ -40,7 +40,7 @@ public class RegionManager implements Listener {
 			if (enter.getEnterPredicate().test(player)) e.setCancelled(true);
 		}
 		for (Region exit : exited) {
-			if (exit.getEnterPredicate().test(player)) e.setCancelled(true);
+			if (exit.getExitPredicate().test(player)) e.setCancelled(true);
 		}
 		
 		if (!entered.isEmpty() || !exited.isEmpty()) inRegions.put(player, applicable);

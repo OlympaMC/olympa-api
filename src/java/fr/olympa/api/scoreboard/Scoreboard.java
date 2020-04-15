@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.scoreboard.ScoreboardSigns.VirtualTeam;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 
 public class Scoreboard {
@@ -100,7 +100,7 @@ public class Scoreboard {
 		 */
 		public void setLines(int firstLine){
 			String text = param.getValue((T) p);
-			text = SpigotUtils.color(text);
+			text = ColorUtils.color(text);
 			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);
 			if (lastAmount > ls.size()){
 				int toRemove = lastAmount - ls.size();

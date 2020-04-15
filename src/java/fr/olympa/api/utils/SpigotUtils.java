@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,16 +37,8 @@ public class SpigotUtils {
 		return size;
 	}
 
-	public static List<String> color(List<String> l) {
-		return l.stream().map(s -> SpigotUtils.color(s)).collect(Collectors.toList());
-	}
-
-	public static String color(String s) {
-		return s != null ? ChatColor.translateAlternateColorCodes('&', s) : "";
-	}
-
 	public static String connectScreen(String s) {
-		return SpigotUtils.color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
+		return ColorUtils.color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
 	}
 
 	public static String convertBlockLocationToString(Location loc) {

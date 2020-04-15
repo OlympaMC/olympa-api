@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaServer;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
@@ -64,8 +64,8 @@ public enum OlympaGroup {
 		this.server = server;
 		this.name = name;
 		this.nameFem = nameFem;
-		this.prefix = SpigotUtils.color(prefix.replaceFirst("%rank", this.name));
-		this.chatSufix = SpigotUtils.color(chatSufix);
+		this.prefix = ColorUtils.color(prefix.replaceFirst("%rank", this.name));
+		this.chatSufix = ColorUtils.color(chatSufix);
 	}
 
 	public Set<OlympaGroup> getAllGroups() {
@@ -102,7 +102,7 @@ public enum OlympaGroup {
 	}
 
 	public String getPrefix(Gender gender) {
-		return SpigotUtils.color(prefix.replaceFirst("%rank", getName(gender)));
+		return ColorUtils.color(prefix.replaceFirst("%rank", getName(gender)));
 	}
 
 	public OlympaServer getServer() {

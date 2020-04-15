@@ -8,9 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-import fr.olympa.api.region.ChunkRegion;
-
-public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
+public class ChunkCuboid extends ExpandedCuboid {
 
 	private int chunkXMin;
 	private int chunkZMin;
@@ -40,8 +38,8 @@ public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 		return map;
 	}
 
-	public static ExpandedCuboid deserialize(Map<String, Object> map) {
-		return new ExpandedCuboid(Bukkit.getWorld((String) map.get("world")), (int) map.get("chunkXMin"), (int) map.get("chunkZMin"), (int) map.get("chunkXMax"), (int) map.get("chunkZMax"));
+	public static ChunkCuboid deserialize(Map<String, Object> map) {
+		return new ChunkCuboid(Bukkit.getWorld((String) map.get("world")), (int) map.get("chunkXMin"), (int) map.get("chunkZMin"), (int) map.get("chunkXMax"), (int) map.get("chunkZMax"));
 	}
 
 	public static ChunkCuboid create(Chunk c1, Chunk c2) {
