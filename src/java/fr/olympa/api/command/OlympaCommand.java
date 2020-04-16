@@ -172,7 +172,7 @@ public abstract class OlympaCommand {
 		sender.sendMessage(SpigotUtils.color(text));
 	}
 
-	public void sendMessage(List<? extends CommandSender> senders, Prefix prefix, String text) {
+	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text) {
 		text = SpigotUtils.color(text);
 		for (CommandSender sender : senders) {
 			sender.sendMessage(text);

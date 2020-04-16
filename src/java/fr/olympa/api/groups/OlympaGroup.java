@@ -14,15 +14,16 @@ public enum OlympaGroup {
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c"),
 	ADMIN(2, 95, OlympaServer.ALL, "Admin", "Admine", "&4%rank ", ":&r"),
 	MODP(6, 85, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
-	RESP_TECH(5, 80, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
-	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
-	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
+	MOD(7, 80, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
+	ASSISTANT(8, 85, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
+	RESP_TECH(5, 70, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
 	RESP_STAFF(9, 65, OlympaServer.ALL, "RespStaff", "RespStaff", "&c%rank ", ":&r"),
-	RESP_ANIM(10, 60, OlympaServer.ALL, "RespAnim", "RespAnim", "&3%rank ", ":&r"),
+	RESP_ANIMATION(10, 60, OlympaServer.ALL, "RespAnim", "RespAnim", "&3%rank ", ":&r"),
 	RESP_BUILDER(11, 55, OlympaServer.ALL, "RespBuildeur", "RespBuildeur", "&a%rank ", ":&r"),
+	DEVP(19, 51, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%rank ", ":&r"),
 	DEV(12, 50, OlympaServer.ALL, "Développeur", "Développeuse", "&b%rank ", ":&r"),
-	ANIMATEUR(13, 48, OlympaServer.ALL, "Animateur", "Animatrice", "&d%rank ", ":&r"),
-	BUILDER(14, 46, OlympaServer.ALL, "Buildeur", "Buildeuse", "&2%rank ", ":&r"),
+	BUILDER(14, 48, OlympaServer.ALL, "Buildeur", "Buildeuse", "&2%rank ", ":&r"),
+	ANIMATEUR(13, 46, OlympaServer.ALL, "Animateur", "Animatrice", "&d%rank ", ":&r"),
 	GRAPHISTE(15, 44, OlympaServer.ALL, "Graphiste", "Graphiste", "&3%rank ", ":&r"),
 	FRIEND(16, 42, OlympaServer.ALL, "Ami", "Amie", "&e%rank ", ":&r"),
 	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&e%rank ", ":&r"),
@@ -76,13 +77,17 @@ public enum OlympaGroup {
 		return chatSufix;
 	}
 
+	public String getColor() {
+		return name.substring(0, 2);
+	}
+
 	public int getId() {
 		return id;
 	}
 
 	@Deprecated
 	public String getName() {
-		return name;
+		return getName(Gender.MALE);
 	}
 
 	public String getName(Gender gender) {

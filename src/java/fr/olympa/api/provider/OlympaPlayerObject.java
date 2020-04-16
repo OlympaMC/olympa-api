@@ -96,6 +96,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public String getGroupNameColored() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String getGroupPrefix() {
 		// TODO Auto-generated method stub
 		return null;

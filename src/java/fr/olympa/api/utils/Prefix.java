@@ -10,6 +10,7 @@ public enum Prefix {
 	DEFAULT_BAD("&6%serverName &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED),
 	DEFAULT_GOOD("&6%serverName &7%symbole &a", ChatColor.GREEN, ChatColor.DARK_GREEN),
 	FACTION("&6Faction &7%symbole &a", ChatColor.YELLOW, ChatColor.GREEN),
+	STAFFCHAT("&cStaffChat &4%symbole "),
 	BAD("&c✕ ", ChatColor.RED, ChatColor.DARK_RED),
 	ERROR("&c⚠ ", ChatColor.RED, ChatColor.DARK_RED),
 	INFO("&6INFO &6%symbole &e", ChatColor.YELLOW, ChatColor.GOLD),
