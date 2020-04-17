@@ -1,13 +1,17 @@
 package fr.olympa.api.region;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
-public interface Region {
+public interface Region extends ConfigurationSerializable {
 
 	Location getMin();
 
@@ -15,22 +19,26 @@ public interface Region {
 
 	Location getRandomLocation();
 
-	default Iterator<Block> blockList() {
-		return new RegionIterator(this);
-	}
+	Iterator<Block> blockList();
+
+	List<Location> getLocations();
 
 	boolean isIn(World world, int x, int y, int z);
 
-	default boolean isIn(Location loc) {
-		return isIn(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-	}
+	boolean isIn(Location loc);
 
-	default boolean isIn(Player player) {
-		return isIn(player.getLocation());
-	}
+	boolean isIn(Player player);
 
-	boolean isInWithMarge(Location loc, double marge);
+	boolean isIn(Chunk chunk);
 
 	World getWorld();
+
+	Predicate<Player> getEnterPredicate();
+
+	Predicate<Player> getExitPredicate();
+
+	void setExitPredicate(Predicate<Player> exitPredicate);
+
+	void setEnterPredicate(Predicate<Player> enterPredicate);
 
 }

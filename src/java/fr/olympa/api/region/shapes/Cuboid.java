@@ -1,18 +1,21 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.NumberConversions;
 
-public class Cuboid implements Region, ConfigurationSerializable {
+import fr.olympa.api.region.AbstractRegion;
+
+public class Cuboid extends AbstractRegion {
 
 	protected final int xMin;
 	protected final int xMax;
@@ -94,13 +97,10 @@ public class Cuboid implements Region, ConfigurationSerializable {
 		}
 		return locations.iterator();
 	}
-
-	public Location getPoint1() {
-		return new Location(this.world, this.xMin, this.yMin, this.zMin);
-	}
-
-	public Location getPoint2() {
-		return new Location(this.world, this.xMax, this.yMax, this.zMax);
+	
+	@Override
+	public List<Location> getLocations() {
+		return Arrays.asList(min, max);
 	}
 
 	@Override
@@ -129,7 +129,6 @@ public class Cuboid implements Region, ConfigurationSerializable {
 		return world == this.world && x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax && z >= this.zMin && z <= this.zMax;
 	}
 
-	@Override
 	public boolean isInWithMarge(final Location loc, final double marge) {
 		return loc.getWorld() == this.world && loc.getX() >= this.xMinCentered - marge && loc.getX() <= this.xMaxCentered + marge && loc.getY() >= this.yMinCentered - marge && loc
 				.getY() <= this.yMaxCentered + marge && loc.getZ() >= this.zMinCentered - marge && loc.getZ() <= this.zMaxCentered + marge;

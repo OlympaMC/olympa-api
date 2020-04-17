@@ -12,7 +12,6 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.scoreboard.DynamicLine;
 import fr.olympa.api.scoreboard.FixedLine;
 import fr.olympa.api.scoreboard.ScoreboardManager;
-import fr.olympa.api.utils.Utils;
 
 public class Main extends JavaPlugin {
 
@@ -31,7 +30,6 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		Utils.registerConfigurationSerializable();
 		OlympaPermission.registerPermissions(OlympaAPIPermission.class);
 
 		instance = this;

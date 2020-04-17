@@ -6,34 +6,46 @@ import org.bukkit.plugin.messaging.Messenger;
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.plugin.OlympaSpigot;
+import fr.olympa.api.region.RegionManager;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
 
-// Ceci est un faux ficher qui récupère quelques donnés du Core dans l'API
+/**
+ * Version minimale du Core, faite pour fonctionner sans lien à la BDD sur des serveurs tests
+ */
 public class OlympaCore extends OlympaSpigot {
 
-    private static OlympaCore instance;
+	private static OlympaCore instance;
 
-    public static OlympaCore getInstance() {
-	return instance;
-    }
+	public static OlympaCore getInstance() {
+		return instance;
+	}
 
-    @Override
-    public void onDisable() {
-	this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion()+ ") is disabled.");
-    }
+	private RegionManager regionManager = new RegionManager();
 
-    @Override
-    public void onEnable() {
-	instance = this;
+	@Override
+	public void onDisable() {
+		this.sendMessage("§4" + this.getDescription().getName() + "§c (" + this.getDescription().getVersion() + ") is disabled.");
+	}
 
-	PluginManager pluginManager = this.getServer().getPluginManager();
-	pluginManager.registerEvents(new Inventories(), this);
-	pluginManager.registerEvents(new DataManagmentListener(), this);
+	@Override
+	public void onEnable() {
+		instance = this;
 
-	Messenger messenger = this.getServer().getMessenger();
-	messenger.registerOutgoingPluginChannel(this, "BungeeCord");
-	new SpigotBPMCEvent().register(this);
+		PluginManager pluginManager = this.getServer().getPluginManager();
+		pluginManager.registerEvents(new Inventories(), this);
+		pluginManager.registerEvents(new DataManagmentListener(), this);
+		pluginManager.registerEvents(regionManager, this);
 
-	this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion()+ ") is activated.");
-    }
+		Messenger messenger = this.getServer().getMessenger();
+		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+		new SpigotBPMCEvent().register(this);
+
+		this.sendMessage("§2" + this.getDescription().getName() + "§a (" + this.getDescription().getVersion() + ") is enabled.");
+	}
+
+	@Override
+	public RegionManager getRegionManager() {
+		return regionManager;
+	}
+
 }

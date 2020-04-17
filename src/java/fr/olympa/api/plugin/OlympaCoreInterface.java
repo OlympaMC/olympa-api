@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import fr.olympa.api.maintenance.MaintenanceStatus;
+import fr.olympa.api.region.RegionManager;
 
 public interface OlympaCoreInterface {
 
@@ -12,4 +13,7 @@ public interface OlympaCoreInterface {
 	MaintenanceStatus getStatus();
 
 	void setStatus(MaintenanceStatus status);
+
+	public RegionManager getRegionManager();
+
 }

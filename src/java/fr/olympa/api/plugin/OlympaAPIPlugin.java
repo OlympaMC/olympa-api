@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.task.TaskManager;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 
 public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPluginInterface {
 
@@ -43,7 +43,7 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 
 	@Override
 	public void sendMessage(String message) {
-		this.getServer().getConsoleSender().sendMessage(SpigotUtils.color(this.getPrefixConsole() + message));
+		this.getServer().getConsoleSender().sendMessage(ColorUtils.color(this.getPrefixConsole() + message));
 	}
 
 }

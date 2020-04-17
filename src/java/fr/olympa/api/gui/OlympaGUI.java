@@ -8,18 +8,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 
 public abstract class OlympaGUI implements InventoryHolder {
 	
 	protected Inventory inv;
 
 	public OlympaGUI(String name, int rows) {
-		this.inv = Bukkit.createInventory(this, 9 * rows, SpigotUtils.color(name));
+		this.inv = Bukkit.createInventory(this, 9 * rows, ColorUtils.color(name));
 	}
 
 	public OlympaGUI(String name, InventoryType type) {
-		this.inv = Bukkit.createInventory(this, type, SpigotUtils.color(name));
+		this.inv = Bukkit.createInventory(this, type, ColorUtils.color(name));
 	}
 
 	public Inventory getInventory() {

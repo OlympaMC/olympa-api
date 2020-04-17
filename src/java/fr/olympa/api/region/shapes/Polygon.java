@@ -1,20 +1,26 @@
-package fr.olympa.api.region;
+package fr.olympa.api.region.shapes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.ImmutableList;
 
-public class Polygon implements Region {
+import fr.olympa.api.region.AbstractRegion;
+import fr.olympa.api.utils.Point2D;
 
-	private final ImmutableList<Point2D> points;
-	private final int minY, maxY;
-	private final Location min, max;
-	private World world;
+public class Polygon extends AbstractRegion {
+
+	protected final ImmutableList<Point2D> points;
+	protected final int minY, maxY;
+	protected final Location min, max;
+	protected World world;
 
 	public Polygon(World world, List<Point2D> points, int minY, int maxY) {
 		this.world = world;
@@ -64,55 +70,25 @@ public class Polygon implements Region {
 	}
 
 	@Override
+	public List<Location> getLocations() {
+		return points.stream().map(this::pointToLocation).collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean isIn(World world, int x, int y, int z) {
 		if (y < minY || y > maxY) return false;
 		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
 
-		Point2D point = new Point2D(x, z);
-
-		// Create a point for line segment from p to infinite 
-		Point2D extreme = new Point2D(max.getBlockX() + 1, z);
-
-		// Count intersections of the above line  
-		// with sides of polygon 
-		int count = 0, i = 0;
-		do {
-			int next = (i + 1) % points.size();
-
-			// Check if the line segment from 'p' to  
-			// 'extreme' intersects with the line  
-			// segment from 'polygon[i]' to 'polygon[next]' 
-			if (doIntersect(points.get(i), points.get(next), point, extreme)) {
-				// If the point 'p' is colinear with line  
-				// segment 'i-next', then check if it lies  
-				// on segment. If it lies, return true, otherwise false 
-				if (orientation(points.get(i), point, points.get(next)) == 0) {
-					return onSegment(points.get(i), point,
-							points.get(next));
-				}
-
-				count++;
-			}
-			i = next;
-		}while (i != 0);
-
-		// Return true if count is odd, false otherwise 
-		return (count % 2 == 1);
-	}
-
-	@Override
-	public boolean isIn(Player player) {
-		return isIn(player.getLocation());
-	}
-
-	@Override
-	public boolean isInWithMarge(Location loc, double marge) {
-		return false;
+		return isInside(points, max.getBlockX(), new Point2D(x, z));
 	}
 
 	@Override
 	public World getWorld() {
 		return world;
+	}
+
+	protected Location pointToLocation(Point2D point) {
+		return new Location(world, point.x, minY, point.z);
 	}
 
 	// Given three colinear points p, q, r,  
@@ -185,6 +161,57 @@ public class Polygon implements Region {
 
 		// Doesn't fall in any of the above cases 
 		return false;
+	}
+
+	public static boolean isInside(List<Point2D> points, int maxX, Point2D point) {
+		// Create a point for line segment from p to infinite 
+		Point2D extreme = new Point2D(maxX + 1, point.z);
+
+		// Count intersections of the above line  
+		// with sides of polygon 
+		int count = 0, i = 0;
+		do {
+			int next = (i + 1) % points.size();
+
+			// Check if the line segment from 'p' to  
+			// 'extreme' intersects with the line  
+			// segment from 'polygon[i]' to 'polygon[next]' 
+			if (doIntersect(points.get(i), points.get(next), point, extreme)) {
+				// If the point 'p' is colinear with line  
+				// segment 'i-next', then check if it lies  
+				// on segment. If it lies, return true, otherwise false 
+				if (orientation(points.get(i), point, points.get(next)) == 0) {
+					return onSegment(points.get(i), point,
+							points.get(next));
+				}
+
+				count++;
+			}
+			i = next;
+		}while (i != 0);
+
+		// Return true if count is odd, false otherwise 
+		return (count % 2 == 1);
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("world", world.getName());
+		map.put("minY", minY);
+		map.put("maxY", maxY);
+		map.put("points", points.stream().map(Point2D::toString).collect(Collectors.toList()));
+
+		return map;
+	}
+
+	public static Polygon deserialize(Map<String, Object> map) {
+		return new Polygon(
+				Bukkit.getWorld((String) map.get("world")),
+				((List<String>) map.get("points")).stream().map(x -> Point2D.fromString(x)).collect(Collectors.toList()),
+				(int) map.get("minY"),
+				(int) map.get("maxY"));
 	}
 
 }

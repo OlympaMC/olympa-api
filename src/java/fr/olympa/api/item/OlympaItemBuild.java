@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 
 public class OlympaItemBuild implements Cloneable {
 
@@ -108,13 +108,13 @@ public class OlympaItemBuild implements Cloneable {
 		}
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (name != null) {
-			itemMeta.setDisplayName(SpigotUtils.color(name));
+			itemMeta.setDisplayName(ColorUtils.color(name));
 		}
 		if (customModelData != null) {
 			itemMeta.setCustomModelData(customModelData);
 		}
 		if (lore != null) {
-			itemMeta.setLore(SpigotUtils.color(lore));
+			itemMeta.setLore(ColorUtils.color(lore));
 		}
 		if (itemFlags != null) {
 			itemMeta.addItemFlags(itemFlags);

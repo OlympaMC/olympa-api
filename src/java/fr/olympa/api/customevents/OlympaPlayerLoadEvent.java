@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.ColorUtils;
 
 public class OlympaPlayerLoadEvent extends Event {
 
@@ -51,7 +51,7 @@ public class OlympaPlayerLoadEvent extends Event {
 		if (joinMessage == null) {
 			this.joinMessage = null;
 		} else {
-			this.joinMessage = SpigotUtils.color(joinMessage
+			this.joinMessage = ColorUtils.color(joinMessage
 					.replaceAll("%group", this.olympaPlayer.getGroup().getName())
 					.replaceAll("%prefix", this.olympaPlayer.getGroup().getPrefix())
 					.replaceAll("%name", this.player.getName()));

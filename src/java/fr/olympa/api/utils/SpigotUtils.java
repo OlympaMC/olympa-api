@@ -20,11 +20,17 @@ import org.bukkit.util.Vector;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.region.Cuboid;
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.shapes.Cuboid;
 import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
+
+	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
+
+	private static final double piOver16 = Math.PI / 16D;
+
+	private static final double pi2 = Math.PI * 2;
 
 	public static Location addYToLocation(Location location, float y) {
 		return new Location(location.getWorld(), location.getX(), location.getY() + 1, location.getZ(), location.getYaw(), location.getPitch());
@@ -39,15 +45,15 @@ public class SpigotUtils {
 	}
 
 	public static List<String> color(List<String> l) {
-		return l.stream().map(s -> SpigotUtils.color(s)).collect(Collectors.toList());
+		return l.stream().map(s -> color(s)).collect(Collectors.toList());
 	}
 
-	public static String color(String s) {
-		return s != null ? ChatColor.translateAlternateColorCodes('&', s) : "";
+	public static String color(String string) {
+		return ChatColor.translateAlternateColorCodes('&', string);
 	}
 
 	public static String connectScreen(String s) {
-		return SpigotUtils.color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
+		return ColorUtils.color("\n&e&m-------------------------------------------\n\n&e[&6Olympa&e]\n\n" + s + "\n\n&e&m-------------------------------------------");
 	}
 
 	public static String convertBlockLocationToString(Location loc) {
@@ -104,6 +110,21 @@ public class SpigotUtils {
 			return cuboid;
 		}
 		return null;
+	}
+
+	public static char getDirectionToLocation(Player player, Location target) {
+		if (player.getWorld() != target.getWorld()) {
+			return 'x';
+		}
+		Location source = player.getLocation();
+		Vector inBetween = target.clone().subtract(source).toVector();
+		Vector lookVec = source.getDirection();
+
+		double angleDir = Math.atan2(inBetween.getZ(), inBetween.getX());
+		double angleLook = Math.atan2(lookVec.getZ(), lookVec.getX());
+
+		double angle = (angleDir - angleLook + pi2) % pi2 / 2;
+		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
 	public static Location getFirstBlockUnderPlayer(Player player) {
@@ -203,10 +224,6 @@ public class SpigotUtils {
 		return false;
 	}
 
-	public static boolean isIn(Location loc, Location playerLoc) {
-		return playerLoc.getWorld() == loc.getWorld() && loc.getBlockX() == playerLoc.getBlockX() && loc.getBlockY() == playerLoc.getBlockY() && loc.getBlockZ() == playerLoc.getBlockZ();
-	}
-
 	public static boolean isOnGround(Player player) {
 		Location location = player.getLocation();
 		location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
@@ -214,7 +231,7 @@ public class SpigotUtils {
 	}
 
 	public static boolean isSameLocation(Location location1, Location location2) {
-		return location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
+		return location1.getWorld() == location2.getWorld() && location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
 	}
 
 	public static boolean isSamePlayer(Player player, Player target) {
@@ -224,22 +241,6 @@ public class SpigotUtils {
 	public static boolean playerisIn(Player player, Location location) {
 		Location playerLocation = player.getLocation();
 		return playerLocation.getBlockX() == location.getBlockX() && (playerLocation.getBlockY() == location.getBlockY() || playerLocation.getBlockY() + 1 == location.getBlockY()) && playerLocation.getBlockZ() == location.getBlockZ();
-	}
-
-	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
-	private static final double piOver16 = Math.PI / 16D;
-	private static final double pi2 = Math.PI * 2;
-	public static char getDirectionToLocation(Player player, Location target) {
-		if (player.getWorld() != target.getWorld()) return 'x';
-		Location source = player.getLocation();
-		Vector inBetween = target.clone().subtract(source).toVector();
-		Vector lookVec = source.getDirection();
-
-		double angleDir = (Math.atan2(inBetween.getZ(), inBetween.getX()));
-		double angleLook = (Math.atan2(lookVec.getZ(), lookVec.getX()));
-
-		double angle = ((angleDir - angleLook + pi2) % pi2) / 2;
-		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
 }
