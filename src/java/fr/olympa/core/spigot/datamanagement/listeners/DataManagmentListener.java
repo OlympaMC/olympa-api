@@ -21,7 +21,7 @@ import fr.olympa.api.utils.ColorUtils;
 public class DataManagmentListener implements Listener {
 
 	{
-		Bukkit.getOnlinePlayers().forEach(player -> this.init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
+		Bukkit.getOnlinePlayers().forEach(player -> init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
 	}
 
 	private void init(OlympaPlayer olympaPlayer) {
@@ -54,7 +54,7 @@ public class DataManagmentListener implements Listener {
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
-		this.init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
+		init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -63,7 +63,7 @@ public class DataManagmentListener implements Listener {
 		AccountProvider.cache.remove(player.getUniqueId());
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerQuitLow(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());

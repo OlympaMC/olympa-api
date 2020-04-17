@@ -16,8 +16,8 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.SpigotUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaCommand {
@@ -169,11 +169,11 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendMessage(CommandSender sender, String text) {
-		sender.sendMessage(SpigotUtils.color(text));
+		sender.sendMessage(ColorUtils.color(text));
 	}
 
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text) {
-		text = SpigotUtils.color(text);
+		text = ColorUtils.color(text);
 		for (CommandSender sender : senders) {
 			sender.sendMessage(text);
 		}

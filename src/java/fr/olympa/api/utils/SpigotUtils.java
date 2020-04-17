@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -42,14 +41,6 @@ public class SpigotUtils {
 		inventory.clear();
 		inventory.setArmorContents(new ItemStack[inventory.getArmorContents().length]);
 		return size;
-	}
-
-	public static List<String> color(List<String> l) {
-		return l.stream().map(s -> color(s)).collect(Collectors.toList());
-	}
-
-	public static String color(String string) {
-		return ChatColor.translateAlternateColorCodes('&', string);
 	}
 
 	public static String connectScreen(String s) {

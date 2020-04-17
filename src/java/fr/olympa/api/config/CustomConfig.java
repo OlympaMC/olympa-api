@@ -51,21 +51,21 @@ public class CustomConfig extends YamlConfiguration {
 			filename += ".yml";
 		}
 		this.filename = filename;
-		this.file = new File(plugin.getDataFolder(), this.filename);
-		this.resource = plugin.getResource(filename);
+		file = new File(plugin.getDataFolder(), this.filename);
+		resource = plugin.getResource(filename);
 	}
 
 	public void eraseFile() {
-		this.file.delete();
+		file.delete();
 		try {
-			this.file.createNewFile();
+			file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public File getFile() {
-		return this.file;
+		return file;
 	}
 
 	@Override
@@ -93,11 +93,11 @@ public class CustomConfig extends YamlConfiguration {
 	}
 
 	public boolean hasResource() {
-		return this.resource != null;
+		return resource != null;
 	}
 
 	public void load() {
-		File file = this.getFile();
+		File file = getFile();
 		File folder = file.getParentFile();
 		if (!folder.exists()) {
 			folder.mkdir();
@@ -105,8 +105,8 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
-				if (this.resource != null) {
-					ByteStreams.copy(this.resource, new FileOutputStream(file));
+				if (resource != null) {
+					ByteStreams.copy(resource, new FileOutputStream(file));
 				}
 				this.load(file);
 			} else {
@@ -114,32 +114,32 @@ public class CustomConfig extends YamlConfiguration {
 				CustomConfig resourceConfig = new CustomConfig();
 				Double resourceConfigVersion = null;
 
-				if (this.resource != null) {
-					resourceConfig.load(new InputStreamReader(this.resource));
+				if (resource != null) {
+					resourceConfig.load(new InputStreamReader(resource));
 					resourceConfigVersion = resourceConfig.getVersion();
 
-					Double version = this.getVersion();
+					Double version = getVersion();
 					if (resourceConfigVersion != null && version != null) {
 						if (resourceConfigVersion > version) {
-							ByteStreams.copy(this.resource, new FileOutputStream(file));
+							ByteStreams.copy(resource, new FileOutputStream(file));
 							this.load(file);
-							Bukkit.getLogger().log(Level.SEVERE, ChatColor.GREEN + "Config updated: " + this.filename);
+							Bukkit.getLogger().log(Level.SEVERE, ChatColor.GREEN + "Config updated: " + filename);
 						}
 					}
 				}
 
 			}
 		} catch (IOException | InvalidConfigurationException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to load config: " + this.filename);
+			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to load config: " + filename);
 			e.printStackTrace();
 		}
 	}
 
 	public void save() {
 		try {
-			this.save(this.getFile());
+			this.save(getFile());
 		} catch (IOException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + this.filename);
+			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + filename);
 			e.printStackTrace();
 		}
 	}
