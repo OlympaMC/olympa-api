@@ -22,6 +22,7 @@ public class Point2D {
 
 	public static Point2D fromString(String string) {
 		int index = string.indexOf('|');
+		if (index == -1) throw new IllegalArgumentException("Invalid Point2D string: " + string);
 		return new Point2D(Integer.parseInt(string.substring(0, index)), Integer.parseInt(string.substring(index + 1)));
 	}
 

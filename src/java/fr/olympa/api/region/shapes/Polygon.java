@@ -70,8 +70,8 @@ public class Polygon extends AbstractRegion {
 	}
 
 	@Override
-	public List<Location> getLocations() {
-		return points.stream().map(this::pointToLocation).collect(Collectors.toList());
+	public List<Point2D> getCorners() {
+		return points;
 	}
 
 	@Override
@@ -85,10 +85,6 @@ public class Polygon extends AbstractRegion {
 	@Override
 	public World getWorld() {
 		return world;
-	}
-
-	protected Location pointToLocation(Point2D point) {
-		return new Location(world, point.x, minY, point.z);
 	}
 
 	// Given three colinear points p, q, r,  

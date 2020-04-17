@@ -11,6 +11,8 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.utils.Point2D;
+
 public interface Region extends ConfigurationSerializable {
 
 	Location getMin();
@@ -21,7 +23,7 @@ public interface Region extends ConfigurationSerializable {
 
 	Iterator<Block> blockList();
 
-	List<Location> getLocations();
+	List<Point2D> getCorners();
 
 	boolean isIn(World world, int x, int y, int z);
 

@@ -33,6 +33,11 @@ public class ChunkPolygon extends Polygon {
 	}
 
 	@Override
+	public List<Point2D> getCorners() {
+		return super.points.stream().map(x -> new Point2D(x.x * 16, x.z * 16)).collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean isIn(Location loc) {
 		return isIn(loc.getChunk());
 	}
@@ -45,11 +50,6 @@ public class ChunkPolygon extends Polygon {
 	@Override
 	public boolean isIn(Chunk chunk) {
 		return super.isIn(chunk.getWorld(), chunk.getX(), 0, chunk.getZ());
-	}
-
-	@Override
-	protected Location pointToLocation(Point2D point) {
-		return new Location(world, point.x * 16, minY, point.z * 16);
 	}
 
 	@Override
