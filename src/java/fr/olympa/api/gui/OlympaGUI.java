@@ -64,6 +64,16 @@ public abstract class OlympaGUI implements InventoryHolder {
 	}
 
 	/**
+	 * Appelé lors d'un shift-click depuis l'inventaire du joueur
+	 * @param p Joueur qui a bougé l'item
+	 * @param moved Item déplacé
+	 * @return true si le déplacement est annulé
+	 */
+	public boolean onMoveItem(Player p, ItemStack moved) {
+		return true;
+	}
+
+	/**
 	 * Called when closing the inventory
 	 *
 	 * @param p Player who has the inventory opened

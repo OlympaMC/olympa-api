@@ -100,6 +100,12 @@ public class ComplexCommand extends OlympaCommand {
 				try {
 					result = Double.parseDouble(arg);
 				}catch (NumberFormatException e) {
+					sendError(arg + " doit être un nombre à virgule.");
+				}
+			}else if (type.equals("INTEGER")) {
+				try {
+					result = Integer.parseInt(arg);
+				}catch (NumberFormatException e) {
 					sendError(arg + " doit être un nombre.");
 				}
 			} else {
@@ -149,6 +155,8 @@ public class ComplexCommand extends OlympaCommand {
 			if (key.equals("PLAYERS")) {
 				return null;
 			}else if (key.equals("DOUBLE")) {
+				return Collections.EMPTY_LIST;
+			}else if (key.equals("INTEGER")) {
 				return Collections.EMPTY_LIST;
 			} else {
 				find.addAll(Arrays.asList(key.split("\\|")));
