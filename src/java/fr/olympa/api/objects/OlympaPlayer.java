@@ -35,8 +35,6 @@ public interface OlympaPlayer {
 
 	String getGroupName();
 
-	String getGroupNameColored();
-
 	String getGroupPrefix();
 
 	TreeMap<OlympaGroup, Long> getGroups();

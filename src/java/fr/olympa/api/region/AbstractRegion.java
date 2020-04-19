@@ -45,7 +45,7 @@ public abstract class AbstractRegion implements Region {
 
 	@Override
 	public boolean isIn(Chunk chunk) {
-		return isIn(chunk.getWorld(), chunk.getX() * 16, getMin().getBlockY(), chunk.getZ() * 16);
+		return isIn(chunk.getWorld(), chunk.getX(), getMin().getBlockY(), chunk.getZ());
 	}
 
 	@Override

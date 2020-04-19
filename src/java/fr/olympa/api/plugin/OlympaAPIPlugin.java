@@ -13,39 +13,37 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	protected CustomConfig config;
 
 	public OlympaAPIPlugin() {
-		task = new TaskManager(this);
-	}
-
-	@Override
-	public CustomConfig getConfig() {
-		return config;
-	}
-
-	@Override
-	public String getPrefixConsole() {
-		return "&f[&6" + getDescription().getName() + "&f] &e";
-	}
-
-	@Override
-	public OlympaTask getTask() {
-		return task;
+		this.task = new TaskManager(this);
 	}
 
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		config = new CustomConfig(this, "config");
-		if (config.hasResource() || config.getFile().exists()) {
-			config.load();
-			config.saveIfNotExists();
-		} else {
-			config = null;
-		}
+		this.config = new CustomConfig(this, "config");
+		if (this.config.hasResource() || this.config.getFile().exists()) {
+			this.config.load();
+			this.config.saveIfNotExists();
+		}else this.config = null;
+	}
+
+	@Override
+	public CustomConfig getConfig() {
+		return this.config;
+	}
+
+	@Override
+	public String getPrefixConsole() {
+		return "&f[&6" + this.getDescription().getName() + "&f] &e";
+	}
+
+	@Override
+	public OlympaTask getTask() {
+		return this.task;
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		getServer().getConsoleSender().sendMessage(ColorUtils.color(getPrefixConsole() + message));
+		this.getServer().getConsoleSender().sendMessage(ColorUtils.color(this.getPrefixConsole() + message));
 	}
 
 }

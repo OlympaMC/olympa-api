@@ -14,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.util.NumberConversions;
 
 import fr.olympa.api.region.AbstractRegion;
-import fr.olympa.api.utils.Point2D;
 
 public class Cuboid extends AbstractRegion {
 
@@ -100,8 +99,8 @@ public class Cuboid extends AbstractRegion {
 	}
 	
 	@Override
-	public List<Point2D> getCorners() {
-		return Arrays.asList(new Point2D(xMin, zMin), new Point2D(xMax, zMin), new Point2D(xMax, zMin), new Point2D(xMin, zMax));
+	public List<Location> getLocations() {
+		return Arrays.asList(min, max);
 	}
 
 	@Override

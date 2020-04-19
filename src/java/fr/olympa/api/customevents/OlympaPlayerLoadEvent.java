@@ -22,7 +22,7 @@ public class OlympaPlayerLoadEvent extends Event {
 
 	public OlympaPlayerLoadEvent(Player who, OlympaPlayer olympaPlayer, boolean async) {
 		super(async);
-		player = who;
+		this.player = who;
 		this.olympaPlayer = olympaPlayer;
 	}
 
@@ -32,15 +32,15 @@ public class OlympaPlayerLoadEvent extends Event {
 	}
 
 	public String getJoinMessage() {
-		return joinMessage;
-	}
-
-	public <T extends OlympaPlayer> T getOlympaPlayer() {
-		return (T) olympaPlayer;
+		return this.joinMessage;
 	}
 
 	public Player getPlayer() {
 		return player;
+	}
+
+	public <T extends OlympaPlayer> T getOlympaPlayer() {
+		return (T) this.olympaPlayer;
 	}
 
 	/**
@@ -52,9 +52,9 @@ public class OlympaPlayerLoadEvent extends Event {
 			this.joinMessage = null;
 		} else {
 			this.joinMessage = ColorUtils.color(joinMessage
-					.replaceAll("%group", olympaPlayer.getGroup().getName())
-					.replaceAll("%prefix", olympaPlayer.getGroup().getPrefix())
-					.replaceAll("%name", player.getName()));
+					.replaceAll("%group", this.olympaPlayer.getGroup().getName())
+					.replaceAll("%prefix", this.olympaPlayer.getGroup().getPrefix())
+					.replaceAll("%name", this.player.getName()));
 		}
 	}
 }
