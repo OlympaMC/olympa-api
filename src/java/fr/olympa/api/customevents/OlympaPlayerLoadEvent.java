@@ -52,8 +52,8 @@ public class OlympaPlayerLoadEvent extends Event {
 			this.joinMessage = null;
 		} else {
 			this.joinMessage = ColorUtils.color(joinMessage
-					.replaceAll("%group", olympaPlayer.getGroup().getName())
-					.replaceAll("%prefix", olympaPlayer.getGroup().getPrefix())
+					.replaceAll("%group", olympaPlayer.getGroupName())
+					.replaceAll("%prefix", olympaPlayer.getGroupPrefix())
 					.replaceAll("%name", player.getName()));
 		}
 	}

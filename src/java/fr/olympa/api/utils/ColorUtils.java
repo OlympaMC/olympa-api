@@ -12,6 +12,6 @@ public class ColorUtils {
 	}
 
 	public static String color(String string) {
-		return ChatColor.translateAlternateColorCodes('&', string);
+		return string != null ? ChatColor.translateAlternateColorCodes('&', string) : null;
 	}
 }
