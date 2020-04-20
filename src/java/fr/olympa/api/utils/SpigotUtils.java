@@ -25,12 +25,6 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
 
-	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
-
-	private static final double piOver16 = Math.PI / 16D;
-
-	private static final double pi2 = Math.PI * 2;
-
 	public static Location addYToLocation(Location location, float y) {
 		return new Location(location.getWorld(), location.getX(), location.getY() + 1, location.getZ(), location.getYaw(), location.getPitch());
 	}
@@ -101,21 +95,6 @@ public class SpigotUtils {
 			return cuboid;
 		}
 		return null;
-	}
-
-	public static char getDirectionToLocation(Player player, Location target) {
-		if (player.getWorld() != target.getWorld()) {
-			return 'x';
-		}
-		Location source = player.getLocation();
-		Vector inBetween = target.clone().subtract(source).toVector();
-		Vector lookVec = source.getDirection();
-
-		double angleDir = Math.atan2(inBetween.getZ(), inBetween.getX());
-		double angleLook = Math.atan2(lookVec.getZ(), lookVec.getX());
-
-		double angle = (angleDir - angleLook + pi2) % pi2 / 2;
-		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
 	public static Location getFirstBlockUnderPlayer(Player player) {
@@ -232,6 +211,22 @@ public class SpigotUtils {
 	public static boolean playerisIn(Player player, Location location) {
 		Location playerLocation = player.getLocation();
 		return playerLocation.getBlockX() == location.getBlockX() && (playerLocation.getBlockY() == location.getBlockY() || playerLocation.getBlockY() + 1 == location.getBlockY()) && playerLocation.getBlockZ() == location.getBlockZ();
+	}
+
+	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
+	private static final double piOver16 = Math.PI / 16D;
+	private static final double pi2 = Math.PI * 2;
+	public static char getDirectionToLocation(Player player, Location target) {
+		if (player.getWorld() != target.getWorld()) return 'x';
+		Location source = player.getLocation();
+		Vector inBetween = target.clone().subtract(source).toVector();
+		Vector lookVec = source.getDirection();
+
+		double angleDir = (Math.atan2(inBetween.getZ(), inBetween.getX()));
+		double angleLook = (Math.atan2(lookVec.getZ(), lookVec.getX()));
+
+		double angle = ((angleDir - angleLook + pi2) % pi2) / 2;
+		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
 }

@@ -15,9 +15,9 @@ public enum OlympaGroup {
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c"),
 	ADMIN(2, 95, OlympaServer.ALL, "Admin", "Admine", "&4%rank ", ":&r"),
 	MODP(6, 85, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
-	MOD(7, 80, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
-	ASSISTANT(8, 85, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
-	RESP_TECH(5, 70, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
+	RESP_TECH(5, 80, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
+	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
+	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"), 
 	RESP_STAFF(9, 65, OlympaServer.ALL, "RespStaff", "RespStaff", "&c%rank ", ":&r"),
 	RESP_ANIMATION(10, 60, OlympaServer.ALL, "RespAnim", "RespAnim", "&3%rank ", ":&r"),
 	RESP_BUILDER(11, 55, OlympaServer.ALL, "RespBuildeur", "RespBuildeur", "&a%rank ", ":&r"),
@@ -30,8 +30,11 @@ public enum OlympaGroup {
 	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&e%rank ", ":&r"),
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&e%rank ", ":&r"),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":"),
-	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r");
+	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r"),
 
+	CREA_CONSTRUCTOR(22, 1, OlympaServer.CREATIF, "Constructeur", "Constructrice", "&9%rank", ":&r"),
+	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%rank", ":&r"),
+	CREA_CREATOR(24, 3, OlympaServer.CREATIF, "Créateur", "Créatrice", "&6%rank", ":&r");
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -40,6 +43,7 @@ public enum OlympaGroup {
 	 */
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
+		
 	}
 
 	/**

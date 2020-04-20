@@ -83,7 +83,7 @@ public class Inventories implements Listener {
 		Inventory inv = e.getClickedInventory();
 		ItemStack current = e.getCurrentItem();
 
-		OlympaGUI gui = getGUI(inv);
+		OlympaGUI gui = getGUI(e.getView().getTopInventory());
 		if (gui == null) {
 			return;
 		}
@@ -91,8 +91,8 @@ public class Inventories implements Listener {
 		e.setCancelled(false);
 
 		if (inv == p.getInventory()) {
-			if (e.isShiftClick()) {
-				e.setCancelled(true);
+			if (e.isShiftClick() && current.getType() != Material.AIR) {
+				e.setCancelled(gui.onMoveItem(p, current));
 			}
 			return;
 		}
@@ -100,13 +100,9 @@ public class Inventories implements Listener {
 			if (current == null || current.getType() == Material.AIR) {
 				return;
 			}
-			if (gui.onClick(p, current, e.getSlot(), e.getClick())) {
-				e.setCancelled(true);
-			}
+			e.setCancelled(gui.onClick(p, current, e.getSlot(), e.getClick()));
 		} else {
-			if (gui.onClickCursor(p, current, e.getCursor(), e.getSlot())) {
-				e.setCancelled(true);
-			}
+			e.setCancelled(gui.onClickCursor(p, current, e.getCursor(), e.getSlot()));
 		}
 	}
 

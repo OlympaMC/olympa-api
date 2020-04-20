@@ -27,12 +27,13 @@ public @interface Cmd {
 	public int min() default 0;
 	
 	/**
-	 * <b>Available :</b>
+	 * <b>Disponible :</b>
 	 * <ul>
-	 * <li> PLAYERS : <i>list of players online</i>
-	 * <li> xxx|yyy|zzz : <i>available values, separated by a pipe (|)</i>
+	 * <li> PLAYERS : liste des joueurs en ligne, <i>sera remplacé par une instance {@link Player}</i>
+	 * <li> DOUBLE : liste vide, <i>sera remplacé par une instance {@link Double}</i>
+	 * <li> INTEGER : liste vide, <i>sera remplacé par une instance {@link Integer}</i>
+	 * <li> xxx|yyy|zzz : valeurs possibles, séparées par une pipe {@code |}, <id>sera laissé en {@link String}</i>
 	 * </ul>
-	 * In the case of PLAYERS, it will be directly replaced by an instance of {@link Player} before command executing (no need to parse the String)
 	 * @return String array of possibles arguments
 	 */
 	public String[] args() default {};

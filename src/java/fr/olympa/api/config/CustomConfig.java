@@ -51,21 +51,21 @@ public class CustomConfig extends YamlConfiguration {
 			filename += ".yml";
 		}
 		this.filename = filename;
-		file = new File(plugin.getDataFolder(), this.filename);
-		resource = plugin.getResource(filename);
+		this.file = new File(plugin.getDataFolder(), this.filename);
+		this.resource = plugin.getResource(filename);
 	}
 
 	public void eraseFile() {
-		file.delete();
+		this.file.delete();
 		try {
-			file.createNewFile();
+			this.file.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public File getFile() {
-		return file;
+		return this.file;
 	}
 
 	@Override
@@ -93,11 +93,11 @@ public class CustomConfig extends YamlConfiguration {
 	}
 
 	public boolean hasResource() {
-		return resource != null;
+		return this.resource != null;
 	}
 
 	public void load() {
-		File file = getFile();
+		File file = this.getFile();
 		File folder = file.getParentFile();
 		if (!folder.exists()) {
 			folder.mkdir();
@@ -105,8 +105,8 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
-				if (resource != null) {
-					ByteStreams.copy(resource, new FileOutputStream(file));
+				if (this.resource != null) {
+					ByteStreams.copy(this.resource, new FileOutputStream(file));
 				}
 				this.load(file);
 			} else {
@@ -114,32 +114,32 @@ public class CustomConfig extends YamlConfiguration {
 				CustomConfig resourceConfig = new CustomConfig();
 				Double resourceConfigVersion = null;
 
-				if (resource != null) {
-					resourceConfig.load(new InputStreamReader(resource));
+				if (this.resource != null) {
+					resourceConfig.load(new InputStreamReader(this.resource));
 					resourceConfigVersion = resourceConfig.getVersion();
 
-					Double version = getVersion();
+					Double version = this.getVersion();
 					if (resourceConfigVersion != null && version != null) {
 						if (resourceConfigVersion > version) {
-							ByteStreams.copy(resource, new FileOutputStream(file));
+							ByteStreams.copy(this.resource, new FileOutputStream(file));
 							this.load(file);
-							Bukkit.getLogger().log(Level.SEVERE, ChatColor.GREEN + "Config updated: " + filename);
+							Bukkit.getLogger().log(Level.SEVERE, ChatColor.GREEN + "Config updated: " + this.filename);
 						}
 					}
 				}
 
 			}
 		} catch (IOException | InvalidConfigurationException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to load config: " + filename);
+			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to load config: " + this.filename);
 			e.printStackTrace();
 		}
 	}
 
 	public void save() {
 		try {
-			this.save(getFile());
+			this.save(this.getFile());
 		} catch (IOException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + filename);
+			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + this.filename);
 			e.printStackTrace();
 		}
 	}
