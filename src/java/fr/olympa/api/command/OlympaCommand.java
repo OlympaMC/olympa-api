@@ -200,6 +200,10 @@ public abstract class OlympaCommand {
 		this.sendMessage(Prefix.DEFAULT_GOOD, message);
 	}
 
+	public void sendInfo(String message) {
+		this.sendMessage(Prefix.INFO, message);
+	}
+
 	public void sendUnknownPlayer(String name) {
 		sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
 		// TODO check historique player

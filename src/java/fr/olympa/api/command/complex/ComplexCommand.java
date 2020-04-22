@@ -25,11 +25,13 @@ public class ComplexCommand extends OlympaCommand {
 
 	class InternalCommand {
 		Cmd cmd;
+		OlympaPermission perm;
 		Method method;
 		Object commands;
 
 		InternalCommand(Cmd cmd, Method method, Object commandsClass) {
 			this.cmd = cmd;
+			this.perm = OlympaPermission.permissions.get(cmd.permissionName());
 			this.method = method;
 			this.commands = commandsClass;
 		}
@@ -70,7 +72,7 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		if (!cmd.permissionName().isEmpty() && !this.hasPermission(cmd.permissionName())) {
+		if (!cmd.permissionName().isEmpty() && !internal.perm.hasPermission(sender)) {
 			this.sendDoNotHavePermission();
 			return true;
 		}
@@ -147,7 +149,7 @@ public class ComplexCommand extends OlympaCommand {
 			if (needed.length <= index) {
 				return tmp;
 			}
-			if (!internal.cmd.permissionName().isEmpty() && !this.hasPermission(internal.cmd.permissionName())) {
+			if (!internal.cmd.permissionName().isEmpty() && !internal.perm.hasPermission(sender)) {
 				return tmp;
 			}
 			sel = args[index + 1];
