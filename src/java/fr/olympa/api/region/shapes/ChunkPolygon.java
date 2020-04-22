@@ -10,9 +10,14 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import fr.olympa.api.region.ChunkRegion;
 import fr.olympa.api.utils.Point2D;
 
-public class ChunkPolygon extends Polygon {
+/**
+ * @deprecated pas vraiment une bonne idée d'utiliser des chunks avec un polygone irrégulier
+ */
+@Deprecated
+public class ChunkPolygon extends Polygon implements ChunkRegion {
 
 	private Location minReal, maxReal;
 

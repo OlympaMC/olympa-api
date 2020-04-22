@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -18,9 +19,9 @@ import fr.olympa.api.utils.SpigotUtils;
 
 public class RegionManager implements Listener {
 
-	private Set<Region> trackedRegions = new HashSet<>();
+	private Set<TrackedRegion> trackedRegions = new HashSet<>();
 
-	private Map<Player, Set<Region>> inRegions = new HashMap<>();
+	private Map<Player, Set<TrackedRegion>> inRegions = new HashMap<>();
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
@@ -29,25 +30,72 @@ public class RegionManager implements Listener {
 
 		Player player = e.getPlayer();
 
-		Set<Region> applicable = trackedRegions.stream().filter(x -> x.isIn(e.getTo())).collect(Collectors.toSet());
-		Set<Region> lastRegions = inRegions.get(player);
+		Set<TrackedRegion> applicable = trackedRegions.stream().filter(x -> x.region.isIn(e.getTo())).collect(Collectors.toSet());
+		Set<TrackedRegion> lastRegions = inRegions.get(player);
 		if (lastRegions == null) lastRegions = Collections.EMPTY_SET;
 
-		Set<Region> entered = Sets.difference(applicable, lastRegions);
-		Set<Region> exited = Sets.difference(lastRegions, applicable);
+		Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
+		Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
 
-		for (Region enter : entered) {
+		for (TrackedRegion enter : entered) {
 			if (enter.getEnterPredicate().test(player)) e.setCancelled(true);
 		}
-		for (Region exit : exited) {
+		for (TrackedRegion exit : exited) {
 			if (exit.getExitPredicate().test(player)) e.setCancelled(true);
 		}
 		
 		if (!entered.isEmpty() || !exited.isEmpty()) inRegions.put(player, applicable);
 	}
 
-	public void registerRegion(Region region) {
-		trackedRegions.add(region);
+	public void registerRegion(Region region, String id, Predicate<Player> enterPredicate, Predicate<Player> exitPredicate) {
+		trackedRegions.add(new TrackedRegion(region, id, enterPredicate, exitPredicate));
+	}
+
+	public Set<TrackedRegion> getTrackedRegions() {
+		return trackedRegions;
+	}
+
+	public Set<TrackedRegion> getCachedPlayerRegions(Player p) {
+		return inRegions.get(p);
+	}
+
+	public class TrackedRegion {
+		private final Region region;
+		private final String id;
+		private Predicate<Player> enterPredicate;
+		private Predicate<Player> exitPredicate;
+
+		public TrackedRegion(Region region, String id, Predicate<Player> enterPredicate, Predicate<Player> exitPredicate) {
+			this.region = region;
+			this.id = id;
+			this.enterPredicate = enterPredicate;
+			this.exitPredicate = exitPredicate;
+		}
+
+		public Region getRegion() {
+			return region;
+		}
+
+		public String getID() {
+			return id;
+		}
+
+		public Predicate<Player> getEnterPredicate() {
+			return enterPredicate;
+		}
+
+		public void setEnterPredicate(Predicate<Player> enterPredicate) {
+			this.enterPredicate = enterPredicate;
+		}
+
+		public Predicate<Player> getExitPredicate() {
+			return exitPredicate;
+		}
+
+		public void setExitPredicate(Predicate<Player> exitPredicate) {
+			this.exitPredicate = exitPredicate;
+		}
+
 	}
 
 }

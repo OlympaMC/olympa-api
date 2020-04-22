@@ -8,7 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-public class ChunkCuboid extends ExpandedCuboid {
+import fr.olympa.api.region.ChunkRegion;
+
+public class ChunkCuboid extends ExpandedCuboid implements ChunkRegion {
 
 	private int chunkXMin;
 	private int chunkZMin;
@@ -23,6 +25,7 @@ public class ChunkCuboid extends ExpandedCuboid {
 		this.chunkZMax = zMax;
 	}
 
+	@Override
 	public boolean isIn(Chunk chunk) {
 		return chunk.getWorld() == super.world && chunk.getX() >= chunkXMin && chunk.getX() <= chunkXMax && chunk.getZ() >= chunkZMin && chunk.getZ() <= chunkZMax;
 	}
