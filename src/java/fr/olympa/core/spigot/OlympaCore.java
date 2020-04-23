@@ -4,6 +4,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
+import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.plugin.OlympaSpigot;
@@ -51,6 +52,7 @@ public class OlympaCore extends OlympaSpigot {
 		PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);
+		pluginManager.registerEvents(new CommandListener(), this);
 		pluginManager.registerEvents(regionManager, this);
 
 		Messenger messenger = getServer().getMessenger();

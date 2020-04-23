@@ -10,10 +10,13 @@ public interface OlympaCoreInterface {
 
 	Connection getDatabase() throws SQLException;
 
+	RegionManager getRegionManager();
+
+	String getServerName();
+
 	MaintenanceStatus getStatus();
 
+	void setServerName(String serverName);
+
 	void setStatus(MaintenanceStatus status);
-
-	public RegionManager getRegionManager();
-
 }

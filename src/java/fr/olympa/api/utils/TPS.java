@@ -43,11 +43,11 @@ public class TPS {
 
 	public static double[] getDoubleTPS() {
 		double[] recentTps;
-		if (canGetWithPaper()) {
-			recentTps = getPaperRecentTps();
-		} else {
-			recentTps = getNMSRecentTps();
-		}
+		// if (canGetWithPaper()) {
+		// recentTps = getPaperRecentTps();
+		// } else {
+		recentTps = getNMSRecentTps();
+		// }
 		return recentTps;
 	}
 
@@ -72,6 +72,7 @@ public class TPS {
 		return recent;
 	}
 
+	@SuppressWarnings("unused")
 	private static double[] getPaperRecentTps() {
 		if (!canGetWithPaper()) {
 			throw new UnsupportedOperationException("Can't get TPS from Paper");

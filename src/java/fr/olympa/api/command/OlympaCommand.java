@@ -2,8 +2,10 @@ package fr.olympa.api.command;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -22,6 +24,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaCommand {
 
+	protected static Map<String, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
 	protected Plugin plugin;
 	protected List<String> alias;
@@ -134,6 +137,12 @@ public abstract class OlympaCommand {
 		}
 		reflectCommand.setExecutor(this);
 		getCommandMap().register("Olympa", reflectCommand);
+	}
+
+	public void registerPreProcess() {
+		usageString = args.entrySet().stream().map(entry -> (entry.getKey() ? "<" : "[") + String.join("|", entry.getValue()) + (entry.getKey() ? ">" : "]")).collect(Collectors.joining(" "));
+		minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
+		commandPreProcess.put(command, this);
 	}
 
 	public void sendDoNotHavePermission() {
