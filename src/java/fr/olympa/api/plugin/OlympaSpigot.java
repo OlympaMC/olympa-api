@@ -3,8 +3,8 @@ package fr.olympa.api.plugin;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.maintenance.MaintenanceStatus;
-import fr.olympa.api.objects.ProtocolAction;
 
 public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreInterface {
 

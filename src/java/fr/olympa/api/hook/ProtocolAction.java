@@ -1,4 +1,4 @@
-package fr.olympa.api.objects;
+package fr.olympa.api.hook;
 
 public interface ProtocolAction {
 

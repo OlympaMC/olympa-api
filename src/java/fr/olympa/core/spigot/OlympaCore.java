@@ -5,7 +5,7 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.objects.ProtocolAction;
+import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.RegionManager;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
