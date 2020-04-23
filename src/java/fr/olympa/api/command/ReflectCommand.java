@@ -53,8 +53,7 @@ public class ReflectCommand extends Command {
 		if (!exe.isAsynchronous) {
 			return exe.onCommand(sender, this, label, args);
 		} else {
-			OlympaCore.getInstance().getTask()
-					.runTaskAsynchronously(() -> exe.onCommand(sender, this, label, args));
+			OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> exe.onCommand(sender, this, label, args));
 			return true;
 		}
 	}

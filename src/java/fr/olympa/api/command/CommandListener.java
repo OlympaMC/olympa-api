@@ -2,24 +2,70 @@ package fr.olympa.api.command;
 
 import java.util.Arrays;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
+
+import fr.olympa.core.spigot.OlympaCore;
 
 public class CommandListener implements Listener {
 
 	@EventHandler
-	public boolean onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		String[] message = event.getMessage().substring(0).split(" ");
+	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+		String[] message = event.getMessage().substring(1).split(" ");
 
 		String command = message[0].toLowerCase();
 		OlympaCommand cmd = OlympaCommand.commandPreProcess.get(command);
 		if (cmd == null) {
-			return false;
+			return;
 		}
-		Player player = event.getPlayer();
-		cmd.onCommand(player, null, command, Arrays.copyOfRange(message, 1, message.length));
-		return false;
+		event.setCancelled(true);
+		sendcommand(cmd, message, event.getPlayer());
+	}
+
+	@EventHandler
+	public void onServerCommand(ServerCommandEvent event) {
+		String[] message = event.getCommand().split(" ");
+
+		String command = message[0].toLowerCase();
+		OlympaCommand cmd = OlympaCommand.commandPreProcess.get(command);
+		if (cmd == null) {
+			return;
+		}
+		event.setCancelled(true);
+		sendcommand(cmd, message, event.getSender());
+	}
+
+	private void sendcommand(OlympaCommand exe, String[] args, CommandSender sender) {
+		String label = args[0];
+		exe.sender = sender;
+		if (sender instanceof Player) {
+			exe.player = (Player) sender;
+			if (exe.permission != null) {
+				if (!exe.hasPermission()) {
+					if (exe.getOlympaPlayer() == null) {
+						exe.sendImpossibleWithOlympaPlayer();
+					} else {
+						exe.sendDoNotHavePermission();
+					}
+					return;
+				}
+			}
+		} else if (!exe.allowConsole) {
+			exe.sendImpossibleWithConsole();
+			return;
+		}
+		if (args.length - 1 < exe.minArg) {
+			exe.sendUsage(args[0]);
+			return;
+		}
+		if (!exe.isAsynchronous) {
+			exe.onCommand(sender, null, label, Arrays.copyOfRange(args, 1, args.length));
+		} else {
+			OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> exe.onCommand(sender, null, label, args));
+		}
 	}
 }
