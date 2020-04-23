@@ -39,9 +39,6 @@ public class ComplexCommand extends OlympaCommand {
 
 	public final Map<String, InternalCommand> commands = new HashMap<>();
 
-	/**
-	 * @param noArgs Predicate(CommandSender) who'll be ran if the command is executed without any arguments. If is null or return <tt>false</tt>, "incorrect syntax" will be sent to the player
-	 */
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
 
@@ -55,7 +52,7 @@ public class ComplexCommand extends OlympaCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
-			if (noArguments(sender)) this.sendIncorrectSyntax();
+			if (!noArguments(sender)) this.sendIncorrectSyntax();
 			return true;
 		}
 
