@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -39,24 +39,23 @@ public class ComplexCommand extends OlympaCommand {
 
 	public final Map<String, InternalCommand> commands = new HashMap<>();
 
-	protected Predicate<CommandSender> noArgs;
-
 	/**
 	 * @param noArgs Predicate(CommandSender) who'll be ran if the command is executed without any arguments. If is null or return <tt>false</tt>, "incorrect syntax" will be sent to the player
 	 */
-	public ComplexCommand(Predicate<CommandSender> noArgs, Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
+	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
-		this.noArgs = noArgs;
 
 		this.registerCommandsClass(this);
+	}
+
+	public boolean noArguments(CommandSender sender) {
+		return false;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
-			if (this.noArgs == null || !this.noArgs.test(sender)) {
-				this.sendIncorrectSyntax();
-			}
+			if (noArguments(sender)) this.sendIncorrectSyntax();
 			return true;
 		}
 
@@ -155,7 +154,7 @@ public class ComplexCommand extends OlympaCommand {
 			sel = args[index + 1];
 			String key = needed[index];
 			if (key.equals("PLAYERS")) {
-				return null;
+				return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
 			}else if (key.equals("DOUBLE")) {
 				return Collections.EMPTY_LIST;
 			}else if (key.equals("INTEGER")) {
