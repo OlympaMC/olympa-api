@@ -63,8 +63,8 @@ public class Polygon extends AbstractRegion {
 		int xDistance = max.getBlockX() - min.getBlockX();
 		int zDistance = max.getBlockZ() - min.getBlockZ();
 		do {
-			x = ran.nextInt(xDistance) + max.getBlockX();
-			z = ran.nextInt(zDistance) + max.getBlockZ();
+			x = ran.nextInt(xDistance) + min.getBlockX();
+			z = ran.nextInt(zDistance) + min.getBlockZ();
 		}while (!isIn(world, x, y, z));
 		return new Location(world, x, y, z);
 	}
@@ -77,9 +77,12 @@ public class Polygon extends AbstractRegion {
 	@Override
 	public boolean isIn(World world, int x, int y, int z) {
 		if (y < minY || y > maxY) return false;
-		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
+		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) {
+			System.out.println("not in min max boundaries");
+			return false;
+		}
 
-		return isInside(points, max.getBlockX(), new Point2D(x, z));
+		return isInside(points, new Point2D(x, z));
 	}
 
 	@Override
@@ -163,9 +166,9 @@ public class Polygon extends AbstractRegion {
 		return false;
 	}
 
-	public static boolean isInside(List<Point2D> points, int maxX, Point2D point) {
+	public static boolean isInside(List<Point2D> points, Point2D point) {
 		// Create a point for line segment from p to infinite 
-		Point2D extreme = new Point2D(maxX + 1, point.z);
+		Point2D extreme = new Point2D(100000000, point.z);
 
 		// Count intersections of the above line  
 		// with sides of polygon 

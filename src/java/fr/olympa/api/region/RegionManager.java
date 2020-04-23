@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
 import fr.olympa.api.utils.SpigotUtils;
@@ -68,8 +69,8 @@ public class RegionManager implements Listener {
 		public TrackedRegion(Region region, String id, Predicate<Player> enterPredicate, Predicate<Player> exitPredicate) {
 			this.region = region;
 			this.id = id;
-			this.enterPredicate = enterPredicate;
-			this.exitPredicate = exitPredicate;
+			this.enterPredicate = enterPredicate == null ? Predicates.alwaysFalse() : enterPredicate;
+			this.exitPredicate = exitPredicate == null ? Predicates.alwaysFalse() : exitPredicate;
 		}
 
 		public Region getRegion() {
