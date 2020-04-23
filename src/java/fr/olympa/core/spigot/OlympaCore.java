@@ -35,6 +35,11 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
+	public String getServerName() {
+		return null;
+	}
+
+	@Override
 	public void onDisable() {
 		sendMessage("§4" + getDescription().getName() + "§c (" + getDescription().getVersion() + ") is disabled.");
 	}
@@ -53,6 +58,11 @@ public class OlympaCore extends OlympaSpigot {
 		new SpigotBPMCEvent().register(this);
 
 		sendMessage("§2" + getDescription().getName() + "§a (" + getDescription().getVersion() + ") is enabled.");
+	}
+
+	@Override
+	public void setServerName(String serverName) {
+
 	}
 
 }

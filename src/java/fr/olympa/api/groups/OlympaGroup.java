@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaServer;
 import fr.olympa.api.utils.ColorUtils;
-import fr.olympa.api.utils.SpigotUtils;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
@@ -17,7 +16,7 @@ public enum OlympaGroup {
 	MODP(6, 85, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r"),
 	RESP_TECH(5, 80, OlympaServer.ALL, "RespTech", "RespTech", "&3%rank ", ":&r"),
 	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&c%rank ", ":&r"),
-	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"), 
+	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&6%rank ", ":&r"),
 	RESP_STAFF(9, 65, OlympaServer.ALL, "RespStaff", "RespStaff", "&c%rank ", ":&r"),
 	RESP_ANIMATION(10, 60, OlympaServer.ALL, "RespAnim", "RespAnim", "&3%rank ", ":&r"),
 	RESP_BUILDER(11, 55, OlympaServer.ALL, "RespBuildeur", "RespBuildeur", "&a%rank ", ":&r"),
@@ -43,7 +42,7 @@ public enum OlympaGroup {
 	 */
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
-		
+
 	}
 
 	/**
@@ -76,6 +75,11 @@ public enum OlympaGroup {
 
 	public Set<OlympaGroup> getAllGroups() {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= getPower()).collect(Collectors.toSet());
+	}
+
+	public String getChatColor() {
+		int index = chatSufix.length();
+		return chatSufix.substring(index - 3, index - 1);
 	}
 
 	public String getChatSufix() {

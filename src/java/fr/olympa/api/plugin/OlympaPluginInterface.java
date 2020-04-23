@@ -9,6 +9,8 @@ public interface OlympaPluginInterface {
 
 	String getPrefixConsole();
 
+	String getServerName();
+
 	OlympaTask getTask();
 
 	default String getUptime() {
@@ -21,4 +23,5 @@ public interface OlympaPluginInterface {
 
 	void sendMessage(String message);
 
+	void setServerName(String serverName);
 }

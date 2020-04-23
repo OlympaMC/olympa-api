@@ -149,7 +149,7 @@ public abstract class OlympaCommand {
 	}
 
 	public void sendImpossibleWithOlympaPlayer() {
-		sendError("Une erreur est survenu avec tes donnés.");
+		sendError("Une erreur est survenu avec tes données.");
 	}
 
 	public void sendIncorrectSyntax() {
@@ -158,6 +158,10 @@ public abstract class OlympaCommand {
 
 	public void sendIncorrectSyntax(String correctSyntax) {
 		sendError("Syntaxe attendue : &o" + correctSyntax);
+	}
+
+	public void sendInfo(String message) {
+		this.sendMessage(Prefix.INFO, message);
 	}
 
 	public void sendMessage(BaseComponent... text) {
@@ -172,7 +176,7 @@ public abstract class OlympaCommand {
 		sender.sendMessage(ColorUtils.color(text));
 	}
 
-	public void sendMessage(List<? extends CommandSender> senders, Prefix prefix, String text) {
+	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text) {
 		text = ColorUtils.color(text);
 		for (CommandSender sender : senders) {
 			sender.sendMessage(text);
@@ -198,10 +202,6 @@ public abstract class OlympaCommand {
 
 	public void sendSuccess(String message) {
 		this.sendMessage(Prefix.DEFAULT_GOOD, message);
-	}
-
-	public void sendInfo(String message) {
-		this.sendMessage(Prefix.INFO, message);
 	}
 
 	public void sendUnknownPlayer(String name) {

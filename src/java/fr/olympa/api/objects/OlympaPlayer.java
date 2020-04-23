@@ -69,6 +69,8 @@ public interface OlympaPlayer {
 
 	long getTeamspeakId();
 
+	String getTuneChar();
+
 	UUID getUniqueId();
 
 	boolean hasPermission(OlympaPermission permission);
@@ -76,6 +78,8 @@ public interface OlympaPlayer {
 	boolean isAfk();
 
 	boolean isConnected();
+
+	boolean isGenderFemale();
 
 	boolean isPremium();
 

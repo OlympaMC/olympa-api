@@ -196,6 +196,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
+	public String getTuneChar() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
 		return uuid;
@@ -215,6 +221,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public boolean isConnected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isGenderFemale() {
 		// TODO Auto-generated method stub
 		return false;
 	}

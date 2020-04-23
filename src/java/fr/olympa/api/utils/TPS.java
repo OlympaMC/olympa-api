@@ -2,7 +2,10 @@ package fr.olympa.api.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
 import fr.olympa.api.utils.Reflection.ClassEnum;
@@ -18,6 +21,42 @@ public class TPS {
 
 	private static boolean canGetWithPaper() {
 		return getSpigotMethod != null && getTPSMethod != null;
+	}
+
+	public static String getAllStringTPS() {
+		return StringUtils.join(ArrayUtils.toObject(getAllTPS()), " ");
+	}
+
+	public static float[] getAllTPS() {
+		double[] recentTps = getDoubleTPS();
+		float[] recentTpsF = round(recentTps);
+		return recentTpsF;
+	}
+
+	public static float getAverage() {
+		return getAverage(getDoubleTPS());
+	}
+
+	public static float getAverage(double[] tps) {
+		return round(Arrays.stream(tps).sum() / tps.length);
+	}
+
+	public static double[] getDoubleTPS() {
+		double[] recentTps;
+		if (canGetWithPaper()) {
+			recentTps = getPaperRecentTps();
+		} else {
+			recentTps = getNMSRecentTps();
+		}
+		return recentTps;
+	}
+
+	public static int getIntTPS() {
+		return getIntTPS(1);
+	}
+
+	public static int getIntTPS(int time) {
+		return Math.round(getTPS(time));
 	}
 
 	private static double[] getNMSRecentTps() {
@@ -37,7 +76,7 @@ public class TPS {
 		if (!canGetWithPaper()) {
 			throw new UnsupportedOperationException("Can't get TPS from Paper");
 		}
-		Object server = Reflection.callMethod(getServerMethod, null); // Call static MinecraftServer.getServer()
+		Object server = Reflection.callMethod(getTPSMethod, null); // Call static MinecraftServer.getServer()
 		double[] recent = Reflection.getFieldValue(recentTpsField, server);
 		return recent;
 	}
@@ -46,8 +85,8 @@ public class TPS {
 		return getTPS(1);
 	}
 
-	public static double getTPS(int time) {
-		double[] recentTps = getTPSs();
+	public static float getTPS(int time) {
+		float[] recentTps = getAllTPS();
 		switch (time) {
 		case 1:
 			return recentTps[0];
@@ -60,24 +99,15 @@ public class TPS {
 		}
 	}
 
-	public static int getTPSint() {
-		return getTPSint(1);
+	public static float round(double tps) {
+		return (float) Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
 	}
 
-	public static int getTPSint(int time) {
-		return (int) Math.round(getTPS(time));
-	}
-
-	public static double[] getTPSs() {
-		double[] recentTps;
-		if (canGetWithPaper()) {
-			recentTps = getPaperRecentTps();
-		} else {
-			recentTps = getNMSRecentTps();
+	public static float[] round(double[] tps) {
+		float[] tpsFloat = new float[tps.length];
+		for (int i = 0; i < tps.length; i++) {
+			tpsFloat[i] = round(tps[i]);
 		}
-		for (int i = 0; i < recentTps.length; i++) {
-			recentTps[i] = Math.min(Math.round(recentTps[i] * 100.0) / 100.0, 20.0);
-		}
-		return recentTps;
+		return tpsFloat;
 	}
 }

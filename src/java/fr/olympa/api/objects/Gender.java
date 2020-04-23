@@ -12,32 +12,32 @@ public enum Gender {
 	}
 
 	int id;
-	String turning;
+	String tune;
 	String pronoun;
 
 	String name;
 
-	private Gender(int id, String turning, String pronoun, String name) {
+	private Gender(int id, String tune, String pronoun, String name) {
 		this.id = id;
-		this.turning = turning;
+		this.tune = tune;
 		this.pronoun = pronoun;
 		this.name = name;
 	}
 
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public String getPronoun() {
-		return this.pronoun;
+		return pronoun;
 	}
 
-	public String getTurning() {
-		return this.turning;
+	public String getTurne() {
+		return tune;
 	}
 
 	public void setId(int id) {
@@ -53,6 +53,6 @@ public enum Gender {
 	}
 
 	public void setTurning(String turning) {
-		this.turning = turning;
+		tune = turning;
 	}
 }

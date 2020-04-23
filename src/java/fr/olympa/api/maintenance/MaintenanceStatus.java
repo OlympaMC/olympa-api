@@ -19,11 +19,11 @@ public enum MaintenanceStatus {
 	UNKNOWN(7, "Inconnu", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
 
 	public static MaintenanceStatus get(int id) {
-		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(MaintenanceStatus.UNKNOWN);
 	}
 
 	public static MaintenanceStatus get(String name) {
-		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(MaintenanceStatus.UNKNOWN);
 	}
 
 	public static MaintenanceStatus getByCommandArg(String commandArg) {
