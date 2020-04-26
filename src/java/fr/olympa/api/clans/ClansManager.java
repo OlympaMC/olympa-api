@@ -86,6 +86,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	public String stringChooseName = "§aChoisis le nom de ton clan :";
 	public String stringInventoryManage = "Gérer son clan";
 	public String stringInventoryJoin = "Rejoindre un clan";
+	public String stringItemLeave = "Quitter le clan";
+	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
+	public String stringItemDisband = "§cDémenteler le clan";
 
 	public ClansManager(OlympaAPIPlugin plugin, String tableName, List<String> columns) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
@@ -97,9 +100,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		columnsJoiner.add("`chief` bigint(20) NOT NULL");
 		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT 5");
 		columns.forEach(x -> columnsJoiner.add(x));
-		OlympaCore.getInstance().getDatabase().createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
+		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				columnsJoiner.toString() +
-				"  PRIMARY KEY (`id`))");
+				",  PRIMARY KEY (`id`))");
 
 		createClanStatement = new OlympaStatement("INSERT INTO " + tableName + " (`name`, `chief`) VALUES (?, ?)", true);
 		removeClanStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
@@ -154,6 +157,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	}
 
 	public void removeClan(T clan) {
+		for (List<T> invits : invitations.values()) {
+			invits.remove(clan);
+		}
 		try {
 			PreparedStatement statement = removeClanStatement.getStatement();
 			statement.setInt(1, clan.getID());
@@ -162,6 +168,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			ex.printStackTrace();
 			plugin.getLogger().severe("Le groupe " + clan.getID() + " n'a pas pu être supprimé de la base de données.");
 		}
+	}
+
+	public T getClan(int id) {
+		return clans.get(id);
 	}
 
 	public List<OlympaPlayerInformations> getPlayersInClan(T clan) throws SQLException {

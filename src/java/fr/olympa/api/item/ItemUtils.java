@@ -3,7 +3,7 @@ package fr.olympa.api.item;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,13 +77,12 @@ public class ItemUtils {
 		im.setDisplayName(name);
 
 		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-		profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString(("{textures:[{Value:\"" + value + "\"}]}"))));
-		Field profileField = null;
+		profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString(("[{Value:\"" + value + "\"}]")), null));
 		try {
-			profileField = im.getClass().getDeclaredField("profile");
-			profileField.setAccessible(true);
-			profileField.set(im, profile);
-		}catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+			Method setProfile = im.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+			setProfile.setAccessible(true);
+			setProfile.invoke(im, profile);
+		}catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}
 
