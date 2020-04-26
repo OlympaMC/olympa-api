@@ -79,7 +79,15 @@ public class Polygon extends AbstractRegion {
 		if (y < minY || y > maxY) return false;
 		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
 
-		return isInside(points, new Point2D(x, z));
+		int i, j;
+		boolean result = false;
+		for (i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+			if ((points.get(i).z > z) != (points.get(j).z > z) &&
+					(x < (points.get(j).x - points.get(i).x) * (z - points.get(i).z) / (points.get(j).z - points.get(i).z) + points.get(i).x)) {
+				result = !result;
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -89,109 +97,6 @@ public class Polygon extends AbstractRegion {
 
 	protected Location pointToLocation(Point2D point) {
 		return new Location(world, point.x, minY, point.z);
-	}
-
-	// Given three colinear points p, q, r,  
-	// the function checks if point q lies 
-	// on line segment 'pr' 
-	public static boolean onSegment(Point2D p, Point2D q, Point2D r) {
-		if (q.x <= Math.max(p.x, r.x) &&
-				q.x >= Math.min(p.x, r.x) &&
-				q.z <= Math.max(p.z, r.z) &&
-				q.z >= Math.min(p.z, r.z)) {
-			return true;
-		}
-		return false;
-	}
-
-	// To find orientation of ordered triplet (p, q, r). 
-	// The function returns following values 
-	// 0 --> p, q and r are colinear 
-	// 1 --> Clockwise 
-	// 2 --> Counterclockwise 
-	public static int orientation(Point2D p, Point2D q, Point2D r) {
-		int val = (q.z - p.z) * (r.x - q.x)
-				- (q.x - p.x) * (r.z - q.z);
-
-		if (val == 0) {
-			return 0; // colinear 
-		}
-		return (val > 0) ? 1 : 2; // clock or counterclock wise 
-	}
-
-	// The function that returns true if  
-	// line segment 'p1q1' and 'p2q2' intersect. 
-	public static boolean doIntersect(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
-		// Find the four orientations needed for  
-		// general and special cases 
-		int o1 = orientation(p1, q1, p2);
-		int o2 = orientation(p1, q1, q2);
-		int o3 = orientation(p2, q2, p1);
-		int o4 = orientation(p2, q2, q1);
-
-		// General case 
-		if (o1 != o2 && o3 != o4) {
-			return true;
-		}
-
-		// Special Cases 
-		// p1, q1 and p2 are colinear and 
-		// p2 lies on segment p1q1 
-		if (o1 == 0 && onSegment(p1, p2, q1)) {
-			return true;
-		}
-
-		// p1, q1 and p2 are colinear and 
-		// q2 lies on segment p1q1 
-		if (o2 == 0 && onSegment(p1, q2, q1)) {
-			return true;
-		}
-
-		// p2, q2 and p1 are colinear and 
-		// p1 lies on segment p2q2 
-		if (o3 == 0 && onSegment(p2, p1, q2)) {
-			return true;
-		}
-
-		// p2, q2 and q1 are colinear and 
-		// q1 lies on segment p2q2 
-		if (o4 == 0 && onSegment(p2, q1, q2)) {
-			return true;
-		}
-
-		// Doesn't fall in any of the above cases 
-		return false;
-	}
-
-	public static boolean isInside(List<Point2D> points, Point2D point) {
-		// Create a point for line segment from p to infinite 
-		Point2D extreme = new Point2D(100000000, point.z);
-
-		// Count intersections of the above line  
-		// with sides of polygon 
-		int count = 0, i = 0;
-		do {
-			int next = (i + 1) % points.size();
-
-			// Check if the line segment from 'p' to  
-			// 'extreme' intersects with the line  
-			// segment from 'polygon[i]' to 'polygon[next]' 
-			if (doIntersect(points.get(i), points.get(next), point, extreme)) {
-				// If the point 'p' is colinear with line  
-				// segment 'i-next', then check if it lies  
-				// on segment. If it lies, return true, otherwise false 
-				if (orientation(points.get(i), point, points.get(next)) == 0) {
-					return onSegment(points.get(i), point,
-							points.get(next));
-				}
-
-				count++;
-			}
-			i = next;
-		}while (i != 0);
-
-		// Return true if count is odd, false otherwise 
-		return (count % 2 == 1);
 	}
 
 	@Override
