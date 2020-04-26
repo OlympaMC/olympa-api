@@ -53,6 +53,10 @@ public enum Prefix {
 		sender.sendMessage(ColorUtils.color(prefix + msg));
 	}
 
+	public String formatMessage(String msg) {
+		return ColorUtils.color(prefix + msg);
+	}
+
 	private void setPrefix(final String prefix) {
 		this.prefix = prefix;
 	}

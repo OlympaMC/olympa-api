@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
@@ -24,6 +25,8 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private OlympaGroup group;
 
 	private OlympaPlayerInformations cachedInfos = null;
+
+	private Player cachedPlayer = null;
 
 	public OlympaPlayerObject(UUID uuid, String name, String ip) {
 		this.uuid = uuid;
@@ -173,8 +176,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public Player getPlayer() {
-		// TODO Auto-generated method stub
-		return null;
+		return cachedPlayer == null ? cachedPlayer = Bukkit.getPlayer(uuid) : cachedPlayer;
 	}
 
 	@Override

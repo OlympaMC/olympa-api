@@ -36,6 +36,10 @@ public class AccountProvider implements OlympaAccount {
 
 	}
 
+	public static String getPlayerProviderTableName() {
+		return null;
+	}
+
 	public AccountProvider(UUID uuid) {
 		this.uuid = uuid;
 	}
