@@ -17,7 +17,7 @@ public class OlympaPlayerInformationsObject implements OlympaPlayerInformations 
 	}
 
 	@Override
-	public long getID() {
+	public long getId() {
 		return id;
 	}
 

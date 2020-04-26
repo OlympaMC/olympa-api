@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface OlympaPlayerInformations {
 
-	public long getID();
+	public long getId();
 
 	public String getName();
 
