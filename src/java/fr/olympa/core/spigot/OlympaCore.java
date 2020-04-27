@@ -10,6 +10,7 @@ import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.RegionManager;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
+import fr.olympa.core.spigot.datamanagement.listeners.PlayerMoveBlockListener;
 
 /**
  * Version minimale du Core, faite pour fonctionner sans lien à la BDD sur des
@@ -53,6 +54,7 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);
 		pluginManager.registerEvents(new CommandListener(), this);
+		pluginManager.registerEvents(new PlayerMoveBlockListener(), this);
 		pluginManager.registerEvents(regionManager, this);
 
 		Messenger messenger = getServer().getMessenger();
