@@ -63,6 +63,11 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 		T clan = getPlayerClan(true);
 		if (clan == null) return;
 		
+		if (clan.members.size() >= clan.getMaxSize()) {
+			sendError(manager.stringClanFull);
+			return;
+		}
+
 		Player targetPlayer = (Player) cmd.args[0];
 		manager.invite(clan, cmd.player, targetPlayer);
 	}

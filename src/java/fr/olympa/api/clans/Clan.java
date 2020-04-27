@@ -28,7 +28,7 @@ public abstract class Clan<T extends Clan<T>> {
 	protected Map<Long, Entry<OlympaPlayerInformations, ClanPlayerInterface<T>>> members = new HashMap<>(8);
 	private String name;
 	private long chief;
-	private int maxSize = 5;
+	private int maxSize;
 
 	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize) {
 		this.manager = manager;

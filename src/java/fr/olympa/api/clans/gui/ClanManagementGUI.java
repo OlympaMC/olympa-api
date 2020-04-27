@@ -23,13 +23,12 @@ import fr.olympa.api.utils.Prefix;
 
 public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 
-	private static ItemStack noMember = ItemUtils.skullCustom("§cPas de membre", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIzZWFlZmJkNTgxMTU5Mzg0Mjc0Y2RiYmQ1NzZjZWQ4MmViNzI0MjNmMmVhODg3MTI0ZjllZDMzYTY4NzJjIn19fQ==");
-	private static ItemStack noMemberInvite = ItemUtils.skullCustom("§bInviter un nouveau membre", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIzZWFlZmJkNTgxMTU5Mzg0Mjc0Y2RiYmQ1NzZjZWQ4MmViNzI0MjNmMmVhODg3MTI0ZjllZDMzYTY4NzJjIn19fQ==");
+	private static ItemStack noMember = ItemUtils.skull("§cPas de membre", "MHF_Question");
+	private static ItemStack noMemberInvite = ItemUtils.skull("§bInviter un nouveau membre", "MHF_Question");
 
-	private static ItemStack leave = ItemUtils.item(Material.OAK_DOOR, "§cQuitter le clan");
-	private static ItemStack leaveChief = ItemUtils.item(Material.OAK_DOOR, "§c§mQuitter le clan", "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre.");
-
-	private static ItemStack disband = ItemUtils.item(Material.BARRIER, "§cDémenteler le clan");
+	private ItemStack leave;
+	private ItemStack leaveChief;
+	private ItemStack disband;
 
 	private ClanPlayerInterface<T> player;
 	private OlympaPlayerInformations playerInformations;
@@ -46,6 +45,10 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		this.playerInformations = p.getInformation();
 		this.clan = (T) p.getClan();
 		isChief = clan.getChief() == playerInformations;
+
+		leave = ItemUtils.item(Material.OAK_DOOR, "§c" + manager.stringItemLeave);
+		leaveChief = ItemUtils.item(Material.OAK_DOOR, "§c§m" + manager.stringItemLeave, manager.stringItemLeaveChiefLore);
+		disband = ItemUtils.item(Material.BARRIER, manager.stringItemDisband);
 
 		inv.setItem(4, getInformationsItem());
 		inv.setItem(17, isChief ? leaveChief : leave);
@@ -69,7 +72,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 	}
 
 	protected ItemStack getInformationsItem() {
-		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres §r§6: §e§o" + clan.getMembersAmount());
+		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres §r§6: §e§o" + clan.getMembersAmount() + "/" + clan.getMaxSize());
 	}
 
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
