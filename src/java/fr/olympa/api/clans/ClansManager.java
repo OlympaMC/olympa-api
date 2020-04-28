@@ -49,6 +49,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	private Map<Integer, T> clans = new HashMap<>();
 	private Map<Player, List<T>> invitations = new HashMap<>();
+	private int defaultMaxSize;
 	private final OlympaStatement createClanStatement;
 	private final OlympaStatement removeClanStatement;
 	private final OlympaStatement getPlayersInClanStatement;
@@ -92,6 +93,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	public ClansManager(OlympaAPIPlugin plugin, String tableName, List<String> columns, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
+		this.defaultMaxSize = defaultMaxSize;
 		this.tableName = "`" + tableName + "`";
 
 		StringJoiner columnsJoiner = new StringJoiner(", ");
@@ -136,6 +138,8 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	protected abstract T provideClan(int id, String name, long chief, int maxSize, ResultSet resultSet);
 
+	protected abstract T createClan(int id, String name, long chief, int maxSize);
+
 	public boolean clanExists(String name) {
 		return clans.values().stream().anyMatch(x -> x.getName().equalsIgnoreCase(name));
 	}
@@ -147,10 +151,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		statement.executeUpdate();
 		ResultSet resultSet = statement.getGeneratedKeys();
 		resultSet.next();
-		int id = resultSet.getInt("id");
-		int maxSize = resultSet.getInt("max_size");
-		T clan = provideClan(id, name, p.getId(), maxSize, resultSet);
+		int id = resultSet.getInt(1);
 		resultSet.close();
+		T clan = createClan(id, name, p.getId(), defaultMaxSize);
 		clans.put(id, clan);
 		clan.addPlayer(p);
 		return clan;
