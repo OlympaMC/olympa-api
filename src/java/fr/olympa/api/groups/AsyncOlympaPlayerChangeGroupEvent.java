@@ -1,5 +1,7 @@
 package fr.olympa.api.groups;
 
+import java.util.Arrays;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,9 +11,29 @@ import fr.olympa.api.objects.OlympaPlayer;
 public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 
 	public enum ChangeType {
-		ADD,
-		REMOVE,
-		SET;
+
+		ADD(1),
+		REMOVE(2),
+		SET(3);
+
+		public static ChangeType get(int i) {
+			return Arrays.stream(ChangeType.values()).filter(ct -> ct.getState() == i).findFirst().orElse(null);
+		}
+
+		int state;
+
+		private ChangeType(int state) {
+			this.state = state;
+		}
+
+		public int getState() {
+			return state;
+		}
+
+		public void setState(int state) {
+			this.state = state;
+		}
+
 	}
 
 	public static HandlerList handlers = new HandlerList();
@@ -33,15 +55,15 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 		this.olympaPlayer = olympaPlayer;
 		this.groupChange = groupChange;
 
-		this.isAsynchronous();
+		isAsynchronous();
 	}
 
 	public ChangeType getChangeType() {
-		return this.olympaGroupChangeType;
+		return olympaGroupChangeType;
 	}
 
 	public OlympaGroup getGroupChange() {
-		return this.groupChange;
+		return groupChange;
 	}
 
 	@Override
@@ -50,10 +72,10 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 	}
 
 	public OlympaPlayer getOlympaPlayer() {
-		return this.olympaPlayer;
+		return olympaPlayer;
 	}
 
 	public Player getPlayer() {
-		return this.player;
+		return player;
 	}
 }
