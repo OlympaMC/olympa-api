@@ -244,6 +244,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		ClanPlayerInterface<T> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
+		if (oplayer == null) return;
 		T clan = oplayer.getClan();
 		if (clan != null) clan.memberLeave(oplayer);
 	}

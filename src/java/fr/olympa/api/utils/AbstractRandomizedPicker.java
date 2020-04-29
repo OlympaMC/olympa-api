@@ -6,11 +6,9 @@ import java.util.Random;
 
 import fr.olympa.api.utils.AbstractRandomizedPicker.Chanced;
 
-public abstract class AbstractRandomizedPicker<T extends Chanced> {
+public interface AbstractRandomizedPicker<T extends Chanced> {
 
-	protected final Random random = new Random();
-
-	public List<T> pick() {
+	public default List<T> pick(Random random) {
 		List<T> objects = new ArrayList<>(getMaxItems());
 
 		int itemAmount = getMinItems() + random.nextInt(getMaxItems() - getMinItems() + 1);

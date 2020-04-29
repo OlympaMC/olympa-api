@@ -1,5 +1,8 @@
 package fr.olympa.api.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,11 +14,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
@@ -227,6 +233,26 @@ public class SpigotUtils {
 
 		double angle = ((angleDir - angleLook + pi2) % pi2) / 2;
 		return arrows[(int) Math.floor(angle / piOver16)];
+	}
+
+	public static <T extends ConfigurationSerializable> byte[] serialize(T object) throws IOException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+		dataOutput.writeObject(object);
+
+		dataOutput.close();
+		return outputStream.toByteArray();
+	}
+	
+	public static <T extends ConfigurationSerializable> T deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+		BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+
+		T object = (T) dataInput.readObject();
+
+		dataInput.close();
+		return object;
 	}
 
 }

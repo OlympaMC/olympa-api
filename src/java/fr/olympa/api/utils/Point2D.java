@@ -20,6 +20,22 @@ public class Point2D {
 		return x + "|" + z;
 	}
 
+	@Override
+	public int hashCode() {
+		long bits = x;
+		bits ^= z * 31;
+		return (((int) bits) ^ ((int) (bits >> 32)));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Point2D) {
+			Point2D other = (Point2D) obj;
+			return other.x == x && other.z == z;
+		}
+		return false;
+	}
+
 	public static Point2D fromString(String string) {
 		int index = string.indexOf('|');
 		return new Point2D(Integer.parseInt(string.substring(0, index)), Integer.parseInt(string.substring(index + 1)));
