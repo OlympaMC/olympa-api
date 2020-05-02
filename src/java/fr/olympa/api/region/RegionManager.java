@@ -52,6 +52,11 @@ public class RegionManager implements Listener {
 		trackedRegions.add(new TrackedRegion(region, id, enterPredicate, exitPredicate));
 	}
 
+	public boolean isIn(Player p, String id) {
+		Set<TrackedRegion> regions = inRegions.get(p);
+		return regions.stream().anyMatch(x -> x.id.equals(id));
+	}
+
 	public Set<TrackedRegion> getTrackedRegions() {
 		return trackedRegions;
 	}
