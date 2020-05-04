@@ -21,7 +21,7 @@ import fr.olympa.api.utils.ColorUtils;
 public class DataManagmentListener implements Listener {
 
 	{
-		Bukkit.getOnlinePlayers().forEach(player -> this.init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
+		Bukkit.getOnlinePlayers().forEach(player -> init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
 	}
 
 	private void init(OlympaPlayer olympaPlayer) {
@@ -31,30 +31,26 @@ public class DataManagmentListener implements Listener {
 		AccountProvider.cachedInformations.put(olympaPlayer.getId(), new OlympaPlayerInformationsObject(olympaPlayer.getId(), olympaPlayer.getName(), olympaPlayer.getUniqueId()));
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
 
 		if (olympaPlayer == null) {
 			player.kickPlayer("§cUne erreur de données est survenu, merci de réessayer.");
+			event.setJoinMessage(null);
 			return;
 		}
 
+		event.setJoinMessage(ColorUtils.color("&7[&a+&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
 		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer, false);
-		loginevent.setJoinMessage("&7[&a+&7] %prefix%name");
 		Bukkit.getPluginManager().callEvent(loginevent);
-
-		if (loginevent.getJoinMessage() != null && !loginevent.getJoinMessage().isEmpty()) {
-			Bukkit.broadcastMessage(loginevent.getJoinMessage());
-		}
-		event.setJoinMessage(null);
 	}
 
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
-		this.init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
+		init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -68,10 +64,7 @@ public class DataManagmentListener implements Listener {
 		Player player = event.getPlayer();
 		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
 		if (olympaPlayer != null) {
-			event.setQuitMessage(ColorUtils.color("&7[&c-&7] %prefix%name"
-					.replaceAll("%group", olympaPlayer.getGroup().getName())
-					.replaceAll("%prefix", olympaPlayer.getGroup().getPrefix())
-					.replaceAll("%name", player.getName())));
+			event.setQuitMessage(ColorUtils.color("&7[&c-&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
 		} else {
 			event.setQuitMessage(null);
 		}

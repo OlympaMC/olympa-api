@@ -27,4 +27,5 @@ public enum OlympaServer {
 	public String getNameCaps() {
 		return Utils.capitalize(toString());
 	}
+
 }

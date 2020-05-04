@@ -66,11 +66,6 @@ public class ReflectCommand extends Command {
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
 		if (sender instanceof Player) {
 			if (!exe.hasPermission()) {
-				if (exe.getOlympaPlayer() == null) {
-					exe.sendImpossibleWithOlympaPlayer();
-				} else {
-					exe.sendDoNotHavePermission();
-				}
 				return null;
 			}
 		} else if (!exe.allowConsole) {

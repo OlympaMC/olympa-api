@@ -82,7 +82,7 @@ public class TPS {
 		return recent;
 	}
 
-	public static double getTPS() {
+	public static float getTPS() {
 		return getTPS(1);
 	}
 
