@@ -1,4 +1,4 @@
-package fr.olympa.api.scoreboard;
+package fr.olympa.api.scoreboard.sign;
 
 import java.util.function.Function;
 

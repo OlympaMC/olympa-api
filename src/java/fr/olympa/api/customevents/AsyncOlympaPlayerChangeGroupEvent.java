@@ -1,4 +1,4 @@
-package fr.olympa.api.groups;
+package fr.olympa.api.customevents;
 
 import java.util.Arrays;
 
@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.OlympaPlayer;
 
 public class AsyncOlympaPlayerChangeGroupEvent extends Event {

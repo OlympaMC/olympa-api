@@ -1,4 +1,4 @@
-package fr.olympa.api.scoreboard;
+package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.scoreboard.ScoreboardSigns.VirtualTeam;
+import fr.olympa.api.scoreboard.sign.ScoreboardSigns.VirtualTeam;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 

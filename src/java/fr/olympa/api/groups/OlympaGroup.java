@@ -69,7 +69,7 @@ public enum OlympaGroup {
 		this.server = server;
 		this.name = name;
 		this.nameFem = nameFem;
-		this.prefix = ColorUtils.color(prefix.replace("%rank", this.name));
+		this.prefix = ColorUtils.color(prefix);
 		this.chatSufix = ColorUtils.color(chatSufix);
 	}
 
@@ -125,7 +125,7 @@ public enum OlympaGroup {
 	}
 
 	public String getPrefix(Gender gender) {
-		return ColorUtils.color(prefix.replaceFirst("%rank", getName(gender)));
+		return ColorUtils.color(prefix.replace("%rank", getName(gender)));
 	}
 
 	public OlympaServer getServer() {

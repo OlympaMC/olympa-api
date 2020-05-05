@@ -60,8 +60,12 @@ public abstract class OlympaCommand {
 		this.alias = Arrays.asList(alias);
 	}
 
+	public void addArgs(boolean isMandatory, List<String> args) {
+		this.args.put(isMandatory, args);
+	}
+
 	public void addArgs(boolean isMandatory, String... args) {
-		this.args.put(isMandatory, Arrays.asList(args));
+		addArgs(isMandatory, Arrays.asList(args));
 	}
 
 	public void broadcast(String message) {

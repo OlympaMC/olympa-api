@@ -28,6 +28,7 @@ public class OlympaPlayerLoadEvent extends Event {
 		return handlers;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends OlympaPlayer> T getOlympaPlayer() {
 		return (T) olympaPlayer;
 	}

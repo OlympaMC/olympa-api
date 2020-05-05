@@ -9,9 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.scoreboard.DynamicLine;
-import fr.olympa.api.scoreboard.FixedLine;
-import fr.olympa.api.scoreboard.ScoreboardManager;
+import fr.olympa.api.scoreboard.sign.DynamicLine;
+import fr.olympa.api.scoreboard.sign.FixedLine;
+import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 
 public class Main extends JavaPlugin {
 

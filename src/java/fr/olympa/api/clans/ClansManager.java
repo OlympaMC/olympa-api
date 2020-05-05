@@ -26,6 +26,7 @@ import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.NMS;
@@ -128,7 +129,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 					clan.members.put(pinfo.getId(), new AbstractMap.SimpleEntry<>(pinfo, null));
 				}
 				clans.put(clan.getID(), clan);
-			}catch (Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 				plugin.getLogger().severe("Impossible de charger le groupe " + resultSet.getInt("id"));
 			}
@@ -167,7 +168,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			PreparedStatement statement = removeClanStatement.getStatement();
 			statement.setInt(1, clan.getID());
 			statement.executeUpdate();
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 			plugin.getLogger().severe("Le groupe " + clan.getID() + " n'a pas pu être supprimé de la base de données.");
 		}
@@ -235,18 +236,27 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	public void onJoin(OlympaPlayerLoadEvent e) {
 		ClanPlayerInterface<T> oplayer = e.getOlympaPlayer();
 		String name = e.getPlayer().getName();
-		if (!enemiesBukkit.hasEntry(name)) enemiesBukkit.addEntry(name);
-		NMS.sendPacket(NMS.addPlayersToTeam(clan, Arrays.asList(e.getPlayer().getName())), e.getPlayer());
+		if (!enemiesBukkit.hasEntry(name)) {
+			enemiesBukkit.addEntry(name);
+		}
+		OlympaCore.getInstance().getNameTagApi().updateFakeNameTag(e.getPlayer(), new Nametag(null, "§a" + clan.getName()), Arrays.asList(e.getPlayer()));
+		//NMS.sendPacket(NMS.addPlayersToTeam(clan, Arrays.asList(e.getPlayer().getName())), e.getPlayer());
 		T clan = oplayer.getClan();
-		if (clan != null) clan.memberJoin(oplayer);
+		if (clan != null) {
+			clan.memberJoin(oplayer);
+		}
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		ClanPlayerInterface<T> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
-		if (oplayer == null) return;
+		if (oplayer == null) {
+			return;
+		}
 		T clan = oplayer.getClan();
-		if (clan != null) clan.memberLeave(oplayer);
+		if (clan != null) {
+			clan.memberLeave(oplayer);
+		}
 	}
 
 	private static ScoreboardTeam createOrGetTeam(Scoreboard sc, String name, ChatColor color) throws ReflectiveOperationException {
