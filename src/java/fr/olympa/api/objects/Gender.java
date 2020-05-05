@@ -15,11 +15,11 @@ public enum Gender {
 	}
 
 	public static Gender get(String name) {
-		return Arrays.stream(values()).filter(g -> g.names != null && Arrays.stream(g.names).anyMatch(n -> n.equalsIgnoreCase(name))).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(g -> g.names.length != 0 && Arrays.stream(g.names).anyMatch(n -> n.equalsIgnoreCase(name))).findFirst().orElse(null);
 	}
 
 	public static List<String> getNames() {
-		return Arrays.stream(values()).map(Gender::getName).collect(Collectors.toList());
+		return Arrays.stream(values()).filter(g -> g.names.length != 0).map(Gender::getName).collect(Collectors.toList());
 	}
 
 	final int id;
