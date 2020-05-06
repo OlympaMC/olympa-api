@@ -15,15 +15,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.objects.OlympaPlayerInformations;
@@ -33,34 +30,32 @@ import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.ColorUtils;
-import fr.olympa.api.utils.NMS;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_15_R1.ScoreboardTeam;
 
 public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
-	private static ScoreboardTeam createOrGetTeam(Scoreboard sc, String name, ChatColor color) throws ReflectiveOperationException {
-		Team team = sc.getTeam(name);
-		if (team == null) {
-			team = sc.registerNewTeam(name);
-			team.setColor(color);
-		}
-		return NMS.getNMSTeam(team);
-	}
+	//	private static ScoreboardTeam createOrGetTeam(Scoreboard sc, String name, ChatColor color) throws ReflectiveOperationException {
+	//		Team team = sc.getTeam(name);
+	//		if (team == null) {
+	//			team = sc.registerNewTeam(name);
+	//			team.setColor(color);
+	//		}
+	//		return NMS.getNMSTeam(team);
+	//	}
 
 	public final OlympaAPIPlugin plugin;
 
 	public final String tableName;
-	public Team enemiesBukkit;
-	public ScoreboardTeam enemies;
-	public ScoreboardTeam clan;
+	//	public Team enemiesBukkit;
+	//	public ScoreboardTeam enemies;
+	//	public ScoreboardTeam clan;
 
-	public ScoreboardTeam allies;
+	//	public ScoreboardTeam allies;
 	private Map<Integer, T> clans = new HashMap<>();
 	private Map<Player, List<T>> invitations = new HashMap<>();
 	private int defaultMaxSize;
@@ -106,23 +101,13 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	public String stringItemDisband = "§cDémenteler le clan";
 
-	public StringJoiner getExtraCollumsDb(StringJoiner columnsJoiner) {
-		return columnsJoiner;
-	}
-	
 	public ClansManager(OlympaAPIPlugin plugin, String tableName, List<String> columns, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
 		this.defaultMaxSize = defaultMaxSize;
 		this.tableName = "`" + tableName + "`";
 
-		StringJoiner columnsJoiner = new StringJoiner(", ");
-		columnsJoiner.add("`id` int(11) unsigned NOT NULL AUTO_INCREMENT");
-		columnsJoiner.add("`name` varchar(45) NOT NULL");
-		columnsJoiner.add("`chief` bigint(20) NOT NULL");
-		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT " + defaultMaxSize);
-		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
-		StringJoiner finalColumnsJoiner = getExtraCollumsDb(columnsJoiner);
-		columns.forEach(x -> finalColumnsJoiner.add(x));
+		StringJoiner columnsJoiner = getCollumsDb();
+		columns.forEach(x -> columnsJoiner.add(x));
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				columnsJoiner.toString() +
 				",  PRIMARY KEY (`id`))");
@@ -135,11 +120,11 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		updateClanChiefStatement = new OlympaStatement("UPDATE " + tableName + " SET `chief` = ? WHERE (`id` = ?)");
 		updateClanMaxStatement = new OlympaStatement("UPDATE " + tableName + " SET `max_size` = ? WHERE (`id` = ?)");
 
-		Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
-		enemies = createOrGetTeam(sc, "enemies", ChatColor.RED);
-		clan = createOrGetTeam(sc, "clan", ChatColor.GREEN);
-		allies = createOrGetTeam(sc, "allies", ChatColor.AQUA);
-		enemiesBukkit = sc.getTeam("enemies");
+		//		Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
+		//		enemies = createOrGetTeam(sc, "enemies", ChatColor.RED);
+		//		clan = createOrGetTeam(sc, "clan", ChatColor.GREEN);
+		//		allies = createOrGetTeam(sc, "allies", ChatColor.AQUA);
+		//		enemiesBukkit = sc.getTeam("enemies");
 
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
 		while (resultSet.next()) {
@@ -190,6 +175,16 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		return clans.entrySet();
 	}
 
+	public StringJoiner getCollumsDb() {
+		StringJoiner columnsJoiner = new StringJoiner(", ");
+		columnsJoiner.add("`id` int(11) unsigned NOT NULL AUTO_INCREMENT");
+		columnsJoiner.add("`name` varchar(45) NOT NULL");
+		columnsJoiner.add("`chief` bigint(20) NOT NULL");
+		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT " + defaultMaxSize);
+		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
+		return columnsJoiner;
+	}
+
 	public List<T> getPlayerInvitations(Player p) {
 		List<T> localInvites = invitations.get(p);
 		return localInvites == null ? Collections.EMPTY_LIST : localInvites;
@@ -228,8 +223,8 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(String.format(stringInvitationReceive, inviter.getName(), clan.getName())));
 		for (BaseComponent comp : texts) {
-			comp.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "clans accept " + clan.getName()));
-			comp.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
+			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "clans accept " + clan.getName()));
+			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
 		}
 		targetPlayer.spigot().sendMessage(texts);
 	}
@@ -237,10 +232,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(OlympaPlayerLoadEvent e) {
 		ClanPlayerInterface<T> oplayer = e.getOlympaPlayer();
-		String name = e.getPlayer().getName();
-		if (!enemiesBukkit.hasEntry(name)) {
-			enemiesBukkit.addEntry(name);
-		}
+		//		String name = e.getPlayer().getName();
+		//		if (!enemiesBukkit.hasEntry(name)) {
+		//			enemiesBukkit.addEntry(name);
+		//		}
 		//NMS.sendPacket(NMS.addPlayersToTeam(clan, Arrays.asList(e.getPlayer().getName())), e.getPlayer());
 		this.setSuffix(oplayer.getPlayer());
 		T clan = oplayer.getClan();
