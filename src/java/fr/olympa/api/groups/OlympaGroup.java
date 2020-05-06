@@ -87,7 +87,7 @@ public enum OlympaGroup {
 	}
 
 	public String getColor() {
-		return name.substring(0, 2);
+		return prefix.substring(0, 2);
 	}
 
 	public int getId() {

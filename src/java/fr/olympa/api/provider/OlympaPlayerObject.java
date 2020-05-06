@@ -14,7 +14,6 @@ import fr.olympa.api.objects.Gender;
 import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
-import fr.olympa.api.permission.OlympaPermission;
 
 public class OlympaPlayerObject implements OlympaPlayer {
 
@@ -207,12 +206,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public UUID getUniqueId() {
 		// TODO Auto-generated method stub
 		return uuid;
-	}
-
-	@Override
-	public boolean hasPermission(OlympaPermission permission) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

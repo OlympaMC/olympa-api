@@ -2,6 +2,7 @@ package fr.olympa.api.scoreboard.tab;
 
 import java.util.ArrayList;
 
+import fr.olympa.api.utils.ProtocolAPI;
 import fr.olympa.api.utils.Utils;
 
 /**
@@ -25,18 +26,10 @@ public class FakeTeam {
 
 	public FakeTeam(String prefix, String suffix, int sortPriority, boolean playerTag) {
 		name = UNIQUE_ID + "_" + getNameFromInput(sortPriority) + ++ID + (playerTag ? "+P" : "");
-
-		switch (VersionChecker.getBukkitVersion()) {
-		case v1_13_R1:
-		case v1_14_R1:
-		case v1_14_R2:
-		case v1_15_R1:
-		case v1_15_R2:
+		if (ProtocolAPI.V1_13.isNewerThanDefault()) {
 			name = name.length() > 128 ? name.substring(0, 128) : name;
-			break;
-		default:
+		} else {
 			name = name.length() > 16 ? name.substring(0, 16) : name;
-			break;
 		}
 		this.prefix = prefix;
 		this.suffix = suffix;

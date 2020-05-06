@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
 
 public interface OlympaPlayer {
 
@@ -72,8 +71,6 @@ public interface OlympaPlayer {
 	String getTuneChar();
 
 	UUID getUniqueId();
-
-	boolean hasPermission(OlympaPermission permission);
 
 	boolean isAfk();
 

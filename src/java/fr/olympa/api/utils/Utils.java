@@ -133,11 +133,15 @@ public class Utils {
 		return String.format("%." + digits + "f", value);
 	}
 
-	public static String generateUUID() {
+	public static String generateUUID(String... noThiss) {
+		String noThis = noThiss.length != 0 ? noThiss[0] : new String();
 		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 5; i++) {
 			builder.append(chars.charAt((int) (Math.random() * chars.length())));
+		}
+		if (!noThis.isEmpty() && builder.toString().equalsIgnoreCase(noThis)) {
+			return generateUUID(noThis);
 		}
 		return builder.toString();
 	}

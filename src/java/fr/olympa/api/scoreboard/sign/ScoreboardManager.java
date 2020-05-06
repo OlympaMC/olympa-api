@@ -20,52 +20,52 @@ public class ScoreboardManager implements Listener {
 	private Map<OlympaPlayer, Scoreboard> scoreboards = new HashMap<>();
 
 	Plugin plugin;
-	String scoreboardsName;
+	String displayName;
 	List<ScoreboardLine<?>> lines;
 
-	public ScoreboardManager(Plugin plugin, String scoreboardsName, List<ScoreboardLine<?>> lines) {
+	public ScoreboardManager(Plugin plugin, String displayName, List<ScoreboardLine<?>> lines) {
 		this.plugin = plugin;
-		this.scoreboardsName = scoreboardsName;
+		this.displayName = displayName;
 		this.lines = lines;
 
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 
 	public void create(OlympaPlayer p) {
-		this.removePlayerScoreboard(p);
-		this.scoreboards.put(p, new Scoreboard(p, this));
+		removePlayerScoreboard(p);
+		scoreboards.put(p, new Scoreboard(p, this));
 	}
 
 	public Scoreboard getPlayerScoreboard(OlympaPlayer p) {
-		return this.scoreboards.get(p);
+		return scoreboards.get(p);
 	}
 
 	@EventHandler
 	public void onJoin(OlympaPlayerLoadEvent e) {
-		this.create(e.getOlympaPlayer());
+		create(e.getOlympaPlayer());
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		this.removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
+		removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
 	}
 
 	public void removePlayerScoreboard(OlympaPlayer p) {
-		if (this.scoreboards.containsKey(p)) {
-			this.scoreboards.remove(p).unload();
+		if (scoreboards.containsKey(p)) {
+			scoreboards.remove(p).unload();
 		}
 	}
 
 	public void unload() {
 		HandlerList.unregisterAll(this);
 
-		for (Scoreboard s : this.scoreboards.values()) {
+		for (Scoreboard s : scoreboards.values()) {
 			s.unload();
 		}
-		if (!this.scoreboards.isEmpty()) {
-			this.plugin.getServer().getConsoleSender().sendMessage(this.scoreboards.size() + " scoreboards deleted.");
+		if (!scoreboards.isEmpty()) {
+			plugin.getServer().getConsoleSender().sendMessage(scoreboards.size() + " scoreboards deleted.");
 		}
-		this.scoreboards.clear();
+		scoreboards.clear();
 	}
 
 }

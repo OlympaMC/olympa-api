@@ -1,20 +1,16 @@
 package fr.olympa.api.scoreboard.sign;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.lang.Validate;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.utils.Passwords;
+import fr.olympa.api.utils.Reflection;
 import net.minecraft.server.v1_15_R1.ChatComponentText;
 import net.minecraft.server.v1_15_R1.IScoreboardCriteria.EnumScoreboardHealthDisplay;
-import net.minecraft.server.v1_15_R1.Packet;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardObjective;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardScore;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
 
 /**
@@ -23,208 +19,53 @@ import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
  * @see <a href="https://gist.github.com/zyuiop/8fcf2ca47794b92d7caa">Original file on GitHub</a>
  * @author zyuiop, SkytAsul
  */
-public class ScoreboardSigns {
+public class ScoreboardSigns implements Cloneable {
 
-	/**
-	 * This class is used to manage the content of a line. Advanced users can use it as they want, but they are encouraged to read and understand the
-	 * code before doing so. Use these methods at your own risk.
-	 */
-	public class VirtualTeam {
-		private final String name;
-		private String prefix;
-		private String suffix;
-		private String currentPlayer;
-		private String oldPlayer;
-		private String cachedValue;
+	private boolean created;
 
-		private boolean prefixChanged, suffixChanged, playerChanged = false;
-		private boolean first = true;
-
-		private VirtualTeam(String name) {
-			this(name, "", "");
-		}
-
-		private VirtualTeam(String name, String prefix, String suffix) {
-			this.name = name;
-			this.prefix = prefix;
-			this.suffix = suffix;
-			this.cachedValue = "";
-		}
-
-		public Object addOrRemovePlayer(int mode, String playerName) {
-			Object packet = new PacketPlayOutScoreboardTeam();
-			setField(packet, "a", this.name);
-			setField(packet, "i", mode);
-
-			try {
-				Field f = packet.getClass().getDeclaredField("h");
-				f.setAccessible(true);
-				((List<String>) f.get(packet)).add(playerName);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-
-			return packet;
-		}
-
-		public Object changePlayer() {
-			return this.addOrRemovePlayer(3, this.currentPlayer);
-		}
-
-		private Object createPacket(int mode) {
-			Object packet = new PacketPlayOutScoreboardTeam();
-			setField(packet, "a", this.name);
-			setField(packet, "i", mode);
-			setField(packet, "b", new ChatComponentText(""));
-			setField(packet, "c", new ChatComponentText(this.prefix));
-			setField(packet, "d", new ChatComponentText(this.suffix));
-			setField(packet, "j", 0);
-			setField(packet, "e", "always");
-
-			return packet;
-		}
-
-		public Object createTeam() {
-			return this.createPacket(0);
-		}
-
-		public String getCurrentPlayer() {
-			return this.currentPlayer;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public String getPrefix() {
-			return this.prefix;
-		}
-
-		public String getSuffix() {
-			return this.suffix;
-		}
-
-		public String getValue() {
-			return this.cachedValue;
-		}
-
-		public Object removeTeam() {
-			Object packet = new PacketPlayOutScoreboardTeam();
-			setField(packet, "a", this.name);
-			setField(packet, "i", 1);
-			this.first = true;
-			return packet;
-		}
-
-		public void reset() {
-			this.prefixChanged = false;
-			this.suffixChanged = false;
-			this.playerChanged = false;
-			this.oldPlayer = null;
-		}
-
-		public Iterable<Object> sendLine() {
-			List<Object> packets = new ArrayList<>();
-
-			if (this.first) {
-				packets.add(this.createTeam());
-			} else if (this.prefixChanged || this.suffixChanged) {
-				packets.add(this.updateTeam());
-			}
-
-			if (this.first || this.playerChanged) {
-				if (this.oldPlayer != null) {
-					packets.add(this.addOrRemovePlayer(4, this.oldPlayer)); //
-				}
-				packets.add(this.changePlayer());
-			}
-
-			if (this.first) {
-				this.first = false;
-			}
-
-			return packets;
-		}
-
-		private void setPlayer(String name) {
-			if (this.currentPlayer == null || !this.currentPlayer.equals(name)) {
-				this.playerChanged = true;
-			}
-			this.oldPlayer = this.currentPlayer;
-			this.currentPlayer = name;
-		}
-
-		private void setPrefix(String prefix) {
-			if (this.prefix == null || !this.prefix.equals(prefix)) {
-				this.prefixChanged = true;
-			}
-			this.prefix = prefix;
-		}
-
-		private void setSuffix(String suffix) {
-			if (this.suffix == null || !this.suffix.equals(this.prefix)) {
-				this.suffixChanged = true;
-			}
-			this.suffix = suffix;
-		}
-
-		public void setValue(String value) {
-			if (value.length() <= 16) {
-				this.setPrefix("");
-				this.setSuffix("");
-				this.setPlayer(value);
-			} else if (value.length() <= 32) {
-				this.setPrefix(value.substring(0, 16));
-				this.setPlayer(value.substring(16));
-				this.setSuffix("");
-			} else if (value.length() <= 48) {
-				this.setPrefix(value.substring(0, 16));
-				this.setPlayer(value.substring(16, 32));
-				this.setSuffix(value.substring(32));
-			} else {
-				throw new IllegalArgumentException("Too long value ! Max 48 characters, value was " + value.length() + " !");
-			}
-			this.cachedValue = value;
-		}
-
-		public Object updateTeam() {
-			return this.createPacket(2);
-		}
-	}
-
-	private static void sendPacket(Player p, Object packet) {
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket((Packet<?>) packet);
-	}
-
-	private static void setField(Object edit, String fieldName, Object value) {
-		Validate.notNull(edit);
-		try {
-			Field field = edit.getClass().getDeclaredField(fieldName);
-			field.setAccessible(true);
-			field.set(edit, value);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private boolean created = false;
-
-	private final ArrayList<VirtualTeam> lines = new ArrayList<>(15);
-
+	private final ArrayList<VirtualTeam> lines = new ArrayList<>();
 	private final Player player;
-
-	private String objectiveName;
-
+	protected String objectiveName;
 	private int last = 0;
+	private String displayName;
 
 	/**
 	 * Create a scoreboard sign for a given player and using a specifig objective name
 	 * @param player the player viewing the scoreboard sign
 	 * @param objectiveName the name of the scoreboard sign (displayed at the top of the scoreboard)
 	 */
-	public ScoreboardSigns(Player player, String objectiveName) {
+	public ScoreboardSigns(Player player, String displayName, String objectiveName) {
 		this.player = player;
-		this.objectiveName = objectiveName;
+		this.displayName = displayName;
+		changeObjectiveName(objectiveName);
+	}
+
+	/**
+	 * Change the name of the objective. The name is displayed at the top of the scoreboard.
+	 * @param name the name of the objective, max 32 char
+	 * @throws ClassNotFoundException reflection problem
+	 */
+	public void changeDisplayName(String name) throws ClassNotFoundException {
+		objectiveName = name;
+		if (created) {
+			Reflection.sendPacket(player, createObjectivePacket(2));
+		}
+	}
+
+	public void changeObjectiveName(String objectiveName) {
+		this.objectiveName = objectiveName.length() > 16 ? objectiveName.substring(0, 16) : objectiveName;
+		lines.clear();
+		created = false;
+	}
+
+	@Override
+	public ScoreboardSigns clone() {
+		try {
+			return (ScoreboardSigns) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -233,7 +74,7 @@ public class ScoreboardSigns {
 	 * @return true if a line has the same value
 	 */
 	public boolean containsValue(String value, VirtualTeam except) {
-		for (VirtualTeam team : this.lines) {
+		for (VirtualTeam team : lines) {
 			// if (team != null) System.out.println("VALUE: " + value + " | TEAM: " +
 			// team.getValue() + " | SAME: " + (except == team));
 			if (team != null && team != except && value.equals(team.getValue())) {
@@ -247,63 +88,60 @@ public class ScoreboardSigns {
 	 * Send the initial creation packets for this scoreboard sign. Must be called at least once.
 	 */
 	public void create() {
-		if (this.created) {
+		if (created) {
 			return;
 		}
-
-		try {
-			sendPacket(this.player, this.createObjectivePacket(0, this.objectiveName));
-			sendPacket(this.player, this.setObjectiveSlot());
-			int i = 0;
-			while (i < this.lines.size()) {
-				this.sendLine(i++);
-			}
-
-			this.created = true;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		Reflection.sendPacket(player, createObjectivePacket(0));
+		created = true;
 	}
 
 	/*
 	 * Factories
 	 */
-	private Object createObjectivePacket(int mode, String displayName) {
+	private Object createObjectivePacket(int mode) {
 		Object packet = new PacketPlayOutScoreboardObjective();
-		// Nom de l'objectif
-		setField(packet, "a", this.player.getName());
-
+		Reflection.setField(packet, "a", objectiveName);
 		// Mode
 		// 0 : créer
 		// 1 : Supprimer
 		// 2 : Mettre à jour
-		setField(packet, "d", mode);
+		Reflection.setField(packet, "d", mode);
 
 		if (mode == 0 || mode == 2) {
-			setField(packet, "b", new ChatComponentText(displayName));
-			setField(packet, "c", EnumScoreboardHealthDisplay.INTEGER);
+			Reflection.setField(packet, "b", new ChatComponentText(displayName));
+			Reflection.setField(packet, "c", EnumScoreboardHealthDisplay.INTEGER);
 		}
-
 		return packet;
 	}
 
 	/**
-	 * Send the packets to remove this scoreboard sign. A destroyed scoreboard sign must be recreated using create() in order
-	 * to be used again
+	 * Send the packets to remove this scoreboard sign and remove teams. A destroyed scoreboard sign must be recreated using create() in order
+	 * to be used again.
 	 */
 	public void destroy() {
-		if (!this.created) {
-			return;
+		if (!created) {
+			Reflection.sendPacket(player, createObjectivePacket(1));
 		}
-
-		sendPacket(this.player, this.createObjectivePacket(1, null));
-		for (VirtualTeam team : this.lines) {
+		for (VirtualTeam team : lines) {
 			if (team != null) {
-				sendPacket(this.player, team.removeTeam());
+				Reflection.sendPacket(player, team.removeTeam());
 			}
 		}
+		created = false;
+	}
 
-		this.created = false;
+	/**
+	 * Display Scoreboard in objective slot
+	 */
+	public void display() {
+		if (!created) {
+			return;
+		}
+		Reflection.sendPacket(player, setObjectiveSlot());
+	}
+
+	public String getDisplayName() {
+		return displayName;
 	}
 
 	/**
@@ -318,19 +156,24 @@ public class ScoreboardSigns {
 		if (line < 0) {
 			return null;
 		}
-		return this.getOrCreateTeam(line).getValue();
+		return getOrCreateTeam(line).getValue();
 	}
 
 	private VirtualTeam getOrCreateTeam(int line) {
-		if (this.lines.size() <= line) {
-			this.lines.add(new VirtualTeam("__fakeScore" + this.last));
-			this.last++;
-		} else if (this.lines.get(line) == null) {
-			this.lines.set(line, new VirtualTeam("__fakeScore" + this.last));
-			this.last++;
+		String teamName = "__fs" + Passwords.generateRandomPassword(16 - 11);
+		if (lines.size() <= line) {
+			lines.add(new VirtualTeam(teamName));
+			last++;
+		} else if (lines.get(line) == null) {
+			lines.set(line, new VirtualTeam(teamName));
+			last++;
 		}
 
-		return this.lines.get(line);
+		return lines.get(line);
+	}
+
+	private int getScore(int i) {
+		return 15 - i;
 	}
 
 	/**
@@ -345,7 +188,7 @@ public class ScoreboardSigns {
 		if (line < 0) {
 			return null;
 		}
-		return this.getOrCreateTeam(line);
+		return getOrCreateTeam(line);
 	}
 
 	/**
@@ -354,19 +197,31 @@ public class ScoreboardSigns {
 	 * @return the line number assigned to the specified team
 	 */
 	public int getTeamLine(VirtualTeam team) {
-		return this.lines.indexOf(team);
+		return lines.indexOf(team);
 	}
 
 	public void moveLines(int start, int amount) {
-		int newSize = this.lines.size() + amount;
+		int newSize = lines.size() + amount;
 		for (int i = start; i < newSize; i++) { // from the start line to the end of the final list
 			if (i < start + amount) { // insert null values to make space
-				this.lines.add(start, null);
+				lines.add(start, null);
 			} else { // refresh scores of the next lines
-				VirtualTeam val = this.getOrCreateTeam(i);
-				sendPacket(this.player, this.sendScore(val.getCurrentPlayer(), 15 - i));
+				VirtualTeam val = getOrCreateTeam(i);
+				Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), getScore(i)));
 			}
 		}
+	}
+
+	/**
+	 * Send the packets to remove this scoreboard sign. A destroyed scoreboard sign must be recreated using create() in order
+	 * to be used again
+	 */
+	public void remove() {
+		if (!created) {
+			return;
+		}
+		Reflection.sendPacket(player, createObjectivePacket(1));
+		created = false;
 	}
 
 	/**
@@ -374,25 +229,25 @@ public class ScoreboardSigns {
 	 * @param line the line to remove
 	 */
 	public void removeLine(int line) {
-		VirtualTeam team = this.getOrCreateTeam(line);
+		VirtualTeam team = getOrCreateTeam(line);
 		String old = team.getCurrentPlayer();
 
-		if (old != null && this.created) {
-			sendPacket(this.player, this.removeLine(old));
-			sendPacket(this.player, team.removeTeam());
+		if (old != null && created) {
+			Reflection.sendPacket(player, this.removeLine(old));
+			Reflection.sendPacket(player, team.removeTeam());
 		}
 
-		this.lines.remove(line);
-		for (int i = line; i < this.lines.size(); i++) {
-			VirtualTeam val = this.getOrCreateTeam(i);
-			sendPacket(this.player, this.sendScore(val.getCurrentPlayer(), 15 - /* line ? */ i));
+		lines.remove(line);
+		for (int i = line; i < lines.size(); i++) {
+			VirtualTeam val = getOrCreateTeam(i);
+			Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), getScore(i)));
 		}
 	}
 
 	private Object removeLine(String line) {
 		Object packet = new PacketPlayOutScoreboardScore();
-		setField(packet, "a", line);
-		setField(packet, "d", Action.REMOVE);
+		Reflection.setField(packet, "a", line);
+		Reflection.setField(packet, "d", Action.REMOVE);
 		return packet;
 	}
 
@@ -403,25 +258,39 @@ public class ScoreboardSigns {
 		if (line < 0) {
 			return;
 		}
-		if (!this.created) {
+		if (!created) {
 			return;
 		}
 
-		int score = 15 - line;
-		VirtualTeam val = this.getOrCreateTeam(line);
+		int score = getScore(line);
+		VirtualTeam val = getOrCreateTeam(line);
 		for (Object packet : val.sendLine()) {
-			sendPacket(this.player, packet);
+			Reflection.sendPacket(player, packet);
 		}
-		sendPacket(this.player, this.sendScore(val.getCurrentPlayer(), score));
+		Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), score));
 		val.reset();
+	}
+
+	public void sendLines() {
+		if (!created) {
+			return;
+		}
+		try {
+			int i = 0;
+			while (i < lines.size()) {
+				sendLine(i++);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Object sendScore(String line, int score) {
 		Object packet = new PacketPlayOutScoreboardScore();
-		setField(packet, "a", line);
-		setField(packet, "b", this.player.getName());
-		setField(packet, "c", score);
-		setField(packet, "d", Action.CHANGE);
+		Reflection.setField(packet, "a", line);
+		Reflection.setField(packet, "b", objectiveName);
+		Reflection.setField(packet, "c", score);
+		Reflection.setField(packet, "d", Action.CHANGE);
 		return packet;
 	}
 
@@ -433,18 +302,18 @@ public class ScoreboardSigns {
 	 */
 	public VirtualTeam setLine(int line, String value) {
 		try {
-			VirtualTeam team = this.getOrCreateTeam(line);
+			VirtualTeam team = getOrCreateTeam(line);
 			String old = team.getCurrentPlayer();
 
-			if (old != null && this.created) {
-				sendPacket(this.player, this.removeLine(old));
+			if (old != null && created) {
+				Reflection.sendPacket(player, this.removeLine(old));
 			}
 
-			while (this.containsValue(value, team)) {
-				value = value + " "; // add a space if a line with the value already exists
+			while (containsValue(value, team)) {
+				value = value + "§r"; // add a space if a line with the value already exists
 			}
 			team.setValue(value);
-			this.sendLine(line);
+			sendLine(line);
 			return team;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -452,23 +321,11 @@ public class ScoreboardSigns {
 		}
 	}
 
-	/**
-	 * Change the name of the objective. The name is displayed at the top of the scoreboard.
-	 * @param name the name of the objective, max 32 char
-	 * @throws ClassNotFoundException reflection problem
-	 */
-	public void setObjectiveName(String name) throws ClassNotFoundException {
-		this.objectiveName = name;
-		if (this.created) {
-			sendPacket(this.player, this.createObjectivePacket(2, name));
-		}
-	}
-
 	private Object setObjectiveSlot() {
 		Object packet = new PacketPlayOutScoreboardDisplayObjective();
 		// Slot
-		setField(packet, "a", 1);
-		setField(packet, "b", this.player.getName());
+		Reflection.setField(packet, "a", 1);
+		Reflection.setField(packet, "b", objectiveName);
 
 		return packet;
 	}
