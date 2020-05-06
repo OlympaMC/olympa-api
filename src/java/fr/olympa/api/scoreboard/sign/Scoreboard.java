@@ -145,7 +145,7 @@ public class Scoreboard {
 				oldSb.destroy();
 			}
 		};
-		runnable.runTaskTimerAsynchronously(manager.plugin, 10 * 20L, 1L);
+		runnable.runTaskTimerAsynchronously(manager.plugin, 20L, 1L);
 	}
 
 	public void addLine(ScoreboardLine<?> line) {
@@ -163,7 +163,7 @@ public class Scoreboard {
 	}
 
 	public void initScoreboard() {
-		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16));
+		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16), manager.lines.size());
 		sb.create();
 		sb.sendLines();
 		for (int i = 0; i < lines.size(); i++) {

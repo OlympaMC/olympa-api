@@ -26,7 +26,7 @@ public class ScoreboardSigns implements Cloneable {
 	private final ArrayList<VirtualTeam> lines = new ArrayList<>();
 	private final Player player;
 	protected String objectiveName;
-	private int last = 0;
+	private int maxSize = 0;
 	private String displayName;
 
 	/**
@@ -34,10 +34,11 @@ public class ScoreboardSigns implements Cloneable {
 	 * @param player the player viewing the scoreboard sign
 	 * @param objectiveName the name of the scoreboard sign (displayed at the top of the scoreboard)
 	 */
-	public ScoreboardSigns(Player player, String displayName, String objectiveName) {
+	public ScoreboardSigns(Player player, String displayName, String objectiveName, int maxSize) {
 		this.player = player;
 		this.displayName = displayName;
-		changeObjectiveName(objectiveName);
+		this.objectiveName = objectiveName.length() > 16 ? objectiveName.substring(0, 16) : objectiveName;
+		this.maxSize = maxSize;
 	}
 
 	/**
@@ -50,12 +51,6 @@ public class ScoreboardSigns implements Cloneable {
 		if (created) {
 			Reflection.sendPacket(player, createObjectivePacket(2));
 		}
-	}
-
-	public void changeObjectiveName(String objectiveName) {
-		this.objectiveName = objectiveName.length() > 16 ? objectiveName.substring(0, 16) : objectiveName;
-		lines.clear();
-		created = false;
 	}
 
 	@Override
@@ -160,20 +155,21 @@ public class ScoreboardSigns implements Cloneable {
 	}
 
 	private VirtualTeam getOrCreateTeam(int line) {
-		String teamName = "__fs" + Passwords.generateRandomPassword(16 - 11);
+		String teamName = "__" + Passwords.generateRandomPassword(16 - 2);
 		if (lines.size() <= line) {
 			lines.add(new VirtualTeam(teamName));
-			last++;
+			if (lines.size() > maxSize) {
+				maxSize = lines.size();
+			}
 		} else if (lines.get(line) == null) {
 			lines.set(line, new VirtualTeam(teamName));
-			last++;
 		}
 
 		return lines.get(line);
 	}
 
 	private int getScore(int i) {
-		return 15 - i;
+		return maxSize - i;
 	}
 
 	/**
@@ -210,18 +206,6 @@ public class ScoreboardSigns implements Cloneable {
 				Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), getScore(i)));
 			}
 		}
-	}
-
-	/**
-	 * Send the packets to remove this scoreboard sign. A destroyed scoreboard sign must be recreated using create() in order
-	 * to be used again
-	 */
-	public void remove() {
-		if (!created) {
-			return;
-		}
-		Reflection.sendPacket(player, createObjectivePacket(1));
-		created = false;
 	}
 
 	/**
