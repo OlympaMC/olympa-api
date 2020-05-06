@@ -14,7 +14,7 @@ import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.provider.AccountProvider;
 
-public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
+public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 
 	private ClansManager<T> manager;
 
@@ -124,7 +124,7 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 		clan.setChief(target.getInformation());
 	}
 
-	private T getPlayerClan(boolean chief) {
+	protected T getPlayerClan(boolean chief) {
 		ClanPlayerInterface<T> p = getOlympaPlayer();
 		T clan = (T) p.getClan();
 		if (clan == null){

@@ -1,6 +1,6 @@
 package fr.olympa.api.scoreboard.tab;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.bukkit.entity.Player;
 
@@ -30,5 +30,7 @@ public interface INametagApi {
 
 	void setSuffix(String player, String suffix);
 
-	void updateFakeNameTag(Player player, Nametag nametag, List<Player> toPlayers);
+	void updateFakeNameTag(Player player, Nametag nametag, Collection<? extends Player> toPlayers);
+
+	void updateFakeNameTag(String player, Nametag nametag, Collection<? extends Player> toPlayers);
 }
