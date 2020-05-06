@@ -74,11 +74,13 @@ public class Scoreboard {
 			if (lastAmount > ls.size()) {
 				int toRemove = lastAmount - ls.size();
 				for (int i = 0; i < toRemove; i++) {
+					System.out.println("ls " + firstLine + " remove team '" + teams.get(0).getValue() + "'");
 					sb.removeLine(sb.getTeamLine(teams.get(0)));
 					teams.remove(0);
 				}
 			} else if (lastAmount < ls.size()) {
 				sb.moveLines(firstLine + lastAmount, ls.size() - lastAmount);
+				System.out.println("ls " + firstLine + " moveLines '" + (firstLine + lastAmount) + "' to " + (ls.size() - lastAmount) + "'");
 			}
 			lastAmount = ls.size();
 			for (int i = 0; i < ls.size(); i++) {
@@ -139,58 +141,11 @@ public class Scoreboard {
 				}
 				oldSb = sb;
 				sb = oldSb.clone();
-				String objectiveName;
-				do {
-					objectiveName = Passwords.generateRandomPassword(16);
-				} while (oldSb.objectiveName.equalsIgnoreCase(objectiveName));
-				sb.changeObjectiveName(objectiveName);
-				sb.create();
-				for (int i = 0; i < lines.size(); i++) {
-					Line<?> line = lines.get(i);
-					line.setLines(i == 0 ? 0 : lines.get(i - 1).lastLineIndex() + 1);
-				}
-				sb.sendLines();
-				sb.display();
+				initScoreboard();
 				oldSb.destroy();
-				oldSb = null;
-
 			}
 		};
-		runnable.runTaskTimerAsynchronously(manager.plugin, 20L, 20L);
-		/*runnable = new BukkitRunnable() {
-			@Override
-			public void run() {
-				if (p.getPlayer() == null) {
-					return;
-				}
-				oldSb = sb;
-				sb = oldSb.clone();
-				String objectiveName;
-				do {
-					objectiveName = Passwords.generateRandomPassword(16);
-				} while (oldSb.objectiveName.equalsIgnoreCase(objectiveName));
-				sb.changeObjectiveName(objectiveName);
-				sb.create();
-		//				for (Line<?> line : lines) {
-		//					if (line.tryRefresh()) {
-		//						line.refreshLines();
-		//					}
-		//				}
-				sb.sendLines();
-				for (int i = 0; i < lines.size(); i++) {
-					Line<?> line = lines.get(i);
-					line.setLines(i == 0 ? 0 : lines.get(i - 1).lastLineIndex() + 1);
-				}
-				Bukkit.getScheduler().runTaskLaterAsynchronously(manager.plugin, () -> {
-					//sb.setLine(lines.size() - 1, animation.get(i++));
-					sb.display();
-					//oldSb.remove();
-					oldSb.remove();
-					oldSb.destroy();
-				}, 1L);
-			}
-		};
-		runnable.runTaskTimerAsynchronously(manager.plugin, 20L, 20L);*/
+		runnable.runTaskTimerAsynchronously(manager.plugin, 10 * 20L, 1L);
 	}
 
 	public void addLine(ScoreboardLine<?> line) {

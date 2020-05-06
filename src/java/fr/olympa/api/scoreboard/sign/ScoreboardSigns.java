@@ -306,6 +306,7 @@ public class ScoreboardSigns implements Cloneable {
 			String old = team.getCurrentPlayer();
 
 			if (old != null && created) {
+				System.out.println("setLine Remove '" + old + "'");
 				Reflection.sendPacket(player, this.removeLine(old));
 			}
 
