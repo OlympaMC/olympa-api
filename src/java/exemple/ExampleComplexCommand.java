@@ -22,7 +22,7 @@ public class ExampleComplexCommand extends ComplexCommand {
 
 	@Cmd(player = true)
 	public void gui(CommandContext cmd) {
-		new ExempleGUI().create(cmd.player);
+		new ExempleGUI().create(getPlayer());
 	}
 
 	@Cmd(args = { "PLAYERS", "" }, min = 2, permissionName = "EXEMPLE_LOL")
@@ -33,7 +33,7 @@ public class ExampleComplexCommand extends ComplexCommand {
 
 	@Cmd(player = true, permissionName = "EXEMPLE_NYAN")
 	public void nyan(CommandContext cmd) {
-		cmd.player.setVelocity(cmd.player.getLocation().getDirection().multiply(3));
+		getPlayer().setVelocity(getPlayer().getLocation().getDirection().multiply(3));
 	}
 
 }

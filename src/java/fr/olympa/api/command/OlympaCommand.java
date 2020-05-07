@@ -99,6 +99,10 @@ public abstract class OlympaCommand {
 		return player;
 	}
 
+	public CommandSender getSender() {
+		return sender;
+	}
+
 	public boolean hasPermission() {
 		return this.hasPermission(permission);
 	}

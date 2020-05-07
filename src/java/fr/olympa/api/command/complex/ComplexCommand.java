@@ -113,7 +113,7 @@ public class ComplexCommand extends OlympaCommand {
 		}
 
 		try {
-			internal.method.invoke(internal.commands, new CommandContext(this, sender, argsCmd, label));
+			internal.method.invoke(internal.commands, new CommandContext(this, argsCmd, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			this.sendError("Une erreur est survenue.");
 			e.printStackTrace();

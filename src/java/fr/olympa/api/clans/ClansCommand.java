@@ -44,7 +44,7 @@ public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 			sendError(manager.stringYouAlreadyInClan);
 			return;
 		}
-		String name = (String) cmd.args[0];
+		String name = cmd.getArgument(0);
 		if (manager.clanExists(name)) {
 			sendError(manager.stringClanAlreadyExists);
 			return;
@@ -68,13 +68,13 @@ public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 			return;
 		}
 
-		Player targetPlayer = (Player) cmd.args[0];
-		manager.invite(clan, cmd.player, targetPlayer);
+		Player targetPlayer = (Player) cmd.getArgument(0);
+		manager.invite(clan, getPlayer(), targetPlayer);
 	}
 	
 	@Cmd (player = true, min = 1, syntax = "<nom du clan>")
 	public void accept(CommandContext cmd) {
-		T clan = manager.getPlayerInvitations(cmd.player).stream().filter(x -> x.getName().equals(cmd.args[0])).findFirst().orElse(null);
+		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(cmd.getArgument(0))).findFirst().orElse(null);
 		if (clan == null) {
 			sendError(String.format(manager.stringNoInvitation, cmd.args[0]));
 			return;
@@ -82,10 +82,10 @@ public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 
 		if (clan.addPlayer(getOlympaPlayer())) {
 			sendSuccess(String.format(manager.stringClanJoined, clan.getName()));
-			manager.clearPlayerInvitations(cmd.player);
+			manager.clearPlayerInvitations(getPlayer());
 		}else {
 			sendError(manager.stringClanFull);
-			manager.getPlayerInvitations(cmd.player).remove(clan);
+			manager.getPlayerInvitations(getPlayer()).remove(clan);
 		}
 	}
 
@@ -110,7 +110,7 @@ public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 		T clan = getPlayerClan(false);
 		if (clan == null) return;
 
-		if (cmd.args[0] == cmd.player) {
+		if (cmd.getArgument(0) == getPlayer()) {
 			sendError(manager.stringCantChiefSelf);
 			return;
 		}
