@@ -11,7 +11,10 @@ public class OlympaPlayerParser<T extends OlympaPlayer> implements TextParser<T>
 
 	public T parse(Player p, String msg) {
 		Player target = Bukkit.getPlayer(msg);
-		if (target == null) Prefix.BAD.sendMessage(p, "Ce joueur n'est pas connecté.");
+		if (target == null) {
+			Prefix.BAD.sendMessage(p, "Ce joueur n'est pas connecté.");
+			return null;
+		}
 		return AccountProvider.get(target.getUniqueId());
 	}
 

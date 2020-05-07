@@ -27,8 +27,8 @@ import com.mojang.authlib.properties.Property;
 
 public class ItemUtils {
 	
-	public static ItemStack none = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§c");
-	public static ItemStack done = ItemUtils.item(Material.DIAMOND, "§a");
+	public static ItemStack none = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§cx");
+	public static ItemStack done = ItemUtils.item(Material.DIAMOND, "§aValider");
 
 	/**
 	 * Create an ItemStack instance

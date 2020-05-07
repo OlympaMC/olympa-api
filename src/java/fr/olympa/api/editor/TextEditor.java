@@ -60,12 +60,12 @@ public class TextEditor<R> extends Editor {
 			}else returnment = (R) msg;
 		}
 
-		if (!invalid){
-			leave(p);
-			run.accept(returnment);
-			return true;
-		}
-		return false;
+		if (invalid && cancel == null) return false;
+		leave(p);
+		if (invalid) {
+			cancel.run();
+		}else run.accept(returnment);
+		return true;
 	}
 	
 }
