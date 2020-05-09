@@ -51,10 +51,6 @@ public class VirtualTeam {
 		return packet;
 	}
 
-	public Object changePlayer() {
-		return addOrRemovePlayer(3, currentPlayer);
-	}
-
 	private Object createPacket(int mode) {
 		Object packet = new PacketPlayOutScoreboardTeam();
 		Reflection.setField(packet, "a", name);
@@ -120,7 +116,7 @@ public class VirtualTeam {
 			if (oldPlayer != null) {
 				packets.add(addOrRemovePlayer(4, oldPlayer));
 			}
-			packets.add(changePlayer());
+			packets.add(addOrRemovePlayer(3, currentPlayer));
 		}
 
 		if (first) {

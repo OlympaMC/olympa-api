@@ -15,6 +15,7 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 		ChatColor color1 = ChatColor.DARK_AQUA;
 		ChatColor color2 = ChatColor.AQUA;
 		final List<String> anim = new ArrayList<>();
+		anim.add(color1 + string);
 		for (int i = 0; i < string.length(); i++) {
 			anim.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
 		}
@@ -22,7 +23,6 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 		for (int i = string.length() - 1; i > -1; i--) {
 			anim.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
 		}
-		anim.add(color1 + string);
 		return anim;
 	}
 
@@ -36,6 +36,10 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 	public AnimLine(String value, int length) {
 		super(1, length);
 		this.value = getAnim(value);
+	}
+
+	public int getAnimSize() {
+		return value.size();
 	}
 
 	@Override

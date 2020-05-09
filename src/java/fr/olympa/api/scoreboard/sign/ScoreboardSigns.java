@@ -1,6 +1,9 @@
 package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -21,11 +24,11 @@ import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
  */
 public class ScoreboardSigns implements Cloneable {
 
-	private boolean created;
-
-	private final ArrayList<VirtualTeam> lines = new ArrayList<>();
-	private final Player player;
 	protected String objectiveName;
+	protected boolean created;
+	protected ArrayList<VirtualTeam> lines = new ArrayList<>();
+	protected ArrayList<VirtualTeam> oldLines = new ArrayList<>();
+	private final Player player;
 	private int maxSize = 0;
 	private String displayName;
 
@@ -49,7 +52,7 @@ public class ScoreboardSigns implements Cloneable {
 	public void changeDisplayName(String name) throws ClassNotFoundException {
 		objectiveName = name;
 		if (created) {
-			Reflection.sendPacket(player, createObjectivePacket(2));
+			Reflection.sendPacket(player, createObjectivePacket(2, objectiveName));
 		}
 	}
 
@@ -63,15 +66,18 @@ public class ScoreboardSigns implements Cloneable {
 		}
 	}
 
+	private boolean containsValue(String value) {
+		return lines.stream().anyMatch(l -> l.getValue().equalsIgnoreCase(value));
+	}
+
 	/**
 	 * Check if a line has the exact same value
 	 * @param value line value to check
 	 * @return true if a line has the same value
 	 */
+	@Deprecated
 	public boolean containsValue(String value, VirtualTeam except) {
 		for (VirtualTeam team : lines) {
-			// if (team != null) System.out.println("VALUE: " + value + " | TEAM: " +
-			// team.getValue() + " | SAME: " + (except == team));
 			if (team != null && team != except && value.equals(team.getValue())) {
 				return true;
 			}
@@ -86,14 +92,14 @@ public class ScoreboardSigns implements Cloneable {
 		if (created) {
 			return;
 		}
-		Reflection.sendPacket(player, createObjectivePacket(0));
+		Reflection.sendPacket(player, createObjectivePacket(0, objectiveName));
 		created = true;
 	}
 
 	/*
 	 * Factories
 	 */
-	private Object createObjectivePacket(int mode) {
+	private Object createObjectivePacket(int mode, String objectiveName) {
 		Object packet = new PacketPlayOutScoreboardObjective();
 		Reflection.setField(packet, "a", objectiveName);
 		// Mode
@@ -109,25 +115,29 @@ public class ScoreboardSigns implements Cloneable {
 		return packet;
 	}
 
-	/**
-	 * Send the packets to remove this scoreboard sign and remove teams. A destroyed scoreboard sign must be recreated using create() in order
-	 * to be used again.
-	 */
 	public void destroy() {
 		if (!created) {
-			Reflection.sendPacket(player, createObjectivePacket(1));
+			destroy(objectiveName);
 		}
-		for (VirtualTeam team : lines) {
+		destroyTeam(lines);
+		created = false;
+	}
+
+	public void destroy(String objectiveName) {
+		if (!created) {
+			Reflection.sendPacket(player, createObjectivePacket(1, objectiveName));
+			created = false;
+		}
+	}
+
+	public void destroyTeam(List<VirtualTeam> teams) {
+		for (VirtualTeam team : teams) {
 			if (team != null) {
 				Reflection.sendPacket(player, team.removeTeam());
 			}
 		}
-		created = false;
 	}
 
-	/**
-	 * Display Scoreboard in objective slot
-	 */
 	public void display() {
 		if (!created) {
 			return;
@@ -135,27 +145,26 @@ public class ScoreboardSigns implements Cloneable {
 		Reflection.sendPacket(player, setObjectiveSlot());
 	}
 
-	public String getDisplayName() {
-		return displayName;
-	}
-
 	/**
 	 * Get the current value for a line
 	 * @param line the line
 	 * @return the content of the line
 	 */
+	@Deprecated
 	public String getLine(int line) {
-		if (line > 14) {
-			return null;
-		}
-		if (line < 0) {
+		if (line > 14 || line < 0) {
 			return null;
 		}
 		return getOrCreateTeam(line).getValue();
 	}
 
+	@Deprecated
 	private VirtualTeam getOrCreateTeam(int line) {
-		String teamName = "__" + Passwords.generateRandomPassword(16 - 2);
+		Set<String> actualNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
+		String teamName;
+		do {
+			teamName = Passwords.generateRandomPassword(16);
+		} while (actualNames.contains(teamName.toLowerCase()));
 		if (lines.size() <= line) {
 			lines.add(new VirtualTeam(teamName));
 			if (lines.size() > maxSize) {
@@ -164,8 +173,34 @@ public class ScoreboardSigns implements Cloneable {
 		} else if (lines.get(line) == null) {
 			lines.set(line, new VirtualTeam(teamName));
 		}
-
 		return lines.get(line);
+	}
+
+	private VirtualTeam getOrCreateTeam(String value) {
+		while (containsValue(value)) {
+			value = value + "§r";
+		}
+		String finalValue = value;
+		Set<String> oldNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
+		Set<String> actualNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
+		VirtualTeam team = oldLines.stream().filter(t -> t.getValue().equals(finalValue)).findFirst().orElse(null);
+		String teamName;
+		do {
+			teamName = Passwords.generateRandomPassword(16);
+		} while (actualNames.contains(teamName.toLowerCase()) && oldNames.contains(teamName.toLowerCase()));
+		if (team == null) {
+			team = new VirtualTeam(teamName);
+			team.setValue(finalValue);
+			lines.add(team);
+			if (lines.size() > maxSize) {
+				maxSize = lines.size();
+				// == maxSize ++;
+			}
+		} else {
+			oldLines.remove(team);
+			lines.add(team);
+		}
+		return team;
 	}
 
 	private int getScore(int i) {
@@ -177,11 +212,9 @@ public class ScoreboardSigns implements Cloneable {
 	 * @param line line number
 	 * @return the VirtualTeam used to display this line
 	 */
+	@Deprecated
 	public VirtualTeam getTeam(int line) {
-		if (line > 14) {
-			return null;
-		}
-		if (line < 0) {
+		if (line > 14 || line < 0) {
 			return null;
 		}
 		return getOrCreateTeam(line);
@@ -192,10 +225,12 @@ public class ScoreboardSigns implements Cloneable {
 	 * @param team Team object to get index of
 	 * @return the line number assigned to the specified team
 	 */
+	@Deprecated
 	public int getTeamLine(VirtualTeam team) {
 		return lines.indexOf(team);
 	}
 
+	@Deprecated
 	public void moveLines(int start, int amount) {
 		int newSize = lines.size() + amount;
 		for (int i = start; i < newSize; i++) { // from the start line to the end of the final list
@@ -212,6 +247,7 @@ public class ScoreboardSigns implements Cloneable {
 	 * Remove a given scoreboard line
 	 * @param line the line to remove
 	 */
+	@Deprecated
 	public void removeLine(int line) {
 		VirtualTeam team = getOrCreateTeam(line);
 		String old = team.getCurrentPlayer();
@@ -228,6 +264,7 @@ public class ScoreboardSigns implements Cloneable {
 		}
 	}
 
+	@Deprecated
 	private Object removeLine(String line) {
 		Object packet = new PacketPlayOutScoreboardScore();
 		Reflection.setField(packet, "a", line);
@@ -235,14 +272,9 @@ public class ScoreboardSigns implements Cloneable {
 		return packet;
 	}
 
+	@Deprecated
 	private void sendLine(int line) throws ClassNotFoundException {
-		if (line > 14) {
-			return;
-		}
-		if (line < 0) {
-			return;
-		}
-		if (!created) {
+		if (line > 14 || line < 0 || !created) {
 			return;
 		}
 
@@ -255,6 +287,21 @@ public class ScoreboardSigns implements Cloneable {
 		val.reset();
 	}
 
+	public void sendLine(int line, String value) {
+		if (line > 14 || line < 0 || !created) {
+			return;
+		}
+
+		int score = getScore(line);
+		VirtualTeam team = getOrCreateTeam(value);
+		for (Object packet : team.sendLine()) {
+			Reflection.sendPacket(player, packet);
+		}
+		Reflection.sendPacket(player, sendScore(team.getCurrentPlayer(), score));
+		team.reset();
+	}
+
+	@Deprecated
 	public void sendLines() {
 		if (!created) {
 			return;
@@ -284,6 +331,7 @@ public class ScoreboardSigns implements Cloneable {
 	 * @param value the new value for the scoreboard line
 	 * @return VirtualTeam created or edited
 	 */
+	@Deprecated
 	public VirtualTeam setLine(int line, String value) {
 		try {
 			VirtualTeam team = getOrCreateTeam(line);
