@@ -36,14 +36,14 @@ public class Scoreboard {
 		/*public int lastLineIndex() {
 			return sb.getTeamLine(teams.get(teams.size() - 1));
 		}
-
+		
 		/**
 		 * Refresh all lines, based on the first index of the previous lines
 		 */
 		/*public void refreshLines() {
 			setLines(firstLineIndex());
 		}
-
+		
 		public void removeLines() {
 			int index = firstLineIndex();
 			for (int i = 0; i < teams.size(); i++) {
@@ -105,7 +105,7 @@ public class Scoreboard {
 				teams.set(index, team);
 			}
 		}
-		
+
 		private boolean tryRefresh() {
 			if (param.refresh == 0) {
 				return false;
@@ -164,7 +164,8 @@ public class Scoreboard {
 				updateScoreboard();
 				if (++i >= animationSize) {
 					cancel();
-					getTask().runTaskTimerAsynchronously(manager.plugin, 10 * 20L, 1L);
+					runnable = getTask();
+					runnable.runTaskTimerAsynchronously(manager.plugin, 10 * 20L, 1L);
 				}
 			}
 		};
@@ -195,7 +196,6 @@ public class Scoreboard {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void updateScoreboard() {
 		String oldName = new String(sb.objectiveName);
 		String name;
@@ -203,7 +203,7 @@ public class Scoreboard {
 			name = Passwords.generateRandomPassword(16);
 		} while (name.equalsIgnoreCase(oldName));
 		sb.objectiveName = name;
-		sb.oldLines = (ArrayList<VirtualTeam>) sb.lines.clone();
+		sb.oldLines.addAll(sb.lines);
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();

@@ -95,12 +95,13 @@ public enum OlympaGroup {
 	}
 
 	public int getIndex() {
-		for (int i = 0; i < OlympaGroup.values().length; i++) {
-			if (OlympaGroup.values()[i].getId() == id) {
+		OlympaGroup[] groups = OlympaGroup.values();
+		for (int i = 0; i < groups.length; i++) {
+			if (groups[i].getId() == id) {
 				return i + 1;
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	@Deprecated

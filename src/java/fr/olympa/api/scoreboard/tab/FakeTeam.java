@@ -3,20 +3,9 @@ package fr.olympa.api.scoreboard.tab;
 import java.util.ArrayList;
 
 import fr.olympa.api.utils.ProtocolAPI;
-import fr.olympa.api.utils.Utils;
 
-/**
- * This class represents a Scoreboard Team. It is used to keep track of the
- * current members of a Team, and is responsible for
- */
 public class FakeTeam {
 
-	// Because some networks use NametagEdit on multiple servers, we may have
-	// clashes
-	// with the same Team names. The UNIQUE_ID ensures there will be no clashing.
-	private static final String UNIQUE_ID = Utils.generateUUID();
-	// This represents the number of FakeTeams that have been created.
-	// It is used to generate a unique Team name.
 	private static int ID = 0;
 
 	private final ArrayList<String> members = new ArrayList<>();
@@ -24,9 +13,9 @@ public class FakeTeam {
 	private String prefix = "";
 	private String suffix = "";
 
-	public FakeTeam(String prefix, String suffix, int sortPriority, boolean playerTag) {
-		name = UNIQUE_ID + "_" + getNameFromInput(sortPriority) + ++ID + (playerTag ? "+P" : "");
-		if (ProtocolAPI.V1_13.isNewerThanDefault()) {
+	public FakeTeam(String prefix, String suffix, int sortPriority) {
+		name = "T_" + getNameFromInput(sortPriority) + ++ID;
+		if (ProtocolAPI.V1_13.isSupported()) {
 			name = name.length() > 128 ? name.substring(0, 128) : name;
 		} else {
 			name = name.length() > 16 ? name.substring(0, 16) : name;

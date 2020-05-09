@@ -130,8 +130,8 @@ public enum ProtocolAPI {
 		return allow;
 	}
 
-	public boolean isNewerThanDefault() {
+	public boolean isSupported() {
 		ProtocolAPI defaultProto = getDefaultProtocol();
-		return getProtocolNumber() >= defaultProto.getProtocolNumber();
+		return getProtocolNumber() <= defaultProto.getProtocolNumber();
 	}
 }
