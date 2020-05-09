@@ -68,7 +68,7 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		if (!cmd.permissionName().isEmpty() && !internal.perm.hasPermission(sender)) {
+		if (!cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender)) {
 			this.sendDoNotHavePermission();
 			return true;
 		}
@@ -145,7 +145,7 @@ public class ComplexCommand extends OlympaCommand {
 			if (needed.length <= index) {
 				return tmp;
 			}
-			if (!internal.cmd.permissionName().isEmpty() && !internal.perm.hasPermission(sender)) {
+			if (!internal.cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender)) {
 				return tmp;
 			}
 			sel = args[index + 1];

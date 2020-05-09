@@ -177,7 +177,7 @@ public class Scoreboard {
 		for (int i = 0; i < lines.size(); i++) {
 			Line<?> line = lines.get(i);
 			String value = line.getValue();
-			sb.sendLine(i, value);
+			sb.setLine(i, value);
 		}
 		sb.display();
 	}
@@ -216,7 +216,7 @@ public class Scoreboard {
 				}
 			}
 			String value = line.getValue();
-			sb.sendLine(i, value);
+			sb.setLine(i, value);
 		}
 		sb.display();
 		sb.destroy(oldName);

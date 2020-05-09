@@ -4,14 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.olympa.api.utils.ProtocolAPI;
 import fr.olympa.api.utils.Reflection;
 import net.minecraft.server.v1_15_R1.ChatComponentText;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardTeam;
 
-/**
- * This class is used to manage the content of a line. Advanced users can use it as they want, but they are encouraged to read and understand the
- * code before doing so. Use these methods at your own risk.
- */
 public class VirtualTeam {
 	private final String name;
 	private String prefix;
@@ -157,12 +154,16 @@ public class VirtualTeam {
 			setPrefix(value.substring(0, 16));
 			setPlayer(value.substring(16));
 			setSuffix("");
-		} else if (value.length() <= 128) {
+		} else if (value.length() <= 48) {
+			setPrefix(value.substring(0, 16));
+			setPlayer(value.substring(16, 32));
+			setSuffix(value.substring(32));
+		} else if (ProtocolAPI.V1_13.isSupported()) {
 			setPrefix(value.substring(0, 16));
 			setPlayer(value.substring(16, 32));
 			setSuffix(value.substring(32));
 		} else {
-			throw new IllegalArgumentException("Too long value ! Max 128 characters, value was " + value.length() + " !");
+			throw new IllegalArgumentException("Too long value for < 1.13 ! Max 48 characters, value was " + value.length() + " !");
 		}
 		cachedValue = value;
 	}

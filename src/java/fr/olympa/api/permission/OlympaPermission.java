@@ -89,13 +89,6 @@ public class OlympaPermission {
 		}
 	}
 
-	public boolean hasPermission(CommandSender sender) {
-		if (sender instanceof Player) {
-			return this.hasPermission(((Player) sender).getUniqueId());
-		}
-		return true;
-	}
-
 	public boolean hasPermission(OlympaGroup group) {
 		return min_group != null && group.getPower() >= min_group.getPower()
 				|| groups_allow != null && Arrays.stream(groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
@@ -112,6 +105,13 @@ public class OlympaPermission {
 
 	public boolean hasPermission(UUID uniqueId) {
 		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
+	}
+
+	public boolean hasSenderPermission(CommandSender sender) {
+		if (sender instanceof Player) {
+			return this.hasPermission(((Player) sender).getUniqueId());
+		}
+		return true;
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {

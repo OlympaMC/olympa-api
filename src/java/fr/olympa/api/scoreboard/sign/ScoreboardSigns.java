@@ -16,12 +16,6 @@ import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardObjective;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardScore;
 import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
 
-/**
- * A simple tool to manage scoreboards in minecraft (lines up to 48 characters !).<br>
- * Edited by me to permit more flexibility
- * @see <a href="https://gist.github.com/zyuiop/8fcf2ca47794b92d7caa">Original file on GitHub</a>
- * @author zyuiop, SkytAsul
- */
 public class ScoreboardSigns implements Cloneable {
 
 	protected String objectiveName;
@@ -32,11 +26,6 @@ public class ScoreboardSigns implements Cloneable {
 	private int maxSize = 0;
 	private String displayName;
 
-	/**
-	 * Create a scoreboard sign for a given player and using a specifig objective name
-	 * @param player the player viewing the scoreboard sign
-	 * @param objectiveName the name of the scoreboard sign (displayed at the top of the scoreboard)
-	 */
 	public ScoreboardSigns(Player player, String displayName, String objectiveName, int maxSize) {
 		this.player = player;
 		this.displayName = displayName;
@@ -44,11 +33,6 @@ public class ScoreboardSigns implements Cloneable {
 		this.maxSize = maxSize;
 	}
 
-	/**
-	 * Change the name of the objective. The name is displayed at the top of the scoreboard.
-	 * @param name the name of the objective, max 32 char
-	 * @throws ClassNotFoundException reflection problem
-	 */
 	public void changeDisplayName(String name) throws ClassNotFoundException {
 		objectiveName = name;
 		if (created) {
@@ -70,24 +54,6 @@ public class ScoreboardSigns implements Cloneable {
 		return lines.stream().anyMatch(l -> l.getValue().equalsIgnoreCase(value));
 	}
 
-	/**
-	 * Check if a line has the exact same value
-	 * @param value line value to check
-	 * @return true if a line has the same value
-	 */
-	@Deprecated
-	public boolean containsValue(String value, VirtualTeam except) {
-		for (VirtualTeam team : lines) {
-			if (team != null && team != except && value.equals(team.getValue())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Send the initial creation packets for this scoreboard sign. Must be called at least once.
-	 */
 	public void create() {
 		if (created) {
 			return;
@@ -96,16 +62,9 @@ public class ScoreboardSigns implements Cloneable {
 		created = true;
 	}
 
-	/*
-	 * Factories
-	 */
 	private Object createObjectivePacket(int mode, String objectiveName) {
 		Object packet = new PacketPlayOutScoreboardObjective();
 		Reflection.setField(packet, "a", objectiveName);
-		// Mode
-		// 0 : créer
-		// 1 : Supprimer
-		// 2 : Mettre à jour
 		Reflection.setField(packet, "d", mode);
 
 		if (mode == 0 || mode == 2) {
@@ -145,37 +104,6 @@ public class ScoreboardSigns implements Cloneable {
 		Reflection.sendPacket(player, setObjectiveSlot());
 	}
 
-	/**
-	 * Get the current value for a line
-	 * @param line the line
-	 * @return the content of the line
-	 */
-	@Deprecated
-	public String getLine(int line) {
-		if (line > 14 || line < 0) {
-			return null;
-		}
-		return getOrCreateTeam(line).getValue();
-	}
-
-	@Deprecated
-	private VirtualTeam getOrCreateTeam(int line) {
-		Set<String> actualNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
-		String teamName;
-		do {
-			teamName = Passwords.generateRandomPassword(16);
-		} while (actualNames.contains(teamName.toLowerCase()));
-		if (lines.size() <= line) {
-			lines.add(new VirtualTeam(teamName));
-			if (lines.size() > maxSize) {
-				maxSize = lines.size();
-			}
-		} else if (lines.get(line) == null) {
-			lines.set(line, new VirtualTeam(teamName));
-		}
-		return lines.get(line);
-	}
-
 	private VirtualTeam getOrCreateTeam(String value) {
 		while (containsValue(value)) {
 			value = value + "§r";
@@ -207,87 +135,23 @@ public class ScoreboardSigns implements Cloneable {
 		return maxSize - i;
 	}
 
-	/**
-	 * Get the team assigned to a line
-	 * @param line line number
-	 * @return the VirtualTeam used to display this line
-	 */
-	@Deprecated
-	public VirtualTeam getTeam(int line) {
-		if (line > 14 || line < 0) {
-			return null;
-		}
-		return getOrCreateTeam(line);
-	}
-
-	/**
-	 * Get the line assigned to a team
-	 * @param team Team object to get index of
-	 * @return the line number assigned to the specified team
-	 */
-	@Deprecated
-	public int getTeamLine(VirtualTeam team) {
-		return lines.indexOf(team);
-	}
-
-	@Deprecated
-	public void moveLines(int start, int amount) {
-		int newSize = lines.size() + amount;
-		for (int i = start; i < newSize; i++) { // from the start line to the end of the final list
-			if (i < start + amount) { // insert null values to make space
-				lines.add(start, null);
-			} else { // refresh scores of the next lines
-				VirtualTeam val = getOrCreateTeam(i);
-				Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), getScore(i)));
-			}
-		}
-	}
-
-	/**
-	 * Remove a given scoreboard line
-	 * @param line the line to remove
-	 */
-	@Deprecated
-	public void removeLine(int line) {
-		VirtualTeam team = getOrCreateTeam(line);
-		String old = team.getCurrentPlayer();
-
-		if (old != null && created) {
-			Reflection.sendPacket(player, this.removeLine(old));
-			Reflection.sendPacket(player, team.removeTeam());
-		}
-
-		lines.remove(line);
-		for (int i = line; i < lines.size(); i++) {
-			VirtualTeam val = getOrCreateTeam(i);
-			Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), getScore(i)));
-		}
-	}
-
-	@Deprecated
-	private Object removeLine(String line) {
+	private Object removeLine(String teamPlayer) {
 		Object packet = new PacketPlayOutScoreboardScore();
-		Reflection.setField(packet, "a", line);
+		Reflection.setField(packet, "a", teamPlayer);
 		Reflection.setField(packet, "d", Action.REMOVE);
 		return packet;
 	}
 
-	@Deprecated
-	private void sendLine(int line) throws ClassNotFoundException {
-		if (line > 14 || line < 0 || !created) {
-			return;
-		}
-
-		int score = getScore(line);
-		VirtualTeam val = getOrCreateTeam(line);
-		for (Object packet : val.sendLine()) {
-			Reflection.sendPacket(player, packet);
-		}
-		Reflection.sendPacket(player, sendScore(val.getCurrentPlayer(), score));
-		val.reset();
+	private Object sendScore(int score, String teamPlayer) {
+		Object packet = new PacketPlayOutScoreboardScore();
+		Reflection.setField(packet, "a", teamPlayer);
+		Reflection.setField(packet, "b", objectiveName);
+		Reflection.setField(packet, "c", score);
+		Reflection.setField(packet, "d", Action.CHANGE);
+		return packet;
 	}
 
-	public void sendLine(int line, String value) {
+	public void setLine(int line, String value) {
 		if (line > 14 || line < 0 || !created) {
 			return;
 		}
@@ -297,66 +161,12 @@ public class ScoreboardSigns implements Cloneable {
 		for (Object packet : team.sendLine()) {
 			Reflection.sendPacket(player, packet);
 		}
-		Reflection.sendPacket(player, sendScore(team.getCurrentPlayer(), score));
+		Reflection.sendPacket(player, sendScore(score, team.getCurrentPlayer()));
 		team.reset();
-	}
-
-	@Deprecated
-	public void sendLines() {
-		if (!created) {
-			return;
-		}
-		try {
-			int i = 0;
-			while (i < lines.size()) {
-				sendLine(i++);
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private Object sendScore(String line, int score) {
-		Object packet = new PacketPlayOutScoreboardScore();
-		Reflection.setField(packet, "a", line);
-		Reflection.setField(packet, "b", objectiveName);
-		Reflection.setField(packet, "c", score);
-		Reflection.setField(packet, "d", Action.CHANGE);
-		return packet;
-	}
-
-	/**
-	 * Change a scoreboard line and send the packets to the player. Can be called async.
-	 * @param line the number of the line (0 &#60;= line &#60; 15)
-	 * @param value the new value for the scoreboard line
-	 * @return VirtualTeam created or edited
-	 */
-	@Deprecated
-	public VirtualTeam setLine(int line, String value) {
-		try {
-			VirtualTeam team = getOrCreateTeam(line);
-			String old = team.getCurrentPlayer();
-
-			if (old != null && created) {
-				System.out.println("setLine Remove '" + old + "'");
-				Reflection.sendPacket(player, this.removeLine(old));
-			}
-
-			while (containsValue(value, team)) {
-				value = value + "§r"; // add a space if a line with the value already exists
-			}
-			team.setValue(value);
-			sendLine(line);
-			return team;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	private Object setObjectiveSlot() {
 		Object packet = new PacketPlayOutScoreboardDisplayObjective();
-		// Slot
 		Reflection.setField(packet, "a", 1);
 		Reflection.setField(packet, "b", objectiveName);
 
