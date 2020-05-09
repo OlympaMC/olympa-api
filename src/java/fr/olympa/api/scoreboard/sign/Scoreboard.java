@@ -36,14 +36,14 @@ public class Scoreboard {
 		/*public int lastLineIndex() {
 			return sb.getTeamLine(teams.get(teams.size() - 1));
 		}
-		
+
 		/**
 		 * Refresh all lines, based on the first index of the previous lines
 		 */
 		/*public void refreshLines() {
 			setLines(firstLineIndex());
 		}
-		
+
 		public void removeLines() {
 			int index = firstLineIndex();
 			for (int i = 0; i < teams.size(); i++) {
@@ -105,7 +105,7 @@ public class Scoreboard {
 				teams.set(index, team);
 			}
 		}
-
+		
 		private boolean tryRefresh() {
 			if (param.refresh == 0) {
 				return false;
@@ -128,7 +128,7 @@ public class Scoreboard {
 
 	private BukkitRunnable runnable;
 
-	private int animationSize;
+	private int animationSize = 1;
 
 	Scoreboard(OlympaPlayer player, ScoreboardManager manager) {
 		p = player;

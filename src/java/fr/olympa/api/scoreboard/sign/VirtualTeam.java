@@ -162,7 +162,7 @@ public class VirtualTeam {
 			setPlayer(value.substring(16, 32));
 			setSuffix(value.substring(32));
 		} else {
-			throw new IllegalArgumentException("Too long value ! Max 48 characters, value was " + value.length() + " !");
+			throw new IllegalArgumentException("Too long value ! Max 128 characters, value was " + value.length() + " !");
 		}
 		cachedValue = value;
 	}
