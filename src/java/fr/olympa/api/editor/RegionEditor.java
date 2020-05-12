@@ -1,0 +1,162 @@
+package fr.olympa.api.editor;
+
+import java.util.LinkedList;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.region.Region;
+import fr.olympa.api.region.shapes.Cuboid;
+import fr.olympa.api.region.shapes.ExpandedCuboid;
+import fr.olympa.api.region.shapes.Polygon;
+import fr.olympa.api.utils.Point2D;
+import fr.olympa.api.utils.Prefix;
+
+public class RegionEditor extends InventoryClear {
+
+	private static ItemStack blockSelector = ItemUtils.item(Material.STICK, "§bSélectionner un bloc");
+	private static ItemStack blockRemover = ItemUtils.item(Material.SHEARS, "§cRetirer le dernier bloc");
+	private static ItemStack regionCuboid = ItemUtils.item(Material.STONE, "§aRégion cubique (cuboid)");
+	private static ItemStack regionPolygon = ItemUtils.item(Material.COBBLESTONE_STAIRS, "§aRégion polygonale (polygon)");
+	private static ItemStack validate = ItemUtils.item(Material.DIAMOND, "§bValider la sélection");
+
+	private RegionType regionType;
+	private boolean expanded = false;
+
+	private LinkedList<Location> locations = new LinkedList<>();
+
+	private Consumer<Region> end;
+
+	public RegionEditor(Player p, Consumer<Region> end) {
+		super(p);
+		this.end = end;
+	}
+
+	@Override
+	public void begin() {
+		super.begin();
+		Inventory inv = p.getInventory();
+		inv.setItem(0, blockSelector);
+		inv.setItem(1, blockRemover);
+		inv.setItem(3, regionCuboid.clone());
+		inv.setItem(4, regionPolygon.clone());
+		inv.setItem(6, ItemUtils.itemSwitch("Région étendue", expanded));
+		inv.setItem(8, validate);
+		setRegionType(RegionType.CUBOID);
+	}
+
+	public void setRegionType(RegionType newRegion) {
+		if (regionType != newRegion) return;
+		if (regionType != null) p.getInventory().getItem(regionType.slot).removeEnchantment(Enchantment.ARROW_DAMAGE);
+		regionType = newRegion;
+		p.getInventory().getItem(regionType.slot).addEnchantment(Enchantment.ARROW_DAMAGE, 0);
+	}
+
+	@EventHandler
+	public void onInteract(PlayerInteractEvent e) {
+		if (e.getPlayer() != p) return;
+		if (e.getHand() != EquipmentSlot.HAND) return;
+
+		int slot = p.getInventory().getHeldItemSlot();
+		RegionType regionTypeClicked = RegionType.fromSlot(slot);
+		if (regionTypeClicked != null) {
+			setRegionType(regionTypeClicked);
+		}else if (slot == 0) {
+			if (e.getClickedBlock() == null) return;
+			Location loc = e.getClickedBlock().getLocation();
+			Action action = e.getAction();
+			switch (regionType) {
+			case CUBOID:
+				if (action == Action.LEFT_CLICK_BLOCK || locations.isEmpty()) {
+					if (!locations.isEmpty()) locations.removeFirst();
+					locations.addFirst(loc);
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 1/2 de la sélection. Sélection valide : §l" + (locations.size() < 2 ? "§cnon" : "§aoui"));
+				}else {
+					if (ensureWorld(loc)) {
+						locations.remove(1);
+						locations.add(loc);
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 2/2 de la sélection.");
+					}
+				}
+				break;
+			case POLYGON:
+				if (ensureWorld(loc)) {
+					locations.add(loc);
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as ajouté 1 bloc à la sélection (" + locations.size() + " blocs). Sélection valide : §l" + (locations.size() < 3 ? "§cnon" : "§aoui"));
+				}
+				break;
+			}
+		}else if (slot == 1) {
+			if (locations.isEmpty()) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as sélectionné aucun bloc.");
+			}else {
+				locations.removeLast();
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as supprimé le dernier bloc de la sélection (reste " + locations.size() + " blocs)");
+			}
+		}else if (slot == 6) {
+			expanded = ItemUtils.toggle(e.getItem());
+		}else if (slot == 8) {
+			leave(p);
+			Region region = null;
+			switch (regionType) {
+			case CUBOID:
+				if (locations.size() > 2) {
+					Location first = locations.getFirst();
+					Location last = locations.getLast();
+					region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
+				}
+				break;
+			case POLYGON:
+				if (locations.size() > 3) {
+					int minY = 0;
+					int maxY = 256;
+					if (!expanded) {
+						for (Location loc : locations) {
+							if (loc.getBlockY() < minY) minY = loc.getBlockY();
+							if (loc.getBlockY() > maxY) maxY = loc.getBlockY();
+						}
+					}
+					region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), minY, maxY);
+				}
+				break;
+			}
+			end.accept(region);
+		}else return;
+		e.setCancelled(true);
+	}
+
+	private boolean ensureWorld(Location location) {
+		if (locations.isEmpty() || locations.getFirst().getWorld().equals(location.getWorld())) return true;
+		Prefix.DEFAULT_BAD.sendMessage(p, "Le bloc que tu as sélectionné ne se trouve pas dans le même monde que les autres.");
+		return false;
+	}
+
+	enum RegionType {
+		CUBOID(3), POLYGON(4);
+
+		public final int slot;
+
+		RegionType(int slot) {
+			this.slot = slot;
+		}
+
+		public static RegionType fromSlot(int slot) {
+			for (RegionType region : values()) {
+				if (region.slot == slot) return region;
+			}
+			return null;
+		}
+	}
+
+}

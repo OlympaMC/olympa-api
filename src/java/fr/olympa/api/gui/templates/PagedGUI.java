@@ -82,6 +82,11 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		return index + (2 * line);
 	}
 
+	public void removeItem(T existing) {
+		if (!objects.remove(existing)) throw new IllegalArgumentException("Cannot remove nonexistent object.");
+		setItems();
+	}
+
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot % 9){
 		case 8:
