@@ -83,11 +83,11 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 			}
 		}else if (isChief && slot >= 9 && slot < 14) {
 			if (playersOrder.size() <= slot - 9) {
-				Prefix.DEFAULT.sendMessage(p, "Entrez le nom du joueur à inviter.");
+				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur à inviter.");
 				new TextEditor<Player>(p, (target) -> {
 					manager.invite(clan, p, target);
 					new ClanManagementGUI<T>(player, manager).create(p);
-				}, () -> this.create(p), false, new PlayerParser()).enterOrLeave(p);
+				}, () -> this.create(p), false, new PlayerParser()).enterOrLeave();
 			}else {
 				OlympaPlayerInformations member = playersOrder.get(slot - 9);
 				if (member == playerInformations) return true;

@@ -48,7 +48,7 @@ public class NoClanGUI<T extends Clan<T>> extends OlympaGUI {
 					return null;
 				}
 				return msg;
-			}).enterOrLeave(p);
+			}).enterOrLeave();
 			break;
 		case 3:
 			new InvitationsGUI<T>(p, manager).create(p);

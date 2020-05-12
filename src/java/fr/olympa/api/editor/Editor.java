@@ -90,7 +90,7 @@ public abstract class Editor implements Listener {
 	public void end() {
 	}
 
-	public <T extends Editor> T enterOrLeave(Player p) {
+	public <T extends Editor> T enterOrLeave() {
 		return (T) enterOrLeave(p, this);
 	}
 

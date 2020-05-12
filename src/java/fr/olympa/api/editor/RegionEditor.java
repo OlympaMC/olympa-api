@@ -58,9 +58,9 @@ public class RegionEditor extends InventoryClear {
 
 	public void setRegionType(RegionType newRegion) {
 		if (regionType != newRegion) return;
-		if (regionType != null) p.getInventory().getItem(regionType.slot).removeEnchantment(Enchantment.ARROW_DAMAGE);
+		if (regionType != null) p.getInventory().getItem(regionType.slot).removeEnchantment(Enchantment.ARROW_DAMAGE); // retire l'effet glowing sur l'item de l'ancienne région
 		regionType = newRegion;
-		p.getInventory().getItem(regionType.slot).addEnchantment(Enchantment.ARROW_DAMAGE, 0);
+		p.getInventory().getItem(regionType.slot).addEnchantment(Enchantment.ARROW_DAMAGE, 0); // ajoute l'effet glowing sur l'item de la nouvelle région
 	}
 
 	@EventHandler
@@ -72,6 +72,8 @@ public class RegionEditor extends InventoryClear {
 		RegionType regionTypeClicked = RegionType.fromSlot(slot);
 		if (regionTypeClicked != null) {
 			setRegionType(regionTypeClicked);
+			locations.clear();
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu sélectionne maintenant une zone de type " + regionTypeClicked.name() + ". Son nombre de blocs minimal est " + regionTypeClicked.minBlocks + ". Ton ancienne sélection a été effacée.");
 		}else if (slot == 0) {
 			if (e.getClickedBlock() == null) return;
 			Location loc = e.getClickedBlock().getLocation();
@@ -81,7 +83,7 @@ public class RegionEditor extends InventoryClear {
 				if (action == Action.LEFT_CLICK_BLOCK || locations.isEmpty()) {
 					if (!locations.isEmpty()) locations.removeFirst();
 					locations.addFirst(loc);
-					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 1/2 de la sélection. Sélection valide : §l" + (locations.size() < 2 ? "§cnon" : "§aoui"));
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 1/2 de la sélection. " + ensureValid());
 				}else {
 					if (ensureWorld(loc)) {
 						locations.remove(1);
@@ -93,7 +95,7 @@ public class RegionEditor extends InventoryClear {
 			case POLYGON:
 				if (ensureWorld(loc)) {
 					locations.add(loc);
-					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as ajouté 1 bloc à la sélection (" + locations.size() + " blocs). Sélection valide : §l" + (locations.size() < 3 ? "§cnon" : "§aoui"));
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as ajouté 1 bloc à la sélection (" + locations.size() + " blocs). " + ensureValid());
 				}
 				break;
 			}
@@ -102,7 +104,7 @@ public class RegionEditor extends InventoryClear {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as sélectionné aucun bloc.");
 			}else {
 				locations.removeLast();
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as supprimé le dernier bloc de la sélection (reste " + locations.size() + " blocs)");
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as supprimé le dernier bloc de la sélection (reste " + locations.size() + " blocs). " + ensureValid());
 			}
 		}else if (slot == 6) {
 			expanded = ItemUtils.toggle(e.getItem());
@@ -136,6 +138,10 @@ public class RegionEditor extends InventoryClear {
 		e.setCancelled(true);
 	}
 
+	private String ensureValid() {
+		return "§eSélection valide : §l" + (locations.size() < regionType.minBlocks ? "§cnon" : "§aoui");
+	}
+
 	private boolean ensureWorld(Location location) {
 		if (locations.isEmpty() || locations.getFirst().getWorld().equals(location.getWorld())) return true;
 		Prefix.DEFAULT_BAD.sendMessage(p, "Le bloc que tu as sélectionné ne se trouve pas dans le même monde que les autres.");
@@ -143,12 +149,14 @@ public class RegionEditor extends InventoryClear {
 	}
 
 	enum RegionType {
-		CUBOID(3), POLYGON(4);
+		CUBOID(3, 2), POLYGON(4, 3);
 
 		public final int slot;
+		public final int minBlocks;
 
-		RegionType(int slot) {
+		RegionType(int slot, int minBlocks) {
 			this.slot = slot;
+			this.minBlocks = minBlocks;
 		}
 
 		public static RegionType fromSlot(int slot) {
