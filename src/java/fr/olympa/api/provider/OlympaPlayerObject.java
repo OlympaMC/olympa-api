@@ -9,9 +9,9 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.objects.Gender;
-import fr.olympa.api.objects.OlympaMoney;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
 

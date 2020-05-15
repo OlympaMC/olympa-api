@@ -14,6 +14,7 @@ import fr.olympa.api.clans.Clan;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.editor.TextEditor;
+import fr.olympa.api.editor.parsers.MoneyAmountParser;
 import fr.olympa.api.editor.parsers.PlayerParser;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.gui.templates.ConfirmGUI;
@@ -25,6 +26,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 
 	private static ItemStack noMember = ItemUtils.skull("§cPas de membre", "MHF_Question");
 	private static ItemStack noMemberInvite = ItemUtils.skull("§bInviter un nouveau membre", "MHF_Question");
+	private static ItemStack addMoney = ItemUtils.item(Material.EMERALD, "§aMettre de l'argent dans la cagnotte");
 
 	private ItemStack leave;
 	private ItemStack leaveChief;
@@ -51,6 +53,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		disband = ItemUtils.item(Material.BARRIER, manager.stringItemDisband);
 
 		inv.setItem(4, getInformationsItem());
+		inv.setItem(8, addMoney);
 		inv.setItem(17, isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(16, disband);
 
@@ -72,7 +75,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 	}
 
 	protected ItemStack getInformationsItem() {
-		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres §r§6: §e§o" + clan.getMembersAmount() + "/" + clan.getMaxSize());
+		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres : §e§o" + clan.getMembersAmount() + "/" + clan.getMaxSize(), "§e§lCagnotte : §6" + clan.getMoney().getFormatted());
 	}
 
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
@@ -109,6 +112,14 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 			}
 		}else if (slot == 16) {
 			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
+		}else if (slot == 8) {
+			new TextEditor<>(p, (amount) -> {
+				create(p);
+				player.getGameMoney().withdraw(amount);
+				clan.getMoney().give(amount);
+				inv.setItem(4, getInformationsItem()); // pour update la money
+				Prefix.DEFAULT_GOOD.sendMessage(p, String.format(manager.stringAddedMoney, amount));
+			}, () -> create(p), false, new MoneyAmountParser(player)).enterOrLeave();
 		}
 		return true;
 	}

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.objects.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.tab.INametagApi;
@@ -33,24 +34,22 @@ public abstract class Clan<T extends Clan<T>> {
 	private String name;
 	private long chief;
 	private int maxSize;
+	private OlympaMoney money;
 	private long created;
 
 	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize) {
-		this.manager = manager;
-		this.id = id;
-		this.name = name;
-		this.chief = chief;
-		this.maxSize = maxSize;
-		this.created = Utils.getCurrentTimeInSeconds();
+		this(manager, id, name, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
 	}
 
-	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize, long created) {
+	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize, double money, long created) {
 		this.manager = manager;
 		this.id = id;
 		this.name = name;
 		this.chief = chief;
 		this.maxSize = maxSize;
 		this.created = created;
+		this.money = new OlympaMoney(money);
+		this.money.observe(this::updateMoney);
 	}
 
 	public boolean addPlayer(ClanPlayerInterface<T> p) {
@@ -124,6 +123,10 @@ public abstract class Clan<T extends Clan<T>> {
 
 	public String getName() {
 		return name;
+	}
+
+	public OlympaMoney getMoney() {
+		return money;
 	}
 
 	public Set<Player> getPlayers() {
@@ -235,6 +238,18 @@ public abstract class Clan<T extends Clan<T>> {
 			this.name = name;
 			broadcast(manager.stringNameChange);
 		} catch (SQLException ex) {
+			ex.printStackTrace();
+			broadcast("Une erreur est survenue.");
+		}
+	}
+
+	private void updateMoney() {
+		try {
+			PreparedStatement statement = manager.updateClanMoneyStatement.getStatement();
+			statement.setDouble(1, money.get());
+			statement.setInt(2, id);
+			statement.executeUpdate();
+		}catch (SQLException ex) {
 			ex.printStackTrace();
 			broadcast("Une erreur est survenue.");
 		}

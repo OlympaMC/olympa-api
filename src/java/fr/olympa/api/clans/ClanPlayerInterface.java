@@ -1,8 +1,8 @@
 package fr.olympa.api.clans;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.economy.MoneyPlayerInterface;
 
-public interface ClanPlayerInterface<T extends Clan<T>> extends OlympaPlayer {
+public interface ClanPlayerInterface<T extends Clan<T>> extends MoneyPlayerInterface {
 
 	T getClan();
 

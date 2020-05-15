@@ -65,6 +65,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	private final OlympaStatement removeOfflinePlayerInClanStatement;
 	public final OlympaStatement updateClanNameStatement;
 	public final OlympaStatement updateClanChiefStatement;
+	public final OlympaStatement updateClanMoneyStatement;
 
 	public final OlympaStatement updateClanMaxStatement;
 	public String stringAlreadyInClan = "Ce joueur est déjà dans un clan.";
@@ -97,6 +98,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	public String stringInventoryManage = "Gérer son clan";
 	public String stringInventoryJoin = "Rejoindre un clan";
 	public String stringItemLeave = "Quitter le clan";
+	public String stringAddedMoney = "Tu viens d'ajouter %s à la cagnotte du clan !";
 	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
 
 	public String stringItemDisband = "§cDémenteler le clan";
@@ -119,6 +121,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		updateClanNameStatement = new OlympaStatement("UPDATE " + tableName + " SET `name` = ? WHERE (`id` = ?)");
 		updateClanChiefStatement = new OlympaStatement("UPDATE " + tableName + " SET `chief` = ? WHERE (`id` = ?)");
 		updateClanMaxStatement = new OlympaStatement("UPDATE " + tableName + " SET `max_size` = ? WHERE (`id` = ?)");
+		updateClanMoneyStatement = new OlympaStatement("UPDATE " + tableName + " SET `money` = ? WHERE (`id` = ?)");
 
 		//		Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
 		//		enemies = createOrGetTeam(sc, "enemies", ChatColor.RED);
@@ -129,7 +132,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
 		while (resultSet.next()) {
 			try {
-				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getLong("chief"), resultSet.getInt("max_size"), resultSet.getDate("created").getTime() / 1000L, resultSet);
+				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getLong("chief"), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
 				for (OlympaPlayerInformations pinfo : getPlayersInClan(clan)) {
 					clan.members.put(pinfo.getId(), new AbstractMap.SimpleEntry<>(pinfo, null));
 				}
@@ -181,6 +184,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		columnsJoiner.add("`name` varchar(45) NOT NULL");
 		columnsJoiner.add("`chief` bigint(20) NOT NULL");
 		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT " + defaultMaxSize);
+		columnsJoiner.add("`money` DOUBLE NOT NULL DEFAULT 0");
 		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
 		return columnsJoiner;
 	}
@@ -256,7 +260,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		}
 	}
 
-	protected abstract T provideClan(int id, String name, long chief, int maxSize, long created, ResultSet resultSet);
+	protected abstract T provideClan(int id, String name, long chief, int maxSize, double money, long created, ResultSet resultSet);
 
 	public void removeClan(T clan) {
 		for (List<T> invits : invitations.values()) {
