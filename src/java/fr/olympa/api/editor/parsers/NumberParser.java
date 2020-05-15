@@ -6,27 +6,30 @@ import org.bukkit.entity.Player;
 
 import fr.olympa.api.utils.Prefix;
 
-public class NumberParser implements TextParser<Number> {
+public class NumberParser<T extends Number> implements TextParser<T> {
+
+	public static final NumberParser<Integer> INTEGER_PARSER = new NumberParser<>(Integer.class, false, false);
+	public static final NumberParser<Integer> INTEGER_PARSER_POSITIVE = new NumberParser<>(Integer.class, true, false);
+	public static final NumberParser<Integer> INTEGER_PARSER_STRICT_POSITIVE = new NumberParser<>(Integer.class, true, true);
 	
-	private Class<? extends Number> numberType;
+	private Class<T> numberType;
 	private boolean positive;
 	private boolean noZero;
 	
-	public NumberParser(Class<? extends Number> numberType, boolean positive){
+	public NumberParser(Class<T> numberType, boolean positive) {
 		this(numberType, positive, false);
 	}
 	
-	public NumberParser(Class<? extends Number> numberType, boolean positive, boolean noZero){
+	public NumberParser(Class<T> numberType, boolean positive, boolean noZero) {
 		this.numberType = numberType;
 		this.positive = positive;
 		this.noZero = noZero;
 	}
 	
-	
-	public Number parse(Player p, String msg) {
+	public T parse(Player p, String msg) {
 		try{
 			String tname = numberType != Integer.class ? numberType.getSimpleName() : "Int";
-			Number number = (Number) numberType.getDeclaredMethod("parse" + tname, String.class).invoke(null, msg);
+			T number = (T) numberType.getDeclaredMethod("parse" + tname, String.class).invoke(null, msg);
 			if (positive || noZero){
 				int compare = new BigDecimal(msg).compareTo(new BigDecimal(0));
 				if (positive && compare < 0){

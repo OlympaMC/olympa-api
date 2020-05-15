@@ -87,7 +87,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 				new TextEditor<Player>(p, (target) -> {
 					manager.invite(clan, p, target);
 					new ClanManagementGUI<T>(player, manager).create(p);
-				}, () -> this.create(p), false, new PlayerParser()).enterOrLeave();
+				}, () -> this.create(p), false, PlayerParser.PLAYER_PARSER).enterOrLeave();
 			}else {
 				OlympaPlayerInformations member = playersOrder.get(slot - 9);
 				if (member == playerInformations) return true;
