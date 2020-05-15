@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 
-import fr.olympa.api.utils.SpigotUtils;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class RegionManager implements Listener {
 

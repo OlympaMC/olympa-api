@@ -1,6 +1,6 @@
 package fr.olympa.api.scoreboard.sign;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public class FixedLine extends ScoreboardLine<OlympaPlayer> {
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Passwords;
 
 // TODO gestion animation pour éviter refresh tous les ticks

@@ -16,8 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.utils.ColorUtils;

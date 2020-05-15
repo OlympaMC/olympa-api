@@ -2,7 +2,7 @@ package fr.olympa.api.provider;
 
 import java.util.UUID;
 
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerInformations;
 
 public class OlympaPlayerInformationsObject implements OlympaPlayerInformations {
 

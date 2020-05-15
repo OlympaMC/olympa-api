@@ -1,4 +1,4 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.utils.spigot;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,6 +8,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 
+import fr.olympa.api.utils.Reflection;
 import fr.olympa.api.utils.Reflection.ClassEnum;
 
 public class TPS {

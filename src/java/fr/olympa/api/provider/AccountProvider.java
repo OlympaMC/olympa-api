@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.objects.OlympaPlayerInformations;
-import fr.olympa.api.objects.OlympaPlayerProvider;
-import fr.olympa.api.permission.OlympaAccount;
+import fr.olympa.api.player.OlympaAccount;
+import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerProvider;
 
 public class AccountProvider implements OlympaAccount {
 

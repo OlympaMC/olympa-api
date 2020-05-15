@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import fr.olympa.api.objects.Gender;
-import fr.olympa.api.objects.OlympaServer;
+import fr.olympa.api.player.Gender;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 

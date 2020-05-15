@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.olympa.api.utils.ProtocolAPI;
 import fr.olympa.api.utils.Reflection;
+import fr.olympa.api.utils.spigot.ProtocolAPI;
 import net.minecraft.server.v1_15_R1.ChatComponentText;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardTeam;
 

@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager implements Listener {

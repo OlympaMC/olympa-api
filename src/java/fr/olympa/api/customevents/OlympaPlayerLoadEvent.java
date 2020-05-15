@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public class OlympaPlayerLoadEvent extends Event {
 

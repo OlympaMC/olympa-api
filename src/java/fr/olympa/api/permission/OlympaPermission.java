@@ -18,7 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;

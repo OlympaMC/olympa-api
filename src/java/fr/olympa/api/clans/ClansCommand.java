@@ -10,8 +10,8 @@ import fr.olympa.api.clans.gui.NoClanGUI;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
 public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {

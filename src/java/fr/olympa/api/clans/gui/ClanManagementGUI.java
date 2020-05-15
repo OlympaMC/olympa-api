@@ -19,7 +19,7 @@ import fr.olympa.api.editor.parsers.PlayerParser;
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.gui.templates.ConfirmGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.utils.Prefix;
 
 public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {

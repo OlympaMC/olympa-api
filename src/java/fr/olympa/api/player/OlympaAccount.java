@@ -1,8 +1,6 @@
-package fr.olympa.api.permission;
+package fr.olympa.api.player;
 
 import java.sql.SQLException;
-
-import fr.olympa.api.objects.OlympaPlayer;
 
 public interface OlympaAccount {
 

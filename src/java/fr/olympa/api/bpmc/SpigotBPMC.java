@@ -9,8 +9,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.objects.OlympaPlayer;
-import fr.olympa.api.objects.OlympaServer;
+import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.core.spigot.OlympaCore;
 
 /*

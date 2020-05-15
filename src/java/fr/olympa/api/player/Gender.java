@@ -1,4 +1,4 @@
-package fr.olympa.api.objects;
+package fr.olympa.api.player;
 
 import java.util.Arrays;
 import java.util.List;

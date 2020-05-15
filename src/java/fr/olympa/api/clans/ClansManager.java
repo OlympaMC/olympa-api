@@ -23,7 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.objects.OlympaPlayerInformations;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;

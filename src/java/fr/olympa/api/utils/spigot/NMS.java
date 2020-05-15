@@ -1,4 +1,4 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.utils.spigot;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

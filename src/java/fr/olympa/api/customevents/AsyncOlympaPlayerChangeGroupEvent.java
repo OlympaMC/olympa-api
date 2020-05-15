@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 

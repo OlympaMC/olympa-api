@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 

@@ -7,8 +7,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.objects.OlympaPlayer;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.scoreboard.sign.DynamicLine;
 import fr.olympa.api.scoreboard.sign.FixedLine;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;

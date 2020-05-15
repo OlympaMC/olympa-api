@@ -2,7 +2,7 @@ package fr.olympa.api.scoreboard.sign;
 
 import java.util.function.Function;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 
 public interface INametagApi {
 

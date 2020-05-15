@@ -1,7 +1,8 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.utils.spigot;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,10 +24,11 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import fr.olympa.api.objects.OlympaPlayer;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cuboid;
+import fr.olympa.api.utils.ColorUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
@@ -41,6 +43,18 @@ public class SpigotUtils {
 		inventory.clear();
 		inventory.setArmorContents(new ItemStack[inventory.getArmorContents().length]);
 		return size;
+	}
+
+	public static void deletePlayerLocalData(Player player) {
+		String worldName = Bukkit.getWorlds().get(0).getName();
+		String playerUuid = player.getUniqueId().toString();
+		File worldDir = new File(Bukkit.getServer().getWorldContainer().getPath() + "/" + worldName);
+		new File(worldDir, "playerdata/" + playerUuid + ".dat").delete();
+		new File(worldDir, "advancements/" + playerUuid + ".json").delete();
+		File stats = new File(worldDir, "stats/" + playerUuid + ".json");
+		if (stats.exists()) {
+			stats.delete();
+		}
 	}
 
 	public static String connectScreen(String s) {

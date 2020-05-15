@@ -1,4 +1,4 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.utils.spigot;
 
 import java.util.ArrayList;
 import java.util.Arrays;

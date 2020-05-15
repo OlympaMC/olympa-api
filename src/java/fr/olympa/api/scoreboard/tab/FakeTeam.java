@@ -2,7 +2,7 @@ package fr.olympa.api.scoreboard.tab;
 
 import java.util.ArrayList;
 
-import fr.olympa.api.utils.ProtocolAPI;
+import fr.olympa.api.utils.spigot.ProtocolAPI;
 
 public class FakeTeam {
 
