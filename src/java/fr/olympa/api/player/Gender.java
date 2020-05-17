@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public enum Gender {
 
-	NO_SPECIFED(0, "", "il"),
+	UNSPECIFIED(0, "", "iel", "non-binaire"),
 	FEMALE(1, "e", "elle", "féminin", "fille", "femme", "meuf"),
 	MALE(2, "", "il", "masculin", "garçon", "homme", "mec");
 

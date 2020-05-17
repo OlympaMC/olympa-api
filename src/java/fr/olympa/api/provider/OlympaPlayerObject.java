@@ -3,8 +3,10 @@ package fr.olympa.api.provider;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.utils.Utils;
 
 public class OlympaPlayerObject implements OlympaPlayer {
 
@@ -21,8 +24,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private String name;
 	private String ip;
 	private long id;
-	private OlympaGroup group;
-
+	private TreeMap<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparing(OlympaGroup::getPower).reversed());
+	private Gender gender = Gender.MALE;
+	
 	private OlympaPlayerInformations cachedInfos = null;
 
 	private Player cachedPlayer = null;
@@ -35,14 +39,15 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void addGroup(OlympaGroup group) {
-		// TODO Auto-generated method stub
-
+		this.addGroup(group, 0l);
 	}
 
 	@Override
 	public void addGroup(OlympaGroup group, long time) {
-		// TODO Auto-generated method stub
-
+		groups.put(group, time);
+		if (groups.size() > 1 && groups.containsKey(OlympaGroup.PLAYER)) {
+			removeGroup(OlympaGroup.PLAYER);
+		}
 	}
 
 	@Override
@@ -83,49 +88,48 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public Gender getGender() {
-		// TODO Auto-generated method stub
-		return null;
+		return gender;
 	}
 
 	@Override
 	public OlympaGroup getGroup() {
-		return group;
+		return groups.isEmpty() ? OlympaGroup.PLAYER : groups.firstKey();
 	}
 
 	@Override
 	public String getGroupName() {
-		// TODO Auto-generated method stub
-		return null;
+		return getGroup().getName(gender);
 	}
 
 	@Override
 	public String getGroupNameColored() {
-		// TODO Auto-generated method stub
-		return null;
+		return getGroup().getColor() + getGroupName();
 	}
 
 	@Override
 	public String getGroupPrefix() {
-		// TODO Auto-generated method stub
-		return null;
+		return getGroup().getPrefix(gender);
 	}
 
 	@Override
 	public TreeMap<OlympaGroup, Long> getGroups() {
-		// TODO Auto-generated method stub
-		return null;
+		return groups;
 	}
 
 	@Override
 	public String getGroupsToHumainString() {
-		// TODO Auto-generated method stub
-		return null;
+		return groups.entrySet().stream().map(entry -> {
+			String time = new String();
+			if (entry.getValue() != 0) {
+				time = " (" + Utils.timestampToDateAndHour(entry.getValue()) + ")";
+			}
+			return entry.getKey().getName(gender) + time;
+		}).collect(Collectors.joining(", "));
 	}
 
 	@Override
 	public String getGroupsToString() {
-		// TODO Auto-generated method stub
-		return null;
+		return groups.entrySet().stream().map(entry -> entry.getKey().getId() + (entry.getValue() != 0 ? ":" + entry.getValue() : "")).collect(Collectors.joining(";"));
 	}
 
 	@Override
@@ -163,7 +167,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return name;
 	}
 
@@ -180,7 +183,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public UUID getPremiumUniqueId() {
-		// TODO Auto-generated method stub
 		return uuid;
 	}
 
@@ -204,7 +206,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public UUID getUniqueId() {
-		// TODO Auto-generated method stub
 		return uuid;
 	}
 
@@ -222,8 +223,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public boolean isGenderFemale() {
-		// TODO Auto-generated method stub
-		return false;
+		return gender == Gender.FEMALE;
 	}
 
 	@Override
@@ -259,9 +259,8 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void removeGroup(OlympaGroup newGroup) {
-		// TODO Auto-generated method stub
-
+	public void removeGroup(OlympaGroup group) {
+		groups.remove(group);
 	}
 
 	@Override
@@ -294,19 +293,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setGender(Gender gender) {
-		// TODO Auto-generated method stub
-
+		this.gender = gender;
 	}
 
 	@Override
 	public void setGroup(OlympaGroup group) {
-		this.group = group;
+		this.setGroup(group, 0l);
 	}
 
 	@Override
 	public void setGroup(OlympaGroup group, long time) {
-		// TODO Auto-generated method stub
-
+		groups.clear();
+		this.addGroup(group, time);
 	}
 
 	@Override
@@ -328,8 +326,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		this.name = name;
 	}
 
 	@Override
