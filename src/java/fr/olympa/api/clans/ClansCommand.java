@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.clans.gui.ClanManagementGUI;
 import fr.olympa.api.clans.gui.NoClanGUI;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
@@ -14,7 +13,7 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
-public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
+public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 
 	private ClansManager<T> manager;
 
@@ -31,7 +30,7 @@ public abstract class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 			T clan = olp.getClan();
 			if (clan == null) {
 				new NoClanGUI<T>(p, manager).create(p);
-			}else new ClanManagementGUI<T>(olp, manager).create(p);
+			}else manager.provideManagementGUI(olp).create(p);
 			return true;
 		}
 		return false;

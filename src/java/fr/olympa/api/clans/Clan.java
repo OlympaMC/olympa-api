@@ -145,6 +145,10 @@ public abstract class Clan<T extends Clan<T>> {
 		return playersArray;
 	}
 
+	public long getCreationTime() {
+		return created;
+	}
+
 	public void memberJoin(ClanPlayerInterface<T> member) {
 		members.get(member.getId()).setValue(member);
 

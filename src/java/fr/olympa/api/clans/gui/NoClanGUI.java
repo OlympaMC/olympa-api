@@ -41,7 +41,7 @@ public class NoClanGUI<T extends Clan<T>> extends OlympaGUI {
 					Inventories.closeAndExit(p);
 					Prefix.ERROR.sendMessage(p, "Une erreur est survenue.");
 				}
-				new ClanManagementGUI<T>(AccountProvider.get(p.getUniqueId()), manager).create(p);
+				manager.provideManagementGUI(AccountProvider.get(p.getUniqueId())).create(p);
 			}, () -> {}, false, (player, msg) -> {
 				if (manager.clanExists(msg)) {
 					Prefix.DEFAULT_BAD.sendMessage(player, manager.stringClanAlreadyExists);
