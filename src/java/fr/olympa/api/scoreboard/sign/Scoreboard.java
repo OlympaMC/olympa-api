@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Passwords;
@@ -126,9 +127,10 @@ public class Scoreboard {
 	private ScoreboardSigns sb;
 	private LinkedList<Line<?>> lines = new LinkedList<>();
 
-	private BukkitRunnable runnable;
+	private BukkitTask task;
 
 	private int animationSize = 1;
+	private int timeBetweenAnimations = 10 * 20;
 
 	Scoreboard(OlympaPlayer player, ScoreboardManager manager) {
 		p = player;
@@ -151,27 +153,28 @@ public class Scoreboard {
 		return sb;
 	}
 
-	private BukkitRunnable getTask() {
-		return new BukkitRunnable() {
+	private void launchTask() {
+		task = new BukkitRunnable() {
 			// nombre de changement dans l'animation -> TODO modifier pour plus de souplesse
-			int i = 0;
+			int animStep = 0;
+			int waitBeforeAnim = 0;
 
 			@Override
 			public void run() {
-				if (p.getPlayer() == null) {
-					return;
-				}
-				updateScoreboard();
-				if (++i >= animationSize) {
-					cancel();
-					runnable = getTask();
-					runnable.runTaskTimerAsynchronously(manager.plugin, 10 * 20L, 1L);
+				if (p.getPlayer() == null) return;
+				if (waitBeforeAnim-- < 0) {
+					updateScoreboard();
+					if (++animStep >= animationSize) {
+						animStep = 0;
+						waitBeforeAnim = timeBetweenAnimations;
+					}
 				}
 			}
-		};
+		}.runTaskTimerAsynchronously(manager.plugin, 20, 1L);
 	}
 
 	public void initScoreboard() {
+		System.out.println("Scoreboard.initScoreboard() OPEN");
 		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16), manager.lines.size());
 		sb.create();
 		for (int i = 0; i < lines.size(); i++) {
@@ -180,30 +183,27 @@ public class Scoreboard {
 			sb.setLine(i, value);
 		}
 		sb.display();
-	}
-
-	private void launchTask() {
-		runnable = getTask();
-		runnable.runTaskTimerAsynchronously(manager.plugin, 20L, 1L);
+		System.out.println("Scoreboard.initScoreboard() CLOSE");
 	}
 
 	public void unload() {
 		if (sb != null) {
 			sb.destroy();
 		}
-		if (runnable != null) {
-			runnable.cancel();
+		if (task != null) {
+			task.cancel();
 		}
 	}
 
 	public void updateScoreboard() {
+		System.out.println("Scoreboard.updateScoreboard() OPEN");
 		String oldName = new String(sb.objectiveName);
 		String name;
 		do {
 			name = Passwords.generateRandomPassword(16);
 		} while (name.equalsIgnoreCase(oldName));
 		sb.objectiveName = name;
-		sb.oldLines.addAll(sb.lines);
+		sb.oldLines = (ArrayList<VirtualTeam>) sb.lines.clone();
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();
@@ -222,6 +222,7 @@ public class Scoreboard {
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);
 		sb.oldLines.clear();
+		System.out.println("Scoreboard.updateScoreboard() CLOSE");
 	}
 
 }

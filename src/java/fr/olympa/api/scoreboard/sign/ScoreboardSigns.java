@@ -104,7 +104,7 @@ public class ScoreboardSigns implements Cloneable {
 		Reflection.sendPacket(player, setObjectiveSlot());
 	}
 
-	private VirtualTeam getOrCreateTeam(String value) {
+	private synchronized VirtualTeam getOrCreateTeam(String value) {
 		while (containsValue(value)) {
 			value = value + "§r";
 		}

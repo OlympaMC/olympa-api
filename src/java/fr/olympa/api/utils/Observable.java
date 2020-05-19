@@ -3,22 +3,33 @@ package fr.olympa.api.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Observable {
+public interface Observable {
 
-	private final List<Observer> observers = new ArrayList<>(3);
+	void observe(Observer observer);
 
-	public void observe(Observer observer) {
-		observers.add(observer);
+	void remove(Observer observer);
+
+	public abstract class AbstractObservable implements Observable {
+
+		private final List<Observer> observers = new ArrayList<>(3);
+
+		@Override
+		public void observe(Observer observer) {
+			observers.add(observer);
+		}
+
+		@Override
+		public void remove(Observer observer) {
+			observers.remove(observer);
+		}
+
+		protected void update() {
+			observers.forEach(Observer::changed);
+		}
+
 	}
 
-	public void remove(Observer observer) {
-		observers.remove(observer);
-	}
-
-	protected void update() {
-		observers.forEach(Observer::changed);
-	}
-
+	@FunctionalInterface
 	public interface Observer {
 		void changed();
 	}

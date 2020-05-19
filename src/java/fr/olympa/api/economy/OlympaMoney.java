@@ -1,8 +1,8 @@
 package fr.olympa.api.economy;
 
-import fr.olympa.api.utils.Observable;
+import fr.olympa.api.utils.Observable.AbstractObservable;
 
-public class OlympaMoney extends Observable {
+public class OlympaMoney extends AbstractObservable {
 
 	private double money;
 

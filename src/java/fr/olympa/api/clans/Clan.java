@@ -70,8 +70,8 @@ public abstract class Clan<T extends Clan<T>> {
 		for (Player player : getPlayersArray()) {
 			nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
 		}
-		memberJoin(p);
 		members.put(p.getId(), new AbstractMap.SimpleEntry<>(p.getInformation(), p));
+		memberJoin(p);
 		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
 		return true;
 	}

@@ -32,13 +32,13 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 	private ItemStack leaveChief;
 	private ItemStack disband;
 
-	private final ClanPlayerInterface<T> player;
-	private final OlympaPlayerInformations playerInformations;
-	private final T clan;
+	protected final ClansManager<T> manager;
+	protected final ClanPlayerInterface<T> player;
+	protected final OlympaPlayerInformations playerInformations;
+	protected final T clan;
 
-	private boolean isChief;
+	protected boolean isChief;
 	private List<OlympaPlayerInformations> playersOrder = new ArrayList<>();
-	private ClansManager<T> manager;
 
 	public ClanManagementGUI(ClanPlayerInterface<T> p, ClansManager<T> manager, int rows) {
 		super(manager.stringInventoryManage, rows);
