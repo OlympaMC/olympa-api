@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.scoreboard.sign.lines.ScoreboardLine;
 import fr.olympa.api.utils.Passwords;
 
 // TODO gestion animation pour éviter refresh tous les ticks
@@ -102,14 +103,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		sb.created = false;
 		sb.create();
 		for (int i = 0; i < lines.size(); i++) {
-			ScoreboardLine<T> line = lines.get(i);
-			/*if (line instanceof AnimLine) {
-				int newAnimSize = ((AnimLine) line).getAnimSize();
-				if (newAnimSize > animationSize) {
-					animationSize = newAnimSize;
-				}
-			}*/
-			String value = line.getValue(p);
+			String value = lines.get(i).getValue(p);
 			sb.setLine(i, value);
 		}
 		sb.display();

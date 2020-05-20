@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.scoreboard.sign.lines.ScoreboardLine;
 
 public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 

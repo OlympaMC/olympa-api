@@ -1,4 +1,4 @@
-package fr.olympa.api.scoreboard.sign;
+package fr.olympa.api.scoreboard.sign.lines;
 
 import fr.olympa.api.player.OlympaPlayer;
 

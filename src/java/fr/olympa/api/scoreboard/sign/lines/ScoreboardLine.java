@@ -1,9 +1,10 @@
-package fr.olympa.api.scoreboard.sign;
+package fr.olympa.api.scoreboard.sign.lines;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.scoreboard.sign.Scoreboard;
 
 public abstract class ScoreboardLine<T extends OlympaPlayer> {
 
