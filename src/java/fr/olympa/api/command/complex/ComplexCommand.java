@@ -74,7 +74,7 @@ public class ComplexCommand extends OlympaCommand {
 		}
 
 		if (args.length - 1 < cmd.min()) {
-			if (cmd.syntax() == "") {
+			if ("".equals(cmd.syntax())) {
 				this.sendIncorrectSyntax();
 			} else {
 				this.sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());

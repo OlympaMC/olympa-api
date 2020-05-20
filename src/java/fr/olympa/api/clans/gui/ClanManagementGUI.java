@@ -26,7 +26,6 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 
 	private static ItemStack noMember = ItemUtils.skull("§cPas de membre", "MHF_Question");
 	private static ItemStack noMemberInvite = ItemUtils.skull("§bInviter un nouveau membre", "MHF_Question");
-	private static ItemStack addMoney = ItemUtils.item(Material.EMERALD, "§aMettre de l'argent dans la cagnotte");
 
 	private ItemStack leave;
 	private ItemStack leaveChief;
@@ -61,7 +60,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		isChief = clan.getChief() == playerInformations;
 
 		inv.setItem(slotInformations(), getInformationsItem());
-		inv.setItem(slotMoney(), addMoney);
+		inv.setItem(slotMoney(), ItemUtils.item(Material.EMERALD, "§aMettre de l'argent dans la cagnotte", "§eCagnotte : §6§l" + clan.getMoney().getFormatted()));
 		inv.setItem(slotLeave(), isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(slotDisband(), disband);
 
@@ -143,11 +142,12 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		}else if (slot == slotDisband()) {
 			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
 		}else if (slot == slotMoney()) {
+			Prefix.INFO.sendMessage(p, "Indique la quantité d'argent que tu veux mettre dans la cagnotte.");
 			new TextEditor<>(p, (amount) -> {
-				create(p);
 				player.getGameMoney().withdraw(amount);
 				clan.getMoney().give(amount);
-				inv.setItem(4, getInformationsItem()); // pour update la money
+				refreshInventory();
+				create(p);
 				Prefix.DEFAULT_GOOD.sendMessage(p, String.format(manager.stringAddedMoney, amount));
 			}, () -> create(p), false, new MoneyAmountParser(player)).enterOrLeave();
 		}

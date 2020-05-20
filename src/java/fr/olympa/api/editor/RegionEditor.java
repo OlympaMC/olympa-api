@@ -57,10 +57,10 @@ public class RegionEditor extends InventoryClear {
 	}
 
 	public void setRegionType(RegionType newRegion) {
-		if (regionType != newRegion) return;
+		if (regionType == newRegion) return;
 		if (regionType != null) p.getInventory().getItem(regionType.slot).removeEnchantment(Enchantment.ARROW_DAMAGE); // retire l'effet glowing sur l'item de l'ancienne région
 		regionType = newRegion;
-		p.getInventory().getItem(regionType.slot).addEnchantment(Enchantment.ARROW_DAMAGE, 0); // ajoute l'effet glowing sur l'item de la nouvelle région
+		p.getInventory().getItem(regionType.slot).addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1); // ajoute l'effet glowing sur l'item de la nouvelle région
 	}
 
 	@EventHandler

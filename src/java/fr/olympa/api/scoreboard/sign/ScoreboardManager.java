@@ -1,5 +1,6 @@
 package fr.olympa.api.scoreboard.sign;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,28 +16,38 @@ import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
-public class ScoreboardManager implements Listener {
+public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
-	private Map<OlympaPlayer, Scoreboard> scoreboards = new HashMap<>();
+	private Map<OlympaPlayer, Scoreboard<T>> scoreboards = new HashMap<>();
 
 	Plugin plugin;
 	String displayName;
-	List<ScoreboardLine<?>> lines;
+	List<ScoreboardLine<T>> lines = new ArrayList<>();
+	List<ScoreboardLine<T>> footer = new ArrayList<>();
 
-	public ScoreboardManager(Plugin plugin, String displayName, List<ScoreboardLine<?>> lines) {
+	public ScoreboardManager(Plugin plugin, String displayName) {
 		this.plugin = plugin;
 		this.displayName = displayName;
-		this.lines = lines;
 
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 
-	public void create(OlympaPlayer p) {
-		removePlayerScoreboard(p);
-		scoreboards.put(p, new Scoreboard(p, this));
+	public ScoreboardManager<T> addLines(ScoreboardLine<T>... lines) {
+		for (ScoreboardLine<T> line : lines) this.lines.add(line);
+		return this;
 	}
 
-	public Scoreboard getPlayerScoreboard(OlympaPlayer p) {
+	public ScoreboardManager<T> addFooters(ScoreboardLine<T>... lines) {
+		for (ScoreboardLine<T> line : lines) this.footer.add(line);
+		return this;
+	}
+
+	public void create(T p) {
+		removePlayerScoreboard(p);
+		scoreboards.put(p, new Scoreboard<>(p, this));
+	}
+
+	public Scoreboard<T> getPlayerScoreboard(T p) {
 		return scoreboards.get(p);
 	}
 
@@ -50,7 +61,7 @@ public class ScoreboardManager implements Listener {
 		removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
 	}
 
-	public void removePlayerScoreboard(OlympaPlayer p) {
+	public void removePlayerScoreboard(T p) {
 		if (scoreboards.containsKey(p)) {
 			scoreboards.remove(p).unload();
 		}
@@ -59,7 +70,7 @@ public class ScoreboardManager implements Listener {
 	public void unload() {
 		HandlerList.unregisterAll(this);
 
-		for (Scoreboard s : scoreboards.values()) {
+		for (Scoreboard<T> s : scoreboards.values()) {
 			s.unload();
 		}
 		if (!scoreboards.isEmpty()) {

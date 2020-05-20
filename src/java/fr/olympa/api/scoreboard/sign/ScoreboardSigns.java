@@ -104,12 +104,17 @@ public class ScoreboardSigns implements Cloneable {
 		Reflection.sendPacket(player, setObjectiveSlot());
 	}
 
-	private synchronized VirtualTeam getOrCreateTeam(String value) {
+	private VirtualTeam getOrCreateTeam(String value) {
 		while (containsValue(value)) {
 			value = value + "§r";
 		}
 		String finalValue = value;
-		Set<String> oldNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
+		Set<String> oldNames = oldLines.stream().map(t -> {
+			if (t == null) {
+				System.out.println("team null");
+			}else if (t.getName() == null) System.out.println("name null");
+			return t.getName().toLowerCase();
+		}).collect(Collectors.toSet());
 		Set<String> actualNames = lines.stream().map(t -> t.getName().toLowerCase()).collect(Collectors.toSet());
 		VirtualTeam team = oldLines.stream().filter(t -> t.getValue().equals(finalValue)).findFirst().orElse(null);
 		String teamName;

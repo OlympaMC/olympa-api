@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public class AnimLine extends ScoreboardLine<OlympaPlayer> {
+public class AnimLine implements ScoreboardLine<OlympaPlayer> {
 
 	//public static final List<String> ANIMATION = getAnim("play.olympa.fr");
 
@@ -30,11 +30,6 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 	private int i = -1;
 
 	public AnimLine(String value) {
-		this(value, 0);
-	}
-
-	public AnimLine(String value, int length) {
-		super(1, length);
 		this.value = getAnim(value);
 	}
 

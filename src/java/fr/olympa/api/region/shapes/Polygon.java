@@ -76,6 +76,7 @@ public class Polygon extends AbstractRegion {
 
 	@Override
 	public boolean isIn(World world, int x, int y, int z) {
+		if (world != this.world) return false;
 		if (y < minY || y > maxY) return false;
 		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
 

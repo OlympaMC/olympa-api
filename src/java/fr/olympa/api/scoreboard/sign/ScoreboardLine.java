@@ -2,24 +2,12 @@ package fr.olympa.api.scoreboard.sign;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public abstract class ScoreboardLine<T extends OlympaPlayer> {
+public interface ScoreboardLine<T extends OlympaPlayer> {
+	
+	public String getValue(T player);
+	
+	public default void addScoreboard(Scoreboard<T> scoreboard) {}
 
-	public int refresh;
-	public int length;
+	public default void removeScoreboard(Scoreboard<T> scoreboard) {}
 
-	public ScoreboardLine(int refresh, int length) {
-		this.refresh = refresh;
-		this.length = length;
-	}
-	
-	public abstract String getValue(T player);
-	
-	public int getRefreshTime(){
-		return refresh;
-	}
-	
-	public int getMaxLength(){
-		return length;
-	}
-	
 }

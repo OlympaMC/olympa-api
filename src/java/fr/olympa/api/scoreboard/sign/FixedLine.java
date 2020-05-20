@@ -2,18 +2,14 @@ package fr.olympa.api.scoreboard.sign;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public class FixedLine extends ScoreboardLine<OlympaPlayer> {
+public class FixedLine<T extends OlympaPlayer> implements ScoreboardLine<T> {
 
-	public static final FixedLine EMPTY_LINE = new FixedLine("");
+	@SuppressWarnings ("rawtypes")
+	public static final FixedLine EMPTY_LINE = new FixedLine<>("");
 
 	private String value;
 
 	public FixedLine(String value) {
-		this(value, 0);
-	}
-
-	public FixedLine(String value, int length) {
-		super(0, length);
 		this.value = value;
 	}
 

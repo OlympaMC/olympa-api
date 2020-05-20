@@ -2,227 +2,130 @@ package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Passwords;
 
 // TODO gestion animation pour éviter refresh tous les ticks
 // TODO gestion multi scoreboard
-public class Scoreboard {
+public class Scoreboard<T extends OlympaPlayer> extends Thread {
 
-	class Line<T extends OlympaPlayer> {
-		ScoreboardLine<T> param;
-		int timeLeft = 1;
-		int lastAmount = 0;
-		private List<VirtualTeam> teams = new ArrayList<>();
+	public final T p;
 
-		Line(ScoreboardLine<T> param) {
-			this.param = param;
-			timeLeft = param.refresh;
-		}
-
-		/*public int firstLineIndex() {
-			return sb.getTeamLine(teams.get(0));
-		}*/
-
-		@SuppressWarnings("unchecked")
-		public String getValue() {
-			return param.getValue((T) p);
-		}
-
-		/*public int lastLineIndex() {
-			return sb.getTeamLine(teams.get(teams.size() - 1));
-		}
-
-		/**
-		 * Refresh all lines, based on the first index of the previous lines
-		 */
-		/*public void refreshLines() {
-			setLines(firstLineIndex());
-		}
-
-		public void removeLines() {
-			int index = firstLineIndex();
-			for (int i = 0; i < teams.size(); i++) {
-				sb.removeLine(index);
-				teams.remove(0);
-			}
-		}*/
-
-		void reset() {
-			teams.clear();
-			lastAmount = 0;
-			timeLeft = param.refresh;
-		}
-
-		/**
-		 * How it works:
-		 * <ol>
-		 * <li> If there is no custom value, the default text will be used
-		 * <li> If there is quests placeholders (<code>{questName}</code> or <code>{questDescription}</code>) they will be replaced by the appropriated value
-		 * <li> All other placeholders are replaced
-		 * <li> The final value is split into lines, depending of its length
-		 * <li> If there is less lines than the previous time, theses lines are removed
-		 * <li> If there is more lines than the previous time, all lines up are moved forward
-		 * <li> Finally, the lines are set in the scoreboard
-		 * </ol>
-		 * @param firstLine Scoreboard line where the first line will be placed
-		 */
-		/*@SuppressWarnings("unchecked")
-		public void setLines(int firstLine) {
-			String text = param.getValue((T) p);
-			text = ColorUtils.color(text);
-			List<String> ls = Utils.splitOnSpace(text, param.length == 0 ? 48 : param.length);
-		//			if (lastAmount > ls.size()) {
-		//				int toRemove = lastAmount - ls.size();
-		//				for (int i = 0; i < toRemove; i++) {
-		//					System.out.println("ls " + firstLine + " remove team '" + teams.get(0).getValue() + "'");
-		//					sb.removeLine(sb.getTeamLine(teams.get(0)));
-		//					teams.remove(0);
-		//				}
-		//			} else if (lastAmount < ls.size()) {
-		//				sb.moveLines(firstLine + lastAmount, ls.size() - lastAmount);
-		//				System.out.println("ls " + firstLine + " moveLines '" + (firstLine + lastAmount) + "' to " + (ls.size() - lastAmount) + "'");
-		//			}
-			lastAmount = ls.size();
-			for (int i = 0; i < ls.size(); i++) {
-				String lineText = ls.get(i);
-				if (lineText.length() > 48) {
-					lineText = lineText.substring(0, 48);
-				}
-				System.out.println("sb setLine" + firstLine + " setLine '" + (firstLine + i) + "' to '" + lineText + "'");
-				setTeam(i, sb.setLine(firstLine + i, lineText));
-			}
-		}*/
-
-		/*private void setTeam(int index, VirtualTeam team) {
-			if (teams.size() <= index) {
-				teams.add(team); // theorically useless (space should be made before with sb.moveLines)
-			} else {
-				teams.set(index, team);
-			}
-		}
-		
-		private boolean tryRefresh() {
-			if (param.refresh == 0) {
-				return false;
-			}
-			timeLeft--;
-			if (timeLeft == 0) {
-				timeLeft = param.refresh;
-				return true;
-			}
-			return false;
-		}*/
-
-	}
-
-	private OlympaPlayer p;
-
-	private ScoreboardManager manager;
+	private ScoreboardManager<T> manager;
 	private ScoreboardSigns sb;
-	private LinkedList<Line<?>> lines = new LinkedList<>();
+	private LinkedList<ScoreboardLine<T>> lines = new LinkedList<>();
 
-	private BukkitTask task;
-
-	private int animationSize = 1;
+	private int animationSize = 0;
 	private int timeBetweenAnimations = 10 * 20;
 
-	Scoreboard(OlympaPlayer player, ScoreboardManager manager) {
+	private boolean needsUpdate = false;
+
+	int animStep = 0;
+	int waitBeforeAnim = 0;
+
+	Scoreboard(T player, ScoreboardManager<T> manager) {
 		p = player;
 		this.manager = manager;
-		for (ScoreboardLine<?> line : manager.lines) {
-			lines.add(new Line<>(line));
+		for (ScoreboardLine<T> line : manager.lines) {
+			lines.add(line);
+			line.addScoreboard(this);
+		}
+		for (ScoreboardLine<T> line : manager.footer) {
+			lines.add(line);
+			line.addScoreboard(this);
 		}
 		initScoreboard();
-		launchTask();
+		start();
 	}
 
-	public void addLine(ScoreboardLine<?> line) {
-		Line<?> sline = new Line<>(line);
-		lines.add(sline);
+	public void addLine(ScoreboardLine<T> line) {
+		lines.add(lines.size() - manager.footer.size(), line);
 		// TODO update uniquement la ligné ajouté
-		updateScoreboard();
+		needsUpdate();
 	}
 
 	public ScoreboardSigns getScoreboard() {
 		return sb;
 	}
 
-	private void launchTask() {
-		task = new BukkitRunnable() {
-			// nombre de changement dans l'animation -> TODO modifier pour plus de souplesse
-			int animStep = 0;
-			int waitBeforeAnim = 0;
+	public void needsUpdate() {
+		needsUpdate = true;
+	}
 
-			@Override
-			public void run() {
-				if (p.getPlayer() == null) return;
-				if (waitBeforeAnim-- < 0) {
-					updateScoreboard();
-					if (++animStep >= animationSize) {
-						animStep = 0;
-						waitBeforeAnim = timeBetweenAnimations;
-					}
+	@Override
+	public void run() {
+		while (true) {
+			if (waitBeforeAnim-- < 0 || needsUpdate) {
+				if (++animStep >= animationSize) {
+					animStep = 0;
+					waitBeforeAnim = timeBetweenAnimations;
 				}
+				needsUpdate = false;
+				updateScoreboard();
 			}
-		}.runTaskTimerAsynchronously(manager.plugin, 20, 1L);
+			try {
+				Thread.sleep(50);
+			}catch (InterruptedException e) {
+				break;
+			}
+		}
 	}
 
 	public void initScoreboard() {
-		System.out.println("Scoreboard.initScoreboard() OPEN");
 		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16), manager.lines.size());
 		sb.create();
 		for (int i = 0; i < lines.size(); i++) {
-			Line<?> line = lines.get(i);
-			String value = line.getValue();
+			ScoreboardLine<T> line = lines.get(i);
+			String value = line.getValue(p);
 			sb.setLine(i, value);
 		}
 		sb.display();
-		System.out.println("Scoreboard.initScoreboard() CLOSE");
 	}
 
 	public void unload() {
-		if (sb != null) {
-			sb.destroy();
+		interrupt();
+		if (sb != null) sb.destroy();
+		for (ScoreboardLine<T> line : lines) {
+			line.removeScoreboard(this);
 		}
-		if (task != null) {
-			task.cancel();
-		}
+		lines.clear();
 	}
 
 	public void updateScoreboard() {
-		System.out.println("Scoreboard.updateScoreboard() OPEN");
+		long beg = System.currentTimeMillis();
+		long pass, create, linesT, display, end;
 		String oldName = new String(sb.objectiveName);
 		String name;
 		do {
 			name = Passwords.generateRandomPassword(16);
 		} while (name.equalsIgnoreCase(oldName));
+		pass = System.currentTimeMillis();
 		sb.objectiveName = name;
 		sb.oldLines = (ArrayList<VirtualTeam>) sb.lines.clone();
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();
+		create = System.currentTimeMillis();
 		for (int i = 0; i < lines.size(); i++) {
-			Line<?> line = lines.get(i);
-			if (line.param instanceof AnimLine) {
-				int newAnimSize = ((AnimLine) line.param).getAnimSize();
+			ScoreboardLine<T> line = lines.get(i);
+			if (line instanceof AnimLine) {
+				int newAnimSize = ((AnimLine) line).getAnimSize();
 				if (newAnimSize > animationSize) {
 					animationSize = newAnimSize;
 				}
 			}
-			String value = line.getValue();
+			String value = line.getValue(p);
 			sb.setLine(i, value);
 		}
+		linesT = System.currentTimeMillis();
 		sb.display();
+		display = System.currentTimeMillis();
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);
 		sb.oldLines.clear();
-		System.out.println("Scoreboard.updateScoreboard() CLOSE");
+		end = System.currentTimeMillis();
+		System.out.println("Scoreboard.updateScoreboard() TIME " + (pass - beg) + " " + (create - beg) + " " + (linesT - beg) + " " + (display - beg) + " " + (end - beg));
 	}
 
 }

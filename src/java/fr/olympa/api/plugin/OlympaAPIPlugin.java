@@ -1,5 +1,7 @@
 package fr.olympa.api.plugin;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.config.CustomConfig;
@@ -40,6 +42,14 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 			config.saveIfNotExists();
 		} else {
 			config = null;
+		}
+	}
+
+	@Override
+	public void onDisable() {
+		super.onDisable();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			p.kickPlayer("Server closed");
 		}
 	}
 

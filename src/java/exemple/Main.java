@@ -1,7 +1,5 @@
 package exemple;
 
-import java.util.Arrays;
-
 import org.bukkit.Location;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +19,7 @@ public class Main extends JavaPlugin {
 		return instance;
 	}
 
-	private ScoreboardManager scoreboards;
+	private ScoreboardManager<OlympaPlayer> scoreboards;
 
 	@Override
 	public void onDisable() {
@@ -37,14 +35,13 @@ public class Main extends JavaPlugin {
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
 
-		this.scoreboards = new ScoreboardManager(this, "Exemple scoreboard", Arrays.asList(
-				new FixedLine("Yo"),
-				new FixedLine("ligne très très longue qui sera coupée en deux tous les 15 caractères", 15),
+		this.scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
+				new FixedLine<>("Yo"),
 				FixedLine.EMPTY_LINE,
 				new DynamicLine<OlympaPlayer>((x) -> {
 					Location lc = x.getPlayer().getLocation();
 					return lc.toString();
-				}, 1, 0)));
+				}));
 
 		final PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(new ExempleListener(), this);
