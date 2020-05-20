@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public class AnimLine implements ScoreboardLine<OlympaPlayer> {
+public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 
 	//public static final List<String> ANIMATION = getAnim("play.olympa.fr");
 
@@ -26,23 +28,32 @@ public class AnimLine implements ScoreboardLine<OlympaPlayer> {
 		return anim;
 	}
 
-	private List<String> value;
-	private int i = -1;
+	private List<String> strings;
+	private int status = -1;
 
-	public AnimLine(String value) {
-		this.value = getAnim(value);
+	public AnimLine(Plugin plugin, String value, int ticksAmount, int ticksBetween) {
+		this.strings = getAnim(value);
+		new BukkitRunnable() {
+			int timeBefore = -1;
+			@Override
+			public void run() {
+				if (--timeBefore > -1) return;
+				if (++status + 2 >= strings.size()) {
+					status = 0;
+					timeBefore = ticksBetween;
+				}
+				AnimLine.this.updateGlobal();
+			}
+		}.runTaskTimerAsynchronously(plugin, 0, ticksAmount);
 	}
 
 	public int getAnimSize() {
-		return value.size();
+		return strings.size();
 	}
 
 	@Override
 	public String getValue(OlympaPlayer player) {
-		if (i + 1 == value.size()) {
-			i = -1;
-		}
-		return value.get(++i);
+		return strings.get(status);
 	}
 
 }

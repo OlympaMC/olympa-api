@@ -86,7 +86,7 @@ public class RegionEditor extends InventoryClear {
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 1/2 de la sélection. " + ensureValid());
 				}else {
 					if (ensureWorld(loc)) {
-						locations.remove(1);
+						if (locations.size() >= 2) locations.remove(1);
 						locations.add(loc);
 						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 2/2 de la sélection.");
 					}

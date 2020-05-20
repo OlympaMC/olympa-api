@@ -2,7 +2,7 @@ package fr.olympa.api.scoreboard.sign;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public class FixedLine<T extends OlympaPlayer> implements ScoreboardLine<T> {
+public class FixedLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 
 	@SuppressWarnings ("rawtypes")
 	public static final FixedLine EMPTY_LINE = new FixedLine<>("");

@@ -1,13 +1,35 @@
 package fr.olympa.api.scoreboard.sign;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.olympa.api.player.OlympaPlayer;
 
-public interface ScoreboardLine<T extends OlympaPlayer> {
-	
-	public String getValue(T player);
-	
-	public default void addScoreboard(Scoreboard<T> scoreboard) {}
+public abstract class ScoreboardLine<T extends OlympaPlayer> {
 
-	public default void removeScoreboard(Scoreboard<T> scoreboard) {}
+	private List<Scoreboard<T>> scoreboards = new ArrayList<>();
+	
+	public abstract String getValue(T player);
+	
+	public void addScoreboard(Scoreboard<T> scoreboard) {
+		scoreboards.add(scoreboard);
+	}
+
+	public void removeScoreboard(Scoreboard<T> scoreboard) {
+		scoreboards.remove(scoreboard);
+	}
+
+	public void updateGlobal() {
+		scoreboards.forEach(Scoreboard::needsUpdate);
+	}
+
+	public void updatePlayer(T player) {
+		for (Scoreboard<T> scoreboard : scoreboards) {
+			if (scoreboard.p == player) {
+				scoreboard.needsUpdate();
+				return;
+			}
+		}
+	}
 
 }

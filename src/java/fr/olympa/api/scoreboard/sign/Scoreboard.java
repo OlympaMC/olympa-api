@@ -16,13 +16,9 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	private ScoreboardSigns sb;
 	private LinkedList<ScoreboardLine<T>> lines = new LinkedList<>();
 
-	private int animationSize = 0;
-	private int timeBetweenAnimations = 10 * 20;
-
 	private boolean needsUpdate = false;
-
-	int animStep = 0;
-	int waitBeforeAnim = 0;
+	
+	private Object lock = new Object();
 
 	Scoreboard(T player, ScoreboardManager<T> manager) {
 		p = player;
@@ -51,21 +47,23 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 
 	public void needsUpdate() {
 		needsUpdate = true;
+		synchronized (lock) {
+			needsUpdate = true;
+			lock.notify();
+		}
 	}
 
 	@Override
 	public void run() {
 		while (true) {
-			if (waitBeforeAnim-- < 0 || needsUpdate) {
-				if (++animStep >= animationSize) {
-					animStep = 0;
-					waitBeforeAnim = timeBetweenAnimations;
-				}
-				needsUpdate = false;
-				updateScoreboard();
-			}
 			try {
-				Thread.sleep(50);
+				synchronized (lock) {
+					while (!needsUpdate) {
+						lock.wait();
+					}
+					needsUpdate = false;
+					updateScoreboard();
+				}
 			}catch (InterruptedException e) {
 				break;
 			}
@@ -93,39 +91,31 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	}
 
 	public void updateScoreboard() {
-		long beg = System.currentTimeMillis();
-		long pass, create, linesT, display, end;
 		String oldName = new String(sb.objectiveName);
 		String name;
 		do {
 			name = Passwords.generateRandomPassword(16);
 		} while (name.equalsIgnoreCase(oldName));
-		pass = System.currentTimeMillis();
 		sb.objectiveName = name;
 		sb.oldLines = (ArrayList<VirtualTeam>) sb.lines.clone();
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();
-		create = System.currentTimeMillis();
 		for (int i = 0; i < lines.size(); i++) {
 			ScoreboardLine<T> line = lines.get(i);
-			if (line instanceof AnimLine) {
+			/*if (line instanceof AnimLine) {
 				int newAnimSize = ((AnimLine) line).getAnimSize();
 				if (newAnimSize > animationSize) {
 					animationSize = newAnimSize;
 				}
-			}
+			}*/
 			String value = line.getValue(p);
 			sb.setLine(i, value);
 		}
-		linesT = System.currentTimeMillis();
 		sb.display();
-		display = System.currentTimeMillis();
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);
 		sb.oldLines.clear();
-		end = System.currentTimeMillis();
-		System.out.println("Scoreboard.updateScoreboard() TIME " + (pass - beg) + " " + (create - beg) + " " + (linesT - beg) + " " + (display - beg) + " " + (end - beg));
 	}
 
 }
