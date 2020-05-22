@@ -8,7 +8,7 @@ import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.plugin.OlympaSpigot;
-import fr.olympa.api.region.RegionManager;
+import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
 
 /**

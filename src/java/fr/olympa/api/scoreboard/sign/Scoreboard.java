@@ -2,6 +2,9 @@ package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.scoreboard.sign.lines.ScoreboardLine;
@@ -16,10 +19,9 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	private ScoreboardManager<T> manager;
 	private ScoreboardSigns sb;
 	private LinkedList<ScoreboardLine<T>> lines = new LinkedList<>();
-
-	private boolean needsUpdate = false;
 	
-	private Object lock = new Object();
+	private Lock lock = new ReentrantLock();
+	private Condition condition = lock.newCondition();
 
 	Scoreboard(T player, ScoreboardManager<T> manager) {
 		p = player;
@@ -46,25 +48,16 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		return sb;
 	}
 
-	public void needsUpdate() {
-		needsUpdate = true;
-		synchronized (lock) {
-			needsUpdate = true;
-			lock.notify();
-		}
+	public synchronized void needsUpdate() {
+		condition.signal();
 	}
 
 	@Override
 	public void run() {
 		while (true) {
 			try {
-				synchronized (lock) {
-					while (!needsUpdate) {
-						lock.wait();
-					}
-					needsUpdate = false;
-					updateScoreboard();
-				}
+				condition.await();
+				updateScoreboard();
 			}catch (InterruptedException e) {
 				break;
 			}

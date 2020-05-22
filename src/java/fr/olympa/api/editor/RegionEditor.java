@@ -71,9 +71,13 @@ public class RegionEditor extends InventoryClear {
 		int slot = p.getInventory().getHeldItemSlot();
 		RegionType regionTypeClicked = RegionType.fromSlot(slot);
 		if (regionTypeClicked != null) {
-			setRegionType(regionTypeClicked);
-			locations.clear();
-			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu sélectionne maintenant une zone de type " + regionTypeClicked.name() + ". Son nombre de blocs minimal est " + regionTypeClicked.minBlocks + ". Ton ancienne sélection a été effacée.");
+			if (regionTypeClicked == regionType) {
+				Prefix.DEFAULT_BAD.sendMessage(p, "Tu sélectionnais déjà une zone de type " + regionTypeClicked.name() + ".");
+			}else {
+				setRegionType(regionTypeClicked);
+				locations.clear();
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu sélectionne maintenant une zone de type " + regionTypeClicked.name() + ". Son nombre de blocs minimal est " + regionTypeClicked.minBlocks + ". Ton ancienne sélection a été effacée.");
+			}
 		}else if (slot == 0) {
 			if (e.getClickedBlock() == null) return;
 			Location loc = e.getClickedBlock().getLocation();
@@ -83,12 +87,12 @@ public class RegionEditor extends InventoryClear {
 				if (action == Action.LEFT_CLICK_BLOCK || locations.isEmpty()) {
 					if (!locations.isEmpty()) locations.removeFirst();
 					locations.addFirst(loc);
-					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 1/2 de la sélection. " + ensureValid());
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi le bloc 1/2 de la sélection. " + ensureValid());
 				}else {
 					if (ensureWorld(loc)) {
 						if (locations.size() >= 2) locations.remove(1);
 						locations.add(loc);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisis le bloc 2/2 de la sélection.");
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi le bloc 2/2 de la sélection.");
 					}
 				}
 				break;
@@ -108,19 +112,20 @@ public class RegionEditor extends InventoryClear {
 			}
 		}else if (slot == 6) {
 			expanded = ItemUtils.toggle(e.getItem());
+			Prefix.DEFAULT_GOOD.sendMessage(p, expanded ? "La région s'étend désormais verticalement." : "La région est limitée aux hauteurs des blocs choisis.");
 		}else if (slot == 8) {
 			leave(p);
 			Region region = null;
 			switch (regionType) {
 			case CUBOID:
-				if (locations.size() > 2) {
+				if (locations.size() == 2) {
 					Location first = locations.getFirst();
 					Location last = locations.getLast();
 					region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
-				}
+				}else System.out.println("no cuboid");
 				break;
 			case POLYGON:
-				if (locations.size() > 3) {
+				if (locations.size() >= 3) {
 					int minY = 0;
 					int maxY = 256;
 					if (!expanded) {
@@ -130,7 +135,7 @@ public class RegionEditor extends InventoryClear {
 						}
 					}
 					region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), minY, maxY);
-				}
+				}else System.out.println("no poly");
 				break;
 			}
 			end.accept(region);
