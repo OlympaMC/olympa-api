@@ -35,7 +35,9 @@ public abstract class OlympaGUI implements InventoryHolder {
 	 * @param click Type of click
 	 * @return Cancel click
 	 */
-	public abstract boolean onClick(Player p, ItemStack current, int slot, ClickType click);
+	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
+		return true;
+	}
 	
 	/**
 	 * Called when clicking on an item <b>with something on the cursor</b>

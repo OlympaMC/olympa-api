@@ -26,6 +26,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private long id;
 	private TreeMap<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparing(OlympaGroup::getPower).reversed());
 	private Gender gender = Gender.MALE;
+	private OlympaMoney storeMoney = new OlympaMoney(0);
 	
 	private OlympaPlayerInformations cachedInfos = null;
 
@@ -188,8 +189,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaMoney getStoreMoney() {
-		// TODO Auto-generated method stub
-		return null;
+		return storeMoney;
 	}
 
 	@Override
@@ -217,8 +217,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public boolean isConnected() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override

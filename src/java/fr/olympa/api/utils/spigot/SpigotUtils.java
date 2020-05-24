@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cuboid;
 import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
@@ -267,6 +269,65 @@ public class SpigotUtils {
 
 		dataInput.close();
 		return object;
+	}
+
+	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
+		for (ItemStack item : inv.getContents()) {
+			if (item == null) continue;
+			if (item.isSimilar(i)) {
+				if (item.getAmount() == amount) {
+					return true;
+				}
+				if (item.getAmount() > amount) {
+					return true;
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean removeItems(Inventory inv, ItemStack i) {
+		if (i.getAmount() <= 0) throw new IllegalArgumentException("Item cannot have a negative or zero amount");
+		ItemStack[] items = inv.getContents();
+		for (int slot = 0; slot < items.length; slot++) {
+			ItemStack item = items[slot];
+			if (item == null) continue;
+			if (item.isSimilar(i)) {
+				if (item.getAmount() == i.getAmount()) {
+					inv.setItem(slot, new ItemStack(Material.AIR));
+					return true;
+				}
+				if (item.getAmount() > i.getAmount()) {
+					item.setAmount(item.getAmount() - i.getAmount());
+					return true;
+				}else if (item.getAmount() < i.getAmount()) {
+					i.setAmount(i.getAmount() - item.getAmount());
+					inv.setItem(slot, new ItemStack(Material.AIR));
+				}
+			}
+		}
+		return false;
+	}
+
+	public static int getItemAmount(Inventory inv, ItemStack i) {
+		int amount = 0;
+		for (ItemStack is : inv.getContents()) {
+			if (is == null) continue;
+			if (is.isSimilar(i)) {
+				amount += is.getAmount();
+				continue;
+			}
+		}
+		return amount;
+	}
+
+	public static void giveItems(Player p, ItemStack... items) {
+		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items);
+		if (leftover.isEmpty()) return;
+		leftover.forEach((i, item) -> p.getWorld().dropItem(p.getLocation(), item));
+		Prefix.DEFAULT.sendMessage(p, "Tes items ont été jetés au sol car tu n'as plus de place dans ton inventaire !");
 	}
 
 }

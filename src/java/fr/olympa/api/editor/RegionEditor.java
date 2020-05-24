@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cuboid;
+import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
 import fr.olympa.api.utils.Point2D;
@@ -29,6 +30,7 @@ public class RegionEditor extends InventoryClear {
 	private static ItemStack blockRemover = ItemUtils.item(Material.SHEARS, "§cRetirer le dernier bloc");
 	private static ItemStack regionCuboid = ItemUtils.item(Material.STONE, "§aRégion cubique (cuboid)");
 	private static ItemStack regionPolygon = ItemUtils.item(Material.COBBLESTONE_STAIRS, "§aRégion polygonale (polygon)");
+	private static ItemStack regionCylinder = ItemUtils.item(Material.SLIME_BALL, "§aRégion cylindrique (cylinder)");
 	private static ItemStack validate = ItemUtils.item(Material.DIAMOND, "§bValider la sélection");
 
 	private RegionType regionType;
@@ -51,6 +53,7 @@ public class RegionEditor extends InventoryClear {
 		inv.setItem(1, blockRemover);
 		inv.setItem(3, regionCuboid.clone());
 		inv.setItem(4, regionPolygon.clone());
+		inv.setItem(5, regionCylinder.clone());
 		inv.setItem(6, ItemUtils.itemSwitch("Région étendue", expanded));
 		inv.setItem(8, validate);
 		setRegionType(RegionType.CUBOID);
@@ -102,6 +105,19 @@ public class RegionEditor extends InventoryClear {
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as ajouté 1 bloc à la sélection (" + locations.size() + " blocs). " + ensureValid());
 				}
 				break;
+			case CYLINDER:
+				if (action == Action.LEFT_CLICK_BLOCK || locations.isEmpty()) {
+					if (!locations.isEmpty()) locations.removeFirst();
+					locations.addFirst(loc);
+					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi le centre de la sélection. " + ensureValid());
+				}else {
+					if (ensureWorld(loc)) {
+						if (locations.size() >= 2) locations.remove(1);
+						locations.add(loc);
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi le un point du cercle de la sélection. Rayon du cylindre : " + (int) locations.getFirst().distance(loc) + " blocs");
+					}
+				}
+				break;
 			}
 		}else if (slot == 1) {
 			if (locations.isEmpty()) {
@@ -115,32 +131,38 @@ public class RegionEditor extends InventoryClear {
 			Prefix.DEFAULT_GOOD.sendMessage(p, expanded ? "La région s'étend désormais verticalement." : "La région est limitée aux hauteurs des blocs choisis.");
 		}else if (slot == 8) {
 			leave(p);
+			if (regionType.minBlocks > locations.size()) end.accept(null);
 			Region region = null;
 			switch (regionType) {
 			case CUBOID:
-				if (locations.size() == 2) {
-					Location first = locations.getFirst();
-					Location last = locations.getLast();
-					region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
-				}else System.out.println("no cuboid");
+				Location first = locations.getFirst();
+				Location last = locations.getLast();
+				region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
 				break;
 			case POLYGON:
-				if (locations.size() >= 3) {
-					int minY = 0;
-					int maxY = 256;
-					if (!expanded) {
-						for (Location loc : locations) {
-							if (loc.getBlockY() < minY) minY = loc.getBlockY();
-							if (loc.getBlockY() > maxY) maxY = loc.getBlockY();
-						}
-					}
-					region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), minY, maxY);
-				}else System.out.println("no poly");
+				MinMax y = getMinMax();
+				region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), y.min, y.max);
+				break;
+			case CYLINDER:
+				y = getMinMax();
+				region = new Cylinder(locations.getFirst(), (int) locations.getFirst().distance(locations.getLast()), y.min, y.max);
 				break;
 			}
 			end.accept(region);
 		}else return;
 		e.setCancelled(true);
+	}
+
+	private MinMax getMinMax() {
+		int minY = 0;
+		int maxY = 256;
+		if (!expanded) {
+			for (Location loc : locations) {
+				if (loc.getBlockY() < minY) minY = loc.getBlockY();
+				if (loc.getBlockY() > maxY) maxY = loc.getBlockY();
+			}
+		}
+		return new MinMax(minY, maxY);
 	}
 
 	private String ensureValid() {
@@ -154,7 +176,7 @@ public class RegionEditor extends InventoryClear {
 	}
 
 	enum RegionType {
-		CUBOID(3, 2), POLYGON(4, 3);
+		CUBOID(3, 2), POLYGON(4, 3), CYLINDER(5, 2);
 
 		public final int slot;
 		public final int minBlocks;
@@ -169,6 +191,16 @@ public class RegionEditor extends InventoryClear {
 				if (region.slot == slot) return region;
 			}
 			return null;
+		}
+	}
+
+	private class MinMax {
+		public final int min;
+		public final int max;
+
+		public MinMax(int min, int max) {
+			this.min = min;
+			this.max = max;
 		}
 	}
 
