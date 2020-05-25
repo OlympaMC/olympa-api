@@ -18,7 +18,6 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -68,10 +67,6 @@ public abstract class OlympaCommand {
 		addArgs(isMandatory, Arrays.asList(args));
 	}
 
-	public void broadcast(String message) {
-		Bukkit.broadcastMessage(message);
-	}
-
 	public String buildText(int min, String[] args) {
 		return String.join(" ", Arrays.copyOfRange(args, min, args.length));
 	}
@@ -101,6 +96,10 @@ public abstract class OlympaCommand {
 
 	public CommandSender getSender() {
 		return sender;
+	}
+
+	public void setAllowConsole(boolean allowConsole) {
+		this.allowConsole = allowConsole;
 	}
 
 	public boolean hasPermission() {
@@ -157,10 +156,6 @@ public abstract class OlympaCommand {
 		sendError("Tu n'as pas la permission &l(◑_◑)");
 	}
 
-	public void sendError(String message) {
-		this.sendMessage(Prefix.DEFAULT_BAD, message);
-	}
-
 	public void sendImpossibleWithConsole() {
 		sendError("Impossible avec la console.");
 	}
@@ -177,65 +172,48 @@ public abstract class OlympaCommand {
 		sendError("Syntaxe attendue : &o" + correctSyntax);
 	}
 
-	public void sendInfo(String message) {
-		this.sendMessage(Prefix.INFO, message);
+	public void sendUnknownPlayer(String name) {
+		sendError("Le joueur &4%s&c est introuvable.", name);
+		// TODO check historique player
 	}
 
-	public void sendMessage(BaseComponent... text) {
-		player.spigot().sendMessage(text);
-	}
-
-	public void sendMessage(CommandSender sender, Prefix prefix, String text) {
-		this.sendMessage(sender, prefix + text);
-	}
-
-	public void sendMessage(CommandSender sender, String text) {
-		sender.sendMessage(ColorUtils.color(text));
-	}
-
-	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text) {
-		text = ColorUtils.color(text);
+	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {
+		text = prefix.formatMessage(text, args);
 		for (CommandSender sender : senders) {
 			sender.sendMessage(text);
 		}
 	}
 
-	public void sendMessage(Prefix prefix, String text) {
-		this.sendMessage(sender, prefix, text);
+	public void broadcast(Prefix prefix, String text, Object... args) {
+		sendMessage(Bukkit.getOnlinePlayers(), prefix, text, args);
 	}
 
-	public void sendMessage(String text) {
-		this.sendMessage(sender, text);
+	public void broadcastToAll(Prefix prefix, String text, Object... args) {
+		broadcast(prefix, text, args);
+		prefix.sendMessage(Bukkit.getConsoleSender(), text, args);
 	}
 
-	public void sendMessageToAll(Prefix prefix, String text) {
-		this.sendMessageToAll(prefix + text);
+	public void sendComponents(BaseComponent... components) {
+		sender.spigot().sendMessage(components);
 	}
 
-	public void sendMessageToAll(String text) {
-		Bukkit.getOnlinePlayers().forEach(player -> this.sendMessage(player, text));
-		this.sendMessage(Bukkit.getConsoleSender(), text);
+	public void sendMessage(Prefix prefix, String message, Object... args) {
+		prefix.sendMessage(sender, message, args);
 	}
 
-	public void sendSuccess(String message) {
-		this.sendMessage(Prefix.DEFAULT_GOOD, message);
+	public void sendInfo(String message, Object... args) {
+		sendMessage(Prefix.INFO, message, args);
 	}
 
-	public void sendUnknownPlayer(String name) {
-		sendError("Le joueur &4%player&c est introuvable.".replaceFirst("%player", name));
-		// TODO check historique player
+	public void sendSuccess(String message, Object... args) {
+		sendMessage(Prefix.DEFAULT_GOOD, message, args);
+	}
+
+	public void sendError(String message, Object... args) {
+		sendMessage(Prefix.DEFAULT_BAD, message, args);
 	}
 
 	public void sendUsage(String label) {
-		this.sendMessage(Prefix.USAGE, "/" + label + " " + usageString);
-	}
-
-	public void sendUsage(String label, String arg0) {
-		// TODO add usage arg0
-		this.sendMessage(Prefix.USAGE, "/" + label + " " + arg0 + " " + "");
-	}
-
-	public void setAllowConsole(boolean allowConsole) {
-		this.allowConsole = allowConsole;
+		sendMessage(Prefix.USAGE, "/%s %s", label, usageString);
 	}
 }

@@ -20,6 +20,7 @@ import com.google.common.io.ByteStreams;
 import fr.olympa.api.region.shapes.ChunkCuboid;
 import fr.olympa.api.region.shapes.ChunkPolygon;
 import fr.olympa.api.region.shapes.Cuboid;
+import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
 import fr.olympa.api.utils.ColorUtils;
@@ -33,6 +34,7 @@ public class CustomConfig extends YamlConfiguration {
 		ConfigurationSerialization.registerClass(ChunkCuboid.class);
 		ConfigurationSerialization.registerClass(Polygon.class);
 		ConfigurationSerialization.registerClass(ChunkPolygon.class);
+		ConfigurationSerialization.registerClass(Cylinder.class);
 	}
 
 	private InputStream resource;

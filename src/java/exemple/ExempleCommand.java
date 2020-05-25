@@ -42,11 +42,11 @@ public class ExempleCommand extends OlympaCommand {
 		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
 
 		// send messages
-		this.sendMessage("To you only");
-		this.sendMessageToAll("[ALL] Hello everyone & Console"); // include Console
-		this.sendMessage(sender, "");
-		this.sendMessage(new ComponentBuilder("Hello ").color(ChatColor.RED).bold(true).append("world").color(ChatColor.DARK_RED).append("!").color(ChatColor.RED).create());
-		this.broadcast("[ALL] Hello players"); // Broadcast to players only
+		this.sendMessage(Prefix.DEFAULT, "To you only");
+		this.broadcastToAll(Prefix.DEFAULT, "[ALL] Hello everyone & Console"); // include Console
+		this.broadcast(Prefix.DEFAULT, "[ALL] Hello players"); // Broadcast to players only
+		this.sendSuccess("Succès, argument %s", "coucou");
+		this.sendComponents(new ComponentBuilder("Hello ").color(ChatColor.RED).bold(true).append("world").color(ChatColor.DARK_RED).append("!").color(ChatColor.RED).create());
 
 		// send pre-made messages
 		this.sendMessage(Prefix.DEFAULT, "This is the default prefix.");

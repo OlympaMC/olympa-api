@@ -220,7 +220,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		localInvites.add(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(inviter, stringPlayerInvited);
 
-		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(String.format(stringInvitationReceive, inviter.getName(), clan.getName())));
+		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getName()));
 		for (BaseComponent comp : texts) {
 			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "clans accept " + clan.getName()));
 			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
