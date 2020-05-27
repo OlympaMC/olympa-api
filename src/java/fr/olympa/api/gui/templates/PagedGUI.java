@@ -1,6 +1,5 @@
 package fr.olympa.api.gui.templates;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.bukkit.DyeColor;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.ObservableList;
 
 /**
  * An inventory with an infinite amount of pages of 35 items (integer limit).
@@ -26,18 +26,19 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	private int page = 0;
 	private int maxPage;
 	
-	protected List<T> objects;
-	protected Consumer<List<T>> validate;
+	protected ObservableList<T> objects;
+	protected Consumer<Player> validate;
 	
-	protected PagedGUI(String name, DyeColor color, List<T> objects){
+	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects) {
 		this(name, color, objects, null);
 	}
 	
-	protected PagedGUI(String name, DyeColor color, List<T> objects, Consumer<List<T>> validate){
+	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, Consumer<Player> validate) {
 		super(name, 5);
 		this.objects = objects;
+		this.objects.observe(this::itemChanged);
 		this.validate = validate;
-		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size()*1D / 35D);
+		calculateMaxPage();
 		
 		setBarItem(0, previousPage);
 		setBarItem(4, nextPage);
@@ -48,6 +49,16 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		setItems();
 	}
 	
+	private void calculateMaxPage() {
+		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
+		if (page >= maxPage) page = maxPage - 1;
+	}
+
+	public void itemChanged() {
+		calculateMaxPage();
+		setItems();
+	}
+
 	private void setItems(){
 		for (int i = 0; i < 35; i++) setMainItem(i, null);
 		for (int i = page * 35; i < objects.size(); i++){
@@ -84,7 +95,6 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 
 	public void removeItem(T existing) {
 		if (!objects.remove(existing)) throw new IllegalArgumentException("Cannot remove nonexistent object.");
-		setItems();
 	}
 
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
@@ -104,7 +114,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 				break;
 				
 			case 2:
-				validate.accept(objects);
+				validate.accept(p);
 				break;
 			}
 			break;

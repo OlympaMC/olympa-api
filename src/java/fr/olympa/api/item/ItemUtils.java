@@ -140,7 +140,7 @@ public class ItemUtils {
 			lore(is, add);
 			return is;
 		}
-		List<String> ls = new ArrayList<>(Arrays.asList(getLore(is)));
+		List<String> ls = is.getItemMeta().getLore();
 		ls.addAll(Arrays.asList(add));
 		lore(is, ls.toArray(new String[0]));
 		return is;

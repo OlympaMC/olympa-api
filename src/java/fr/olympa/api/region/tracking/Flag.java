@@ -18,8 +18,8 @@ public class Flag {
 
 	public Flag(String greeting, String farewell, ChatMessageType position) {
 		this.position = position;
-		this.greeting = TextComponent.fromLegacyText(greeting);
-		this.farewell = TextComponent.fromLegacyText(farewell);
+		this.greeting = greeting != null ? TextComponent.fromLegacyText(greeting) : null;
+		this.farewell = farewell != null ? TextComponent.fromLegacyText(farewell) : null;
 	}
 
 	/**

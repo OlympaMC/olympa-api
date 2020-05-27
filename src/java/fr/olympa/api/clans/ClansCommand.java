@@ -75,12 +75,12 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 	public void accept(CommandContext cmd) {
 		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(cmd.getArgument(0))).findFirst().orElse(null);
 		if (clan == null) {
-			sendError(String.format(manager.stringNoInvitation, cmd.args[0]));
+			sendError(manager.stringNoInvitation, cmd.args[0]);
 			return;
 		}
 
 		if (clan.addPlayer(getOlympaPlayer())) {
-			sendSuccess(String.format(manager.stringClanJoined, clan.getName()));
+			sendSuccess(manager.stringClanJoined, clan.getName());
 			manager.clearPlayerInvitations(getPlayer());
 		}else {
 			sendError(manager.stringClanFull);
@@ -116,7 +116,7 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 
 		OlympaPlayer target = AccountProvider.get(((Player) cmd.args[0]).getUniqueId());
 		if (!clan.contains(target)) {
-			sendError(String.format(manager.stringPlayerNotInClan, target.getName()));
+			sendError(manager.stringPlayerNotInClan, target.getName());
 			return;
 		}
 

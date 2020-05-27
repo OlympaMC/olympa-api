@@ -7,7 +7,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.utils.ObservableList;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -58,7 +58,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	//	public ScoreboardTeam allies;
 	private Map<Integer, T> clans = new HashMap<>();
-	private Map<Player, List<T>> invitations = new HashMap<>();
+	private Map<Player, ObservableList<T>> invitations = new HashMap<>();
 	private int defaultMaxSize;
 	private final OlympaStatement createClanStatement;
 	private final OlympaStatement removeClanStatement;
@@ -104,10 +104,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	public String stringItemDisband = "§cDémenteler le clan";
 
-	public ClansManager(OlympaAPIPlugin plugin, String tableName, List<String> columns, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
+	public ClansManager(OlympaAPIPlugin plugin, String table, List<String> columns, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
 		this.defaultMaxSize = defaultMaxSize;
-		this.tableName = "`" + tableName + "`";
+		this.tableName = "`" + table + "`";
 
 		StringJoiner columnsJoiner = new StringJoiner(", ");
 		addDBCollums(columnsJoiner);
@@ -191,9 +191,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
 	}
 
-	public List<T> getPlayerInvitations(Player p) {
-		List<T> localInvites = invitations.get(p);
-		return localInvites == null ? Collections.EMPTY_LIST : localInvites;
+	public ObservableList<T> getPlayerInvitations(Player p) {
+		ObservableList<T> localInvites = invitations.get(p);
+		return localInvites == null ? ObservableList.EMPTY_LIST : localInvites;
 	}
 
 	public void clearPlayerInvitations(Player p) {
@@ -212,9 +212,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			return;
 		}
 
-		List<T> localInvites = invitations.get(targetPlayer);
+		ObservableList<T> localInvites = invitations.get(targetPlayer);
 		if (localInvites == null) {
-			localInvites = new ArrayList<>();
+			localInvites = new ObservableList<>(new ArrayList<>());
 			invitations.put(targetPlayer, localInvites);
 		}
 		localInvites.add(clan);
@@ -222,7 +222,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getName()));
 		for (BaseComponent comp : texts) {
-			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "clans accept " + clan.getName()));
+			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clans accept " + clan.getName()));
 			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
 		}
 		targetPlayer.spigot().sendMessage(texts);

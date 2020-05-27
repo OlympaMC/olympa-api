@@ -114,7 +114,7 @@ public class RegionEditor extends InventoryClear {
 					if (ensureWorld(loc)) {
 						if (locations.size() >= 2) locations.remove(1);
 						locations.add(loc);
-						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi le un point du cercle de la sélection. Rayon du cylindre : " + (int) locations.getFirst().distance(loc) + " blocs");
+						Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as choisi un point du cercle de la sélection. Rayon du cylindre : " + (int) locations.getFirst().distance(loc) + " blocs");
 					}
 				}
 				break;
@@ -131,22 +131,23 @@ public class RegionEditor extends InventoryClear {
 			Prefix.DEFAULT_GOOD.sendMessage(p, expanded ? "La région s'étend désormais verticalement." : "La région est limitée aux hauteurs des blocs choisis.");
 		}else if (slot == 8) {
 			leave(p);
-			if (regionType.minBlocks > locations.size()) end.accept(null);
 			Region region = null;
-			switch (regionType) {
-			case CUBOID:
-				Location first = locations.getFirst();
-				Location last = locations.getLast();
-				region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
-				break;
-			case POLYGON:
-				MinMax y = getMinMax();
-				region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), y.min, y.max);
-				break;
-			case CYLINDER:
-				y = getMinMax();
-				region = new Cylinder(locations.getFirst(), (int) locations.getFirst().distance(locations.getLast()), y.min, y.max);
-				break;
+			if (regionType.minBlocks <= locations.size()) {
+				switch (regionType) {
+				case CUBOID:
+					Location first = locations.getFirst();
+					Location last = locations.getLast();
+					region = expanded ? new ExpandedCuboid(first.getWorld(), first.getBlockX(), first.getBlockZ(), last.getBlockX(), last.getBlockZ()) : new Cuboid(first, last);
+					break;
+				case POLYGON:
+					MinMax y = getMinMax();
+					region = new Polygon(locations.getFirst().getWorld(), locations.stream().map(Point2D::new).collect(Collectors.toList()), y.min, y.max);
+					break;
+				case CYLINDER:
+					y = getMinMax();
+					region = new Cylinder(locations.getFirst(), (int) locations.getFirst().distance(locations.getLast()), y.min, y.max);
+					break;
+				}
 			}
 			end.accept(region);
 		}else return;

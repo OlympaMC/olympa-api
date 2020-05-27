@@ -18,7 +18,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 
 	private ScoreboardManager<T> manager;
 	private ScoreboardSigns sb;
-	private LinkedList<ScoreboardLine<T>> lines = new LinkedList<>();
+	private LinkedList<Line> lines = new LinkedList<>();
 	
 	private Lock lock = new ReentrantLock();
 	private Condition condition = lock.newCondition();
@@ -27,11 +27,11 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		p = player;
 		this.manager = manager;
 		for (ScoreboardLine<T> line : manager.lines) {
-			lines.add(line);
+			lines.add(new Line(line));
 			line.addScoreboard(this);
 		}
 		for (ScoreboardLine<T> line : manager.footer) {
-			lines.add(line);
+			lines.add(new Line(line));
 			line.addScoreboard(this);
 		}
 		initScoreboard();
@@ -39,7 +39,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	}
 
 	public void addLine(ScoreboardLine<T> line) {
-		lines.add(lines.size() - manager.footer.size(), line);
+		lines.add(lines.size() - manager.footer.size(), new Line(line));
 		// TODO update uniquement la ligné ajouté
 		needsUpdate();
 	}
@@ -48,18 +48,26 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		return sb;
 	}
 
-	public synchronized void needsUpdate() {
-		condition.signal();
+	public void needsUpdate() {
+		lock.lock();
+		try {
+			condition.signal();
+		}finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
 	public void run() {
 		while (true) {
+			lock.lock();
 			try {
 				condition.await();
 				updateScoreboard();
 			}catch (InterruptedException e) {
 				break;
+			}finally {
+				lock.unlock();
 			}
 		}
 	}
@@ -67,10 +75,12 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	public void initScoreboard() {
 		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16), manager.lines.size());
 		sb.create();
-		for (int i = 0; i < lines.size(); i++) {
-			ScoreboardLine<T> line = lines.get(i);
-			String value = line.getValue(p);
-			sb.setLine(i, value);
+		int sbLine = 0;
+		for (Line line : lines) {
+			String[] value = line.getLines(p);
+			for (String internalLine : value) {
+				sb.setLine(sbLine++, internalLine);
+			}
 		}
 		sb.display();
 	}
@@ -78,8 +88,8 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	public void unload() {
 		interrupt();
 		if (sb != null) sb.destroy();
-		for (ScoreboardLine<T> line : lines) {
-			line.removeScoreboard(this);
+		for (Line line : lines) {
+			line.line.removeScoreboard(this);
 		}
 		lines.clear();
 	}
@@ -95,14 +105,32 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();
-		for (int i = 0; i < lines.size(); i++) {
-			String value = lines.get(i).getValue(p);
-			sb.setLine(i, value);
+		int sbLine = 0;
+		for (Line line : lines) {
+			String[] value = line.getLines(p);
+			for (String internalLine : value) {
+				sb.setLine(sbLine++, internalLine);
+			}
 		}
 		sb.display();
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);
 		sb.oldLines.clear();
+	}
+
+	class Line {
+		ScoreboardLine<T> line;
+
+		public Line(ScoreboardLine<T> line) {
+			this.line = line;
+		}
+
+		public String[] getLines(T player) {
+			String text = line.getValue(p);
+			return text.split("\\n");
+			//return ChatPaginator.wordWrap(text, 48);
+		}
+
 	}
 
 }

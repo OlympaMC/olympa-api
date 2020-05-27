@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +20,9 @@ import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class RegionManager implements Listener {
 
-	private Set<TrackedRegion> trackedRegions = new HashSet<>();
+	private final Set<TrackedRegion> trackedRegions = new HashSet<>();
 
-	private Map<Player, Set<TrackedRegion>> inRegions = new HashMap<>();
+	private final Map<Player, Set<TrackedRegion>> inRegions = new HashMap<>();
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
@@ -60,6 +61,7 @@ public class RegionManager implements Listener {
 	}
 
 	public TrackedRegion registerRegion(Region region, String id, Flag... flags) {
+		Validate.notNull(region, id + " is a null region");
 		TrackedRegion tracked = new TrackedRegion(region, id, flags);
 		trackedRegions.add(tracked);
 		return tracked;
@@ -75,7 +77,7 @@ public class RegionManager implements Listener {
 	}
 
 	public Set<TrackedRegion> getCachedPlayerRegions(Player p) {
-		return inRegions.get(p);
+		return inRegions.getOrDefault(p, Collections.EMPTY_SET);
 	}
 
 }

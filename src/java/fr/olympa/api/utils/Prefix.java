@@ -1,7 +1,5 @@
 package fr.olympa.api.utils;
 
-import java.util.Formatter;
-
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
@@ -17,15 +15,13 @@ public enum Prefix {
 	ERROR("&c⚠ ", ChatColor.RED, ChatColor.DARK_RED),
 	INFO("&6INFO &6%symbole &e", ChatColor.YELLOW, ChatColor.GOLD),
 	USAGE("&6Usage &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED),
-	NONE(null, null, null);
+	NONE("", null, null);
 
 	static {
 		for (final Prefix prefix : Prefix.values()) {
 			prefix.setPrefix(prefix.toStringWithoutFormat().replaceAll("%serverName", "Olympa").replaceAll("%symbole", "➤"));
 		}
 	}
-
-	private static Formatter formatter = new Formatter();
 
 	String prefix;
 	ChatColor color;
@@ -59,7 +55,7 @@ public enum Prefix {
 	}
 
 	public String formatMessage(String msg, Object... args) {
-		return ColorUtils.color(prefix + formatter.format(msg, args).toString());
+		return String.format(ColorUtils.color(prefix + msg), args);
 	}
 
 	private void setPrefix(final String prefix) {
