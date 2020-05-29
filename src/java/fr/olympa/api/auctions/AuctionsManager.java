@@ -90,6 +90,10 @@ public class AuctionsManager {
 		return 10;
 	}
 
+	public void openAuctionsGUI(Player p) {
+		gui.create(p);
+	}
+
 	public void openAuctionCreationGUI(Player p) {
 		new CreateAuctionGUI(this).create(p);
 	}

@@ -104,14 +104,13 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	public String stringItemDisband = "§cDémenteler le clan";
 
-	public ClansManager(OlympaAPIPlugin plugin, String table, List<String> columns, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
+	public ClansManager(OlympaAPIPlugin plugin, String table, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
 		this.defaultMaxSize = defaultMaxSize;
 		this.tableName = "`" + table + "`";
 
 		StringJoiner columnsJoiner = new StringJoiner(", ");
 		addDBCollums(columnsJoiner);
-		columns.forEach(x -> columnsJoiner.add(x));
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				columnsJoiner.toString() +
 				",  PRIMARY KEY (`id`))");
