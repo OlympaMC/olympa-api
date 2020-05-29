@@ -23,6 +23,8 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class ComplexCommand extends OlympaCommand {
 
+	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
+
 	class InternalCommand {
 		Cmd cmd;
 		OlympaPermission perm;
@@ -155,7 +157,7 @@ public class ComplexCommand extends OlympaCommand {
 			}else if (key.equals("DOUBLE")) {
 				return Collections.EMPTY_LIST;
 			}else if (key.equals("INTEGER")) {
-				return Collections.EMPTY_LIST;
+				return INTEGERS;
 			} else {
 				find.addAll(Arrays.asList(key.split("\\|")));
 			}

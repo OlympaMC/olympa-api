@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.sql.OlympaStatement;
-import fr.olympa.api.utils.ObservableList;
+import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -22,6 +22,7 @@ public class AuctionsManager {
 	private final String tableName;
 	private final Plugin plugin;
 	private final ObservableList<Auction> auctions = new ObservableList<>(new ArrayList<>());
+	private final AuctionsGUI gui;
 
 	private OlympaStatement createAuctionStatement;
 	private OlympaStatement removeAuctionStatement;
@@ -46,6 +47,8 @@ public class AuctionsManager {
 
 		createAuctionStatement = new OlympaStatement("INSERT INTO " + tableName + " (``player_id`, `item`, `price`, `expiration`) VALUES (?, ?, ?, ?)", true);
 		removeAuctionStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
+
+		gui = new AuctionsGUI(this);
 	}
 
 	public synchronized void createAuction(OlympaPlayerInformations player, ItemStack item, double price, long expiration) throws SQLException, IOException {
@@ -85,10 +88,6 @@ public class AuctionsManager {
 
 	public int getDemidaysMax() {
 		return 10;
-	}
-
-	public void openAuctionGUI(Player p) {
-		new AuctionsGUI(this).create(p);
 	}
 
 	public void openAuctionCreationGUI(Player p) {

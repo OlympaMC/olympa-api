@@ -10,7 +10,7 @@ import fr.olympa.api.item.ItemUtils;
 public class AuctionsGUI extends PagedGUI<Auction> {
 
 	public AuctionsGUI(AuctionsManager manager) {
-		super("Hôtel des Ventes", DyeColor.CYAN, manager.getAuctions(), p -> manager.openAuctionCreationGUI(p));
+		super("Hôtel des Ventes", DyeColor.CYAN, manager.getAuctions(), true, p -> manager.openAuctionCreationGUI(p));
 	}
 
 	@Override

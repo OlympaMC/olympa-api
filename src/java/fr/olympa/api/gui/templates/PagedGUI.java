@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.ObservableList;
+import fr.olympa.api.utils.observable.ObservableList;
 
 /**
  * An inventory with an infinite amount of pages of 35 items (integer limit).
@@ -28,15 +28,19 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	
 	protected ObservableList<T> objects;
 	protected Consumer<Player> validate;
+	private boolean persistent;
+	private final String inventoryName;
 	
-	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects) {
-		this(name, color, objects, null);
+	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, boolean persistent) {
+		this(name, color, objects, persistent, null);
 	}
 	
-	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, Consumer<Player> validate) {
+	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, boolean persistent, Consumer<Player> validate) {
 		super(name, 5);
+		this.inventoryName = name;
 		this.objects = objects;
-		this.objects.observe(this::itemChanged);
+		this.objects.observe(name, this::itemChanged);
+		this.persistent = persistent;
 		this.validate = validate;
 		calculateMaxPage();
 		
@@ -48,13 +52,14 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		
 		setItems();
 	}
-	
+
 	private void calculateMaxPage() {
 		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
 		if (page >= maxPage) page = maxPage - 1;
 	}
 
 	public void itemChanged() {
+		System.out.println("PagedGUI.itemChanged()");
 		calculateMaxPage();
 		setItems();
 	}
@@ -131,6 +136,15 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		return true;
 	}
 	
+	@Override
+	public boolean onClose(Player p) {
+		if (!persistent) {
+			objects.remove(inventoryName);
+			inv = null;
+		}
+		return true;
+	}
+
 	/**
 	 * @param object existing object to represent
 	 * @return ItemStack who represents the object

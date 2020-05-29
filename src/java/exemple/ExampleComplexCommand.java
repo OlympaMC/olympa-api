@@ -25,10 +25,10 @@ public class ExampleComplexCommand extends ComplexCommand {
 		new ExempleGUI().create(getPlayer());
 	}
 
-	@Cmd(args = { "PLAYERS", "" }, min = 2, permissionName = "EXEMPLE_LOL")
+	@Cmd (args = { "PLAYERS", "" }, min = 1, permissionName = "EXEMPLE_LOL")
 	public void lol(CommandContext cmd) {
-		Player p = (Player) cmd.args[0];
-		p.sendMessage((String) cmd.args[1]);
+		Player p = cmd.getArgument(0);
+		p.sendMessage(cmd.getArgument(1, "valeurDef"));
 	}
 
 	@Cmd(player = true, permissionName = "EXEMPLE_NYAN")

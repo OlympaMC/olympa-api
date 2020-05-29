@@ -49,7 +49,7 @@ public abstract class Clan<T extends Clan<T>> {
 		this.maxSize = maxSize;
 		this.created = created;
 		this.money = new OlympaMoney(money);
-		this.money.observe(this::updateMoney);
+		this.money.observe("clan_update_db", this::updateMoney);
 	}
 
 	public boolean addPlayer(ClanPlayerInterface<T> p) {

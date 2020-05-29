@@ -3,7 +3,7 @@ package fr.olympa.api.scoreboard.sign.lines;
 import java.util.function.Function;
 
 import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.utils.Observable;
+import fr.olympa.api.utils.observable.Observable;
 
 public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 
@@ -16,7 +16,7 @@ public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 	public DynamicLine(Function<T, String> value, Observable observable) {
 		this.value = value;
 
-		if (observable != null) observable.observe(this::updateGlobal);
+		if (observable != null) observable.observe("scoreboard_line_" + hashCode(), this::updateGlobal);
 	}
 
 	@Override

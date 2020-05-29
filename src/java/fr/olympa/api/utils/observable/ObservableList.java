@@ -1,4 +1,4 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.utils.observable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +13,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-
-import fr.olympa.api.utils.Observable.AbstractObservable;
 
 @SuppressWarnings ("rawtypes")
 public class ObservableList<T> extends AbstractObservable implements List<T> {

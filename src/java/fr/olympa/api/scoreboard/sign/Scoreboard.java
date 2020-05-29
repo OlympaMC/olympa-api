@@ -72,7 +72,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		}
 	}
 
-	public void initScoreboard() {
+	private void initScoreboard() {
 		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, Passwords.generateRandomPassword(16), manager.lines.size());
 		sb.create();
 		int sbLine = 0;
@@ -94,7 +94,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		lines.clear();
 	}
 
-	public void updateScoreboard() {
+	private void updateScoreboard() {
 		String oldName = new String(sb.objectiveName);
 		String name;
 		do {

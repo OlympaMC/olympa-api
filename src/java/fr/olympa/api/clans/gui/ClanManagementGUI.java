@@ -108,8 +108,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == slotLeave()) {
 			if (!isChief) {
-				new ConfirmGUI(() -> clan.removePlayer(playerInformations, true), () -> this.create(p), manager.stringSureLeave);
-				p.closeInventory();
+				new ConfirmGUI(() -> clan.removePlayer(playerInformations, true), () -> this.create(p), manager.stringSureLeave).create(p);
 			}
 		}else if (isChief && slot >= slotPlayerFirst() && slot < slotPlayerFirst() + clan.getMaxSize()) {
 			if (playersOrder.size() <= slot - slotPlayerFirst()) {
