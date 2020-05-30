@@ -1,4 +1,4 @@
-package fr.olympa.api.auctions;
+package fr.olympa.api.auctions.gui;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.editor.parsers.NumberParser;
 import fr.olympa.api.gui.OlympaGUI;
@@ -48,7 +49,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 
 	@Override
 	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) {
-		return slot == 10;
+		return slot != 10;
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 			sendError(manager.stringYouAlreadyInClan);
 			return;
 		}
-		String name = cmd.getArgument(0);
+		String name = cmd.getFrom(0);
 		if (manager.clanExists(name)) {
 			sendError(manager.stringClanAlreadyExists);
 			return;
@@ -73,7 +73,8 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 	
 	@Cmd (player = true, min = 1, syntax = "<nom du clan>")
 	public void accept(CommandContext cmd) {
-		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(cmd.getArgument(0))).findFirst().orElse(null);
+		String name = cmd.getFrom(0);
+		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(name)).findFirst().orElse(null);
 		if (clan == null) {
 			sendError(manager.stringNoInvitation, cmd.getArgument(0));
 			return;

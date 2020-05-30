@@ -24,6 +24,7 @@ import fr.olympa.core.spigot.OlympaCore;
 public class ComplexCommand extends OlympaCommand {
 
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
+	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
 
 	class InternalCommand {
 		Cmd cmd;
@@ -108,6 +109,8 @@ public class ComplexCommand extends OlympaCommand {
 				}catch (NumberFormatException e) {
 					sendError(arg + " doit être un nombre.");
 				}
+			}else if (type.equals("BOOLEAN")) {
+				result = Boolean.parseBoolean(arg);
 			} else {
 				result = arg;
 			}
@@ -158,6 +161,8 @@ public class ComplexCommand extends OlympaCommand {
 				return Collections.EMPTY_LIST;
 			}else if (key.equals("INTEGER")) {
 				return INTEGERS;
+			}else if (key.equals("BOOLEAN")) {
+				return BOOLEAN;
 			} else {
 				find.addAll(Arrays.asList(key.split("\\|")));
 			}

@@ -23,14 +23,14 @@ public abstract class ScoreboardLine<T extends OlympaPlayer> {
 
 	public void updateGlobal() {
 		for (Entry<Scoreboard<T>, String> scoreboard : scoreboards.entrySet()) {
-			if (!scoreboard.getValue().equals(getValue(scoreboard.getKey().p))) scoreboard.getKey().needsUpdate();
+			if (!getValue(scoreboard.getKey().p).equals(scoreboard.getValue())) scoreboard.getKey().needsUpdate();
 		}
 	}
 
 	public void updatePlayer(T player) {
 		for (Entry<Scoreboard<T>, String> scoreboard : scoreboards.entrySet()) {
-			if (scoreboard.getKey() == player) {
-				if (!scoreboard.getValue().equals(getValue(player))) scoreboard.getKey().needsUpdate();
+			if (scoreboard.getKey().p == player) {
+				if (!getValue(player).equals(scoreboard.getValue())) scoreboard.getKey().needsUpdate();
 				return;
 			}
 		}

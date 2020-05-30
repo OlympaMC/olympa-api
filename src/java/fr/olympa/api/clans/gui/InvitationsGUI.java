@@ -18,7 +18,7 @@ public class InvitationsGUI<T extends Clan<T>> extends PagedGUI<T> {
 	private ClansManager<T> manager;
 
 	protected InvitationsGUI(Player p, ClansManager<T> manager) {
-		super("§4Mes invitations", DyeColor.MAGENTA, manager.getPlayerInvitations(p), false);
+		super("§4Mes invitations", DyeColor.MAGENTA, manager.getPlayerInvitations(p), 5);
 		this.manager = manager;
 	}
 

@@ -1,6 +1,6 @@
 package fr.olympa.api.gui.templates;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.gui.OlympaGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.utils.observable.ObservableList;
+import fr.olympa.api.utils.observable.Observable;
 
 /**
  * An inventory with an infinite amount of pages of 35 items (integer limit).
@@ -26,35 +26,31 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	private int page = 0;
 	private int maxPage;
 	
-	protected ObservableList<T> objects;
-	protected Consumer<Player> validate;
-	private boolean persistent;
+	protected List<T> objects;
 	private final String inventoryName;
+	private int rows;
+	private int itemsPerPage;
 	
-	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, boolean persistent) {
-		this(name, color, objects, persistent, null);
-	}
-	
-	protected PagedGUI(String name, DyeColor color, ObservableList<T> objects, boolean persistent, Consumer<Player> validate) {
-		super(name, 5);
+	protected PagedGUI(String name, DyeColor color, List<T> objects, int rows) {
+		super(name, rows);
+		if (rows < 2) throw new IllegalArgumentException("Rows must be higher than 2");
+		this.rows = rows;
+		this.itemsPerPage = 7 * rows;
 		this.inventoryName = name;
 		this.objects = objects;
-		this.objects.observe(name, this::itemChanged);
-		this.persistent = persistent;
-		this.validate = validate;
+		if (objects instanceof Observable) ((Observable) objects).observe(name, this::itemChanged);
 		calculateMaxPage();
 		
 		setBarItem(0, previousPage);
-		setBarItem(4, nextPage);
-		if (validate != null) setBarItem(2, ItemUtils.done);
+		setBarItem(rows - 1, nextPage);
 
-		for (int i = 0; i < 5; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
+		for (int i = 0; i < rows; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 		
 		setItems();
 	}
 
 	private void calculateMaxPage() {
-		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
+		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / (double) itemsPerPage);
 		if (page >= maxPage) page = maxPage - 1;
 	}
 
@@ -65,11 +61,11 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	}
 
 	private void setItems(){
-		for (int i = 0; i < 35; i++) setMainItem(i, null);
-		for (int i = page * 35; i < objects.size(); i++){
-			if (i == (page + 1) * 35) break;
+		for (int i = 0; i < itemsPerPage; i++) setMainItem(i, null);
+		for (int i = page * itemsPerPage; i < objects.size(); i++) {
+			if (i == (page + 1) * itemsPerPage) break;
 			T obj = objects.get(i);
-			setMainItem(i - page * 35, getItemStack(obj));
+			setMainItem(i - page * itemsPerPage, getItemStack(obj));
 		}
 	}
 	
@@ -80,7 +76,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		return slot;
 	}
 	
-	private int setBarItem(int barSlot, ItemStack is){
+	protected int setBarItem(int barSlot, ItemStack is) {
 		int slot = barSlot * 9 + 8;
 		inv.setItem(slot, is);
 		return slot;
@@ -92,7 +88,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	 */
 	public int getObjectSlot(T object){
 		int index = objects.indexOf(object);
-		if (index < page*35 || index > (page + 1)*35) return -1;
+		if (index < page * itemsPerPage || index > (page + 1) * itemsPerPage) return -1;
 		
 		int line = (int) Math.floor(index * 1.0 / 7.0);
 		return index + (2 * line);
@@ -106,22 +102,15 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		switch (slot % 9){
 		case 8:
 			int barSlot = (slot - 8) / 9;
-			switch (barSlot){
-			case 0:
+			if (barSlot == 0) {
 				if (page == 0) break;
 				page--;
 				setItems();
-				break;
-			case 4:
+			}else if (barSlot == rows - 1) {
 				if (page+1 == maxPage) break;
 				page++;
 				setItems();
-				break;
-				
-			case 2:
-				validate.accept(p);
-				break;
-			}
+			}else return onBarItemClick(p, current, barSlot, click);
 			break;
 			
 		case 7:
@@ -129,19 +118,22 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 			
 		default:
 			int line = (int) Math.floor(slot * 1D / 9D);
-			int objectSlot = slot - line*2 + page*35;
+			int objectSlot = slot - line * 2 + page * itemsPerPage;
 			click(objects.get(objectSlot), p);
 			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
+			break;
 		}
 		return true;
 	}
 	
 	@Override
 	public boolean onClose(Player p) {
-		if (!persistent) {
-			objects.remove(inventoryName);
-			inv = null;
-		}
+		if (objects instanceof Observable) ((Observable) objects).unobserve(inventoryName);
+		inv = null;
+		return true;
+	}
+
+	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
 		return true;
 	}
 

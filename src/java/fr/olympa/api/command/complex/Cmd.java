@@ -31,7 +31,8 @@ public @interface Cmd {
 	 * <ul>
 	 * <li> PLAYERS : liste des joueurs en ligne, <i>sera remplacé par une instance {@link Player}</i>
 	 * <li> DOUBLE : liste vide, <i>sera remplacé par une instance {@link Double}</i>
-	 * <li> INTEGER : liste vide, <i>sera remplacé par une instance {@link Integer}</i>
+	 * <li> INTEGER : liste 1|2|3|..., <i>sera remplacé par une instance {@link Integer}</i>
+	 * <li> BOOLEAN : liste true|false, <i>sera remplacé par une instance {@link Boolean}</i>
 	 * <li> xxx|yyy|zzz : valeurs possibles, séparées par une pipe {@code |}, <id>sera laissé en {@link String}</i>
 	 * </ul>
 	 * @return String array of possibles arguments

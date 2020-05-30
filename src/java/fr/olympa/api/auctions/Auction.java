@@ -47,6 +47,10 @@ public class Auction {
 		if (task != null) task.cancel();
 	}
 
+	public boolean hasExpired() {
+		return expiration < System.currentTimeMillis();
+	}
+
 	public String getTimeBeforeExpiration() {
 		long time = expiration - System.currentTimeMillis();
 		if (time <= 0) return "Expiré !";

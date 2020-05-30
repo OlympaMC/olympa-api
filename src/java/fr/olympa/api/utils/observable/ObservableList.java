@@ -75,7 +75,7 @@ public class ObservableList<T> extends AbstractObservable implements List<T> {
 	@Override
 	public boolean remove(Object o) {
 		boolean remove = sub.remove(o);
-		update();
+		if (remove) update();
 		return remove;
 	}
 
