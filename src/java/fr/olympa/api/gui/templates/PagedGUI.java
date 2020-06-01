@@ -120,7 +120,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 			int line = (int) Math.floor(slot * 1D / 9D);
 			int objectSlot = slot - line * 2 + page * itemsPerPage;
 			click(objects.get(objectSlot), p);
-			inv.setItem(slot, getItemStack(objects.get(objectSlot)));
+			if (inv != null) inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 			break;
 		}
 		return true;

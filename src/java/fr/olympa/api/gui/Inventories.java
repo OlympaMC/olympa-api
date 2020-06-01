@@ -49,7 +49,8 @@ public class Inventories implements Listener {
 	}
 
 	public static <T extends OlympaGUI> T create(Player p, T inv) {
-		closeWithoutExit(p);
+		//closeWithoutExit(p);
+		p.closeInventory();
 		p.openInventory(inv.getInventory());
 		g.put(p, inv);
 		return inv;

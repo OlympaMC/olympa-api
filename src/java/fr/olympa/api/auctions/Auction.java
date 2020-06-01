@@ -1,14 +1,19 @@
 package fr.olympa.api.auctions;
 
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.olympa.api.economy.MoneyPlayerInterface;
+import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class Auction {
 
@@ -19,32 +24,42 @@ public class Auction {
 	public ItemStack item;
 	public double price;
 	public long expiration;
+	public boolean bought;
 
 	private BukkitTask task;
+	private AuctionsManager manager;
 
-	public Auction(AuctionsManager manager, int id, OlympaPlayerInformations player, ItemStack item, double price, long expiration) {
+	public Auction(AuctionsManager manager, int id, OlympaPlayerInformations player, ItemStack item, double price, long expiration, boolean bought) {
+		this.manager = manager;
 		this.id = id;
 		this.player = player;
 		this.item = item;
 		this.price = price;
 		this.expiration = expiration;
+		this.bought = bought;
 
-		task = new BukkitRunnable() {
-			@Override
-			public void run() {
-				try {
-					task = null;
-					manager.removeAuction(Auction.this);
-				}catch (SQLException e) {
-					manager.getPlugin().getLogger().severe("Une erreur est survenue lors de la suppression de la vente " + id);
-					e.printStackTrace();
-				}
-			}
-		}.runTaskLater(manager.getPlugin(), (expiration - System.currentTimeMillis()) / 50);
+		if (!bought && !hasExpired()) {
+			task = Bukkit.getScheduler().runTaskLater(manager.getPlugin(), () -> manager.auctionExpired(this), (expiration - System.currentTimeMillis()) / 50);
+		}
 	}
 
-	public void deleted() {
+	public void expired() {
 		if (task != null) task.cancel();
+	}
+
+	public synchronized void buy(Player p) {
+		if (bought) throw new IllegalStateException("Auction already bought");
+		MoneyPlayerInterface buyer = AccountProvider.get(p.getUniqueId());
+		if (player.equals(buyer.getInformation())) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
+			return;
+		}
+		if (buyer.getGameMoney().withdraw(price)) {
+			SpigotUtils.giveItems(p, item);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %d ont été retirés de ton compte !", price);
+			this.bought = true;
+			manager.auctionExpired(this);
+		}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour acheter cet objet.");
 	}
 
 	public boolean hasExpired() {
@@ -73,6 +88,12 @@ public class Auction {
 		sb.append(numberFormat.format(seconds)).append("S");
 
 		return sb.toString();
+	}
+
+	public ItemStack getShownItem() {
+		ItemStack item = this.item.clone();
+		ItemUtils.loreAdd(item, "", "§8---------------------", "§aClique pour acheter.", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), "§eExpire dans §6" + getTimeBeforeExpiration());
+		return item;
 	}
 
 }

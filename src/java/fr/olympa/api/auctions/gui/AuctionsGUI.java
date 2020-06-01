@@ -1,7 +1,5 @@
 package fr.olympa.api.auctions.gui;
 
-import java.sql.SQLException;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,9 +11,6 @@ import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auction> {
 
@@ -30,28 +25,12 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 
 	@Override
 	public ItemStack getItemStack(Auction object) {
-		ItemStack item = object.item.clone();
-		ItemUtils.loreAdd(item, "§8-------------", "§aClique pour acheter.", "", "§ePrix: §6§l" + object.price, "§eProposé par §6§l" + object.player.getName(), "§eExpire dans §6§l" + object.getTimeBeforeExpiration());
-		return item;
+		return object.getShownItem();
 	}
 
 	@Override
 	public void click(Auction existing, Player p) {
-		MoneyPlayerInterface player = AccountProvider.get(p.getUniqueId());
-		if (existing.player.equals(player.getInformation())) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
-			return;
-		}
-		if (player.getGameMoney().withdraw(existing.price)) {
-			SpigotUtils.giveItems(p, existing.item);
-			// TODO give money
-			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %d ont été retirés de ton compte !", existing.price);
-			try {
-				manager.removeAuction(existing);
-			}catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		existing.buy(p);
 	}
 
 	@Override
@@ -59,7 +38,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 		if (barSlot == 2) {
 			manager.openAuctionCreationGUI(p);
 		}else if (barSlot == 3) {
-
+			manager.openMyAuctionsGUI(p);
 		}
 		return true;
 	}
