@@ -9,17 +9,17 @@ import fr.olympa.api.utils.AbstractRandomizedPicker.Chanced;
 public interface AbstractRandomizedPicker<T extends Chanced> {
 
 	public default List<T> pick(Random random) {
-		List<T> objects = new ArrayList<>(getMaxItems());
+		int itemAmount = getMinItems() == getMaxItems() ? getMinItems() : Math.max(getMinItems(), getMinItems() + random.nextInt(getMaxItems() - getMinItems()));
 
-		int itemAmount = getMinItems() + random.nextInt(getMaxItems() - getMinItems() + 1);
+		List<T> objects = new ArrayList<>(itemAmount);
+
 		for (T obj : getAlwaysObjectList()) {
 			objects.add(obj);
 			itemAmount--;
 		}
 		if (itemAmount <= 0) return objects;
 
-		int objectsChanceSum = 0;
-		for (T obj : getObjectList()) objectsChanceSum += obj.getChance();
+		double objectsChanceSum = getObjectList().stream().mapToDouble(T::getChance).sum();
 		for (int dropCount = 0; dropCount < itemAmount; dropCount++) {
 			double hitValue = objectsChanceSum * random.nextDouble();
 			double runningValue = 0;

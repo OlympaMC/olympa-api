@@ -26,11 +26,11 @@ public class ComplexCommand extends OlympaCommand {
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
 
-	class InternalCommand {
-		Cmd cmd;
-		OlympaPermission perm;
-		Method method;
-		Object commands;
+	public static class InternalCommand {
+		public Cmd cmd;
+		public OlympaPermission perm;
+		public Method method;
+		public Object commands;
 
 		InternalCommand(Cmd cmd, Method method, Object commandsClass) {
 			this.cmd = cmd;

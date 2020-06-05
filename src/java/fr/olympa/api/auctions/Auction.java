@@ -56,7 +56,7 @@ public class Auction {
 		}
 		if (buyer.getGameMoney().withdraw(price)) {
 			SpigotUtils.giveItems(p, item);
-			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %d ont été retirés de ton compte !", price);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %f ont été retirés de ton compte !", price);
 			this.bought = true;
 			manager.auctionExpired(this);
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour acheter cet objet.");
@@ -92,7 +92,7 @@ public class Auction {
 
 	public ItemStack getShownItem() {
 		ItemStack item = this.item.clone();
-		ItemUtils.loreAdd(item, "", "§8---------------------", "§aClique pour acheter.", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), "§eExpire dans §6" + getTimeBeforeExpiration());
+		ItemUtils.loreAdd(item, "", "§8---------------------", "§aClique pour acheter.", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), hasExpired() ? "" : "§eExpire dans §6" + getTimeBeforeExpiration());
 		return item;
 	}
 

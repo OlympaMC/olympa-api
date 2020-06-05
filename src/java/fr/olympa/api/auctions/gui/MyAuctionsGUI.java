@@ -33,6 +33,8 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 		ItemUtils.loreAdd(item, "§8---------------------");
 		if (object.bought) {
 			ItemUtils.loreAdd(item, "§6§lVendu !", "§e> §oClique pour récupérer tes gains");
+		}else if (object.hasExpired()) {
+			ItemUtils.loreAdd(item, "§6§lExpiré !", "§e> §oClique pour récupérer ton objet");
 		}else {
 			ItemUtils.loreAdd(item, "§6§lEn attente...", "§c> §oClique pour annuler la vente");
 		}
@@ -44,7 +46,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 		if (existing.bought) {
 			try {
 				manager.removeAuction(existing);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %d (taxes retirées).", Tax.pay(player, existing.price));
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %f (taxes retirées).", Tax.pay(player, existing.price));
 			}catch (SQLException e) {
 				e.printStackTrace();
 				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de ton paiement.");

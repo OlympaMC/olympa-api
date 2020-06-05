@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,7 +32,7 @@ public class RegionManager implements Listener {
 
 		Player player = e.getPlayer();
 
-		Set<TrackedRegion> applicable = trackedRegions.stream().filter(x -> x.getRegion().isIn(e.getTo())).collect(Collectors.toSet());
+		Set<TrackedRegion> applicable = getApplicableRegions(e.getTo());
 		Set<TrackedRegion> lastRegions = inRegions.get(player);
 		if (lastRegions == null) lastRegions = Collections.EMPTY_SET;
 
@@ -78,6 +79,10 @@ public class RegionManager implements Listener {
 
 	public Set<TrackedRegion> getCachedPlayerRegions(Player p) {
 		return inRegions.getOrDefault(p, Collections.EMPTY_SET);
+	}
+
+	public Set<TrackedRegion> getApplicableRegions(Location loc) {
+		return trackedRegions.stream().filter(x -> x.getRegion().isIn(loc)).collect(Collectors.toSet());
 	}
 
 }

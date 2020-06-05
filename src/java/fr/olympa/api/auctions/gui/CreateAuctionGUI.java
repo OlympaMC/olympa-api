@@ -84,7 +84,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu dois déposer l'item que tu veux vendre !");
 			}else {
 				try {
-					manager.createAuction(AccountProvider.get(p.getUniqueId()).getInformation(), inv.getItem(10), slot, System.currentTimeMillis() + duration * 12 * 3600 * 1000);
+					manager.createAuction(AccountProvider.get(p.getUniqueId()).getInformation(), inv.getItem(10), price, System.currentTimeMillis() + duration * 12 * 3600 * 1000);
 					finished = true;
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as mis ton item en vente !");
 				}catch (SQLException | IOException e) {
