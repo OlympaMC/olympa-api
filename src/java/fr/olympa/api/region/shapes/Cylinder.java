@@ -1,5 +1,6 @@
 package fr.olympa.api.region.shapes;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ public class Cylinder extends AbstractRegion {
 	private Location min, max;
 	private Random random = new Random();
 
+	private List<Location> points;
+
 	public Cylinder(Location center, int radius, int minY, int maxY) {
 		this(center.getWorld(), center.getBlockX(), center.getBlockZ(), radius, minY, maxY);
 	}
@@ -37,6 +40,8 @@ public class Cylinder extends AbstractRegion {
 
 		min = new Location(world, centerX - radius, minY, centerZ - radius);
 		max = new Location(world, centerX + radius, minY, centerZ + radius);
+
+		points = Arrays.asList(new Location(world, centerX, minY, centerZ));
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class Cylinder extends AbstractRegion {
 
 	@Override
 	public List<Location> getLocations() {
-		throw new UnsupportedOperationException();
+		return points;
 	}
 
 	@Override

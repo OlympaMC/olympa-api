@@ -1,16 +1,25 @@
 package fr.olympa.api.item;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -22,13 +31,19 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+
+import fr.olympa.core.spigot.OlympaCore;
 
 public class ItemUtils {
 	
 	public static ItemStack none = ItemUtils.item(Material.RED_STAINED_GLASS_PANE, "§cx");
 	public static ItemStack done = ItemUtils.item(Material.DIAMOND, "§aValider");
+
+	private static Map<String, String> textures = new HashMap<>();
 
 	/**
 	 * Create an ItemStack instance
@@ -49,19 +64,61 @@ public class ItemUtils {
 	
 	/**
 	 * Create an ItemStack instance of a skull item
+	 * @param callback consumer called when the head is ready
 	 * @param name name of the item
 	 * @param skull skull's owner name
 	 * @param lore lore of the item, formatted as a String array
-	 * @return the ItemStack instance
 	 */
-	public static ItemStack skull(String name, String skull, String... lore) {
-		ItemStack is = new ItemStack(Material.PLAYER_HEAD);
-		SkullMeta im = (SkullMeta) is.getItemMeta();
-		im.setDisplayName(name);
-		im.setOwner(skull);
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
-		return is;
+	public static void skull(Consumer<ItemStack> callback, String name, String skull, String... lore) {
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
+			String value = textures.get(skull);
+			if (value == null) {
+				value = getHeadValue(name);
+				textures.put(name, value);
+			}
+			callback.accept(skullCustom(name, value, lore));
+		});
+	}
+
+	public static String getHeadValue(String name) {
+		try {
+			String result = getURLContent("https://api.mojang.com/users/profiles/minecraft/" + name);
+			Gson g = new Gson();
+			JsonObject obj = g.fromJson(result, JsonObject.class);
+			String uid = obj.get("id").toString().replace("\"", "");
+			String signature = getURLContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uid);
+			obj = g.fromJson(signature, JsonObject.class);
+			String value = obj.getAsJsonArray("properties").get(0).getAsJsonObject().get("value").getAsString();
+			String decoded = new String(Base64.getDecoder().decode(value));
+			obj = g.fromJson(decoded, JsonObject.class);
+			String skinURL = obj.getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
+			byte[] skinByte = ("{\"textures\":{\"SKIN\":{\"url\":\"" + skinURL + "\"}}}").getBytes();
+			return new String(Base64.getEncoder().encode(skinByte));
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
+	private static String getURLContent(String urlStr) {
+		URL url;
+		BufferedReader in = null;
+		StringBuilder sb = new StringBuilder();
+		try {
+			url = new URL(urlStr);
+			in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
+			String str;
+			while ((str = in.readLine()) != null) {
+				sb.append(str);
+			}
+		}catch (Exception ignored) {}finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			}catch (IOException ignored) {}
+		}
+		return sb.toString();
 	}
 
 	/**

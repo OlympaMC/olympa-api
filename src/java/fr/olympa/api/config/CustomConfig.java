@@ -23,6 +23,7 @@ import fr.olympa.api.region.shapes.Cuboid;
 import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
+import fr.olympa.api.region.shapes.WorldRegion;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 
@@ -35,6 +36,7 @@ public class CustomConfig extends YamlConfiguration {
 		ConfigurationSerialization.registerClass(Polygon.class);
 		ConfigurationSerialization.registerClass(ChunkPolygon.class);
 		ConfigurationSerialization.registerClass(Cylinder.class);
+		ConfigurationSerialization.registerClass(WorldRegion.class);
 	}
 
 	private InputStream resource;

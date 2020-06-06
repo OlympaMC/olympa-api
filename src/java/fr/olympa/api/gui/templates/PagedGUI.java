@@ -94,6 +94,11 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		return index + (2 * line);
 	}
 
+	public void updateObjectItem(T object, ItemStack item) {
+		int slot = getObjectSlot(object);
+		if (slot != -1) inv.setItem(slot, item);
+	}
+
 	public void removeItem(T existing) {
 		if (!objects.remove(existing)) throw new IllegalArgumentException("Cannot remove nonexistent object.");
 	}

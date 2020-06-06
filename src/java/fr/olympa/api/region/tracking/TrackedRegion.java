@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.event.EventPriority;
+
 import fr.olympa.api.region.Region;
+import fr.olympa.api.region.tracking.flags.Flag;
 
 public class TrackedRegion {
 
 	private final Region region;
 	private final String id;
+	private final EventPriority priority;
 	private final List<Flag> flags = new ArrayList<>();
 
-	public TrackedRegion(Region region, String id, Flag... flags) {
+	TrackedRegion(Region region, String id, EventPriority priority, Flag... flags) {
 		this.region = region;
 		this.id = id;
-		this.getFlags().addAll(Arrays.asList(flags));
+		this.priority = priority;
+		this.flags.addAll(Arrays.asList(flags));
 	}
 
 	public Region getRegion() {
@@ -26,15 +31,37 @@ public class TrackedRegion {
 		return id;
 	}
 
+	public EventPriority getPriority() {
+		return priority;
+	}
+
 	public List<Flag> getFlags() {
 		return flags;
 	}
 
 	public <T extends Flag> T getFlag(Class<T> clazz) {
 		for (Flag flag : flags) {
-			if (flag.getClass() == clazz) return (T) flag;
+			if (clazz.isAssignableFrom(flag.getClass())) return (T) flag;
 		}
 		return null;
+	}
+
+	public void registerFlags(Flag... flag) {
+		flags.addAll(Arrays.asList(flag));
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) return true;
+		if (obj instanceof TrackedRegion) {
+			return ((TrackedRegion) obj).id.equals(this.id);
+		}
+		return false;
 	}
 
 }

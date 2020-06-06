@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.auctions.Auction;
@@ -23,6 +25,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 
 	public MyAuctionsGUI(AuctionsManager manager, MoneyPlayerInterface player) {
 		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 5);
+		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§bRevenir aux ventes"));
 		this.manager = manager;
 		this.player = player;
 	}
@@ -64,4 +67,10 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 		p.closeInventory();
 	}
 	
+	@Override
+	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
+		if (barSlot == 2) manager.openAuctionsGUI(p);
+		return true;
+	}
+
 }

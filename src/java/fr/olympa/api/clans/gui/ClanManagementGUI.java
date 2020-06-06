@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,8 +25,8 @@ import fr.olympa.api.utils.Prefix;
 
 public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 
-	private static ItemStack noMember = ItemUtils.skull("§cPas de membre", "MHF_Question");
-	private static ItemStack noMemberInvite = ItemUtils.skull("§bInviter un nouveau membre", "MHF_Question");
+	private static ItemStack noMember = ItemUtils.skullCustom("§cPas de membre", "ewogICJ0aW1lc3RhbXAiIDogMTU5MTQzNzg2Njk4MywKICAicHJvZmlsZUlkIiA6ICI2MDZlMmZmMGVkNzc0ODQyOWQ2Y2UxZDMzMjFjNzgzOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfUXVlc3Rpb24iLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZTA2M2NhZmI0NjdhNWM4ZGU0M2VjNzg2MTkzOTlmMzY5ZjRhNTI0MzRkYTgwMTdhOTgzY2RkOTI1MTZhMCIKICAgIH0KICB9Cn0=");
+	private static ItemStack noMemberInvite = ItemUtils.skullCustom("§bInviter un nouveau membre", "ewogICJ0aW1lc3RhbXAiIDogMTU5MTQzNzg2Njk4MywKICAicHJvZmlsZUlkIiA6ICI2MDZlMmZmMGVkNzc0ODQyOWQ2Y2UxZDMzMjFjNzgzOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfUXVlc3Rpb24iLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZTA2M2NhZmI0NjdhNWM4ZGU0M2VjNzg2MTkzOTlmMzY5ZjRhNTI0MzRkYTgwMTdhOTgzY2RkOTI1MTZhMCIKICAgIH0KICB9Cn0=");
 
 	private ItemStack leave;
 	private ItemStack leaveChief;
@@ -66,14 +67,14 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 
 		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> entry : clan.getMembers()) {
 			OlympaPlayerInformations member = entry.getKey();
-			ItemStack item;
+			int slot = slotPlayerFirst() + playersOrder.size();
+			Consumer<ItemStack> callback = item -> inv.setItem(slot, item);
 			if (isChief) {
 				String[] lore = member == playerInformations ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
-				item = ItemUtils.skull("§a" + member.getName(), member.getName(), lore);
+				ItemUtils.skull(callback, "§a" + member.getName(), member.getName(), lore);
 			}else {
-				item = ItemUtils.skull("§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
+				ItemUtils.skull(callback, "§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
 			}
-			inv.setItem(slotPlayerFirst() + playersOrder.size(), item);
 			playersOrder.add(member);
 		}
 		for (int id = playersOrder.size(); id < clan.getMaxSize(); id++) {

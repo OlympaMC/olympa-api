@@ -25,7 +25,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 
 	@Override
 	public ItemStack getItemStack(Auction object) {
-		return object.getShownItem();
+		return ItemUtils.loreAdd(object.getShownItem(), "", "§aClique pour acheter !");
 	}
 
 	@Override

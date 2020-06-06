@@ -1,6 +1,7 @@
-package fr.olympa.api.region.tracking;
+package fr.olympa.api.region.tracking.flags;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -8,18 +9,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Flag {
 
-	private final BaseComponent[] greeting;
-	private final BaseComponent[] farewell;
+	private BaseComponent[] greeting;
+	private BaseComponent[] farewell;
 	private ChatMessageType position;
 
-	public Flag() {
-		this(null, null, null);
-	}
-
-	public Flag(String greeting, String farewell, ChatMessageType position) {
+	public Flag setMessages(String greeting, String farewell, ChatMessageType position) {
 		this.position = position;
 		this.greeting = greeting != null ? TextComponent.fromLegacyText(greeting) : null;
 		this.farewell = farewell != null ? TextComponent.fromLegacyText(farewell) : null;
+		return this;
 	}
 
 	/**
@@ -41,5 +39,7 @@ public class Flag {
 		if (farewell != null) p.spigot().sendMessage(position, farewell);
 		return false;
 	}
+
+	public void onEvent(Event event) {}
 
 }
