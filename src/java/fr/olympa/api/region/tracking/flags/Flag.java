@@ -1,7 +1,6 @@
 package fr.olympa.api.region.tracking.flags;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -39,7 +38,5 @@ public class Flag {
 		if (farewell != null) p.spigot().sendMessage(position, farewell);
 		return false;
 	}
-
-	public void onEvent(Event event) {}
 
 }

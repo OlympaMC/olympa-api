@@ -4,14 +4,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,6 +32,13 @@ import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.MoistureChangeEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -41,6 +50,7 @@ import com.google.common.collect.Sets;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.WorldRegion;
+import fr.olympa.api.region.tracking.flags.DamageFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
@@ -98,14 +108,14 @@ public class RegionManager implements Listener {
 		return inRegions.getOrDefault(p, Collections.EMPTY_SET);
 	}
 
-	public Set<TrackedRegion> getApplicableRegions(Location loc) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(loc)).collect(Collectors.toSet());
+	public Set<TrackedRegion> getApplicableRegions(Location location) {
+		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).collect(Collectors.toSet());
 	}
 
-	private void fireEvent(Event event, Class<? extends Flag> flagClass, Location location) {
+	public <T extends Flag> void fireEvent(Location location, Class<T> flagClass, Consumer<T> consumer) {
 		trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted((o1, o2) -> Integer.compare(o1.getPriority().getSlot(), o2.getPriority().getSlot())).forEach(x -> {
-			Flag flag = x.getFlag(flagClass);
-			if (flag != null) flag.onEvent(event);
+			T flag = x.getFlag(flagClass);
+			if (flag != null) consumer.accept(flag);
 		});
 	}
 
@@ -156,84 +166,123 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onBreakBlock(BlockBreakEvent e) {
-		fireEvent(e, PlayerBlocksFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
 	}
 
 	@EventHandler
 	public void onPlaceBlock(BlockPlaceEvent e) {
-		fireEvent(e, PlayerBlocksFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
 	}
 
 	@EventHandler
 	public void onFertilize(BlockFertilizeEvent e) {
-		fireEvent(e, PlayerBlocksFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
 	}
 
 	@EventHandler
 	public void onIgnite(BlockIgniteEvent e) {
-		fireEvent(e, PlayerBlocksFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
+	}
+
+	@EventHandler
+	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
+	}
+
+	@EventHandler
+	public void onBucketEmpty(PlayerBucketFillEvent e) {
+		fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getBlock()));
+	}
+
+	@EventHandler
+	public void onEntityInteract(PlayerInteractEntityEvent e) {
+		if (e.getRightClicked() instanceof ItemFrame) fireEvent(e.getRightClicked().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getRightClicked()));
+	}
+
+	@EventHandler
+	public void onHangingPlace(HangingPlaceEvent e) {
+		fireEvent(e.getEntity().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getEntity()));
+	}
+
+	@EventHandler
+	public void onHangingBreak(HangingBreakByEntityEvent e) {
+		if (e.getRemover() instanceof Player) fireEvent(e.getEntity().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, (Player) e.getRemover(), e.getEntity()));
+	}
+
+	@EventHandler
+	public void onEntityInteract(EntityInteractEvent e) {
+		if (e.getBlock().getType() == Material.FARMLAND) {
+			if (e.getEntity() instanceof Player) {
+				fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, (Player) e.getEntity(), e.getBlock()));
+			}else fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+		}
 	}
 
 	@EventHandler
 	public void onFade(BlockFadeEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onBurn(BlockBurnEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onExplode(BlockExplodeEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onForm(BlockFormEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onFromTo(BlockFromToEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onGrow(BlockGrowEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onSpread(BlockSpreadEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onFluidChanges(FluidLevelChangeEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onLeavesDecay(LeavesDecayEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onMoisture(MoistureChangeEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onSponge(SpongeAbsorbEvent e) {
-		fireEvent(e, PhysicsFlag.class, e.getBlock().getLocation());
+		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
-		fireEvent(e, PlayerInteractFlag.class, e.getClickedBlock().getLocation());
+		fireEvent(e.getClickedBlock().getLocation(), PlayerInteractFlag.class, x -> x.interactEvent(e));
+	}
+
+	@EventHandler
+	public void onDamage(EntityDamageEvent e) {
+		fireEvent(e.getEntity().getLocation(), DamageFlag.class, x -> x.damageEvent(e));
 	}
 
 }

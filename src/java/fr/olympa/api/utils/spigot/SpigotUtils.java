@@ -216,10 +216,9 @@ public class SpigotUtils {
 		return false;
 	}
 
+	@Deprecated // use Player#isOnGround
 	public static boolean isOnGround(Player player) {
-		Location location = player.getLocation();
-		location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
-		return location.getBlock().getType() == Material.AIR;
+		return player.getLocation().getBlock().getRelative(0, -1, 0).getType() == Material.AIR;
 	}
 
 	public static boolean isSameLocation(Location location1, Location location2) {
