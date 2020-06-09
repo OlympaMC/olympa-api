@@ -15,7 +15,6 @@ import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.Tax;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class MyAuctionsGUI extends PagedGUI<Auction> {
@@ -48,15 +47,15 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 	public void click(Auction existing, Player p) {
 		if (existing.bought) {
 			try {
-				manager.removeAuction(existing);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %f (taxes retirées).", Tax.pay(player, existing.price));
+				manager.terminateAuction(existing);
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %f (taxes retirées).", manager.getTaxManager().pay(player, existing.price));
 			}catch (SQLException e) {
 				e.printStackTrace();
 				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de ton paiement.");
 			}
 		}else {
 			try {
-				manager.removeAuction(existing);
+				manager.terminateAuction(existing);
 				SpigotUtils.giveItems(p, existing.item);
 				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as annulé ta vente.");
 			}catch (SQLException e) {

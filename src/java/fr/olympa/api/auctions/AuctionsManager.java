@@ -17,6 +17,7 @@ import fr.olympa.api.auctions.gui.AuctionsGUI;
 import fr.olympa.api.auctions.gui.CreateAuctionGUI;
 import fr.olympa.api.auctions.gui.MyAuctionsGUI;
 import fr.olympa.api.economy.MoneyPlayerInterface;
+import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.sql.OlympaStatement;
@@ -28,14 +29,17 @@ public class AuctionsManager {
 
 	private final String tableName;
 	private final Plugin plugin;
+	private final TaxManager tax;
 	private final Map<Integer, Auction> auctions = new HashMap<>();
 	private final ObservableList<Auction> ongoingAuctions = new ObservableList<>(new ArrayList<>());
 
 	private OlympaStatement createAuctionStatement;
-	private OlympaStatement removeAuctionStatement;
+	private OlympaStatement setAuctionBoughtStatement;
+	private OlympaStatement setAuctionTerminatedStatement;
 
-	public AuctionsManager(Plugin plugin, String table) throws SQLException, ClassNotFoundException, IOException {
+	public AuctionsManager(Plugin plugin, String table, TaxManager tax) throws SQLException, ClassNotFoundException, IOException {
 		this.plugin = plugin;
+		this.tax = tax;
 		this.tableName = "`" + table + "`";
 		
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
@@ -45,15 +49,17 @@ public class AuctionsManager {
 				"  `price` DOUBLE NOT NULL," +
 				"  `expiration` BIGINT NOT NULL," +
 				"  `bought` BOOLEAN NOT NULL DEFAULT 0," +
+				"  `terminated` BOOLEAN NOT NULL DEFAULT 0," +
 				"  PRIMARY KEY (`id`))");
 		
-		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
+		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName + " WHERE (`terminated` = 0)");
 		while (resultSet.next()) {
 			addAuction(new Auction(this, resultSet.getInt("id"), AccountProvider.getPlayerInformations(resultSet.getLong("player_id")), SpigotUtils.<ItemStack>deserialize(resultSet.getBytes("item")), resultSet.getDouble("price"), resultSet.getLong("expiration"), resultSet.getBoolean("bought")));
 		}
 
 		createAuctionStatement = new OlympaStatement("INSERT INTO " + tableName + " (`player_id`, `item`, `price`, `expiration`) VALUES (?, ?, ?, ?)", true);
-		removeAuctionStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
+		setAuctionBoughtStatement = new OlympaStatement("UPDATE " + tableName + " SET `bought` = 1 WHERE (`id` = ?)");
+		setAuctionTerminatedStatement = new OlympaStatement("UPDATE " + tableName + " SET `terminated` = 1 WHERE (`id` = ?)");
 	}
 
 	public synchronized void createAuction(OlympaPlayerInformations player, ItemStack item, double price, long expiration) throws SQLException, IOException {
@@ -68,8 +74,16 @@ public class AuctionsManager {
 		addAuction(new Auction(this, resultSet.getInt(1), player, item, price, expiration, false));
 	}
 
-	public synchronized void removeAuction(Auction auction) throws SQLException {
-		PreparedStatement statement = removeAuctionStatement.getStatement();
+	public synchronized void boughtAuction(Auction auction) throws SQLException {
+		PreparedStatement statement = setAuctionBoughtStatement.getStatement();
+		statement.setInt(1, auction.id);
+		statement.executeUpdate();
+		auctionExpired(auction);
+		auction.bought = true;
+	}
+
+	public synchronized void terminateAuction(Auction auction) throws SQLException {
+		PreparedStatement statement = setAuctionTerminatedStatement.getStatement();
 		statement.setInt(1, auction.id);
 		statement.executeUpdate();
 		auctions.remove(auction.id);
@@ -96,6 +110,10 @@ public class AuctionsManager {
 
 	public Plugin getPlugin() {
 		return plugin;
+	}
+
+	public TaxManager getTaxManager() {
+		return tax;
 	}
 
 	public int getPriceMax() {

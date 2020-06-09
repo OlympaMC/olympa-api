@@ -1,5 +1,6 @@
 package fr.olympa.api.auctions;
 
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -57,8 +58,11 @@ public class Auction {
 		if (buyer.getGameMoney().withdraw(price)) {
 			SpigotUtils.giveItems(p, item);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %f ont été retirés de ton compte !", price);
-			this.bought = true;
-			manager.auctionExpired(this);
+			try {
+				manager.boughtAuction(this);
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}else Prefix.DEFAULT_BAD.sendMessage(p, "Tu n'as pas assez d'argent pour acheter cet objet.");
 	}
 

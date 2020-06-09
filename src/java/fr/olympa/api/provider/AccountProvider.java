@@ -15,6 +15,7 @@ public class AccountProvider implements OlympaAccount {
 	public static Map<UUID, OlympaPlayer> cache = new HashMap<>();
 	public static Map<Long, OlympaPlayerInformations> cachedInformations = new HashMap<>();
 	private UUID uuid;
+	private static OlympaPlayerProvider provider;
 
 	public static <T extends OlympaPlayer> T get(UUID uuid) {
 		return (T) cache.get(uuid);
@@ -32,8 +33,8 @@ public class AccountProvider implements OlympaAccount {
 		return null;
 	}
 
-	public static void setPlayerProvider(Class<? extends OlympaPlayerObject> playerClass, OlympaPlayerProvider supplier, String pluginName, Map<String, String> columns) {
-
+	public static void setPlayerProvider(Class<? extends OlympaPlayerObject> playerClass, OlympaPlayerProvider provider, String pluginName, Map<String, String> columns) {
+		AccountProvider.provider = provider;
 	}
 
 	public static String getPlayerProviderTableName() {
@@ -46,7 +47,7 @@ public class AccountProvider implements OlympaAccount {
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		return new OlympaPlayerObject(uuid, name, ip);
+		return provider.create(uuid, name, ip);
 	}
 
 	@Override
