@@ -23,7 +23,7 @@ public class TaxManager {
 	public TaxManager(Plugin plugin, OlympaPermission commandPermission, String tableName, double defaultTax) throws SQLException {
 		tableName = "`" + tableName + "`";
 		
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE " + tableName + " (" +
+		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				"  `date` BIGINT UNSIGNED NOT NULL," +
 				"  `tax` DOUBLE UNSIGNED NOT NULL," +
 				"  `total_taxed` DOUBLE UNSIGNED NOT NULL," +
@@ -37,7 +37,7 @@ public class TaxManager {
 		}
 		setTax(tax, false);
 		
-		insertStatement = new OlympaStatement("INSERT INTO " + tableName + " (`date`, `tax`, `total_taxed``) VALUES(?, ?)");
+		insertStatement = new OlympaStatement("INSERT INTO " + tableName + " (`date`, `tax`, `total_taxed`) VALUES(?, ?, ?)");
 
 		new TaxCommand(plugin, commandPermission, this).register();
 	}

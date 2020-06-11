@@ -12,7 +12,7 @@ public class TimerLine<T extends OlympaPlayer> extends DynamicLine<T> {
 	public TimerLine(Function<T, String> value, Plugin plugin, int ticks) {
 		super(value);
 		
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, this::updateGlobal);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateGlobal, 1, ticks);
 	}
 
 }

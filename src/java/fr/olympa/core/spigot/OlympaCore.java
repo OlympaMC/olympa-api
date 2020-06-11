@@ -23,7 +23,7 @@ public class OlympaCore extends OlympaSpigot {
 		return instance;
 	}
 
-	private RegionManager regionManager = new RegionManager();
+	private RegionManager regionManager;
 
 	@Override
 	public ProtocolAction getProtocolSupport() {
@@ -53,7 +53,7 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);
 		pluginManager.registerEvents(new CommandListener(), this);
-		pluginManager.registerEvents(regionManager, this);
+		pluginManager.registerEvents(regionManager = new RegionManager(), this);
 
 		Messenger messenger = getServer().getMessenger();
 		messenger.registerOutgoingPluginChannel(this, "BungeeCord");

@@ -1,5 +1,7 @@
 package fr.olympa.api.region.tracking.flags;
 
+import java.util.Optional;
+
 import org.bukkit.event.Cancellable;
 
 public abstract class AbstractProtectionFlag extends Flag {
@@ -19,7 +21,15 @@ public abstract class AbstractProtectionFlag extends Flag {
 	}
 
 	protected void handleCancellable(Cancellable event) {
-		event.setCancelled(protectedByDefault);
+		handleCancellable(event, protectedByDefault);
+	}
+
+	protected void handleCancellable(Cancellable event, Optional<Boolean> cancel) {
+		handleCancellable(event, cancel.orElse(protectedByDefault));
+	}
+
+	protected void handleCancellable(Cancellable event, boolean cancel) {
+		event.setCancelled(cancel);
 	}
 
 }

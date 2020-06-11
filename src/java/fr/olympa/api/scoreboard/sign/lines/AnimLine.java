@@ -44,7 +44,7 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 				}
 				AnimLine.this.updateGlobal();
 			}
-		}.runTaskTimerAsynchronously(plugin, 0, ticksAmount);
+		}.runTaskTimerAsynchronously(plugin, 1, ticksAmount);
 	}
 
 	public int getAnimSize() {
