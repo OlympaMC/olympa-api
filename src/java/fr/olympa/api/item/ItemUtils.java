@@ -29,7 +29,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -73,8 +72,8 @@ public class ItemUtils {
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
 			String value = textures.get(skull);
 			if (value == null) {
-				value = getHeadValue(name);
-				textures.put(name, value);
+				value = getHeadValue(skull);
+				textures.put(skull, value);
 			}
 			callback.accept(skullCustom(name, value, lore));
 		});
@@ -134,7 +133,7 @@ public class ItemUtils {
 		im.setDisplayName(name);
 
 		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-		profile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString(("[{Value:\"" + value + "\"}]")), null));
+		profile.getProperties().put("textures", new Property("textures", value, null));
 		try {
 			Method setProfile = im.getClass().getDeclaredMethod("setProfile", GameProfile.class);
 			setProfile.setAccessible(true);
