@@ -69,9 +69,8 @@ public class Utils {
 	 */
 	public static List<String> colorString(String string, net.md_5.bungee.api.ChatColor color1, net.md_5.bungee.api.ChatColor color2) {
 		List<String> dyn = new ArrayList<>();
-		for (int i = 0; i < string.length(); i++) {
+		for (int i = 0; i < string.length(); i++)
 			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
-		}
 		dyn.add(color1 + string);
 		return dyn;
 	}
@@ -82,10 +81,8 @@ public class Utils {
 	 */
 	public static List<String> colorString(String string, org.bukkit.ChatColor color1, org.bukkit.ChatColor color2) {
 		List<String> dyn = new ArrayList<>();
-		for (int i = 0; i < string.length(); i++) {
+		for (int i = 0; i < string.length(); i++)
 			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
-
-		}
 		dyn.add(color1 + string);
 		return dyn;
 	}
@@ -110,9 +107,8 @@ public class Utils {
 			os = new FileOutputStream(dest);
 			byte[] buffer = new byte[1024];
 			int length;
-			while ((length = is.read(buffer)) > 0) {
+			while ((length = is.read(buffer)) > 0)
 				os.write(buffer, 0, length);
-			}
 		} finally {
 			is.close();
 			os.close();
@@ -137,12 +133,10 @@ public class Utils {
 		String noThis = noThiss.length != 0 ? noThiss[0] : new String();
 		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++)
 			builder.append(chars.charAt((int) (Math.random() * chars.length())));
-		}
-		if (!noThis.isEmpty() && builder.toString().equalsIgnoreCase(noThis)) {
+		if (!noThis.isEmpty() && builder.toString().equalsIgnoreCase(noThis))
 			return generateUUID(noThis);
-		}
 		return builder.toString();
 	}
 
@@ -277,17 +271,15 @@ public class Utils {
 	}
 
 	public static List<String> replaceInList(List<String> list, HashMap<String, String> replace) {
-		for (Entry<String, String> Ereplace : replace.entrySet()) {
+		for (Entry<String, String> Ereplace : replace.entrySet())
 			list = replaceInList(list, Ereplace.getKey(), Ereplace.getValue());
-		}
 		return list;
 	}
 
 	public static List<String> replaceInList(List<String> list, String toReplace, String replaced) {
 		List<String> list2 = new ArrayList<>(list);
-		for (int i = 0; i < list2.size(); i++) {
+		for (int i = 0; i < list2.size(); i++)
 			list2.set(i, list2.get(i).replaceAll(toReplace, replaced));
-		}
 		return list2;
 	}
 
@@ -295,9 +287,8 @@ public class Utils {
 	 * Permet d'arrondir un double avec x nombre après la virgule
 	 */
 	public static double round(double value, int x) {
-		if (x < 0) {
+		if (x < 0)
 			throw new IllegalArgumentException();
-		}
 
 		long factor = (long) Math.pow(10, x);
 		value = value * factor;
@@ -310,9 +301,8 @@ public class Utils {
 	}
 
 	public static List<String> splitOnSpace(String string, int lineLength) {
-		if (string == null) {
+		if (string == null)
 			return null;
-		}
 		List<String> ls = new ArrayList<>();
 		if (string.isEmpty()) {
 			ls.add("");
@@ -323,23 +313,19 @@ public class Utils {
 
 	public static List<String> startWords(String word, Iterable<String> allWords) {
 		TreeSet<String> startWordList = new TreeSet<>(Collator.getInstance());
-		for (String currentWord : allWords) {
-			if (removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase()))) {
+		for (String currentWord : allWords)
+			if (removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase())))
 				startWordList.add(currentWord);
-			}
-		}
 		return new ArrayList<>(startWordList);
 	}
 
 	public static String timestampToDate(long timestamp) {
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-		format.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return format.format(new Date(timestamp * 1000));
 	}
 
 	public static String timestampToDateAndHour(long timestamp) {
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-		format.setTimeZone(TimeZone.getTimeZone("GMT"));
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		return format.format(new Date(timestamp * 1000));
 	}
 
@@ -376,47 +362,36 @@ public class Utils {
 		long second = dur.getSeconds() - 60 * dur.toMinutes();
 
 		List<String> msg = new ArrayList<>();
-		if (year > 1) {
+		if (year > 1)
 			msg.add(year + " ans");
-		} else if (year == 1) {
+		else if (year == 1)
 			msg.add(year + " an");
-		}
-		if (month != 0) {
+		if (month != 0)
 			msg.add(month + " mois");
-		}
 
-		if (day > 1) {
+		if (day > 1)
 			msg.add(day + " jours");
-		} else if (day == 1) {
+		else if (day == 1)
 			msg.add(day + " jour");
-		}
-		if (hour > 1) {
+		if (hour > 1)
 			msg.add(hour + " heures");
-		} else if (hour == 1) {
+		else if (hour == 1)
 			msg.add(hour + " heure");
-		}
-		if (minute > 1) {
+		if (minute > 1)
 			msg.add(minute + " minutes");
-		} else if (minute == 1) {
+		else if (minute == 1)
 			msg.add(minute + " minute");
-		}
-		if (second > 1) {
+		if (second > 1)
 			msg.add(second + " secondes");
-		} else if (second == 1) {
+		else if (second == 1)
 			msg.add(second + " seconde");
-		}
-		// System.out.println("Timestamp " + timestamp + " " + year + "year " + month +
-		// "month " + day + "day " + hour + "hour " + minute + "minute " + second +
-		// "second ");
 
 		List<String> msgs = new ArrayList<>();
 		for (String message : msg) {
-			if (message != null) {
+			if (message != null)
 				msgs.add(message);
-			}
-			if (msgs.size() >= 2) {
+			if (msgs.size() >= 2)
 				break;
-			}
 		}
 		return String.join(", ", msgs);
 	}
@@ -449,17 +424,15 @@ public class Utils {
 	}
 
 	public static void toTextComponent(TextComponent msg, List<TextComponent> list, String separator, String end) {
-		if (list.size() == 0) {
+		if (list.size() == 0)
 			return;
-		}
 		int i = 1;
 		for (TextComponent targetAccountsText : list) {
 			msg.addExtra(targetAccountsText);
-			if (i == list.size()) {
+			if (i == list.size())
 				targetAccountsText.addExtra(end);
-			} else {
+			else
 				targetAccountsText.addExtra(separator);
-			}
 			i++;
 		}
 	}
