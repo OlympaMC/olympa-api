@@ -15,10 +15,19 @@ public class Flag {
 	private BaseComponent[] farewell;
 	private ChatMessageType position;
 
+	private boolean entryDenied = false;
+	private boolean exitDenied = false;
+
 	public Flag setMessages(String greeting, String farewell, ChatMessageType position) {
 		this.position = position;
 		this.greeting = greeting != null ? TextComponent.fromLegacyText(greeting) : null;
 		this.farewell = farewell != null ? TextComponent.fromLegacyText(farewell) : null;
+		return this;
+	}
+
+	public Flag setEntryExitDenied(boolean entryDenied, boolean exitDenied) {
+		this.entryDenied = entryDenied;
+		this.exitDenied = exitDenied;
 		return this;
 	}
 
@@ -30,7 +39,7 @@ public class Flag {
 	 */
 	public boolean enters(Player p, Set<TrackedRegion> to) {
 		if (greeting != null) p.spigot().sendMessage(position, greeting);
-		return false;
+		return entryDenied;
 	}
 
 	/**
@@ -41,7 +50,7 @@ public class Flag {
 	 */
 	public boolean leaves(Player p, Set<TrackedRegion> to) {
 		if (farewell != null) p.spigot().sendMessage(position, farewell);
-		return false;
+		return exitDenied;
 	}
 
 }

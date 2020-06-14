@@ -4,12 +4,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import fr.olympa.api.hook.ProtocolAction;
-import fr.olympa.api.maintenance.MaintenanceStatus;
 import fr.olympa.api.scoreboard.tab.INametagApi;
+import fr.olympa.api.server.ServerStatus;
 
 public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreInterface {
 
-	protected MaintenanceStatus status;
+	protected ServerStatus status;
 	private INametagApi nameTagApi;
 
 	@Override
@@ -25,7 +25,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public abstract ProtocolAction getProtocolSupport();
 
 	@Override
-	public MaintenanceStatus getStatus() {
+	public ServerStatus getStatus() {
 		return status;
 	}
 
@@ -40,7 +40,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	}
 
 	@Override
-	public void setStatus(MaintenanceStatus status) {
+	public void setStatus(ServerStatus status) {
 		this.status = status;
 	}
 }

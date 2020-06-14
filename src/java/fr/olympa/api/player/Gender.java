@@ -6,12 +6,13 @@ import java.util.stream.Collectors;
 
 public enum Gender {
 
-	UNSPECIFIED(0, "", "iel", "non-binaire"),
-	FEMALE(1, "e", "elle", "féminin", "fille", "femme", "meuf"),
-	MALE(2, "", "il", "masculin", "garçon", "homme", "mec");
+	UNSPECIFIED("", "iel", "non spécifié"),
+	FEMALE("e", "elle", "féminin", "fille", "femme", "meuf"),
+	MALE("", "il", "masculin", "garçon", "homme", "mec"),
+	UNBINARY("", "iel", "non-binaire");
 
-	public static Gender get(int int1) {
-		return Arrays.stream(values()).filter(i -> int1 == i.getId()).findFirst().orElse(null);
+	public static Gender get(int id) {
+		return values()[id];
 	}
 
 	public static Gender get(String name) {
@@ -22,26 +23,17 @@ public enum Gender {
 		return Arrays.stream(values()).filter(g -> g.names.length != 0).map(Gender::getName).collect(Collectors.toList());
 	}
 
-	final int id;
 	final String tune;
 	final String pronoun;
 
 	final String[] names;
 
-	private Gender(int id, String tune, String pronoun, String... names) {
-		this.id = id;
+	private Gender(String tune, String pronoun, String... names) {
 		this.tune = tune;
 		this.pronoun = pronoun;
 		this.names = names;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	/**
-	 * @throws NullPointerException Si le genre est NO_SPECIFED
-	 */
 	public String getName() {
 		return names[0];
 	}

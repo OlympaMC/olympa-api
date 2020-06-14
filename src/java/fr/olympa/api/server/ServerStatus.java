@@ -1,4 +1,4 @@
-package fr.olympa.api.maintenance;
+package fr.olympa.api.server;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +8,7 @@ import exemple.OlympaAPIPermission;
 import fr.olympa.api.permission.OlympaPermission;
 import net.md_5.bungee.api.ChatColor;
 
-public enum MaintenanceStatus {
+public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
 	MAINTENANCE(2, "Maintenance", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
@@ -18,20 +18,20 @@ public enum MaintenanceStatus {
 	CLOSE(6, "Fermé", ChatColor.DARK_RED, null, null),
 	UNKNOWN(7, "Inconnu", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
 
-	public static MaintenanceStatus get(int id) {
-		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(MaintenanceStatus.UNKNOWN);
+	public static ServerStatus get(int id) {
+		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(ServerStatus.UNKNOWN);
 	}
 
-	public static MaintenanceStatus get(String name) {
-		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(MaintenanceStatus.UNKNOWN);
+	public static ServerStatus get(String name) {
+		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(ServerStatus.UNKNOWN);
 	}
 
-	public static MaintenanceStatus getByCommandArg(String commandArg) {
+	public static ServerStatus getByCommandArg(String commandArg) {
 		return Arrays.stream(values()).filter(status -> status.getCommandArg() != null && status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
 	}
 
 	public static List<String> getNames() {
-		return Arrays.stream(values()).filter(status -> status != UNKNOWN).map(MaintenanceStatus::getName).collect(Collectors.toList());
+		return Arrays.stream(values()).filter(status -> status != UNKNOWN).map(ServerStatus::getName).collect(Collectors.toList());
 	}
 
 	private int id;
@@ -41,7 +41,7 @@ public enum MaintenanceStatus {
 	private OlympaPermission permission;
 	private String commandArg;
 
-	private MaintenanceStatus(int id, String name, ChatColor color, OlympaPermission permission, String commandArg) {
+	private ServerStatus(int id, String name, ChatColor color, OlympaPermission permission, String commandArg) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
