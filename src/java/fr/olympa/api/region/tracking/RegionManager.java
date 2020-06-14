@@ -34,10 +34,12 @@ import org.bukkit.event.block.MoistureChangeEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,7 +53,9 @@ import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.WorldRegion;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
+import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
+import fr.olympa.api.region.tracking.flags.FoodFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
@@ -109,11 +113,11 @@ public class RegionManager implements Listener {
 	}
 
 	public Set<TrackedRegion> getApplicableRegions(Location location) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).collect(Collectors.toSet());
+		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).collect(Collectors.toUnmodifiableSet());
 	}
 
 	public <T extends Flag> void fireEvent(Location location, Class<T> flagClass, Consumer<T> consumer) {
-		trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted((o1, o2) -> Integer.compare(o1.getPriority().getSlot(), o2.getPriority().getSlot())).forEach(x -> {
+		trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(RegionComparator.COMPARATOR).forEach(x -> {
 			T flag = x.getFlag(flagClass);
 			if (flag != null) consumer.accept(flag);
 		});
@@ -126,7 +130,19 @@ public class RegionManager implements Listener {
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		inRegions.put(e.getPlayer(), getApplicableRegions(e.getPlayer().getLocation()));
+		Set<TrackedRegion> regions = getApplicableRegions(e.getPlayer().getLocation());
+		inRegions.put(e.getPlayer(), regions);
+		if (!e.getPlayer().hasPlayedBefore()) {
+			for (TrackedRegion enter : regions) {
+				try {
+					for (Flag flag : enter.getFlags()) {
+						if (flag.enters(e.getPlayer(), regions)) OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
+					}
+				}catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@EventHandler
@@ -145,7 +161,7 @@ public class RegionManager implements Listener {
 		for (TrackedRegion enter : entered) {
 			try {
 				for (Flag flag : enter.getFlags()) {
-					if (flag.enters(player)) e.setCancelled(true);
+					if (flag.enters(player, applicable)) e.setCancelled(true);
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -154,7 +170,7 @@ public class RegionManager implements Listener {
 		for (TrackedRegion exit : exited) {
 			try {
 				for (Flag flag : exit.getFlags()) {
-					if (flag.leaves(player)) e.setCancelled(true);
+					if (flag.leaves(player, applicable)) e.setCancelled(true);
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -283,6 +299,16 @@ public class RegionManager implements Listener {
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
 		fireEvent(e.getEntity().getLocation(), DamageFlag.class, x -> x.damageEvent(e));
+	}
+	
+	@EventHandler
+	public void onFood(FoodLevelChangeEvent e) {
+		fireEvent(e.getEntity().getLocation(), FoodFlag.class, x -> x.foodEvent(e));
+	}
+
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent e) {
+		fireEvent(e.getPlayer().getLocation(), DropFlag.class, x -> x.dropEvent(e));
 	}
 
 }

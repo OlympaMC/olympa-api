@@ -22,9 +22,9 @@ public class DamageFlag extends Flag {
 		if (disabledCauses.length != 0) this.disabledCauses = Arrays.asList(disabledCauses);
 	}
 
-	public void damageEvent(EntityDamageEvent e) {
-		if (onlyPlayers && !(e.getEntity() instanceof Player)) return;
-		e.setCancelled(disabledCauses == null || disabledCauses.contains(e.getCause()));
+	public void damageEvent(EntityDamageEvent event) {
+		if (onlyPlayers && !(event.getEntity() instanceof Player)) return;
+		event.setCancelled(disabledCauses == null || disabledCauses.contains(event.getCause()));
 	}
 
 }

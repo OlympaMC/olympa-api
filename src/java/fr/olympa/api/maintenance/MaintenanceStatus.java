@@ -13,9 +13,9 @@ public enum MaintenanceStatus {
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
 	MAINTENANCE(2, "Maintenance", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
 	DEV(3, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, "dev"),
-	BETA(4, "Beta", ChatColor.GOLD, OlympaAPIPermission.CONNECT_SERVERSTATUS_BETA, "beta"),
+	BETA(4, "Bêta", ChatColor.GOLD, OlympaAPIPermission.CONNECT_SERVERSTATUS_BETA, "beta"),
 	SOON(5, "Bientôt", ChatColor.YELLOW, OlympaAPIPermission.CONNECT_SERVERSTATUS_SOON, "soon"),
-	CLOSE(6, "Fermer", ChatColor.DARK_RED, null, null),
+	CLOSE(6, "Fermé", ChatColor.DARK_RED, null, null),
 	UNKNOWN(7, "Inconnu", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
 
 	public static MaintenanceStatus get(int id) {
