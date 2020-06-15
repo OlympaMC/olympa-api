@@ -58,7 +58,7 @@ import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.region.tracking.flags.FoodFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
-import fr.olympa.api.region.tracking.flags.PlayerInteractFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -158,10 +158,12 @@ public class RegionManager implements Listener {
 		Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
 		Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
 
+		boolean cancelled = false;
+
 		for (TrackedRegion enter : entered) {
 			try {
 				for (Flag flag : enter.getFlags()) {
-					if (flag.enters(player, applicable)) e.setCancelled(true);
+					if (flag.enters(player, applicable)) cancelled = true;
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -170,13 +172,17 @@ public class RegionManager implements Listener {
 		for (TrackedRegion exit : exited) {
 			try {
 				for (Flag flag : exit.getFlags()) {
-					if (flag.leaves(player, applicable)) e.setCancelled(true);
+					if (flag.leaves(player, applicable)) cancelled = true;
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 		
+		if (cancelled) {
+			e.setCancelled(true);
+			return;
+		}
 		if (!entered.isEmpty() || !exited.isEmpty()) inRegions.put(player, applicable);
 	}
 
@@ -293,7 +299,7 @@ public class RegionManager implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
-		fireEvent(e.getClickedBlock().getLocation(), PlayerInteractFlag.class, x -> x.interactEvent(e));
+		fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
 	}
 
 	@EventHandler
