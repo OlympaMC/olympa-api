@@ -11,7 +11,7 @@ import fr.olympa.api.command.complex.ComplexCommand;
 public class ExampleComplexCommand extends ComplexCommand {
 
 	public ExampleComplexCommand(Plugin plugin) {
-		super(plugin, "complex", "Exemple de commande complexe", OlympaAPIPermission.EXEMPLE_COMMAND);
+		super(plugin, "complex", "Exemple de commande complexe", ExemplePermissions.EXEMPLE_COMMAND);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class ExempleCommand extends OlympaCommand {
 
 	// NOTE: you didn't need to add the command in plugin.yml
 	public ExempleCommand(Plugin plugin) {
-		super(plugin, "exemple", OlympaAPIPermission.EXEMPLE_COMMAND, "alias1", "alias2");
+		super(plugin, "exemple", ExemplePermissions.EXEMPLE_COMMAND, "alias1", "alias2");
 
 		// Use to create the usage message like "Usage: /%command% <arg1Mandatory|arg1MandatoryAgain|arg1MandatoryAgainAgain> [arg2|arg2Again|arg2AgainAgain]"
 		// isMandatory = if args is required

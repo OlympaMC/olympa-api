@@ -7,6 +7,8 @@ import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.hook.ProtocolAction;
+import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
@@ -50,6 +52,8 @@ public class OlympaCore extends OlympaSpigot {
 	public void onEnable() {
 		instance = this;
 		
+		OlympaPermission.registerPermissions(OlympaAPIPermissions.class);
+
 		PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);

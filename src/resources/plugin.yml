@@ -1,4 +1,4 @@
-name: OlympaAPI
+name: OlympaCore
 main: fr.olympa.core.spigot.OlympaCore
 authors: [Tristiisch, SkytAsul]
 api-version: 1.15

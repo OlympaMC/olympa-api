@@ -28,7 +28,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		OlympaPermission.registerPermissions(OlympaAPIPermission.class);
+		OlympaPermission.registerPermissions(ExemplePermissions.class);
 
 		instance = this;
 

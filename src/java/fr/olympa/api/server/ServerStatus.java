@@ -4,19 +4,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import exemple.OlympaAPIPermission;
+import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
 import net.md_5.bungee.api.ChatColor;
 
 public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
-	MAINTENANCE(2, "Maintenance", ChatColor.RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
-	DEV(3, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, "dev"),
-	BETA(4, "Bêta", ChatColor.GOLD, OlympaAPIPermission.CONNECT_SERVERSTATUS_BETA, "beta"),
-	SOON(5, "Bientôt", ChatColor.YELLOW, OlympaAPIPermission.CONNECT_SERVERSTATUS_SOON, "soon"),
+	MAINTENANCE(2, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
+	DEV(3, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "dev"),
+	BETA(4, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
+	SOON(5, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "soon"),
 	CLOSE(6, "Fermé", ChatColor.RED, null, null),
-	UNKNOWN(7, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermission.CONNECT_SERVERSTATUS_DEV, null);
+	UNKNOWN(7, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null);
 
 	public static ServerStatus get(int id) {
 		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(ServerStatus.UNKNOWN);
