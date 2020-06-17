@@ -1,11 +1,10 @@
-package fr.olympa.api.scoreboard.sign.lines;
+package fr.olympa.api.lines;
 
 import java.util.function.Function;
 
-import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.observable.Observable;
 
-public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
+public class DynamicLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 
 	private Function<T, String> value;
 
@@ -16,12 +15,12 @@ public class DynamicLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 	public DynamicLine(Function<T, String> value, Observable observable) {
 		this.value = value;
 
-		if (observable != null) observable.observe("scoreboard_line_" + hashCode(), this::updateGlobal);
+		if (observable != null) observable.observe("dynamic_line_" + hashCode(), this::updateGlobal);
 	}
 
 	@Override
-	public String getValue(T player) {
-		return value.apply(player);
+	public String getValue(T holder) {
+		return value.apply(holder);
 	}
 
 }

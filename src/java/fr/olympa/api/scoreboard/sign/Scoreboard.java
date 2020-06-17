@@ -6,15 +6,16 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.scoreboard.sign.lines.ScoreboardLine;
 import fr.olympa.api.utils.Passwords;
 
 // TODO gestion animation pour éviter refresh tous les ticks
 // TODO gestion multi scoreboard
-public class Scoreboard<T extends OlympaPlayer> extends Thread {
+public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesHolder<Scoreboard<T>> {
 
-	public final T p;
+	private final T p;
 
 	private ScoreboardManager<T> manager;
 	private ScoreboardSigns sb;
@@ -26,19 +27,23 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	Scoreboard(T player, ScoreboardManager<T> manager) {
 		p = player;
 		this.manager = manager;
-		for (ScoreboardLine<T> line : manager.lines) {
+		for (AbstractLine<Scoreboard<T>> line : manager.lines) {
 			lines.add(new Line(line));
-			line.addScoreboard(this);
+			line.addHolder(this);
 		}
-		for (ScoreboardLine<T> line : manager.footer) {
+		for (AbstractLine<Scoreboard<T>> line : manager.footer) {
 			lines.add(new Line(line));
-			line.addScoreboard(this);
+			line.addHolder(this);
 		}
 		initScoreboard();
 		start();
 	}
 
-	public void addLine(ScoreboardLine<T> line) {
+	public T getOlympaPlayer() {
+		return p;
+	}
+
+	public void addLine(AbstractLine<Scoreboard<T>> line) {
 		lines.add(lines.size() - manager.footer.size(), new Line(line));
 		// TODO update uniquement la ligné ajouté
 		needsUpdate();
@@ -46,6 +51,11 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 
 	public ScoreboardSigns getScoreboard() {
 		return sb;
+	}
+
+	@Override
+	public void update(AbstractLine<Scoreboard<T>> line) {
+		needsUpdate(); // TODO update seulement la ligne
 	}
 
 	public void needsUpdate() {
@@ -89,7 +99,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 		interrupt();
 		if (sb != null) sb.destroy();
 		for (Line line : lines) {
-			line.line.removeScoreboard(this);
+			line.line.removeHolder(this);
 		}
 		lines.clear();
 	}
@@ -119,14 +129,14 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread {
 	}
 
 	class Line {
-		ScoreboardLine<T> line;
+		AbstractLine<Scoreboard<T>> line;
 
-		public Line(ScoreboardLine<T> line) {
+		public Line(AbstractLine<Scoreboard<T>> line) {
 			this.line = line;
 		}
 
 		public String[] getLines(T player) {
-			String text = line.getValue(p);
+			String text = line.getValue(Scoreboard.this);
 			return text.split("\\n");
 			//return ChatPaginator.wordWrap(text, 48);
 		}

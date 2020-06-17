@@ -5,11 +5,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.gui.Inventories;
+import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
-import fr.olympa.api.scoreboard.sign.lines.DynamicLine;
-import fr.olympa.api.scoreboard.sign.lines.FixedLine;
 
 public class Main extends JavaPlugin {
 
@@ -38,10 +39,10 @@ public class Main extends JavaPlugin {
 		this.scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
 				new FixedLine<>("Yo"),
 				FixedLine.EMPTY_LINE,
-				new DynamicLine<OlympaPlayer>((x) -> {
-					Location lc = x.getPlayer().getLocation();
+				new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {
+					Location lc = x.getOlympaPlayer().getPlayer().getLocation();
 					return lc.toString();
-				}));
+				}, this, 5));
 
 		final PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvents(new ExempleListener(), this);

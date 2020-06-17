@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.player.OlympaPlayer;
@@ -26,7 +25,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private long id;
 	private TreeMap<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparing(OlympaGroup::getPower).reversed());
 	private Gender gender = Gender.MALE;
-	private OlympaMoney storeMoney = new OlympaMoney(0);
 	
 	private OlympaPlayerInformations cachedInfos = null;
 
@@ -185,11 +183,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getPremiumUniqueId() {
 		return uuid;
-	}
-
-	@Override
-	public OlympaMoney getStoreMoney() {
-		return storeMoney;
 	}
 
 	@Override

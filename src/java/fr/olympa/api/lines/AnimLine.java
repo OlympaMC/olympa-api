@@ -1,4 +1,4 @@
-package fr.olympa.api.scoreboard.sign.lines;
+package fr.olympa.api.lines;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.player.OlympaPlayer;
-
-public class AnimLine extends ScoreboardLine<OlympaPlayer> {
+public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 
 	//public static final List<String> ANIMATION = getAnim("play.olympa.fr");
 
@@ -50,12 +48,12 @@ public class AnimLine extends ScoreboardLine<OlympaPlayer> {
 	}
 
 	@Override
-	public String getValue(OlympaPlayer player) {
+	public String getValue(T holder) {
 		return strings.get(status);
 	}
 
-	public static AnimLine olympaAnimation(Plugin plugin) {
-		return new AnimLine(plugin, getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
+	public static AnimLine<?> olympaAnimation(Plugin plugin) {
+		return new AnimLine<>(plugin, getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
 	}
 
 }
