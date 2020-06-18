@@ -11,11 +11,13 @@ import fr.olympa.api.lines.LinesHolder;
 
 public class Hologram implements LinesHolder<Hologram> {
 
-	public List<Line> lines = new ArrayList<>();
-	private Location location;
+	private static final double LINE_SPACING = 0.3;
 
-	public Hologram(Location location, AbstractLine<Hologram>... lines) {
-		this.location = location;
+	public List<Line> lines = new ArrayList<>();
+	private Location bottom;
+
+	public Hologram(Location bottom, AbstractLine<Hologram>... lines) {
+		this.bottom = bottom;
 
 		for (AbstractLine<Hologram> line : lines) {
 			addLine(line);
@@ -23,7 +25,23 @@ public class Hologram implements LinesHolder<Hologram> {
 	}
 
 	public void addLine(AbstractLine<Hologram> line) {
+		lines.forEach(x -> x.entity.teleport(x.entity.getLocation().add(0, LINE_SPACING, 0)));
 		lines.add(new Line(line));
+	}
+
+	public void removeLine(AbstractLine<Hologram> line) {
+		for (int i = 0; i < lines.size(); i++) {
+			Line hline = lines.get(i);
+			if (hline.line == line) {
+				hline.destroy();
+				for (int j = 0; j < i; j++) {
+					hline = lines.get(j);
+					hline.entity.teleport(hline.entity.getLocation().subtract(0, LINE_SPACING, 0));
+				}
+				lines.remove(i);
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -47,7 +65,7 @@ public class Hologram implements LinesHolder<Hologram> {
 
 		public Line(AbstractLine<Hologram> line) {
 			this.line = line;
-			this.entity = location.getWorld().spawn(location.add(0, lines.size() * 0.3, 0), ArmorStand.class);
+			this.entity = bottom.getWorld().spawn(bottom, ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);
 			entity.setSmall(true);
@@ -59,7 +77,8 @@ public class Hologram implements LinesHolder<Hologram> {
 		}
 
 		public void updateText() {
-			entity.setCustomName(line.getValue(Hologram.this));
+			String value = line.getValue(Hologram.this);
+			entity.setCustomName("".equals(value) ? "§a" : value);
 		}
 
 		public void destroy() {
