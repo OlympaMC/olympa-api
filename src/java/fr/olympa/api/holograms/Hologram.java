@@ -69,7 +69,6 @@ public class Hologram implements LinesHolder<Hologram> {
 			entity.setGravity(false);
 			entity.setMarker(true);
 			entity.setSmall(true);
-			entity.setCustomNameVisible(true);
 			entity.setVisible(false);
 			entity.setInvulnerable(true);
 			line.addHolder(Hologram.this);
@@ -78,7 +77,10 @@ public class Hologram implements LinesHolder<Hologram> {
 
 		public void updateText() {
 			String value = line.getValue(Hologram.this);
-			entity.setCustomName("".equals(value) ? "§a" : value);
+			if ("".equals(value)) {
+				entity.setCustomNameVisible(true);
+				entity.setCustomName(value);
+			}else entity.setCustomNameVisible(false);
 		}
 
 		public void destroy() {
