@@ -6,6 +6,7 @@ import org.bukkit.plugin.messaging.Messenger;
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.gui.Inventories;
+import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.hook.ProtocolAction;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
@@ -25,17 +26,14 @@ public class OlympaCore extends OlympaSpigot {
 		return instance;
 	}
 	
-	private RegionManager regionManager;
 	private String serverName;
 	
+	private HologramsManager holograms;
+	private RegionManager regions;
+
 	@Override
 	public ProtocolAction getProtocolSupport() {
 		return null;
-	}
-	
-	@Override
-	public RegionManager getRegionManager() {
-		return regionManager;
 	}
 	
 	@Override
@@ -44,7 +42,18 @@ public class OlympaCore extends OlympaSpigot {
 	}
 	
 	@Override
+	public RegionManager getRegionManager() {
+		return regions;
+	}
+
+	@Override
+	public HologramsManager getHologramsManager() {
+		return holograms;
+	}
+
+	@Override
 	public void onDisable() {
+		holograms.unload();
 		sendMessage("§4" + getDescription().getName() + "§c (" + getDescription().getVersion() + ") is disabled.");
 	}
 	
@@ -58,8 +67,10 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);
 		pluginManager.registerEvents(new CommandListener(), this);
-		pluginManager.registerEvents(regionManager = new RegionManager(), this);
+		pluginManager.registerEvents(regions = new RegionManager(), this);
 		
+		regions = new RegionManager();
+
 		Messenger messenger = getServer().getMessenger();
 		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
 		new SpigotBPMCEvent().register(this);

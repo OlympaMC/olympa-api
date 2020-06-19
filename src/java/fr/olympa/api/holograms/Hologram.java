@@ -77,7 +77,7 @@ public class Hologram implements LinesHolder<Hologram> {
 
 		public void updateText() {
 			String value = line.getValue(Hologram.this);
-			if ("".equals(value)) {
+			if (!"".equals(value)) {
 				entity.setCustomNameVisible(true);
 				entity.setCustomName(value);
 			}else entity.setCustomNameVisible(false);
