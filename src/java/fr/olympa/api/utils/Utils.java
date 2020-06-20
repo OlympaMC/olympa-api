@@ -270,6 +270,10 @@ public class Utils {
 						.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
+	public static boolean isEmpty(String string) {
+		return string == null || string.isEmpty();
+	}
+
 	public static List<String> replaceInList(List<String> list, HashMap<String, String> replace) {
 		for (Entry<String, String> Ereplace : replace.entrySet())
 			list = replaceInList(list, Ereplace.getKey(), Ereplace.getValue());

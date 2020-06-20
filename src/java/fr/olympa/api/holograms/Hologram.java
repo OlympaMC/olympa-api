@@ -75,6 +75,7 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 	public void move(Location newBottom) {
 		this.bottom = newBottom.clone();
 		lines.forEach(Line::updatePosition);
+		update();
 	}
 
 	@Override
