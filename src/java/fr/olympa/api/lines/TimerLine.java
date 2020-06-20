@@ -1,13 +1,11 @@
-package fr.olympa.api.scoreboard.sign.lines;
+package fr.olympa.api.lines;
 
 import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import fr.olympa.api.player.OlympaPlayer;
-
-public class TimerLine<T extends OlympaPlayer> extends DynamicLine<T> {
+public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 
 	public TimerLine(Function<T, String> value, Plugin plugin, int ticks) {
 		super(value);

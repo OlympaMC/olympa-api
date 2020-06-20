@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.tracking.flags.Flag;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class TrackedRegion {
 
@@ -48,6 +49,10 @@ public class TrackedRegion {
 
 	public void registerFlags(Flag... flag) {
 		flags.addAll(Arrays.asList(flag));
+	}
+
+	public void unregister() {
+		OlympaCore.getInstance().getRegionManager().unregisterRegion(id);
 	}
 
 	@Override

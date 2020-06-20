@@ -3,6 +3,7 @@ package fr.olympa.api.plugin;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.server.ServerStatus;
@@ -14,6 +15,8 @@ public interface OlympaCoreInterface {
 	INametagApi getNameTagApi();
 
 	RegionManager getRegionManager();
+
+	HologramsManager getHologramsManager();
 
 	String getServerName();
 

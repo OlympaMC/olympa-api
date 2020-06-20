@@ -13,9 +13,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.scoreboard.sign.lines.ScoreboardLine;
 
 public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
@@ -23,8 +23,8 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
 	Plugin plugin;
 	String displayName;
-	List<ScoreboardLine<T>> lines = new ArrayList<>();
-	List<ScoreboardLine<T>> footer = new ArrayList<>();
+	List<AbstractLine<Scoreboard<T>>> lines = new ArrayList<>();
+	List<AbstractLine<Scoreboard<T>>> footer = new ArrayList<>();
 
 	public ScoreboardManager(Plugin plugin, String displayName) {
 		this.plugin = plugin;
@@ -33,13 +33,13 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 
-	public ScoreboardManager<T> addLines(ScoreboardLine<T>... lines) {
-		for (ScoreboardLine<T> line : lines) this.lines.add(line);
+	public ScoreboardManager<T> addLines(AbstractLine<Scoreboard<T>>... lines) {
+		for (AbstractLine<Scoreboard<T>> line : lines) this.lines.add(line);
 		return this;
 	}
 
-	public ScoreboardManager<T> addFooters(ScoreboardLine<T>... lines) {
-		for (ScoreboardLine<T> line : lines) this.footer.add(line);
+	public ScoreboardManager<T> addFooters(AbstractLine<Scoreboard<T>>... lines) {
+		for (AbstractLine<Scoreboard<T>> line : lines) this.footer.add(line);
 		return this;
 	}
 

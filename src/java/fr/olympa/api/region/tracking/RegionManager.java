@@ -42,9 +42,11 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import com.google.common.collect.Sets;
@@ -56,9 +58,10 @@ import fr.olympa.api.region.tracking.flags.DamageFlag;
 import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.region.tracking.flags.FoodFlag;
+import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
-import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
+import fr.olympa.api.region.tracking.flags.PlayerBlocksFlag;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -77,6 +80,19 @@ public class RegionManager implements Listener {
 		});
 	}
 
+	public TrackedRegion registerRegion(Region region, String id, EventPriority priority, Flag... flags) {
+		Validate.notNull(region, id + " is a null region");
+		Validate.isTrue(!id.endsWith("_global"), "The region ID cannot end with _global");
+		Validate.isTrue(!trackedRegions.containsKey(id), "A region with ID" + id + " already exists");
+		TrackedRegion tracked = new TrackedRegion(region, id, priority, flags);
+		trackedRegions.put(id, tracked);
+		return tracked;
+	}
+
+	public void unregisterRegion(String id) {
+		trackedRegions.remove(id);
+	}
+
 	private void registerWorld(World world) {
 		if (worldRegions.containsKey(world)) return;
 		TrackedRegion region = new TrackedRegion(new WorldRegion(world), world.getName() + "_global", EventPriority.LOWEST);
@@ -86,13 +102,11 @@ public class RegionManager implements Listener {
 		Bukkit.getPluginManager().callEvent(new WorldTrackingEvent(world, region));
 	}
 
-	public TrackedRegion registerRegion(Region region, String id, EventPriority priority, Flag... flags) {
-		Validate.notNull(region, id + " is a null region");
-		Validate.isTrue(!id.endsWith("_global"), "The region ID cannot end with _global");
-		Validate.isTrue(!trackedRegions.containsKey(id), "A region with ID" + id + " already exists");
-		TrackedRegion tracked = new TrackedRegion(region, id, priority, flags);
-		trackedRegions.put(id, tracked);
-		return tracked;
+	private void unregisterWorld(World world) {
+		TrackedRegion region = worldRegions.remove(world);
+		if (region == null) return;
+		unregisterRegion(region.getID());
+		OlympaCore.getInstance().getLogger().info("Unregistered global region for world " + world.getName());
 	}
 
 	public boolean isIn(Player p, String id) {
@@ -126,6 +140,11 @@ public class RegionManager implements Listener {
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onWorldLoad(WorldInitEvent e) {
 		registerWorld(e.getWorld());
+	}
+
+	@EventHandler
+	public void onWorldUnload(WorldUnloadEvent e) {
+		unregisterWorld(e.getWorld());
 	}
 
 	@EventHandler (priority = EventPriority.LOWEST)
@@ -315,6 +334,11 @@ public class RegionManager implements Listener {
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e) {
 		fireEvent(e.getPlayer().getLocation(), DropFlag.class, x -> x.dropEvent(e));
+	}
+
+	@EventHandler
+	public void onItemDamage(PlayerItemDamageEvent e) {
+		fireEvent(e.getPlayer().getLocation(), ItemDurabilityFlag.class, x -> x.itemDamageEvent(e));
 	}
 
 }

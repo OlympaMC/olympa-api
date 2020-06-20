@@ -1,8 +1,6 @@
-package fr.olympa.api.scoreboard.sign.lines;
+package fr.olympa.api.lines;
 
-import fr.olympa.api.player.OlympaPlayer;
-
-public class FixedLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
+public class FixedLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 
 	@SuppressWarnings ("rawtypes")
 	public static final FixedLine EMPTY_LINE = new FixedLine<>("");
@@ -13,7 +11,11 @@ public class FixedLine<T extends OlympaPlayer> extends ScoreboardLine<T> {
 		this.value = value;
 	}
 
-	public String getValue(OlympaPlayer player) {
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getValue(T holder) {
 		return value;
 	}
 

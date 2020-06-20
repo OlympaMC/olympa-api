@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.groups.OlympaGroup;
 
 public interface OlympaPlayer {
@@ -64,8 +63,6 @@ public interface OlympaPlayer {
 	Player getPlayer();
 
 	UUID getPremiumUniqueId();
-
-	OlympaMoney getStoreMoney();
 
 	long getTeamspeakId();
 
