@@ -110,7 +110,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		this.tableName = "`" + table + "`";
 
 		StringJoiner columnsJoiner = new StringJoiner(", ");
-		addDBCollums(columnsJoiner);
+		columnsJoiner = addDBCollums(columnsJoiner);
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +
 				columnsJoiner.toString() +
 				",  PRIMARY KEY (`id`))");
@@ -131,18 +131,16 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		//		enemiesBukkit = sc.getTeam("enemies");
 
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
-		while (resultSet.next()) {
+		while (resultSet.next())
 			try {
 				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getLong("chief"), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
-				for (OlympaPlayerInformations pinfo : getPlayersInClan(clan)) {
+				for (OlympaPlayerInformations pinfo : getPlayersInClan(clan))
 					clan.members.put(pinfo.getId(), new AbstractMap.SimpleEntry<>(pinfo, null));
-				}
 				clans.put(clan.getID(), clan);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				plugin.getLogger().severe("Impossible de charger le groupe " + resultSet.getInt("id"));
 			}
-		}
 		resultSet.close();
 	}
 
@@ -175,19 +173,20 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 
 	protected abstract T createClan(int id, String name, long chief, int maxSize);
 
-	protected abstract T provideClan(int id, String name, long chief, int maxSize, double money, long created, ResultSet resultSet);
+	protected abstract T provideClan(int id, String name, long chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
 
 	public ClanManagementGUI<T> provideManagementGUI(ClanPlayerInterface<T> player) {
 		return new ClanManagementGUI<>(player, this, 2);
 	}
 
-	public void addDBCollums(StringJoiner columnsJoiner) {
+	public StringJoiner addDBCollums(StringJoiner columnsJoiner) {
 		columnsJoiner.add("`id` int(11) unsigned NOT NULL AUTO_INCREMENT");
 		columnsJoiner.add("`name` varchar(45) NOT NULL");
 		columnsJoiner.add("`chief` bigint(20) NOT NULL");
 		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT " + defaultMaxSize);
 		columnsJoiner.add("`money` DOUBLE NOT NULL DEFAULT 0");
 		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
+		return columnsJoiner;
 	}
 
 	public ObservableList<T> getPlayerInvitations(Player p) {
@@ -232,21 +231,19 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		PreparedStatement statement = getPlayersInClanStatement.getStatement();
 		statement.setInt(1, clan.getID());
 		ResultSet resultSet = statement.executeQuery();
-		while (resultSet.next()) {
+		while (resultSet.next())
 			players.add(AccountProvider.getPlayerInformations(resultSet.getLong("player_id")));
-		}
 		return players;
 	}
 
 	public void removeClan(T clan) {
-		for (List<T> invits : invitations.values()) {
+		for (List<T> invits : invitations.values())
 			invits.remove(clan);
-		}
 		try {
 			PreparedStatement statement = removeClanStatement.getStatement();
 			statement.setInt(1, clan.getID());
 			statement.executeUpdate();
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 			plugin.getLogger().severe("Le groupe " + clan.getID() + " n'a pas pu être supprimé de la base de données.");
 		}
@@ -268,21 +265,18 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		//NMS.sendPacket(NMS.addPlayersToTeam(clan, Arrays.asList(e.getPlayer().getName())), e.getPlayer());
 		this.setSuffix(oplayer.getPlayer());
 		T clan = oplayer.getClan();
-		if (clan != null) {
+		if (clan != null)
 			clan.memberJoin(oplayer);
-		}
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		ClanPlayerInterface<T> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
-		if (oplayer == null) {
+		if (oplayer == null)
 			return;
-		}
 		T clan = oplayer.getClan();
-		if (clan != null) {
+		if (clan != null)
 			clan.memberLeave(oplayer);
-		}
 	}
 
 	public void setSuffix(Player p) {
@@ -293,9 +287,8 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			Collection<Entry<OlympaPlayerInformations, ClanPlayerInterface<T>>> members = clan.getMembers();
 			ChatColor chatColor = members.stream().anyMatch(e -> e.getKey().getUUID().equals(p.getUniqueId())) ? ChatColor.GREEN : ChatColor.RED;
 			Nametag nameTag = new Nametag(null, " " + chatColor + clanName);
-			for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> m : members) {
+			for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> m : members)
 				nameTagApi.updateFakeNameTag(m.getKey().getName(), nameTag, Arrays.asList(p));
-			}
 		}
 	}
 

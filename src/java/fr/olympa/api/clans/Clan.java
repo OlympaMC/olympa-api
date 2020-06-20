@@ -26,21 +26,21 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public abstract class Clan<T extends Clan<T>> {
-
+	
 	protected final ClansManager<T> manager;
 	protected final int id;
-
+	
 	protected Map<Long, Entry<OlympaPlayerInformations, ClanPlayerInterface<T>>> members = new HashMap<>(8);
 	private String name;
 	private long chief;
 	private int maxSize;
 	private OlympaMoney money;
 	private long created;
-
+	
 	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize) {
 		this(manager, id, name, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
 	}
-
+	
 	public Clan(ClansManager<T> manager, int id, String name, long chief, int maxSize, double money, long created) {
 		this.manager = manager;
 		this.id = id;
@@ -51,11 +51,10 @@ public abstract class Clan<T extends Clan<T>> {
 		this.money = new OlympaMoney(money);
 		this.money.observe("clan_update_db", this::updateMoney);
 	}
-
+	
 	public boolean addPlayer(ClanPlayerInterface<T> p) {
-		if (members.size() >= getMaxSize()) {
+		if (members.size() >= getMaxSize())
 			return false;
-		}
 		p.setClan((T) this);
 		// packets pour mettre le nouveau joueur en vert pour les anciens
 		Player[] players = getPlayersArray();
@@ -67,120 +66,113 @@ public abstract class Clan<T extends Clan<T>> {
 		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.enemies, joiner), players);
 		//NMS.sendPacket(NMS.addPlayersToTeam(manager.clan, joiner), players);
 		// packets pour mettre les autres joueurs en vert pour le nouveau
-		for (Player player : getPlayersArray()) {
+		for (Player player : getPlayersArray())
 			nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
-		}
 		members.put(p.getId(), new AbstractMap.SimpleEntry<>(p.getInformation(), p));
 		memberJoin(p);
 		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
 		return true;
 	}
-
+	
 	public void broadcast(String message) {
 		String finalMessage = ColorUtils.color(Prefix.DEFAULT + "§6" + name + " §e: " + message + " Terminé.");
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
-
+	
 	public boolean contains(OlympaPlayer p) {
 		return members.containsKey(p.getId());
 	}
-
+	
 	public void disband() {
 		broadcast(manager.stringClanDisband);
-		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values()) {
+		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values())
 			removePlayer(member.getKey(), false);
-		}
 		manager.removeClan((T) this);
 	}
-
+	
 	public void executeAllPlayers(Consumer<Player> consumer) {
-		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values()) {
-			if (member.getValue() != null) {
+		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values())
+			if (member.getValue() != null)
 				consumer.accept(member.getValue().getPlayer());
-			}
-		}
 	}
-
+	
 	public OlympaPlayerInformations getChief() {
 		return members.get(chief).getKey();
 	}
-
+	
 	public int getID() {
 		return id;
 	}
-
+	
 	public int getMaxSize() {
 		return maxSize;
 	}
-
+	
 	public Collection<Entry<OlympaPlayerInformations, ClanPlayerInterface<T>>> getMembers() {
 		return members.values();
 	}
-
+	
 	public int getMembersAmount() {
 		return members.size();
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public OlympaMoney getMoney() {
 		return money;
 	}
-
+	
 	public Set<Player> getPlayers() {
 		return members.values().stream().filter(entry -> entry.getValue() != null).map(entry -> entry.getValue().getPlayer()).collect(Collectors.toSet());
 	}
-
+	
 	public Player[] getPlayersArray() {
 		Player[] playersArray = new Player[members.size()];
 		int i = 0;
-		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values()) {
+		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member : members.values())
 			if (member.getValue() != null) {
 				playersArray[i] = member.getValue().getPlayer();
 				i++;
 			}
-		}
 		return playersArray;
 	}
-
+	
 	public long getCreationTime() {
 		return created;
 	}
-
+	
 	public void memberJoin(ClanPlayerInterface<T> member) {
 		members.get(member.getId()).setValue(member);
-
+		
 		//List<String> names = members.values().stream().map(x -> x.getKey().getName()).collect(Collectors.toList());
 		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.enemies, names), p);
 		//NMS.sendPacket(NMS.addPlayersToTeam(manager.clan, names), p);
 	}
-
+	
 	public void memberLeave(ClanPlayerInterface<T> p) {
 		members.get(p.getId()).setValue(null);
 	}
-
+	
 	protected void removedOnlinePlayer(ClanPlayerInterface<T> oplayer) {
 		// packets pour mettre le suffix des autres joueurs en rouge pour le partant
 		Player[] players = getPlayersArray();
 		Player player = oplayer.getPlayer();
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, " §c" + this.getName());
-		for (Player otherP : players) {
+		for (Player otherP : players)
 			nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));
-		}
 		// packets pour mettre les autres joueurs en rouge pour le partant
 		//List<String> names = members.values().stream().map(x -> x.getKey().getName()).collect(Collectors.toList());
 		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.clan, names), player);
 		//NMS.sendPacket(NMS.addPlayersToTeam(manager.enemies, names), player);
 		oplayer.setClan(null);
 	}
-
+	
 	public void removePlayer(OlympaPlayerInformations pinfo, boolean message) {
-		if (message) {
+		if (message)
 			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
-		}
 		Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> member = members.remove(pinfo.getId());
 		// packets pour mettre le joueur partant sans suffix pour tous le monde
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
@@ -191,7 +183,7 @@ public abstract class Clan<T extends Clan<T>> {
 		//List<String> leaver = Arrays.asList(pinfo.getName());
 		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.clan, leaver), players);
 		//NMS.sendPacket(NMS.addPlayersToTeam(manager.enemies, leaver), players);
-
+		
 		ClanPlayerInterface<T> oplayer = member.getValue();
 		if (oplayer == null) { // joueur offline
 			try {
@@ -202,10 +194,10 @@ public abstract class Clan<T extends Clan<T>> {
 			}
 			return;
 		}
-
+		
 		removedOnlinePlayer(oplayer);
 	}
-
+	
 	public void setChief(OlympaPlayerInformations p) {
 		try {
 			PreparedStatement statement = manager.updateClanChiefStatement.getStatement();
@@ -219,7 +211,7 @@ public abstract class Clan<T extends Clan<T>> {
 			broadcast("Une erreur est survenue.");
 		}
 	}
-
+	
 	public void setMaxSize(int maxSize) {
 		try {
 			PreparedStatement statement = manager.updateClanMaxStatement.getStatement();
@@ -232,7 +224,7 @@ public abstract class Clan<T extends Clan<T>> {
 			broadcast("Une erreur est survenue.");
 		}
 	}
-
+	
 	public void setName(String name) {
 		try {
 			PreparedStatement statement = manager.updateClanNameStatement.getStatement();
@@ -253,10 +245,10 @@ public abstract class Clan<T extends Clan<T>> {
 			statement.setDouble(1, money.get());
 			statement.setInt(2, id);
 			statement.executeUpdate();
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 			broadcast("Une erreur est survenue.");
 		}
 	}
-
+	
 }
