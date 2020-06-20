@@ -1,5 +1,8 @@
 package fr.olympa.core.spigot;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
@@ -70,6 +73,12 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(regions = new RegionManager(), this);
 		
 		regions = new RegionManager();
+		try {
+			holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml"));
+		}catch (IOException e) {
+			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
+			e.printStackTrace();
+		}
 
 		Messenger messenger = getServer().getMessenger();
 		messenger.registerOutgoingPluginChannel(this, "BungeeCord");

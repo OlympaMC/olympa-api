@@ -10,4 +10,6 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission CONNECT_SERVERSTATUS_SOON = new OlympaPermission(OlympaGroup.FRIEND);
 	public static final OlympaPermission CONNECT_SERVER_BUILDER = new OlympaPermission(new OlympaGroup[] { OlympaGroup.BUILDER }, OlympaGroup.RESP_TECH);
 
+	public static final OlympaPermission COMMAND_HOLOGRAMS_MANAGE = new OlympaPermission(OlympaGroup.DEV);
+
 }

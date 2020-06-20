@@ -1,15 +1,17 @@
 package fr.olympa.api.lines;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> {
+import fr.olympa.core.spigot.OlympaCore;
 
-	//public static final List<String> ANIMATION = getAnim("play.olympa.fr");
+public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> implements ConfigurationSerializable {
 
 	public static List<String> getAnim(String string, ChatColor normal, ChatColor up) {
 		final List<String> anim = new ArrayList<>();
@@ -24,23 +26,28 @@ public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 		return anim;
 	}
 
-	private List<String> strings;
-	private int status = -1;
+	private final List<String> strings;
+	private final int ticksAmount;
+	private final int ticksBetween;
 
-	public AnimLine(Plugin plugin, List<String> animation, int ticksAmount, int ticksBetween) {
+	private int status = 0;
+
+	public AnimLine(List<String> animation, int ticksAmount, int ticksBetween) {
 		this.strings = animation;
+		this.ticksAmount = ticksAmount;
+		this.ticksBetween = ticksBetween;
 		new BukkitRunnable() {
 			int timeBefore = -1;
 			@Override
 			public void run() {
 				if (--timeBefore > -1) return;
-				if (++status + 2 >= strings.size()) {
+				if (++status >= strings.size()) {
 					status = 0;
 					timeBefore = ticksBetween;
 				}
 				AnimLine.this.updateGlobal();
 			}
-		}.runTaskTimerAsynchronously(plugin, 1, ticksAmount);
+		}.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, ticksAmount);
 	}
 
 	public int getAnimSize() {
@@ -52,8 +59,22 @@ public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 		return strings.get(status);
 	}
 
-	public static AnimLine<?> olympaAnimation(Plugin plugin) {
-		return new AnimLine<>(plugin, getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("strings", strings);
+		map.put("ticksSpeed", ticksAmount);
+		map.put("ticksBetween", ticksBetween);
+		return map;
+	}
+
+	public static AnimLine<?> deserialize(Map<String, Object> map) {
+		return new AnimLine<>((List<String>) map.get("strings"), (int) map.get("ticksSpeed"), (int) map.get("ticksBetween"));
+	}
+
+	@SuppressWarnings ("rawtypes")
+	public static AnimLine olympaAnimation() {
+		return new AnimLine<>(getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
 	}
 
 }

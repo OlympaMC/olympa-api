@@ -85,6 +85,7 @@ public class ItemUtils {
 			String result = getURLContent("https://api.mojang.com/users/profiles/minecraft/" + name);
 			Gson g = new Gson();
 			JsonObject obj = g.fromJson(result, JsonObject.class);
+			if (obj == null || !obj.has("id")) return null;
 			String uid = obj.get("id").toString().replace("\"", "");
 			String signature = getURLContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uid);
 			obj = g.fromJson(signature, JsonObject.class);
@@ -133,14 +134,16 @@ public class ItemUtils {
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
 
-		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-		profile.getProperties().put("textures", new Property("textures", value, null));
-		try {
-			Method setProfile = im.getClass().getDeclaredMethod("setProfile", GameProfile.class);
-			setProfile.setAccessible(true);
-			setProfile.invoke(im, profile);
-		}catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+		if (value != null) {
+			GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+			profile.getProperties().put("textures", new Property("textures", value, null));
+			try {
+				Method setProfile = im.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+				setProfile.setAccessible(true);
+				setProfile.invoke(im, profile);
+			}catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
 		}
 
 		is.setItemMeta(im);

@@ -1,32 +1,46 @@
 package fr.olympa.api.holograms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
 
 import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.LinesHolder;
+import fr.olympa.api.utils.observable.AbstractObservable;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 
-public class Hologram implements LinesHolder<Hologram> {
+public class Hologram extends AbstractObservable implements LinesHolder<Hologram>, ConfigurationSerializable {
 
 	private static final double LINE_SPACING = 0.3;
 
-	public List<Line> lines = new ArrayList<>();
+	private final List<Line> lines = new ArrayList<>();
 	private Location bottom;
 
 	public Hologram(Location bottom, AbstractLine<Hologram>... lines) {
-		this.bottom = bottom;
+		this.bottom = bottom.clone();
+		this.bottom.setPitch(0);
+		this.bottom.setYaw(0);
 
 		for (AbstractLine<Hologram> line : lines) {
 			addLine(line);
 		}
 	}
 
+	public Location getBottom() {
+		return bottom;
+	}
+
 	public void addLine(AbstractLine<Hologram> line) {
-		lines.forEach(x -> x.entity.teleport(x.entity.getLocation().add(0, LINE_SPACING, 0)));
 		lines.add(new Line(line));
+		lines.forEach(Line::updatePosition);
+		update();
 	}
 
 	public void removeLine(AbstractLine<Hologram> line) {
@@ -34,14 +48,18 @@ public class Hologram implements LinesHolder<Hologram> {
 			Line hline = lines.get(i);
 			if (hline.line == line) {
 				hline.destroy();
-				for (int j = 0; j < i; j++) {
-					hline = lines.get(j);
-					hline.entity.teleport(hline.entity.getLocation().subtract(0, LINE_SPACING, 0));
-				}
 				lines.remove(i);
+				lines.forEach(Line::updatePosition);
+				update();
 				break;
 			}
 		}
+	}
+
+	public void removeLine(int index) {
+		lines.remove(index).destroy();
+		lines.forEach(Line::updatePosition);
+		update();
 	}
 
 	@Override
@@ -54,9 +72,36 @@ public class Hologram implements LinesHolder<Hologram> {
 		}
 	}
 
+	public void move(Location newBottom) {
+		this.bottom = newBottom.clone();
+		lines.forEach(Line::updatePosition);
+	}
+
+	@Override
+	public String toString() {
+		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("|"));
+	}
+
 	public void destroy() {
+		clearObservers();
 		lines.forEach(Line::destroy);
 		lines.clear();
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("bottom", SpigotUtils.convertLocationToString(getBottom()));
+		map.put("lines", lines.stream().map(x -> {
+			AbstractLine<Hologram> line = x.line;
+			if (line instanceof ConfigurationSerializable) return line;
+			return new FixedLine<>("§c" + line.getClass().getSimpleName() + " cannot be serialized");
+		}).collect(Collectors.toList()));
+		return map;
+	}
+
+	public static Hologram deserialize(Map<String, Object> map) {
+		return new Hologram(SpigotUtils.convertStringToLocation((String) map.get("bottom")), ((List<AbstractLine<Hologram>>) map.get("lines")).toArray(AbstractLine[]::new));
 	}
 
 	class Line {
@@ -65,7 +110,7 @@ public class Hologram implements LinesHolder<Hologram> {
 
 		public Line(AbstractLine<Hologram> line) {
 			this.line = line;
-			this.entity = bottom.getWorld().spawn(bottom, ArmorStand.class);
+			this.entity = getBottom().getWorld().spawn(getBottom(), ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);
 			entity.setSmall(true);
@@ -73,6 +118,10 @@ public class Hologram implements LinesHolder<Hologram> {
 			entity.setInvulnerable(true);
 			line.addHolder(Hologram.this);
 			updateText();
+		}
+
+		public void updatePosition() {
+			entity.teleport(getBottom().clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0));
 		}
 
 		public void updateText() {
