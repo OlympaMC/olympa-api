@@ -21,8 +21,8 @@ public class ImageMapCommand extends OlympaCommand {
 	public ImageMapCommand(Plugin plugin) {
 		super(plugin, "imagemap", OlympaAPIPermissions.COMMAND_IMAGEMAP, "imap");
 		minArg = 1;
-		addArgs(true, List.of(new CommandArgument("lienDl")));
-		addArgs(true, List.of(new CommandArgument("info"), new CommandArgument("download"), new CommandArgument("true"), new CommandArgument("false"), new CommandArgument("scale")));
+		addCommandArguments(true, List.of(new CommandArgument("lienDl")));
+		addCommandArguments(true, List.of(new CommandArgument("info"), new CommandArgument("download"), new CommandArgument("true"), new CommandArgument("false"), new CommandArgument("scale")));
 	}
 
 	/**

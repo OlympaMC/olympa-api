@@ -59,12 +59,17 @@ public abstract class OlympaCommand {
 		this.alias = Arrays.asList(alias);
 	}
 	
-	public void addArgs(boolean isMandatory, List<CommandArgument> ca) {
+	public void addCommandArguments(boolean isMandatory, List<CommandArgument> ca) {
 		args.put(isMandatory, ca);
 	}
 
+	@Deprecated
+	public void addArgs(boolean isMandatory, List<String> arg) {
+		args.put(isMandatory, arg.stream().map(a -> new CommandArgument(a)).collect(Collectors.toList()));
+	}
+
 	public void addArgs(boolean isMandatory, String... args) {
-		addArgs(isMandatory, Arrays.stream(args).map(a -> new CommandArgument(a)).collect(Collectors.toList()));
+		addCommandArguments(isMandatory, Arrays.stream(args).map(a -> new CommandArgument(a)).collect(Collectors.toList()));
 	}
 	
 	public String buildText(int min, String[] args) {
