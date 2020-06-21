@@ -15,53 +15,53 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ImageDownloadTask implements Runnable {
-	private JavaPlugin plugin;
+	private Plugin plugin;
 	private String filename;
 	private String downloadUrl;
 	private CommandSender sender;
 	private CompletableFuture future;
-
-	ImageDownloadTask(JavaPlugin plugin, String url, String filename, CommandSender sender) {
+	
+	ImageDownloadTask(Plugin plugin, String url, String filename, CommandSender sender) {
 		this.plugin = plugin;
 		this.sender = sender;
-		this.downloadUrl = url;
+		downloadUrl = url;
 		this.filename = filename;
-
-		this.future = CompletableFuture.runAsync(this);
+		
+		future = CompletableFuture.runAsync(this);
 	}
-
+	
 	public void close(Closeable c) {
-		if (c != null) {
+		if (c != null)
 			try {
 				c.close();
 			} catch (IOException ex) {
 			}
-		}
 	}
-
+	
 	public String getResult() {
 		try {
-			return this.future.isDone() ? (String) this.future.get() : null;
+			return future.isDone() ? (String) future.get() : null;
 		} catch (Exception ex) {
 			return "Exception when getting result";
 		}
 	}
-
+	
 	public CommandSender getSender() {
-		return this.sender;
+		return sender;
 	}
-
+	
 	public String getURL() {
-		return this.downloadUrl;
+		return downloadUrl;
 	}
-
+	
 	public boolean isDone() {
-		return this.future.isDone();
+		return future.isDone();
 	}
-
+	
 	@Override
 	public void run() {
 		ReadableByteChannel in = null;
@@ -69,39 +69,39 @@ public class ImageDownloadTask implements Runnable {
 		FileChannel out = null;
 		InputStream is = null;
 		try {
-			URL url = new URL(this.downloadUrl);
+			URL url = new URL(downloadUrl);
 			URLConnection connection = url.openConnection();
 			if (!(connection instanceof HttpURLConnection)) {
-				this.future.complete("Not a http(s) URL");
+				future.complete("Not a http(s) URL");
 				return;
 			}
-
+			
 			int responseCode = ((HttpURLConnection) connection).getResponseCode();
 			if (responseCode != 200) {
-				this.future.complete("HTTP Status " + responseCode);
+				future.complete("HTTP Status " + responseCode);
 				return;
 			}
-
+			
 			String mimeType = ((HttpURLConnection) connection).getHeaderField("Content-type");
 			if (!mimeType.startsWith("image/")) {
-				this.future.complete("That is a " + mimeType + ", not an image");
+				future.complete("That is a " + mimeType + ", not an image");
 				return;
 			}
-
+			
 			in = Channels.newChannel(is = connection.getInputStream());
-			fos = new FileOutputStream(new File(this.plugin.getDataFolder() + "/images", this.filename));
+			fos = new FileOutputStream(new File(plugin.getDataFolder() + "/images", filename));
 			out = fos.getChannel();
 			out.transferFrom(in, 0, Long.MAX_VALUE);
-			this.future.complete("Download to " + this.filename + " finished");
+			future.complete("Download to " + filename + " finished");
 		} catch (MalformedURLException ex) {
-			this.future.complete("URL invalid");
+			future.complete("URL invalid");
 		} catch (IOException ex) {
-			this.future.complete("IO Exception");
+			future.complete("IO Exception");
 		} finally {
-			this.close(out);
-			this.close(in);
-			this.close(is);
-			this.close(fos);
+			close(out);
+			close(in);
+			close(is);
+			close(fos);
 		}
 	}
 }

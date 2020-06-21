@@ -8,6 +8,7 @@ import org.bukkit.plugin.messaging.Messenger;
 
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.command.CommandListener;
+import fr.olympa.api.frame.ImageFrameManager;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.hook.ProtocolAction;
@@ -75,11 +76,10 @@ public class OlympaCore extends OlympaSpigot {
 		regions = new RegionManager();
 		try {
 			holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml"));
-		}catch (IOException e) {
+		} catch (IOException e) {
 			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
 			e.printStackTrace();
 		}
-
 		Messenger messenger = getServer().getMessenger();
 		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
 		new SpigotBPMCEvent().register(this);
@@ -90,6 +90,12 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
+	}
+	
+	@Override
+	public ImageFrameManager getImageFrameManager() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

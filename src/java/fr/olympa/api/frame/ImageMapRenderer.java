@@ -18,8 +18,8 @@ public class ImageMapRenderer extends MapRenderer {
 	}
 
 	public void recalculateInput(BufferedImage input, int x1, int y1, double scale) {
-		int x2 = ImageMaps.MAP_WIDTH;
-		int y2 = ImageMaps.MAP_HEIGHT;
+		int x2 = ImageFrameManager.MAP_WIDTH;
+		int y2 = ImageFrameManager.MAP_HEIGHT;
 
 		if (x1 > input.getWidth() * scale + 0.001 || y1 > input.getHeight() * scale + 0.001) {
 			return;
@@ -35,7 +35,7 @@ public class ImageMapRenderer extends MapRenderer {
 
 		this.image = input.getSubimage((int) (x1 / scale), (int) (y1 / scale), (int) (x2 / scale), (int) (y2 / scale));
 		if (scale != 1.0) {
-			BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType());
+			BufferedImage resized = new BufferedImage(ImageFrameManager.MAP_WIDTH, ImageFrameManager.MAP_HEIGHT, input.getType());
 			AffineTransform at = new AffineTransform();
 			at.scale(scale, scale);
 			AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);

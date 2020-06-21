@@ -6,21 +6,21 @@ import java.util.List;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ImageDownloadCompleteNotifier extends BukkitRunnable {
-
-	private ImageMaps plugin;
-
-	public ImageDownloadCompleteNotifier(ImageMaps plugin) {
-		this.plugin = plugin;
+	
+	private ImageFrameManager manager;
+	
+	public ImageDownloadCompleteNotifier(ImageFrameManager manager) {
+		this.manager = manager;
 	}
-
+	
 	@Override
 	public void run() {
-		List<ImageDownloadTask> tasks = this.plugin.getDownloadTasks();
-
+		List<ImageDownloadTask> tasks = manager.getDownloadTasks();
+		
 		Iterator<ImageDownloadTask> itr = tasks.iterator();
 		while (itr.hasNext()) {
 			ImageDownloadTask task = itr.next();
-
+			
 			if (task.isDone()) {
 				itr.remove();
 				task.getSender().sendMessage("Download " + task.getURL() + ": " + task.getResult());

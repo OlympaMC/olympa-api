@@ -17,55 +17,51 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class FastSendTask extends BukkitRunnable implements Listener {
 	@Deprecated
 	private Map<UUID, Queue<Integer>> status = new HashMap<>();
-	private final ImageMaps plugin;
+	private final ImageFrameManager manager;
 	private final int mapsPerRun;
-
-	public FastSendTask(ImageMaps plugin, int mapsPerSend) {
-		this.plugin = plugin;
-		this.mapsPerRun = mapsPerSend;
+	
+	public FastSendTask(ImageFrameManager manager, int mapsPerSend) {
+		this.manager = manager;
+		mapsPerRun = mapsPerSend;
 	}
-
+	
 	@Deprecated
 	public void addToQueue(int mapId) {
-		for (Queue<Integer> queue : this.status.values()) {
+		for (Queue<Integer> queue : status.values())
 			queue.add(mapId);
-		}
 	}
-
+	
 	private Queue<Integer> getStatus(Player p) {
-		if (!this.status.containsKey(p.getUniqueId())) {
-			this.status.put(p.getUniqueId(), new LinkedList<>(this.plugin.getFastSendList()));
-		}
-
-		return this.status.get(p.getUniqueId());
+		if (!status.containsKey(p.getUniqueId()))
+			status.put(p.getUniqueId(), new LinkedList<>(manager.getFastSendList()));
+		
+		return status.get(p.getUniqueId());
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	@Deprecated
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		this.status.put(e.getPlayer().getUniqueId(), new LinkedList<>(this.plugin.getFastSendList()));
+		status.put(e.getPlayer().getUniqueId(), new LinkedList<>(manager.getFastSendList()));
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	@Deprecated
 	public void onPlayerQuit(PlayerQuitEvent e) {
-		this.status.remove(e.getPlayer().getUniqueId());
+		status.remove(e.getPlayer().getUniqueId());
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void run() {
-		if (this.plugin.getFastSendList().isEmpty()) {
+		if (manager.getFastSendList().isEmpty())
 			return;
-		}
-
-		for (Player p : this.plugin.plugin.getServer().getOnlinePlayers()) {
-			Queue<Integer> state = this.getStatus(p);
-
-			for (int i = 0; i < this.mapsPerRun && !state.isEmpty(); i++) {
-				p.sendMap(this.plugin.plugin.getServer().getMap(state.poll()));
-			}
+		
+		for (Player p : manager.plugin.getServer().getOnlinePlayers()) {
+			Queue<Integer> state = getStatus(p);
+			
+			for (int i = 0; i < mapsPerRun && !state.isEmpty(); i++)
+				p.sendMap(manager.plugin.getServer().getMap(state.poll()));
 		}
 	}
-
+	
 }

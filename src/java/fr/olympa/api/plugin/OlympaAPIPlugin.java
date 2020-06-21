@@ -40,17 +40,15 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 		if (config.hasResource() || config.getFile().exists()) {
 			config.load();
 			config.saveIfNotExists();
-		} else {
+		} else
 			config = null;
-		}
 	}
 
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		for (Player p : Bukkit.getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers())
 			p.kickPlayer("Server closed");
-		}
 	}
 
 	@Override
