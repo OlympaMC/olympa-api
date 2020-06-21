@@ -12,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -32,16 +33,14 @@ public class ReflectCommand extends Command {
 		exe.sender = sender;
 		if (sender instanceof Player) {
 			exe.player = (Player) sender;
-			if (exe.permission != null) {
+			if (exe.permission != null)
 				if (!exe.hasPermission()) {
-					if (exe.getOlympaPlayer() == null) {
+					if (exe.getOlympaPlayer() == null)
 						exe.sendImpossibleWithOlympaPlayer();
-					} else {
+					else
 						exe.sendDoNotHavePermission();
-					}
 					return false;
 				}
-			}
 		} else if (!exe.allowConsole) {
 			exe.sendImpossibleWithConsole();
 			return false;
@@ -50,9 +49,9 @@ public class ReflectCommand extends Command {
 			exe.sendUsage(label);
 			return false;
 		}
-		if (!exe.isAsynchronous) {
+		if (!exe.isAsynchronous)
 			return exe.onCommand(sender, this, label, args);
-		} else {
+		else {
 			OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> exe.onCommand(sender, this, label, args));
 			return true;
 		}
@@ -65,47 +64,45 @@ public class ReflectCommand extends Command {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
 		if (sender instanceof Player) {
-			if (!exe.hasPermission()) {
+			if (!exe.hasPermission())
 				return null;
-			}
 		} else if (!exe.allowConsole) {
 			exe.sendImpossibleWithConsole();
 			return null;
 		}
 		List<String> customResponse = exe.onTabComplete(sender, this, alias, args);
-		if (customResponse != null) {
+		if (customResponse != null)
 			return customResponse;
-		}
 
-		Collection<List<String>> defaultArgs = exe.args.values();
-		if (!defaultArgs.isEmpty()) {
-			Iterator<List<String>> iterator = defaultArgs.iterator();
-			List<String> getArgs = null;
-			List<String> potentialArgs = new ArrayList<>();
-			int i = 0;
-			while (iterator.hasNext()) {
-				getArgs = iterator.next();
-				i++;
-			}
-			if (args.length == i && getArgs != null) {
-				for (String argss : getArgs) {
-					switch (argss.toLowerCase()) {
-					case "joueur":
-						potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
-						break;
-					case "time":
-						potentialArgs.addAll(Arrays.asList("1h", "2h", "4h", "6h", "12h", "1jour", "2jours", "3jours", "1semaine", "2semaines", "1mois", "1an"));
-						break;
-					default:
-						potentialArgs.add(argss);
-						break;
-					}
-				}
-
-				return Utils.startWords(args[i - 1], potentialArgs);
+		Collection<List<CommandArgument>> defaultArgs = exe.args.values();
+		if (defaultArgs.isEmpty())
+			return null;
+		Iterator<List<CommandArgument>> iterator = defaultArgs.iterator();
+		List<CommandArgument> cas = null;
+		List<String> potentialArgs = new ArrayList<>();
+		int i = 0;
+		while (iterator.hasNext() && args.length > i) {
+			cas = iterator.next();
+			i++;
+		}
+		if (args.length != i || cas == null)
+			return null;
+		for (CommandArgument ca : cas) {
+			if (ca.getPermission() != null && !ca.getPermission().hasPermission((OlympaPlayer) exe.getOlympaPlayer()) || !ca.hasRequireArg(args, i))
+				continue;
+			switch (ca.getArgName().toLowerCase()) {
+			case "joueur":
+				potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+				break;
+			case "time":
+				potentialArgs.addAll(Arrays.asList("1h", "2h", "4h", "6h", "12h", "1j", "2j", "3j", "1semaine", "2semaines", "1mois", "1an"));
+				break;
+			default:
+				potentialArgs.add(ca.getArgName());
+				break;
 			}
 		}
-		return null;
+		return Utils.startWords(args[i - 1], potentialArgs);
 	}
 
 }

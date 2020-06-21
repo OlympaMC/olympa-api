@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.command.CommandArgument;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.core.spigot.OlympaCore;
@@ -20,6 +21,8 @@ public class ImageMapCommand extends OlympaCommand {
 	public ImageMapCommand(Plugin plugin) {
 		super(plugin, "imagemap", OlympaAPIPermissions.COMMAND_IMAGEMAP, "imap");
 		minArg = 1;
+		addArgs(true, List.of(new CommandArgument("lienDl")));
+		addArgs(true, List.of(new CommandArgument("info"), new CommandArgument("download"), new CommandArgument("true"), new CommandArgument("false"), new CommandArgument("scale")));
 	}
 
 	/**
