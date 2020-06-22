@@ -83,7 +83,7 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("|"));
 	}
 
-	public void destroy() {
+	void destroy() {
 		clearObservers();
 		lines.forEach(Line::destroy);
 		lines.clear();

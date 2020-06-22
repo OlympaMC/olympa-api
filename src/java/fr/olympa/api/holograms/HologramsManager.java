@@ -47,9 +47,14 @@ public class HologramsManager {
 		holograms.add(hologram);
 	}
 
+	public void deleteHologram(Hologram hologram) {
+		holograms.remove(hologram);
+		hologram.destroy();
+	}
+
 	public int addPersistentHologram(Hologram hologram) {
 		int id = lastID++;
-		holograms.add(hologram);
+		addHologram(hologram);
 		persistentHolograms.put(id, hologram);
 		Observer update = updateHologram(id, hologram);
 		hologram.observe("manager_save", update);
@@ -68,11 +73,10 @@ public class HologramsManager {
 		};
 	}
 
-	public boolean deleteHologram(int id) {
+	public boolean deletePersistentHologram(int id) {
 		Hologram hologram = persistentHolograms.remove(id);
 		if (hologram == null) return false;
-		hologram.destroy();
-		holograms.remove(hologram);
+		deleteHologram(hologram);
 		updateHologram(id, null).changed();
 		return true;
 	}

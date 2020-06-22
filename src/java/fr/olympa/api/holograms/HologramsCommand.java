@@ -43,7 +43,7 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd (player = true, min = 1, args = "INTEGER", syntax = "<id de l'hologramme>")
 	public void remove(CommandContext cmd) {
 		int id = cmd.getArgument(0);
-		if (holograms.deleteHologram(id)) {
+		if (holograms.deletePersistentHologram(id)) {
 			sendSuccess("L'hologramme %d vient d'être supprimé.", id);
 		}else {
 			sendError("Il n'y a aucun hologramme à supprimer avec l'ID %d.", id);

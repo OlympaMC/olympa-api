@@ -8,7 +8,7 @@ public enum OlympaServer {
 	LOBBY("Lobby", true),
 	DEV("Développement"),
 	BUILDEUR("Buildeur"),
-	ZTA("ZTA"),
+	ZTA("Olympa ZTA"),
 	CREATIF("Créatif"),
 	LG("Loup-Garou", true),
 	PVPFAC("PvP-Factions");
