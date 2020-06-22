@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -26,7 +28,7 @@ public class ComplexCommand extends OlympaCommand {
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
 
-	public static class InternalCommand {
+	public class InternalCommand {
 		public Cmd cmd;
 		public OlympaPermission perm;
 		public Method method;
@@ -40,12 +42,51 @@ public class ComplexCommand extends OlympaCommand {
 		}
 	}
 
+	private class ArgumentParser {
+		private Supplier<List<String>> tabArgumentsSupplier;
+		private Function<String, Object> supplyArgumentFunction;
+
+		public ArgumentParser(Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
+			this.tabArgumentsSupplier = tabArgumentsSupplier;
+			this.supplyArgumentFunction = supplyArgumentFunction;
+		}
+	}
+
 	public final Map<String, InternalCommand> commands = new HashMap<>();
+
+	private final Map<String, ArgumentParser> parsers = new HashMap<>();
 
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
 
+		addArgumentParser("PLAYERS", () -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
+			Player result = Bukkit.getPlayerExact(x);
+			if (result == null) sendUnknownPlayer(x);
+			return result;
+		});
+		addArgumentParser("INTEGER", () -> INTEGERS, x -> {
+			try {
+				return Integer.parseInt(x);
+			}catch (NumberFormatException e) {
+				sendError(x + " doit être un nombre entier.");
+			}
+			return null;
+		});
+		addArgumentParser("DOUBLE", () -> Collections.EMPTY_LIST, x -> {
+			try {
+				return Double.parseDouble(x);
+			}catch (NumberFormatException e) {
+				sendError(x + " doit être un nombre décimal.");
+			}
+			return null;
+		});
+		addArgumentParser("BOOLEAN", () -> BOOLEAN, Boolean::parseBoolean);
+		
 		this.registerCommandsClass(this);
+	}
+
+	public void addArgumentParser(String name, Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
+		parsers.put(name, new ArgumentParser(tabArgumentsSupplier, supplyArgumentFunction));
 	}
 
 	public boolean noArguments(CommandSender sender) {
@@ -90,30 +131,13 @@ public class ComplexCommand extends OlympaCommand {
 			String arg = args[i];
 			String type = i > cmd.args().length ? "" : cmd.args()[i - 1];
 			Object result = null;
-			if (type.equals("PLAYERS")) {
-				Player target = Bukkit.getPlayerExact(arg);
-				if (target == null) {
-					this.sendUnknownPlayer(arg);
-					return true;
-				}
-				result = target;
-			}else if (type.equals("DOUBLE")) {
-				try {
-					result = Double.parseDouble(arg);
-				}catch (NumberFormatException e) {
-					sendError(arg + " doit être un nombre à virgule.");
-				}
-			}else if (type.equals("INTEGER")) {
-				try {
-					result = Integer.parseInt(arg);
-				}catch (NumberFormatException e) {
-					sendError(arg + " doit être un nombre.");
-				}
-			}else if (type.equals("BOOLEAN")) {
-				result = Boolean.parseBoolean(arg);
+			ArgumentParser parser = parsers.get(type);
+			if (parser != null) {
+				result = parser.supplyArgumentFunction.apply(arg);
 			} else {
 				result = arg;
 			}
+			if (result == null) return true;
 			argsCmd[i - 1] = result;
 		}
 
@@ -154,17 +178,12 @@ public class ComplexCommand extends OlympaCommand {
 				return tmp;
 			}
 			sel = args[index + 1];
-			String key = needed[index];
-			if (key.equals("PLAYERS")) {
-				return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
-			}else if (key.equals("DOUBLE")) {
-				return Collections.EMPTY_LIST;
-			}else if (key.equals("INTEGER")) {
-				return INTEGERS;
-			}else if (key.equals("BOOLEAN")) {
-				return BOOLEAN;
+			String type = needed[index];
+			ArgumentParser parser = parsers.get(type);
+			if (parser != null) {
+				find.addAll(parser.tabArgumentsSupplier.get());
 			} else {
-				find.addAll(Arrays.asList(key.split("\\|")));
+				find.addAll(Arrays.asList(type.split("\\|")));
 			}
 		} else {
 			return tmp;

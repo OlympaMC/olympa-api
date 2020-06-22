@@ -3,8 +3,8 @@ package fr.olympa.api.server;
 public enum OlympaServer {
 	
 	ALL(null),
-	BUNGEE("Bungee", true),
-	AUTH("Auth", true),
+	BUNGEE("BungeeCord", true),
+	AUTH("Authentification", true),
 	LOBBY("Lobby", true),
 	DEV("Développement"),
 	BUILDEUR("Buildeur"),
