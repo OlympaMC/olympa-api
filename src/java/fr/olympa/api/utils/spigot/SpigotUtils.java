@@ -55,6 +55,7 @@ public class SpigotUtils {
 		int size = (int) (Arrays.stream(inventory.getContents()).filter(item -> item != null).count() + Arrays.stream(inventory.getArmorContents()).filter(item -> item != null).count());
 		inventory.clear();
 		inventory.setArmorContents(new ItemStack[inventory.getArmorContents().length]);
+		//		inventory.setExtraContents(new ItemStack[inventory.getExtraContents().length]);
 		return size;
 	}
 
