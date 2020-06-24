@@ -1,5 +1,7 @@
 package fr.olympa.api.utils;
 
+import java.util.Collection;
+
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
@@ -18,9 +20,8 @@ public enum Prefix {
 	NONE("", null, null);
 
 	static {
-		for (final Prefix prefix : Prefix.values()) {
+		for (final Prefix prefix : Prefix.values())
 			prefix.setPrefix(prefix.toStringWithoutFormat().replaceAll("%serverName", "Olympa").replaceAll("%symbole", "➤"));
-		}
 	}
 
 	String prefix;
@@ -49,9 +50,14 @@ public enum Prefix {
 	public ChatColor getColor2() {
 		return color2;
 	}
-
+	
 	public void sendMessage(CommandSender sender, String msg, Object... args) {
 		sender.sendMessage(formatMessage(msg, args));
+	}
+
+	public void sendMessage(Collection<? extends CommandSender> sender, String msg, Object... args) {
+		String formattedMessage = formatMessage(msg, args);
+		sender.forEach(s -> s.sendMessage(formattedMessage));
 	}
 
 	public String formatMessage(String msg, Object... args) {
