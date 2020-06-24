@@ -1,5 +1,7 @@
 package fr.olympa.api.economy;
 
+import java.text.DecimalFormat;
+
 import fr.olympa.api.utils.observable.AbstractObservable;
 
 public class OlympaMoney extends AbstractObservable {
@@ -7,11 +9,12 @@ public class OlympaMoney extends AbstractObservable {
 	private double money;
 
 	public OlympaMoney(double base) {
-		this.money = base;
+		money = base;
 	}
 
 	public String getFormatted() {
-		return money + "Ω";
+		DecimalFormat df = new DecimalFormat("##.##");
+		return df.format(money) + "Ω";
 	}
 
 	public double get() {
@@ -37,9 +40,8 @@ public class OlympaMoney extends AbstractObservable {
 			this.money -= money;
 			update();
 			return true;
-		}else {
+		} else
 			return false;
-		}
 	}
 
 }
