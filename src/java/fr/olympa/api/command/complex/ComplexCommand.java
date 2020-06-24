@@ -24,16 +24,16 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ComplexCommand extends OlympaCommand {
-	
+
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
-	
+
 	public class InternalCommand {
 		public Cmd cmd;
 		public OlympaPermission perm;
 		public Method method;
 		public Object commands;
-		
+
 		InternalCommand(Cmd cmd, Method method, Object commandsClass) {
 			this.cmd = cmd;
 			perm = OlympaPermission.permissions.get(cmd.permissionName());
@@ -41,32 +41,32 @@ public class ComplexCommand extends OlympaCommand {
 			commands = commandsClass;
 		}
 	}
-	
+
 	private class ArgumentParser {
 		private Supplier<List<String>> tabArgumentsSupplier;
 		private Function<String, Object> supplyArgumentFunction;
-		
+
 		public ArgumentParser(Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
 			this.tabArgumentsSupplier = tabArgumentsSupplier;
 			this.supplyArgumentFunction = supplyArgumentFunction;
 		}
 	}
-	
-	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
 
+	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
+	
 	public InternalCommand getCommand(String argName) {
 		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue()).orElse(null);
 	}
-
+	
 	public boolean containsCommand(String argName) {
 		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()));
 	}
-	
+
 	private final Map<String, ArgumentParser> parsers = new HashMap<>();
-	
+
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
-		
+
 		addArgumentParser("PLAYERS", () -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
 			Player result = Bukkit.getPlayerExact(x);
 			if (result == null)
@@ -90,18 +90,18 @@ public class ComplexCommand extends OlympaCommand {
 			return null;
 		});
 		addArgumentParser("BOOLEAN", () -> BOOLEAN, Boolean::parseBoolean);
-
+		
 		registerCommandsClass(this);
 	}
-	
+
 	public void addArgumentParser(String name, Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
 		parsers.put(name, new ArgumentParser(tabArgumentsSupplier, supplyArgumentFunction));
 	}
-	
+
 	public boolean noArguments(CommandSender sender) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
@@ -109,24 +109,24 @@ public class ComplexCommand extends OlympaCommand {
 				this.sendIncorrectSyntax();
 			return true;
 		}
-		
+
 		InternalCommand internal = getCommand(args[0]);
 		if (internal == null) {
 			sendError("La commande n'existe pas.");
 			return true;
 		}
-		
+
 		Cmd cmd = internal.cmd;
 		if (cmd.player() && !(sender instanceof Player)) {
 			sendImpossibleWithConsole();
 			return true;
 		}
-		
+
 		if (!cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender)) {
 			sendDoNotHavePermission();
 			return true;
 		}
-		
+
 		if (args.length - 1 < cmd.min()) {
 			if ("".equals(cmd.syntax()))
 				this.sendIncorrectSyntax();
@@ -134,7 +134,7 @@ public class ComplexCommand extends OlympaCommand {
 				this.sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());
 			return true;
 		}
-		
+
 		Object[] argsCmd = new Object[args.length - 1];
 		for (int i = 1; i < args.length; i++) {
 			String arg = args[i];
@@ -149,23 +149,23 @@ public class ComplexCommand extends OlympaCommand {
 				return true;
 			argsCmd[i - 1] = result;
 		}
-		
+
 		try {
 			internal.method.invoke(internal.commands, new CommandContext(this, argsCmd, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		List<String> tmp = new ArrayList<>();
 		List<String> find = new ArrayList<>();
 		String sel = args[0];
-		
+
 		if (args.length == 1)
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
 				String perm = en.getValue().cmd.permissionName();
@@ -191,13 +191,13 @@ public class ComplexCommand extends OlympaCommand {
 				find.addAll(Arrays.asList(type.split("\\|")));
 		} else
 			return tmp;
-		
+
 		for (String arg : find)
-			if (arg.startsWith(sel))
+			if (arg.toLowerCase().startsWith(sel.toLowerCase()))
 				tmp.add(arg);
 		return tmp;
 	}
-	
+
 	/**
 	 * Register all available commands from an instance of a Class
 	 * @param commandsClassInstance Instance of the Class
@@ -219,5 +219,5 @@ public class ComplexCommand extends OlympaCommand {
 						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + commandsClassInstance.getClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}
 	}
-	
+
 }
