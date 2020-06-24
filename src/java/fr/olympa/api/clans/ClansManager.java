@@ -57,7 +57,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	//	public ScoreboardTeam clan;
 	
 	//	public ScoreboardTeam allies;
-	private Map<Integer, T> clans = new HashMap<>();
+	protected Map<Integer, T> clans = new HashMap<>();
 	private Map<Player, ObservableList<T>> invitations = new HashMap<>();
 	public int defaultMaxSize;
 	private final OlympaStatement createClanStatement;
