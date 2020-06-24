@@ -6,6 +6,9 @@ import fr.olympa.api.utils.observable.AbstractObservable;
 
 public class OlympaMoney extends AbstractObservable {
 
+	public static final String OMEGA = "Ω";
+	public static final DecimalFormat FORMAT = new DecimalFormat("0.##");
+
 	private double money;
 
 	public OlympaMoney(double base) {
@@ -13,8 +16,7 @@ public class OlympaMoney extends AbstractObservable {
 	}
 
 	public String getFormatted() {
-		DecimalFormat df = new DecimalFormat("##.##");
-		return df.format(money) + "Ω";
+		return format(money);
 	}
 
 	public double get() {
@@ -42,6 +44,10 @@ public class OlympaMoney extends AbstractObservable {
 			return true;
 		} else
 			return false;
+	}
+
+	public static String format(double amount) {
+		return FORMAT.format(amount) + OMEGA;
 	}
 
 }
