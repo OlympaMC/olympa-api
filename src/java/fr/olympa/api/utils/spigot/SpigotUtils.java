@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
@@ -35,6 +36,16 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SpigotUtils {
 
+	private static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
+	private static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+
+	public static BlockFace yawToFace(float yaw, boolean useSubCardinalDirections) {
+		if (useSubCardinalDirections)
+			return radial[Math.round(yaw / 45f) & 0x7].getOppositeFace();
+
+		return axis[Math.round(yaw / 90f) & 0x3].getOppositeFace();
+	}
+
 	public static Location addYToLocation(Location location, float y) {
 		return new Location(location.getWorld(), location.getX(), location.getY() + 1, location.getZ(), location.getYaw(), location.getPitch());
 	}
@@ -54,9 +65,8 @@ public class SpigotUtils {
 		new File(worldDir, "playerdata/" + playerUuid + ".dat").delete();
 		new File(worldDir, "advancements/" + playerUuid + ".json").delete();
 		File stats = new File(worldDir, "stats/" + playerUuid + ".json");
-		if (stats.exists()) {
+		if (stats.exists())
 			stats.delete();
-		}
 	}
 
 	public static String connectScreen(String s) {
@@ -99,13 +109,10 @@ public class SpigotUtils {
 
 	public static List<Location> getBlockAround(Location location, int raduis) {
 		List<Location> locations = new ArrayList<>();
-		for (int x = raduis; x >= -raduis; x--) {
-			for (int y = raduis; y >= -raduis; y--) {
-				for (int z = raduis; z >= -raduis; z--) {
+		for (int x = raduis; x >= -raduis; x--)
+			for (int y = raduis; y >= -raduis; y--)
+				for (int z = raduis; z >= -raduis; z--)
 					locations.add(location.getBlock().getRelative(x, y, z).getLocation());
-				}
-			}
-		}
 		return locations;
 	}
 
@@ -122,50 +129,41 @@ public class SpigotUtils {
 	public static Location getFirstBlockUnderPlayer(Player player) {
 		Location location = player.getLocation();
 		do {
-			if (location.getBlockY() == 0) {
+			if (location.getBlockY() == 0)
 				return null;
-			}
 			location = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
 		} while (!location.getBlock().getType().isOccluding());
 		return location;
 	}
 
 	public static ChatColor getIntervalChatColor(int i, int min, int max) {
-		if (i == 0) {
+		if (i == 0)
 			return ChatColor.GRAY;
-		}
-		if (i < min) {
+		if (i < min)
 			return ChatColor.GREEN;
-		}
-		if (i < max) {
+		if (i < max)
 			return ChatColor.GOLD;
-		}
 		return ChatColor.RED;
 	}
 
 	public static short getIntervalGlassPaneColor(int i, int min, int max) {
-		if (i == 0) {
+		if (i == 0)
 			return 0;
-		}
-		if (i < min) {
+		if (i < min)
 			return 5;
-		}
-		if (i < max) {
+		if (i < max)
 			return 1;
-		}
 		return 14;
 	}
 
 	public static String getName(UUID playerUniqueId) {
 		Player player = Bukkit.getPlayer(playerUniqueId);
-		if (player != null) {
+		if (player != null)
 			return player.getName();
-		}
 		try {
 			OlympaPlayer olympaPlayer = new AccountProvider(playerUniqueId).get();
-			if (olympaPlayer != null) {
+			if (olympaPlayer != null)
 				return olympaPlayer.getName();
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -174,13 +172,11 @@ public class SpigotUtils {
 
 	public static Player getNearestPlayer(Player checkNear) {
 		Player nearest = null;
-		for (Player p : checkNear.getWorld().getPlayers()) {
-			if (nearest == null) {
+		for (Player p : checkNear.getWorld().getPlayers())
+			if (nearest == null)
 				nearest = p;
-			} else if (p.getLocation().distance(checkNear.getLocation()) < nearest.getLocation().distance(checkNear.getLocation())) {
+			else if (p.getLocation().distance(checkNear.getLocation()) < nearest.getLocation().distance(checkNear.getLocation()))
 				nearest = p;
-			}
-		}
 		return nearest;
 	}
 
@@ -188,30 +184,24 @@ public class SpigotUtils {
 		Inventory inventory2 = Bukkit.createInventory(null, inventory.getSize());
 		inventory2.setContents(inventory.getContents());
 		int amount1 = 0;
-		for (ItemStack item : inventory2.getContents()) {
-			if (item != null) {
+		for (ItemStack item : inventory2.getContents())
+			if (item != null)
 				amount1 += item.getAmount();
-			}
-		}
 
 		int amount2 = 0;
-		for (ItemStack item : items) {
+		for (ItemStack item : items)
 			amount2 += item.getAmount();
-		}
 
 		int amount3 = amount1 + amount2;
 		inventory2.addItem(items);
 
 		int amount4 = 0;
-		for (ItemStack item : inventory2.getContents()) {
-			if (item != null) {
+		for (ItemStack item : inventory2.getContents())
+			if (item != null)
 				amount4 += item.getAmount();
-			}
-		}
 
-		if (amount4 == amount3) {
+		if (amount4 == amount3)
 			return true;
-		}
 
 		return false;
 	}
@@ -237,16 +227,18 @@ public class SpigotUtils {
 	private static char[] arrows = new char[] { '↑', '↗', '↗', '→', '→', '↘', '↘', '↓', '↓', '↙', '↙', '←', '←', '↖', '↖', '↑' };
 	private static final double piOver16 = Math.PI / 16D;
 	private static final double pi2 = Math.PI * 2;
+
 	public static char getDirectionToLocation(Player player, Location target) {
-		if (player.getWorld() != target.getWorld()) return 'x';
+		if (player.getWorld() != target.getWorld())
+			return 'x';
 		Location source = player.getLocation();
 		Vector inBetween = target.clone().subtract(source).toVector();
 		Vector lookVec = source.getDirection();
 
-		double angleDir = (Math.atan2(inBetween.getZ(), inBetween.getX()));
-		double angleLook = (Math.atan2(lookVec.getZ(), lookVec.getX()));
+		double angleDir = Math.atan2(inBetween.getZ(), inBetween.getX());
+		double angleLook = Math.atan2(lookVec.getZ(), lookVec.getX());
 
-		double angle = ((angleDir - angleLook + pi2) % pi2) / 2;
+		double angle = (angleDir - angleLook + pi2) % pi2 / 2;
 		return arrows[(int) Math.floor(angle / piOver16)];
 	}
 
@@ -272,27 +264,28 @@ public class SpigotUtils {
 
 	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
 		for (ItemStack item : inv.getContents()) {
-			if (item == null) continue;
+			if (item == null)
+				continue;
 			if (item.isSimilar(i)) {
-				if (item.getAmount() == amount) {
+				if (item.getAmount() == amount)
 					return true;
-				}
-				if (item.getAmount() > amount) {
+				if (item.getAmount() > amount)
 					return true;
-				}else if (item.getAmount() < amount) {
+				else if (item.getAmount() < amount)
 					amount -= item.getAmount();
-				}
 			}
 		}
 		return false;
 	}
 
 	public static boolean removeItems(Inventory inv, ItemStack i) {
-		if (i.getAmount() <= 0) throw new IllegalArgumentException("Item cannot have a negative or zero amount");
+		if (i.getAmount() <= 0)
+			throw new IllegalArgumentException("Item cannot have a negative or zero amount");
 		ItemStack[] items = inv.getContents();
 		for (int slot = 0; slot < items.length; slot++) {
 			ItemStack item = items[slot];
-			if (item == null) continue;
+			if (item == null)
+				continue;
 			if (item.isSimilar(i)) {
 				if (item.getAmount() == i.getAmount()) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
@@ -301,7 +294,7 @@ public class SpigotUtils {
 				if (item.getAmount() > i.getAmount()) {
 					item.setAmount(item.getAmount() - i.getAmount());
 					return true;
-				}else if (item.getAmount() < i.getAmount()) {
+				} else if (item.getAmount() < i.getAmount()) {
 					i.setAmount(i.getAmount() - item.getAmount());
 					inv.setItem(slot, new ItemStack(Material.AIR));
 				}
@@ -313,7 +306,8 @@ public class SpigotUtils {
 	public static int getItemAmount(Inventory inv, ItemStack i) {
 		int amount = 0;
 		for (ItemStack is : inv.getContents()) {
-			if (is == null) continue;
+			if (is == null)
+				continue;
 			if (is.isSimilar(i)) {
 				amount += is.getAmount();
 				continue;
@@ -324,7 +318,8 @@ public class SpigotUtils {
 
 	public static void giveItems(Player p, ItemStack... items) {
 		HashMap<Integer, ItemStack> leftover = p.getInventory().addItem(items);
-		if (leftover.isEmpty()) return;
+		if (leftover.isEmpty())
+			return;
 		leftover.forEach((i, item) -> p.getWorld().dropItem(p.getLocation(), item));
 		Prefix.DEFAULT.sendMessage(p, "Tes items ont été jetés au sol car tu n'as plus de place dans ton inventaire !");
 	}
