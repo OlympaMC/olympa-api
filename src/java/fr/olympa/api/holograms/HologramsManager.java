@@ -27,6 +27,7 @@ public class HologramsManager {
 	public HologramsManager(File hologramsFile) throws IOException {
 		this.hologramsFile = hologramsFile;
 
+		hologramsFile.getParentFile().mkdirs();
 		hologramsFile.createNewFile();
 		hologramsYaml = YamlConfiguration.loadConfiguration(hologramsFile);
 

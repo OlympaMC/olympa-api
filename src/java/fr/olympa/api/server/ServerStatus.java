@@ -72,4 +72,8 @@ public enum ServerStatus {
 	public OlympaPermission getPermission() {
 		return permission;
 	}
+	
+	public boolean canConnect() {
+		return this == CLOSE || this == UNKNOWN;
+	}
 }
