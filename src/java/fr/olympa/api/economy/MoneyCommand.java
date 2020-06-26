@@ -17,7 +17,7 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 		super(plugin, cmd, description, globalPermission, alias);
 		this.getOtherMoneyPermission = getOtherMoneyPermission;
 		for (String internal : new String[] {"set", "give", "withdraw"}) {
-			super.commands.get(internal).perm = manageMoneyPermission;
+			super.getCommand(internal).perm = manageMoneyPermission;
 		}
 	}
 

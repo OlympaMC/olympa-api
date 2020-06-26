@@ -2,7 +2,6 @@ package fr.olympa.api.clans.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -12,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.clans.Clan;
+import fr.olympa.api.clans.ClanPlayerData;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.editor.TextEditor;
@@ -65,8 +65,8 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		inv.setItem(slotLeave(), isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(slotDisband(), disband);
 
-		for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> entry : clan.getMembers()) {
-			OlympaPlayerInformations member = entry.getKey();
+		for (ClanPlayerData<T> entry : clan.getMembers()) {
+			OlympaPlayerInformations member = entry.getPlayerInformations();
 			int slot = slotPlayerFirst() + playersOrder.size();
 			Consumer<ItemStack> callback = item -> inv.setItem(slot, item);
 			if (isChief) {

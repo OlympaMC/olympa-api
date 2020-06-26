@@ -3,7 +3,6 @@ package fr.olympa.api.clans;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -133,9 +132,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName);
 		while (resultSet.next())
 			try {
-				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getLong("chief"), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
+				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), AccountProvider.getPlayerInformations(resultSet.getLong("chief")), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
 				for (OlympaPlayerInformations pinfo : getPlayersInClan(clan))
-					clan.members.put(pinfo.getId(), new AbstractMap.SimpleEntry<>(pinfo, null));
+					clan.members.put(pinfo, createClanData(pinfo));
 				clans.put(clan.getID(), clan);
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -165,15 +164,19 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		resultSet.next();
 		int id = resultSet.getInt(1);
 		resultSet.close();
-		T clan = createClan(id, name, p.getId(), defaultMaxSize);
+		T clan = createClan(id, name, p.getInformation(), defaultMaxSize);
 		clans.put(id, clan);
 		clan.addPlayer(p);
 		return clan;
 	}
 	
-	protected abstract T createClan(int id, String name, long chief, int maxSize);
+	protected abstract T createClan(int id, String name, OlympaPlayerInformations chief, int maxSize);
 	
-	protected abstract T provideClan(int id, String name, long chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
+	protected abstract T provideClan(int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
+	
+	protected ClanPlayerData<T> createClanData(OlympaPlayerInformations informations) {
+		return new ClanPlayerData<>(informations);
+	}
 	
 	public ClanManagementGUI<T> provideManagementGUI(ClanPlayerInterface<T> player) {
 		return new ClanManagementGUI<>(player, this, 2);
@@ -284,11 +287,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		for (Entry<Integer, T> entry : this.getClans()) {
 			T clan = entry.getValue();
 			String clanName = entry.getValue().getName();
-			Collection<Entry<OlympaPlayerInformations, ClanPlayerInterface<T>>> members = clan.getMembers();
-			ChatColor chatColor = members.stream().anyMatch(e -> e.getKey().getUUID().equals(p.getUniqueId())) ? ChatColor.GREEN : ChatColor.RED;
+			Collection<ClanPlayerData<T>> members = clan.getMembers();
+			ChatColor chatColor = members.stream().anyMatch(e -> e.getPlayerInformations().getUUID().equals(p.getUniqueId())) ? ChatColor.GREEN : ChatColor.RED;
 			Nametag nameTag = new Nametag(null, " " + chatColor + clanName);
-			for (Entry<OlympaPlayerInformations, ClanPlayerInterface<T>> m : members)
-				nameTagApi.updateFakeNameTag(m.getKey().getName(), nameTag, Arrays.asList(p));
+			for (ClanPlayerData<T> m : members) nameTagApi.updateFakeNameTag(m.getPlayerInformations().getName(), nameTag, Arrays.asList(p));
 		}
 	}
 	
