@@ -98,7 +98,7 @@ public class RegionManager implements Listener {
 		TrackedRegion region = new TrackedRegion(new WorldRegion(world), world.getName() + "_global", EventPriority.LOWEST);
 		worldRegions.put(world, region);
 		trackedRegions.put(region.getID(), region);
-		OlympaCore.getInstance().getLogger().info("Registered global region for world " + world.getName());
+		OlympaCore.getInstance().sendMessage("Région globale enregistrée pour le monde §e" + world.getName());
 		Bukkit.getPluginManager().callEvent(new WorldTrackingEvent(world, region));
 	}
 
@@ -106,7 +106,7 @@ public class RegionManager implements Listener {
 		TrackedRegion region = worldRegions.remove(world);
 		if (region == null) return;
 		unregisterRegion(region.getID());
-		OlympaCore.getInstance().getLogger().info("Unregistered global region for world " + world.getName());
+		OlympaCore.getInstance().sendMessage("Région globale supprimée pour le monde §e" + world.getName());
 	}
 
 	public boolean isIn(Player p, String id) {

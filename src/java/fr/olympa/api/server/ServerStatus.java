@@ -74,6 +74,6 @@ public enum ServerStatus {
 	}
 	
 	public boolean canConnect() {
-		return this == CLOSE || this == UNKNOWN;
+		return this != CLOSE && this != UNKNOWN;
 	}
 }

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -90,6 +91,11 @@ public class ComplexCommand extends OlympaCommand {
 			return null;
 		});
 		addArgumentParser("BOOLEAN", () -> BOOLEAN, Boolean::parseBoolean);
+		addArgumentParser("WORLD", () -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
+			World result = Bukkit.getWorld(x);
+			if (result == null) sendError("Le monde %s n'existe pas.", x);
+			return result;
+		});
 		
 		registerCommandsClass(this);
 	}

@@ -3,20 +3,26 @@ package fr.olympa.api.holograms;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import fr.olympa.api.utils.observable.Observable.Observer;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class HologramsManager {
 
-	private List<Hologram> holograms = new ArrayList<>();
+	public static NamespacedKey HOLOGRAM = new NamespacedKey(OlympaCore.getInstance(), "hologram");
+	
+	private Map<Integer, Hologram> holograms = new HashMap<>();
+	private int lastInternalID = 0;
 
 	private BiMap<Integer, Hologram> persistentHolograms = HashBiMap.create();
 	private int lastID = 0;
@@ -35,7 +41,6 @@ public class HologramsManager {
 			int id = Integer.parseInt(key);
 			lastID = Math.max(id + 1, lastID);
 			Hologram hologram = (Hologram) hologramsYaml.get(key);
-			holograms.add(hologram);
 			persistentHolograms.put(id, hologram);
 			Observer update = updateHologram(id, hologram);
 			hologram.observe("manager_save", update);
@@ -44,13 +49,18 @@ public class HologramsManager {
 		new HologramsCommand(this).register();
 	}
 
-	public void addHologram(Hologram hologram) {
-		holograms.add(hologram);
+	int addHologram(Hologram hologram) {
+		int id = lastInternalID++;
+		holograms.put(id, hologram);
+		return id;
 	}
 
-	public void deleteHologram(Hologram hologram) {
-		holograms.remove(hologram);
-		hologram.destroy();
+	Hologram getHologram(int id) {
+		return holograms.get(id);
+	}
+	
+	void deleteHologram(Hologram hologram) {
+		holograms.remove(hologram.internalID);
 	}
 
 	public int addPersistentHologram(Hologram hologram) {
@@ -82,7 +92,7 @@ public class HologramsManager {
 		return true;
 	}
 
-	public Hologram getHologram(int id) {
+	public Hologram getPersistentHologram(int id) {
 		return persistentHolograms.get(id);
 	}
 
@@ -91,8 +101,7 @@ public class HologramsManager {
 	}
 
 	public void unload() {
-		holograms.forEach(Hologram::destroy);
-		holograms.clear();
+		new ArrayList<>(holograms.values()).forEach(Hologram::remove);
 	}
 
 }

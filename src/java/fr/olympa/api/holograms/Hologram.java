@@ -9,12 +9,14 @@ import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class Hologram extends AbstractObservable implements LinesHolder<Hologram>, ConfigurationSerializable {
 
@@ -23,6 +25,8 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 	private final List<Line> lines = new ArrayList<>();
 	private Location bottom;
 
+	final int internalID;
+	
 	public Hologram(Location bottom, AbstractLine<Hologram>... lines) {
 		this.bottom = bottom.clone();
 		this.bottom.setPitch(0);
@@ -31,10 +35,19 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 		for (AbstractLine<Hologram> line : lines) {
 			addLine(line);
 		}
+		
+		internalID = OlympaCore.getInstance().getHologramsManager().addHologram(this);
 	}
 
 	public Location getBottom() {
 		return bottom;
+	}
+	
+	public boolean containsArmorStand(ArmorStand stand) {
+		for (Line line : lines) {
+			if (line.entity.equals(stand)) return true;
+		}
+		return false;
 	}
 
 	public void addLine(AbstractLine<Hologram> line) {
@@ -83,7 +96,8 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("|"));
 	}
 
-	void destroy() {
+	public void remove() {
+		OlympaCore.getInstance().getHologramsManager().deleteHologram(this);
 		clearObservers();
 		lines.forEach(Line::destroy);
 		lines.clear();
@@ -117,6 +131,7 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 			entity.setSmall(true);
 			entity.setVisible(false);
 			entity.setInvulnerable(true);
+			entity.getPersistentDataContainer().set(HologramsManager.HOLOGRAM, PersistentDataType.INTEGER, internalID);
 			line.addHolder(Hologram.this);
 			updateText();
 		}

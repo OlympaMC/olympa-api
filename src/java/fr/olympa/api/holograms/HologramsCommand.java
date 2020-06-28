@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
+import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.persistence.PersistentDataType;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -84,6 +88,23 @@ public class HologramsCommand extends ComplexCommand {
 		}catch (IndexOutOfBoundsException ex) {
 			sendError("Il n'y a pas de ligne avec cet ID.");
 		}
+	}
+	
+	@Cmd (min = 1, args = "WORLD", syntax = "<world>")
+	public void clearUnattachedHolograms(CommandContext cmd) {
+		World world = cmd.getArgument(0);
+		int removed = 0, kept = 0;
+		for (ArmorStand armorStand : world.getEntitiesByClass(ArmorStand.class)) {
+			if (armorStand.getPersistentDataContainer().has(HologramsManager.HOLOGRAM, PersistentDataType.INTEGER)) {
+				int id = armorStand.getPersistentDataContainer().get(HologramsManager.HOLOGRAM, PersistentDataType.INTEGER);
+				Hologram hologram = holograms.getHologram(id);
+				if (!hologram.containsArmorStand(armorStand)) {
+					armorStand.remove();
+					removed++;
+				}else kept++;
+			}
+		}
+		sendSuccess("%d hologrammes supprimés, %d hologrammes gardés.", removed, kept);
 	}
 
 	private Hologram getHologram(int id) {
