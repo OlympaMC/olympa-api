@@ -12,7 +12,7 @@ public class Matcher {
 	private static Pattern matchHour = Pattern.compile("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}");
 	private static Pattern matchInt = Pattern.compile("^-?\\d+$");
 	private static Pattern matchIp = Pattern.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}$");
-	private static Pattern matchUsername = Pattern.compile("(?iu)^[a-z0-9_-]{3,16}$");
+	private static Pattern matchUsername = Pattern.compile("(?iu)^[\\w_]{3,16}$");
 	private static Pattern matchUuid = Pattern.compile("^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$");
 	private static Pattern matchEmail = Pattern.compile("^(.+)@(.+)\\.(.+)$");
 	private static Pattern matchTagDiscord = Pattern.compile(".*#[0-9]{4}");
