@@ -12,48 +12,44 @@ import org.bukkit.event.server.ServerCommandEvent;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class CommandListener implements Listener {
-
+	
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		String[] message = event.getMessage().substring(1).split(" ");
-
+		
 		String command = message[0].toLowerCase();
-		OlympaCommand cmd = OlympaCommand.commandPreProcess.get(command);
-		if (cmd == null) {
+		OlympaCommand cmd = OlympaCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(entry -> entry.getValue()).findFirst().orElse(null);
+		if (cmd == null)
 			return;
-		}
 		event.setCancelled(true);
 		sendcommand(cmd, message, event.getPlayer());
 	}
-
+	
 	@EventHandler
 	public void onServerCommand(ServerCommandEvent event) {
 		String[] message = event.getCommand().split(" ");
-
+		
 		String command = message[0].toLowerCase();
-		OlympaCommand cmd = OlympaCommand.commandPreProcess.get(command);
-		if (cmd == null) {
+		OlympaCommand cmd = OlympaCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(entry -> entry.getValue()).findFirst().orElse(null);
+		if (cmd == null)
 			return;
-		}
 		event.setCancelled(true);
 		sendcommand(cmd, message, event.getSender());
 	}
-
+	
 	private void sendcommand(OlympaCommand exe, String[] args, CommandSender sender) {
 		String label = args[0];
 		exe.sender = sender;
 		if (sender instanceof Player) {
 			exe.player = (Player) sender;
-			if (exe.permission != null) {
+			if (exe.permission != null)
 				if (!exe.hasPermission()) {
-					if (exe.getOlympaPlayer() == null) {
+					if (exe.getOlympaPlayer() == null)
 						exe.sendImpossibleWithOlympaPlayer();
-					} else {
+					else
 						exe.sendDoNotHavePermission();
-					}
 					return;
 				}
-			}
 		} else if (!exe.allowConsole) {
 			exe.sendImpossibleWithConsole();
 			return;
@@ -62,10 +58,9 @@ public class CommandListener implements Listener {
 			exe.sendUsage(args[0]);
 			return;
 		}
-		if (!exe.isAsynchronous) {
+		if (!exe.isAsynchronous)
 			exe.onCommand(sender, null, label, Arrays.copyOfRange(args, 1, args.length));
-		} else {
+		else
 			OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> exe.onCommand(sender, null, label, args));
-		}
 	}
 }
