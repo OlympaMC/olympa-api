@@ -1,6 +1,7 @@
 package fr.olympa.api.command;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,7 +24,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaCommand {
 	
-	protected static Map<String, OlympaCommand> commandPreProcess = new HashMap<>();
+	protected static Map<List<String>, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
 	protected Plugin plugin;
 	protected List<String> aliases;
@@ -154,7 +155,10 @@ public abstract class OlympaCommand {
 	
 	public void registerPreProcess() {
 		build();
-		commandPreProcess.put(command, this);
+		List<String> commands = new ArrayList<>();
+		commands.add(command);
+		commands.addAll(aliases);
+		commandPreProcess.put(commands, this);
 	}
 	
 	public void sendDoNotHavePermission() {
