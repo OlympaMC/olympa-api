@@ -23,6 +23,8 @@ public interface OlympaCoreInterface {
 	
 	String getServerName();
 	
+	boolean isServerName(String serverName);
+	
 	ServerStatus getStatus();
 	
 	void setServerName(String serverName);
