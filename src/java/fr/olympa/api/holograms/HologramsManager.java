@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -35,16 +36,19 @@ public class HologramsManager {
 
 		hologramsFile.getParentFile().mkdirs();
 		hologramsFile.createNewFile();
-		hologramsYaml = YamlConfiguration.loadConfiguration(hologramsFile);
+		
+		Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> {
+			hologramsYaml = YamlConfiguration.loadConfiguration(hologramsFile);
 
-		for (String key : hologramsYaml.getKeys(false)) {
-			int id = Integer.parseInt(key);
-			lastID = Math.max(id + 1, lastID);
-			Hologram hologram = (Hologram) hologramsYaml.get(key);
-			persistentHolograms.put(id, hologram);
-			Observer update = updateHologram(id, hologram);
-			hologram.observe("manager_save", update);
-		}
+			for (String key : hologramsYaml.getKeys(false)) {
+				int id = Integer.parseInt(key);
+				lastID = Math.max(id + 1, lastID);
+				Hologram hologram = (Hologram) hologramsYaml.get(key);
+				persistentHolograms.put(id, hologram);
+				Observer update = updateHologram(id, hologram);
+				hologram.observe("manager_save", update);
+			}
+		});
 
 		new HologramsCommand(this).register();
 	}

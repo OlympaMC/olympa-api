@@ -93,7 +93,7 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 
 	@Override
 	public String toString() {
-		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("|"));
+		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("§7§l | "));
 	}
 
 	public void remove() {

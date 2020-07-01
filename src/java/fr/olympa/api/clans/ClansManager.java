@@ -117,7 +117,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		createClanStatement = new OlympaStatement("INSERT INTO " + tableName + " (`name`, `chief`) VALUES (?, ?)", true);
 		removeClanStatement = new OlympaStatement("DELETE FROM " + tableName + " WHERE (`id` = ?)");
 		getPlayersInClanStatement = new OlympaStatement("SELECT `player_id` FROM " + AccountProvider.getPlayerProviderTableName() + " WHERE (`clan` = ?)");
-		removeOfflinePlayerInClanStatement = new OlympaStatement("UPDATE " + AccountProvider.getPlayerProviderTableName() + " SET `clan` = NULL WHERE (`player_id` = ?)");
+		removeOfflinePlayerInClanStatement = new OlympaStatement("UPDATE " + AccountProvider.getPlayerProviderTableName() + " SET `clan` = -1 WHERE (`player_id` = ?)");
 		updateClanNameStatement = new OlympaStatement("UPDATE " + tableName + " SET `name` = ? WHERE (`id` = ?)");
 		updateClanChiefStatement = new OlympaStatement("UPDATE " + tableName + " SET `chief` = ? WHERE (`id` = ?)");
 		updateClanMaxStatement = new OlympaStatement("UPDATE " + tableName + " SET `max_size` = ? WHERE (`id` = ?)");
