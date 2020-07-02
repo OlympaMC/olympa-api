@@ -9,7 +9,7 @@ public class DropFlag extends AbstractProtectionFlag {
 	}
 
 	public void dropEvent(PlayerDropItemEvent event) {
-		handleCancellable(event);
+		handleCancellable(event, event.getPlayer());
 	}
 
 }

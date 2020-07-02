@@ -1,5 +1,6 @@
 package fr.olympa.api.region.tracking.flags;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class FoodFlag extends AbstractProtectionFlag {
@@ -9,7 +10,7 @@ public class FoodFlag extends AbstractProtectionFlag {
 	}
 
 	public void foodEvent(FoodLevelChangeEvent event) {
-		handleCancellable(event);
+		handleCancellable(event, (Player) event.getEntity());
 	}
 
 }

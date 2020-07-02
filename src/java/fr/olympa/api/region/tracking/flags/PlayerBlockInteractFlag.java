@@ -25,8 +25,8 @@ public class PlayerBlockInteractFlag extends AbstractProtectionFlag {
 
 	public void interactEvent(PlayerInteractEvent event) {
 		if (handleBlocksInventory) {
-			handleCancellable(event, inventoryBlocks.contains(event.getClickedBlock().getType()) ? blockInventoryProtected : false);
-		}else handleCancellable(event);
+			handleCancellable(event, event.getPlayer(), inventoryBlocks.contains(event.getClickedBlock().getType()) ? blockInventoryProtected : false);
+		}else handleCancellable(event, event.getPlayer());
 	}
 
 }
