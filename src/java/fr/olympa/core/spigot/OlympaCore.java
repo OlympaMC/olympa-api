@@ -34,7 +34,7 @@ public class OlympaCore extends OlympaSpigot {
 
 	private HologramsManager holograms;
 	private RegionManager regions;
-	
+
 	@Override
 	public ProtocolAction getProtocolSupport() {
 		return null;
@@ -49,12 +49,12 @@ public class OlympaCore extends OlympaSpigot {
 	public RegionManager getRegionManager() {
 		return regions;
 	}
-	
+
 	@Override
 	public HologramsManager getHologramsManager() {
 		return holograms;
 	}
-	
+
 	@Override
 	public void onDisable() {
 		holograms.unload();
@@ -66,7 +66,7 @@ public class OlympaCore extends OlympaSpigot {
 		instance = this;
 
 		OlympaPermission.registerPermissions(OlympaAPIPermissions.class);
-		
+
 		PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
 		pluginManager.registerEvents(new DataManagmentListener(), this);
@@ -97,7 +97,7 @@ public class OlympaCore extends OlympaSpigot {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public boolean isServerName(String serverName) {
 		return this.serverName.equals(serverName);
