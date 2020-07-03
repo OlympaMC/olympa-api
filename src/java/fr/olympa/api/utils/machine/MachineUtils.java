@@ -27,7 +27,7 @@ public class MachineUtils {
 		LinkSpigotBungee main = LinkSpigotBungee.Provider.link;
 		TextComponent out = new TextComponent();
 
-		TextComponent out2 = new TextComponent(TextComponent.fromLegacyText("§e§m--------------------"));
+		TextComponent out2 = new TextComponent(TextComponent.fromLegacyText("§e§m-------------------"));
 		out.addExtra(out2);
 		out.addExtra("\n");
 		out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Serveur §b" + main.getServerName())));
