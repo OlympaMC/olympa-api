@@ -13,11 +13,11 @@ public class PlayerBlocksFlag extends AbstractProtectionFlag {
 	}
 
 	public <T extends Event & Cancellable> void blockEvent(T event, Player p, Block block) {
-		handleCancellable(event);
+		handleCancellable(event, p);
 	}
 
 	public <T extends Event & Cancellable> void entityEvent(T event, Player p, Entity entity) {
-		handleCancellable(event);
+		handleCancellable(event, p);
 	}
 
 }

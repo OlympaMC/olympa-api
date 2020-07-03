@@ -12,5 +12,6 @@ public class OlympaAPIPermissions {
 	
 	public static final OlympaPermission COMMAND_HOLOGRAMS_MANAGE = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission COMMAND_IMAGEMAP = new OlympaPermission(OlympaGroup.DEV);
+	public static final OlympaPermission COMMAND_BYPASS_REGIONS = new OlympaPermission(OlympaGroup.DEV);
 	
 }

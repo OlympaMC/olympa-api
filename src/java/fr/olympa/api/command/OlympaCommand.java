@@ -70,11 +70,11 @@ public abstract class OlympaCommand {
 	}
 
 	public void addArgs(boolean isMandatory, List<String> arg) {
-		addCommandArguments(isMandatory, arg.stream().map(a -> new CommandArgument(a)).collect(Collectors.toList()));
+		addCommandArguments(isMandatory, arg.stream().map(CommandArgument::new).collect(Collectors.toList()));
 	}
 
 	public void addArgs(boolean isMandatory, String... args) {
-		addArgs(isMandatory, args);
+		addCommandArguments(isMandatory, Arrays.stream(args).map(CommandArgument::new).collect(Collectors.toList()));
 	}
 
 	public String buildText(int min, String[] args) {

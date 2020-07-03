@@ -6,6 +6,7 @@ public class ItemDurabilityFlag extends AbstractProtectionFlag {
 
 	public ItemDurabilityFlag(boolean protectedByDefault) {
 		super(protectedByDefault);
+		setBypassProtectionOverriden();
 	}
 
 	public void itemDamageEvent(PlayerItemDamageEvent event) {

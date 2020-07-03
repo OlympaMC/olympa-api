@@ -78,6 +78,8 @@ public class RegionManager implements Listener {
 				registerWorld(world);
 			}
 		});
+		
+		new BypassCommand().register();
 	}
 
 	public TrackedRegion registerRegion(Region region, String id, EventPriority priority, Flag... flags) {
