@@ -83,8 +83,8 @@ public class MachineUtils {
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? TPS.isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
 			out.addExtra(" ");
 			out.addExtra(out2);
-			out.addExtra("\n");
 			for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
+				out.addExtra("\n");
 				Chunk[] chunks = world.getLoadedChunks();
 				List<Entity> entities = world.getEntities();
 				List<LivingEntity> livingEntities = world.getLivingEntities();
