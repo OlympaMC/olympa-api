@@ -25,9 +25,6 @@ public class MachineUtils {
 	public static TextComponent getInfos() {
 		MachineInfo machine = new MachineInfo();
 		LinkSpigotBungee main = LinkSpigotBungee.Provider.link;
-		OlympaCore core = null;
-		if (main instanceof OlympaCore)
-			core = (OlympaCore) main;
 		TextComponent out = new TextComponent();
 
 		TextComponent out2 = new TextComponent(TextComponent.fromLegacyText("§e§m-------------------"));
@@ -42,7 +39,7 @@ public class MachineUtils {
 		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§e" + Utils.timestampToDateAndHour(main.getUptimeLong()) + ".")));
 		out.addExtra(out2);
 		out.addExtra("\n");
-		if (core != null) {
+		if (main.isSpigot()) {
 			double[] tps = TPS.getDoubleTPS();
 			float average = TPS.getAverage(tps);
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3TPS: §b1m " + TPSUtils.getTpsColor(tps[0]) + "§b 5m " + TPSUtils.getTpsColor(tps[1]) + "§b 15m " + TPSUtils.getTpsColor(tps[2])));
@@ -65,8 +62,8 @@ public class MachineUtils {
 		out.addExtra(out2);
 		out.addExtra("\n");
 
-		if (core != null) {
-			IProtocolSupport protocolSupport = core.getProtocolSupport();
+		if (main.isSpigot()) {
+			IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 			if (protocolSupport != null) {
 				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportés: §b" + protocolSupport.getRangeVersion() + "§3."));
 				String unSupVer = protocolSupport.getVersionUnSupportedInRange();

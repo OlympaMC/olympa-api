@@ -18,15 +18,17 @@ public interface LinkSpigotBungee {
 		return Utils.timestampToDuration(LinkSpigotBungee.upTime);
 	}
 
-	default long getUptimeLong() {
-		return upTime;
-	}
-
 	Connection getDatabase() throws SQLException;
 
 	void launchAsync(Runnable run);
 
 	String getServerName();
 
+	boolean isSpigot();
+
 	ServerStatus getStatus();
+
+	default long getUptimeLong() {
+		return upTime;
+	}
 }
