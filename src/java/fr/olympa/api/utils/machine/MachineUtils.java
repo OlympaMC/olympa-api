@@ -63,7 +63,7 @@ public class MachineUtils {
 		if (main.isSpigot()) {
 			IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 			if (protocolSupport != null) {
-				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportés: §b" + protocolSupport.getRangeVersion() + "§3."));
+				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + protocolSupport.getRangeVersion() + "§3."));
 				String unSupVer = protocolSupport.getVersionUnSupportedInRange();
 				if (!unSupVer.isBlank()) {
 					out2.addExtra(new TextComponent(TextComponent.fromLegacyText("§4[§c!§4]§3.")));
@@ -77,7 +77,7 @@ public class MachineUtils {
 				} catch (Exception e) {
 					versionsString = "erreur : " + e.getMessage();
 				}
-				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportés: §b" + versionsString + "§3."));
+				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + versionsString + "§3."));
 			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Bukkit API: §b" + Bukkit.getBukkitVersion().replace("-SNAPSHOT", "") + "§3."));
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? TPS.isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
