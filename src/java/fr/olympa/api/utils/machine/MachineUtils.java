@@ -42,7 +42,7 @@ public class MachineUtils {
 			double[] tps = TPS.getDoubleTPS();
 			float average = TPS.getAverage(tps);
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3TPS: §b1m " + TPSUtils.getTpsColor(tps[0]) + "§b 5m " + TPSUtils.getTpsColor(tps[1]) + "§b 15m " + TPSUtils.getTpsColor(tps[2])));
-			out2.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Moyenne: §b" + TPSUtils.getTpsColor(average) + "§3.")));
+			out2.addExtra(new TextComponent(TextComponent.fromLegacyText(" §3Moyenne: §b" + TPSUtils.getTpsColor(average) + "§3.")));
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eLes TPS (0 à 20) sont les ticks par secondes.")));
 			out.addExtra(out2);
 			out.addExtra("\n");
@@ -56,7 +56,7 @@ public class MachineUtils {
 		out.addExtra(out2);
 		out.addExtra(" ");
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3Threads: §b" + machine.getThreads() + "§3."));
-		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eNombre de processus.")));
+		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eNombre de 'sous-processus'.")));
 		out.addExtra(out2);
 		out.addExtra("\n");
 
@@ -81,6 +81,7 @@ public class MachineUtils {
 			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Bukkit API: §b" + Bukkit.getBukkitVersion().replace("-SNAPSHOT", "") + "§3."));
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? TPS.isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
+			out.addExtra(" ");
 			out.addExtra(out2);
 			out.addExtra("\n");
 			for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
@@ -88,18 +89,18 @@ public class MachineUtils {
 				List<Entity> entities = world.getEntities();
 				List<LivingEntity> livingEntities = world.getLivingEntities();
 
-				out2 = new TextComponent(TextComponent.fromLegacyText("§3Monde §b" + world.getName() + "§3:" + "§3."));
+				out2 = new TextComponent(TextComponent.fromLegacyText("§3Monde §b" + world.getName() + "§3: "));
 
 				TextComponent out3 = new TextComponent(TextComponent.fromLegacyText("§b" + chunks.length + "§3 chunks "));
 				out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eChunks (region de 16x16) chargés dans le monde")));
 				out2.addExtra(out3);
-				out2.addExtra("");
+				out2.addExtra(" ");
 				Collection<Chunk> forceChunks = world.getForceLoadedChunks();
 				if (!forceChunks.isEmpty()) {
 					out3 = new TextComponent(TextComponent.fromLegacyText("(" + forceChunks.size() + " forcés) "));
 					out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eLes chunks forcés sont les chunks du spawn du monde §6ou §edes chunks victime de Chunk Loader.")));
 					out2.addExtra(out3);
-					out2.addExtra("");
+					out2.addExtra(" ");
 				}
 				out3 = new TextComponent(TextComponent.fromLegacyText("§b" + livingEntities.size() + "/" + entities.size() + "§3 entités"));
 				out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eEntités vivantes/Toutes Entités.")));
