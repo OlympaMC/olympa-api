@@ -27,12 +27,11 @@ public class MachineUtils {
 		LinkSpigotBungee main = LinkSpigotBungee.Provider.link;
 		TextComponent out = new TextComponent();
 
-		TextComponent out2 = new TextComponent(TextComponent.fromLegacyText("§e§m-------------------"));
+		TextComponent out2 = new TextComponent(TextComponent.fromLegacyText("§e§m--------------------"));
 		out.addExtra(out2);
 		out.addExtra("\n");
-		out2.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Serveur §b" + main.getServerName())));
-		out.addExtra(out2);
-		out.addExtra("");
+		out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Serveur §b" + main.getServerName())));
+		out.addExtra(" ");
 		out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Status: " + main.getStatus().getNameColored() + "§3.")));
 		out.addExtra("\n");
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3En ligne depuis §b" + main.getUptime() + "§3."));
@@ -43,7 +42,6 @@ public class MachineUtils {
 			double[] tps = TPS.getDoubleTPS();
 			float average = TPS.getAverage(tps);
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3TPS: §b1m " + TPSUtils.getTpsColor(tps[0]) + "§b 5m " + TPSUtils.getTpsColor(tps[1]) + "§b 15m " + TPSUtils.getTpsColor(tps[2])));
-			out.addExtra("");
 			out2.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Moyenne: §b" + TPSUtils.getTpsColor(average) + "§3.")));
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eLes TPS (0 à 20) sont les ticks par secondes.")));
 			out.addExtra(out2);
@@ -52,11 +50,11 @@ public class MachineUtils {
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3RAM: §b" + machine.getMemUsage() + "§3 (" + machine.getMemUse() + ")."));
 		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eRAM utilisée/RAM maximum du serveur Minecraft.")));
 		out.addExtra(out2);
-		out.addExtra("");
+		out.addExtra(" ");
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3CPU: §b" + machine.getCPUUsage() + "§3 (" + machine.getCores() + " cores)."));
 		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eUtilisation globale du processeur du serveur dédié.")));
 		out.addExtra(out2);
-		out.addExtra("");
+		out.addExtra(" ");
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3Threads: §b" + machine.getThreads() + "§3."));
 		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eNombre de processus.")));
 		out.addExtra(out2);
