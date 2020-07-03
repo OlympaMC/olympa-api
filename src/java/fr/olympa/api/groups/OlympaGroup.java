@@ -10,7 +10,7 @@ import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaGroup {
-	
+
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%rank ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4%rank ", ":&r", true),
 	MODP(6, 85, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%rank ", ":&r", true),
@@ -30,7 +30,7 @@ public enum OlympaGroup {
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%rank ", ":&r", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false),
 	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%rank ", ":&r", false),
-	
+
 	CREA_CONSTRUCTOR(22, 1, OlympaServer.CREATIF, "Constructeur", "Constructrice", "&9%rank ", ":&r", false),
 	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%rank ", ":&r", false),
 	CREA_CREATOR(24, 3, OlympaServer.CREATIF, "Créateur", "Créatrice", "&6%rank ", ":&r", false);
@@ -42,9 +42,9 @@ public enum OlympaGroup {
 	 */
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
-		
+
 	}
-	
+
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -54,7 +54,7 @@ public enum OlympaGroup {
 	public static OlympaGroup getByName(String name) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> Utils.equalsIgnoreCase(group.getName(), name)).findFirst().orElse(null);
 	}
-	
+
 	final int id;
 	final int power;
 	final OlympaServer server;
@@ -63,7 +63,7 @@ public enum OlympaGroup {
 	final String prefix;
 	final String chatSufix;
 	private boolean highStaff;
-	
+
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix, boolean highStaff) {
 		this.id = id;
 		this.power = power;
@@ -74,28 +74,28 @@ public enum OlympaGroup {
 		this.chatSufix = ColorUtils.color(chatSufix);
 		this.highStaff = highStaff;
 	}
-	
+
 	public Set<OlympaGroup> getAllGroups() {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= getPower()).collect(Collectors.toSet());
 	}
-	
+
 	public String getChatColor() {
 		int index = chatSufix.length();
 		return chatSufix.substring(index - 3, index - 1);
 	}
-	
+
 	public String getChatSufix() {
 		return chatSufix;
 	}
-	
+
 	public String getColor() {
 		return prefix.substring(0, 2);
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 	public int getIndex() {
 		OlympaGroup[] groups = OlympaGroup.values();
 		for (int i = 0; i < groups.length; i++)
@@ -103,35 +103,35 @@ public enum OlympaGroup {
 				return i + 1;
 		return -1;
 	}
-	
+
 	@Deprecated
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getName(Gender gender) {
 		if (gender == Gender.FEMALE)
 			return nameFem.replace("_", " ");
 		return name.replace("_", " ");
 	}
-	
+
 	public int getPower() {
 		return power;
 	}
-	
+
 	public boolean isHighStaff() {
 		return highStaff;
 	}
-	
+
 	@Deprecated
 	public String getPrefix() {
 		return getPrefix(Gender.MALE);
 	}
-	
+
 	public String getPrefix(Gender gender) {
 		return ColorUtils.color(prefix.replace("%rank", getName(gender)));
 	}
-	
+
 	public OlympaServer getServer() {
 		return server;
 	}
