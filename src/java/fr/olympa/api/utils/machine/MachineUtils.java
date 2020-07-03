@@ -105,8 +105,8 @@ public class MachineUtils {
 				out3 = new TextComponent(TextComponent.fromLegacyText("§b" + livingEntities.size() + "/" + entities.size() + "§3 entités"));
 				out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eEntités vivantes/Toutes Entités.")));
 				out2.addExtra(out3);
+				out.addExtra(out2);
 			}
-			out.addExtra(out2);
 			out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3.")));
 		}
 		return out;
