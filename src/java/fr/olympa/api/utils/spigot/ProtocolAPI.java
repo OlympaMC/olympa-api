@@ -13,7 +13,8 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public enum ProtocolAPI {
 
-	V1_16(713, false),
+	V1_16_1(736, false),
+	V1_16(735, false),
 	V1_15_2(578),
 	V1_15_1(575),
 	V1_15(573),
@@ -97,11 +98,15 @@ public enum ProtocolAPI {
 		return matcher.group();
 	}
 
+	public static String getVersionSupportedToString() {
+		List<String> vers = getVersionSupported();
+		return vers.isEmpty() ? null : String.join(", ", vers);
+	}
+
 	public static List<String> getVersionSupported() {
 		ProtocolAPI defaultProto = getDefaultProtocol();
-		if (defaultProto != null) {
+		if (defaultProto != null)
 			return gets(defaultProto.getProtocolNumber()).stream().map(ProtocolAPI::getName).collect(Collectors.toList());
-		}
 		return new ArrayList<>();
 	}
 

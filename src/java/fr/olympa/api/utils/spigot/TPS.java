@@ -20,8 +20,12 @@ public class TPS {
 	private static Method getServerMethod = minecraftServerClass != null ? Reflection.makeMethod(minecraftServerClass, "getServer") : null;
 	private static Field recentTpsField = minecraftServerClass != null ? Reflection.makeField(minecraftServerClass, "recentTps") : null;
 
-	private static boolean canGetWithPaper() {
-		return getSpigotMethod != null && getTPSMethod != null;
+	public static boolean isPaper() {
+		return isSpigot() && getTPSMethod != null;
+	}
+
+	public static boolean isSpigot() {
+		return getSpigotMethod != null;
 	}
 
 	public static String getAllStringTPS() {
@@ -44,11 +48,10 @@ public class TPS {
 
 	public static double[] getDoubleTPS() {
 		double[] recentTps;
-		// if (canGetWithPaper()) {
-		// recentTps = getPaperRecentTps();
-		// } else {
-		recentTps = getNMSRecentTps();
-		// }
+		if (isPaper())
+			recentTps = getPaperRecentTps();
+		else
+			recentTps = getNMSRecentTps();
 		return recentTps;
 	}
 
@@ -61,24 +64,21 @@ public class TPS {
 	}
 
 	private static double[] getNMSRecentTps() {
-		if (getServerMethod == null || recentTpsField == null) {
+		if (getServerMethod == null || recentTpsField == null)
 			try {
 				throw new Exception("Can't get TPS from NMS");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		Object server = Reflection.callMethod(getServerMethod, null); // Call static MinecraftServer.getServer()
+		Object server = Reflection.callMethod(getServerMethod, null);
 		double[] recent = Reflection.getFieldValue(recentTpsField, server);
 		return recent;
 	}
 
-	@SuppressWarnings("unused")
 	private static double[] getPaperRecentTps() {
-		if (!canGetWithPaper()) {
+		if (!isPaper())
 			throw new UnsupportedOperationException("Can't get TPS from Paper");
-		}
-		Object server = Reflection.callMethod(getTPSMethod, null); // Call static MinecraftServer.getServer()
+		Object server = Reflection.callMethod(getTPSMethod, null);
 		double[] recent = Reflection.getFieldValue(recentTpsField, server);
 		return recent;
 	}
@@ -107,9 +107,8 @@ public class TPS {
 
 	public static float[] round(double[] tps) {
 		float[] tpsFloat = new float[tps.length];
-		for (int i = 0; i < tps.length; i++) {
+		for (int i = 0; i < tps.length; i++)
 			tpsFloat[i] = round(tps[i]);
-		}
 		return tpsFloat;
 	}
 }
