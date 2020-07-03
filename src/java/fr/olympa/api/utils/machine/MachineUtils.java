@@ -24,7 +24,7 @@ public class MachineUtils {
 
 	public static TextComponent getInfos() {
 		MachineInfo machine = new MachineInfo();
-		LinkSpigotBungee main = (LinkSpigotBungee) OlympaCore.getInstance();
+		LinkSpigotBungee main = LinkSpigotBungee.Provider.link;
 		OlympaCore core = null;
 		if (main instanceof OlympaCore)
 			core = (OlympaCore) main;
