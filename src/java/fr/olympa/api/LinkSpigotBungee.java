@@ -24,6 +24,8 @@ public interface LinkSpigotBungee {
 
 	String getServerName();
 
+	void sendMessage(String message);
+
 	boolean isSpigot();
 
 	ServerStatus getStatus();
