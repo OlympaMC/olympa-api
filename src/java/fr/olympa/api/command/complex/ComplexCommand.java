@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -44,11 +43,11 @@ public class ComplexCommand extends OlympaCommand {
 	}
 
 	private class ArgumentParser {
-		private Supplier<List<String>> tabArgumentsSupplier;
+		private Function<CommandSender, List<String>> tabArgumentsFunction;
 		private Function<String, Object> supplyArgumentFunction;
-
-		public ArgumentParser(Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
-			this.tabArgumentsSupplier = tabArgumentsSupplier;
+		
+		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
+			this.tabArgumentsFunction = tabArgumentsFunction;
 			this.supplyArgumentFunction = supplyArgumentFunction;
 		}
 	}
@@ -68,13 +67,13 @@ public class ComplexCommand extends OlympaCommand {
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
 
-		addArgumentParser("PLAYERS", () -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
+		addArgumentParser("PLAYERS", sender -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
 			Player result = Bukkit.getPlayerExact(x);
 			if (result == null)
 				sendUnknownPlayer(x);
 			return result;
 		});
-		addArgumentParser("INTEGER", () -> INTEGERS, x -> {
+		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
 			try {
 				return Integer.parseInt(x);
 			} catch (NumberFormatException e) {
@@ -82,7 +81,7 @@ public class ComplexCommand extends OlympaCommand {
 			}
 			return null;
 		});
-		addArgumentParser("DOUBLE", () -> Collections.EMPTY_LIST, x -> {
+		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
 			try {
 				return Double.parseDouble(x);
 			} catch (NumberFormatException e) {
@@ -90,8 +89,8 @@ public class ComplexCommand extends OlympaCommand {
 			}
 			return null;
 		});
-		addArgumentParser("BOOLEAN", () -> BOOLEAN, Boolean::parseBoolean);
-		addArgumentParser("WORLD", () -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
+		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
+		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
 			World result = Bukkit.getWorld(x);
 			if (result == null) sendError("Le monde %s n'existe pas.", x);
 			return result;
@@ -100,8 +99,19 @@ public class ComplexCommand extends OlympaCommand {
 		registerCommandsClass(this);
 	}
 
-	public void addArgumentParser(String name, Supplier<List<String>> tabArgumentsSupplier, Function<String, Object> supplyArgumentFunction) {
-		parsers.put(name, new ArgumentParser(tabArgumentsSupplier, supplyArgumentFunction));
+	public <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass) {
+		List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
+		addArgumentParser(name, sender -> values, playerInput -> {
+			for (T each : enumClass.getEnumConstants()) {
+				if (each.name().equalsIgnoreCase(playerInput)) return each;
+			}
+			sendError("La valeur %s n'existe pas.", playerInput);
+			return null;
+		});
+	}
+	
+	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
+		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
 	}
 
 	public boolean noArguments(CommandSender sender) {
@@ -192,7 +202,7 @@ public class ComplexCommand extends OlympaCommand {
 			String type = needed[index];
 			ArgumentParser parser = parsers.get(type);
 			if (parser != null)
-				find.addAll(parser.tabArgumentsSupplier.get());
+				find.addAll(parser.tabArgumentsFunction.apply(sender));
 			else
 				find.addAll(Arrays.asList(type.split("\\|")));
 		} else
