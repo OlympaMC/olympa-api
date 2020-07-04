@@ -25,7 +25,7 @@ public class ClanPlayerData<T extends Clan<T>> {
 	}
 	
 	public boolean isConnected() {
-		return player == null;
+		return player != null;
 	}
 	
 	public ClanPlayerInterface<T> getConnectedPlayer() {

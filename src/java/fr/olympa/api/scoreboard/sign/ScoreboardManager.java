@@ -19,7 +19,7 @@ import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
-	private Map<OlympaPlayer, Scoreboard<T>> scoreboards = new HashMap<>();
+	private Map<T, Scoreboard<T>> scoreboards = new HashMap<>();
 
 	Plugin plugin;
 	String displayName;
