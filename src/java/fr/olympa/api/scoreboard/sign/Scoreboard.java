@@ -1,6 +1,7 @@
 package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -9,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.core.spigot.OlympaCore;
 
 // TODO gestion animation pour éviter refresh tous les ticks
 // TODO gestion multi scoreboard
@@ -23,7 +25,10 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	private Lock lock = new ReentrantLock();
 	private Condition condition = lock.newCondition();
 	
+	private Lock updateLock = new ReentrantLock();
+	
 	Scoreboard(T player, ScoreboardManager<T> manager) {
+		super("Scoreboard " + player.getName());
 		p = player;
 		this.manager = manager;
 		for (AbstractLine<Scoreboard<T>> line : manager.lines) {
@@ -43,7 +48,9 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	public void addLine(AbstractLine<Scoreboard<T>> line) {
+		updateLock.lock();
 		lines.add(lines.size() - manager.footer.size(), new Line(line));
+		updateLock.unlock();
 		// TODO update uniquement la ligné ajouté
 		needsUpdate();
 	}
@@ -74,7 +81,8 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 				condition.await();
 				updateScoreboard();
 			} catch (InterruptedException e) {
-				break;
+				OlympaCore.getInstance().sendMessage("Boucle du scoreboard de " + p.getName() + " interrompue.");
+				return;
 			} finally {
 				lock.unlock();
 			}
@@ -95,11 +103,11 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	public void unload() {
 		interrupt();
-		if (sb != null)
-			sb.destroy();
-		for (Line line : lines)
-			line.line.removeHolder(this);
-		lines.clear();
+		if (sb != null) sb.destroy();
+		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
+			iterator.next().line.removeHolder(this);
+			iterator.remove();
+		}
 	}
 	
 	private void updateScoreboard() {
@@ -114,11 +122,13 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		sb.created = false;
 		sb.create();
 		int sbLine = 0;
+		updateLock.lock();
 		for (Line line : lines) {
 			String[] value = line.getLines(p);
 			for (String internalLine : value)
 				sb.setLine(sbLine++, internalLine);
 		}
+		updateLock.unlock();
 		sb.display();
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);

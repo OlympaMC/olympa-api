@@ -167,6 +167,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		T clan = createClan(id, name, p.getInformation(), defaultMaxSize);
 		clans.put(id, clan);
 		clan.addPlayer(p);
+		plugin.sendMessage("Clan " + name + " créé.");
 		return clan;
 	}
 	
@@ -246,6 +247,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			PreparedStatement statement = removeClanStatement.getStatement();
 			statement.setInt(1, clan.getID());
 			statement.executeUpdate();
+			plugin.sendMessage("Clan " + clan.getName() + " supprimé.");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			plugin.getLogger().severe("Le groupe " + clan.getID() + " n'a pas pu être supprimé de la base de données.");

@@ -31,12 +31,12 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 		this.bottom = bottom.clone();
 		this.bottom.setPitch(0);
 		this.bottom.setYaw(0);
+		
+		internalID = OlympaCore.getInstance().getHologramsManager().addHologram(this);
 
 		for (AbstractLine<Hologram> line : lines) {
 			addLine(line);
 		}
-		
-		internalID = OlympaCore.getInstance().getHologramsManager().addHologram(this);
 	}
 
 	public Location getBottom() {

@@ -40,6 +40,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
@@ -56,6 +57,7 @@ import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.WorldRegion;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
 import fr.olympa.api.region.tracking.flags.DropFlag;
+import fr.olympa.api.region.tracking.flags.FishFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.region.tracking.flags.FoodFlag;
 import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
@@ -343,4 +345,9 @@ public class RegionManager implements Listener {
 		fireEvent(e.getPlayer().getLocation(), ItemDurabilityFlag.class, x -> x.itemDamageEvent(e));
 	}
 
+	@EventHandler
+	public void onFish(PlayerFishEvent e) {
+		fireEvent(e.getPlayer().getLocation(), FishFlag.class, x -> x.fishEvent(e));
+	}
+	
 }
