@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.region.tracking.ActionResult;
 import fr.olympa.api.region.tracking.TrackedRegion;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -15,8 +16,8 @@ public class Flag {
 	private BaseComponent[] farewell;
 	private ChatMessageType position;
 
-	private boolean entryDenied = false;
-	private boolean exitDenied = false;
+	private ActionResult entry = ActionResult.ALLOW;
+	private ActionResult exit = ActionResult.ALLOW;
 
 	public Flag setMessages(String greeting, String farewell, ChatMessageType position) {
 		this.position = position;
@@ -26,8 +27,8 @@ public class Flag {
 	}
 
 	public Flag setEntryExitDenied(boolean entryDenied, boolean exitDenied) {
-		this.entryDenied = entryDenied;
-		this.exitDenied = exitDenied;
+		this.entry = entryDenied ? ActionResult.DENY : ActionResult.ALLOW;
+		this.exit = exitDenied ? ActionResult.DENY : ActionResult.ALLOW;
 		return this;
 	}
 
@@ -37,9 +38,9 @@ public class Flag {
 	 * @param to Liste des régions applicables au joueur après son entrée
 	 * @return <code>true </code> si le joueur ne peut pas entrer
 	 */
-	public boolean enters(Player p, Set<TrackedRegion> to) {
+	public ActionResult enters(Player p, Set<TrackedRegion> to) {
 		if (greeting != null) p.spigot().sendMessage(position, greeting);
-		return entryDenied;
+		return entry;
 	}
 
 	/**
@@ -48,9 +49,9 @@ public class Flag {
 	 * @param to Liste des régions applicables au joueur après sa sortie
 	 * @return <code>true </code> si le joueur ne peut pas sortir
 	 */
-	public boolean leaves(Player p, Set<TrackedRegion> to) {
+	public ActionResult leaves(Player p, Set<TrackedRegion> to) {
 		if (farewell != null) p.spigot().sendMessage(position, farewell);
-		return exitDenied;
+		return exit;
 	}
 
 }

@@ -159,7 +159,7 @@ public class RegionManager implements Listener {
 			for (TrackedRegion enter : regions) {
 				try {
 					for (Flag flag : enter.getFlags()) {
-						if (flag.enters(e.getPlayer(), regions)) OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
+						if (flag.enters(e.getPlayer(), regions) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
 					}
 				}catch (Exception ex) {
 					ex.printStackTrace();
@@ -181,12 +181,12 @@ public class RegionManager implements Listener {
 		Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
 		Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
 
-		boolean cancelled = false;
+		ActionResult result = ActionResult.ALLOW;
 
 		for (TrackedRegion enter : entered) {
 			try {
 				for (Flag flag : enter.getFlags()) {
-					if (flag.enters(player, applicable)) cancelled = true;
+					result = result.or(flag.enters(player, applicable));
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
@@ -195,17 +195,17 @@ public class RegionManager implements Listener {
 		for (TrackedRegion exit : exited) {
 			try {
 				for (Flag flag : exit.getFlags()) {
-					if (flag.leaves(player, applicable)) cancelled = true;
+					result = result.or(flag.leaves(player, applicable));
 				}
 			}catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 		
-		if (cancelled) {
+		if (result == ActionResult.DENY) {
 			e.setCancelled(true);
 			return;
-		}
+		}else if (result == ActionResult.TELEPORT_ELSEWHERE) return;
 		if (!entered.isEmpty() || !exited.isEmpty()) inRegions.put(player, applicable);
 	}
 
