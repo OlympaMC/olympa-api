@@ -21,7 +21,7 @@ public class OlympaRuntime {
 	}
 
 	public static Thread action(String command, Consumer<String> function) {
-		return new Thread((Runnable) () -> {
+		return new Thread(() -> {
 			try {
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));

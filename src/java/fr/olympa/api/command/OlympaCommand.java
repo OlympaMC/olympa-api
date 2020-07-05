@@ -26,7 +26,7 @@ import fr.olympa.api.utils.Reflection;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 @SuppressWarnings("unchecked")
-public abstract class OlympaCommand {
+public abstract class OlympaCommand implements IOlympaCommand {
 
 	protected static Map<List<String>, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
@@ -65,58 +65,34 @@ public abstract class OlympaCommand {
 		this.aliases = Arrays.asList(aliases);
 	}
 
+	@Override
 	public void addCommandArguments(boolean isMandatory, List<CommandArgument> ca) {
 		args.put(isMandatory, ca);
 	}
 
-	public void addArgs(boolean isMandatory, List<String> arg) {
-		addCommandArguments(isMandatory, arg.stream().map(CommandArgument::new).collect(Collectors.toList()));
-	}
-
-	public void addArgs(boolean isMandatory, String... args) {
-		addCommandArguments(isMandatory, Arrays.stream(args).map(CommandArgument::new).collect(Collectors.toList()));
-	}
-
-	public String buildText(int min, String[] args) {
-		return String.join(" ", Arrays.copyOfRange(args, min, args.length));
-	}
-
+	@Override
 	public <T extends OlympaPlayer> T getOlympaPlayer() {
 		return AccountProvider.get(player.getUniqueId());
 	}
 
+	@Override
 	public Player getPlayer() {
 		return player;
 	}
 
+	@Override
 	public CommandSender getSender() {
 		return sender;
 	}
 
+	@Override
 	public void setAllowConsole(boolean allowConsole) {
 		this.allowConsole = allowConsole;
 	}
 
+	@Override
 	public boolean hasPermission() {
 		return this.hasPermission(permission);
-	}
-
-	public boolean hasPermission(OlympaPermission perm) {
-		if (perm == null || player == null)
-			return true;
-		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
-		if (olympaPlayer == null)
-			return false;
-		return perm.hasPermission(olympaPlayer);
-	}
-
-	public boolean hasPermission(String permName) {
-		if (permName == null || permName.isEmpty())
-			return true;
-		OlympaPermission perm = OlympaPermission.permissions.get(permName);
-		if (perm == null)
-			return false;
-		return this.hasPermission(perm);
 	}
 
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
@@ -132,6 +108,7 @@ public abstract class OlympaCommand {
 		minArg = (int) args.entrySet().stream().count();
 	}
 
+	@Override
 	public void register() {
 		build();
 		ReflectCommand reflectCommand = new ReflectCommand(command);
@@ -143,6 +120,7 @@ public abstract class OlympaCommand {
 		getCommandMap().register("Olympa", reflectCommand);
 	}
 
+	@Override
 	public void registerPreProcess() {
 		build();
 		List<String> commands = new ArrayList<>();
@@ -151,70 +129,34 @@ public abstract class OlympaCommand {
 		commandPreProcess.put(commands, this);
 	}
 
-	public void sendDoNotHavePermission() {
-		sendError("Tu n'as pas la permission &l(◑_◑)");
-	}
-
-	public void sendImpossibleWithConsole() {
-		sendError("Impossible avec la console.");
-	}
-
-	public void sendImpossibleWithOlympaPlayer() {
-		sendError("Une erreur est survenu avec tes données.");
-	}
-
-	public void sendIncorrectSyntax() {
-		sendError("Syntaxe incorrecte.");
-	}
-
-	public void sendIncorrectSyntax(String correctSyntax) {
-		sendError("Syntaxe attendue : &o" + correctSyntax);
-	}
-
-	public void sendUnknownPlayer(String name) {
-		sendError("Le joueur &4%s&c est introuvable.", name);
-		// TODO check historique player
-	}
-
-	public void sendError() {
-		sendError("Une erreur est survenu ¯\\_(ツ)_/¯");
-	}
-
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {
 		text = prefix.formatMessage(text, args);
 		for (CommandSender sender : senders)
 			sender.sendMessage(text);
 	}
 
+	@Override
 	public void broadcast(Prefix prefix, String text, Object... args) {
 		sendMessage(Bukkit.getOnlinePlayers(), prefix, text, args);
 	}
 
+	@Override
 	public void broadcastToAll(Prefix prefix, String text, Object... args) {
 		broadcast(prefix, text, args);
 		prefix.sendMessage(Bukkit.getConsoleSender(), text, args);
 	}
 
+	@Override
 	public void sendComponents(BaseComponent... components) {
 		sender.spigot().sendMessage(components);
 	}
 
+	@Override
 	public void sendMessage(Prefix prefix, String message, Object... args) {
 		prefix.sendMessage(sender, message, args);
 	}
 
-	public void sendInfo(String message, Object... args) {
-		sendMessage(Prefix.INFO, message, args);
-	}
-
-	public void sendSuccess(String message, Object... args) {
-		sendMessage(Prefix.DEFAULT_GOOD, message, args);
-	}
-
-	public void sendError(String message, Object... args) {
-		sendMessage(Prefix.DEFAULT_BAD, message, args);
-	}
-
+	@Override
 	public void sendUsage(String label) {
 		sendMessage(Prefix.USAGE, "/%s %s", label, usageString);
 	}
@@ -259,5 +201,15 @@ public abstract class OlympaCommand {
 				return null;
 			}
 		return cmap;
+	}
+
+	@Override
+	public boolean isConsole() {
+		return player == null;
+	}
+
+	@Override
+	public boolean isConsoleAllowed() {
+		return allowConsole;
 	}
 }
