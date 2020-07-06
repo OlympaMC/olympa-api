@@ -26,7 +26,9 @@ public class OlympaRuntime {
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
-				while ((line = br.readLine()) != null && !line.isEmpty()) {
+				while ((line = br.readLine()) != null) {
+					if (line.isEmpty())
+						continue;
 					String out = Prefix.DEFAULT + line.replace("0;", "").replace("", "")
 							.replace("[0m", "§f")
 							.replace("[1m", "§l")
