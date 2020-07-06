@@ -26,7 +26,7 @@ public class OlympaRuntime {
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
-				while ((line = br.readLine()) != null && !line.isBlank()) {
+				while ((line = br.readLine()) != null && !line.isEmpty()) {
 					String out = Prefix.DEFAULT + line.replace("0;", "").replace("", "")
 							.replace("[0m", "§f")
 							.replace("[1m", "§l")
@@ -60,8 +60,8 @@ public class OlympaRuntime {
 				String out = Prefix.DEFAULT + "&4ERROR&c " + e.getMessage();
 				if (function != null)
 					function.accept(out);
-				System.out.println(out);
 				e.printStackTrace();
+				System.out.println(out);
 			}
 		}, "Start command " + command);
 	}

@@ -104,6 +104,9 @@ public enum OlympaGroup {
 		return -1;
 	}
 
+	/*
+	 * Get name without space & gender
+	 */
 	@Deprecated
 	public String getName() {
 		return name;

@@ -207,11 +207,6 @@ public class SpigotUtils {
 		return false;
 	}
 
-	@Deprecated // use Player#isOnGround
-	public static boolean isOnGround(Player player) {
-		return player.getLocation().getBlock().getRelative(0, -1, 0).getType() == Material.AIR;
-	}
-
 	public static boolean isSameLocation(Location location1, Location location2) {
 		return location1.getWorld() == location2.getWorld() && location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
 	}
@@ -252,7 +247,7 @@ public class SpigotUtils {
 		dataOutput.close();
 		return outputStream.toByteArray();
 	}
-	
+
 	public static <T extends ConfigurationSerializable> T deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
