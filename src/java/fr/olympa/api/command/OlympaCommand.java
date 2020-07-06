@@ -105,7 +105,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			List<CommandArgument> ca = entry.getValue();
 			return (isMandatory ? "<" : "[") + ca.stream().map(c -> c.getArgName()).collect(Collectors.joining("|")) + (isMandatory ? ">" : "]");
 		}).collect(Collectors.joining(" "));
-		minArg = (int) args.entrySet().stream().count();
+		minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
 	}
 
 	@Override
