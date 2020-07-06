@@ -12,9 +12,9 @@ public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
 	MAINTENANCE(2, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
-	DEV(3, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "dev"),
 	BETA(4, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
 	SOON(5, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "soon"),
+	DEV(3, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "dev"),
 	CLOSE(6, "Fermé", ChatColor.RED, null, null),
 	UNKNOWN(7, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null);
 
@@ -72,7 +72,7 @@ public enum ServerStatus {
 	public OlympaPermission getPermission() {
 		return permission;
 	}
-	
+
 	public boolean canConnect() {
 		return this != CLOSE && this != UNKNOWN;
 	}
