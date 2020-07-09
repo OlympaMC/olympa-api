@@ -21,7 +21,11 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 	public void updateGlobal() {
 		for (Entry<T, String> scoreboard : holders.entrySet()) {
 			T holder = scoreboard.getKey();
-			if (!getValue(holder).equals(scoreboard.getValue())) holder.update(this);
+			String newValue = getValue(holder);
+			if (!newValue.equals(scoreboard.getValue())) {
+				holder.update(this);
+				scoreboard.setValue(newValue);
+			}
 		}
 	}
 
@@ -29,7 +33,11 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 		for (Entry<T, String> scoreboard : holders.entrySet()) {
 			T sholder = scoreboard.getKey();
 			if (sholder == holder) {
-				if (!getValue(holder).equals(scoreboard.getValue())) holder.update(this);
+				String newValue = getValue(holder);
+				if (!newValue.equals(scoreboard.getValue())) {
+					holder.update(this);
+					scoreboard.setValue(newValue);
+				}
 				return;
 			}
 		}

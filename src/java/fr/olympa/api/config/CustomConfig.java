@@ -17,7 +17,6 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
-import fr.olympa.api.holograms.Hologram;
 import fr.olympa.api.lines.AnimLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.region.shapes.ChunkCuboid;
@@ -43,8 +42,6 @@ public class CustomConfig extends YamlConfiguration {
 
 		ConfigurationSerialization.registerClass(FixedLine.class);
 		ConfigurationSerialization.registerClass(AnimLine.class);
-
-		ConfigurationSerialization.registerClass(Hologram.class);
 	}
 
 	private InputStream resource;
