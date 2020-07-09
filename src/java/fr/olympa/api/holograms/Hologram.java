@@ -133,7 +133,7 @@ public class Hologram extends AbstractObservable {
 		return new Hologram(id, SpigotUtils.convertStringToLocation((String) map.get("bottom")), persistent, ((List<AbstractLine<HologramLine>>) map.get("lines")).toArray(AbstractLine[]::new));
 	}
 
-	class HologramLine implements LinesHolder<HologramLine> {
+	public class HologramLine implements LinesHolder<HologramLine> {
 		private final AbstractLine<HologramLine> line;
 		private ArmorStand entity;
 

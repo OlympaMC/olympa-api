@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
+@SuppressWarnings ("unused")
 public class OlympaStatement {
 	
 	public enum StatementType {

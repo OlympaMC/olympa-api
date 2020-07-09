@@ -132,13 +132,6 @@ public class ScoreboardSigns implements Cloneable {
 		return maxSize - i;
 	}
 	
-	private Object removeLine(String teamPlayer) {
-		Object packet = new PacketPlayOutScoreboardScore();
-		Reflection.setField(packet, "a", teamPlayer);
-		Reflection.setField(packet, "d", Action.REMOVE);
-		return packet;
-	}
-	
 	private Object sendScore(int score, String teamPlayer) {
 		Object packet = new PacketPlayOutScoreboardScore();
 		Reflection.setField(packet, "a", teamPlayer);
