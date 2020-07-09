@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.olympa.core.spigot.OlympaCore;
 
-public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> implements ConfigurationSerializable {
+public class CyclingLine<T extends LinesHolder<T>> extends AbstractLine<T> implements ConfigurationSerializable {
 
 	public static List<String> getAnim(String string, ChatColor normal, ChatColor up) {
 		final List<String> anim = new ArrayList<>();
@@ -27,15 +27,19 @@ public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> implemen
 	}
 
 	private final List<String> strings;
-	private final int ticksAmount;
 	private final int ticksBetween;
+	private final int ticksSleep;
 
 	private int status = 0;
 
-	public AnimLine(List<String> animation, int ticksAmount, int ticksBetween) {
-		this.strings = animation;
-		this.ticksAmount = ticksAmount;
+	public CyclingLine(List<String> lines, int ticksBetween) {
+		this(lines, ticksBetween, 0);
+	}
+	
+	public CyclingLine(List<String> lines, int ticksBetween, int ticksSleep) {
+		this.strings = lines;
 		this.ticksBetween = ticksBetween;
+		this.ticksSleep = ticksSleep;
 		new BukkitRunnable() {
 			int timeBefore = -1;
 			@Override
@@ -43,11 +47,11 @@ public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> implemen
 				if (--timeBefore > -1) return;
 				if (++status >= strings.size()) {
 					status = 0;
-					timeBefore = ticksBetween;
+					timeBefore = ticksSleep;
 				}
-				AnimLine.this.updateGlobal();
+				CyclingLine.this.updateGlobal();
 			}
-		}.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, ticksAmount);
+		}.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, ticksBetween);
 	}
 
 	public int getAnimSize() {
@@ -63,18 +67,18 @@ public class AnimLine<T extends LinesHolder<T>> extends AbstractLine<T> implemen
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("strings", strings);
-		map.put("ticksSpeed", ticksAmount);
 		map.put("ticksBetween", ticksBetween);
+		map.put("ticksSleep", ticksSleep);
 		return map;
 	}
 
-	public static AnimLine<?> deserialize(Map<String, Object> map) {
-		return new AnimLine<>((List<String>) map.get("strings"), (int) map.get("ticksSpeed"), (int) map.get("ticksBetween"));
+	public static CyclingLine<?> deserialize(Map<String, Object> map) {
+		return new CyclingLine<>((List<String>) map.get("strings"), (int) map.get("ticksBetween"), (int) map.get("ticksSleep"));
 	}
 
 	@SuppressWarnings ("rawtypes")
-	public static AnimLine olympaAnimation() {
-		return new AnimLine<>(getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
+	public static CyclingLine olympaAnimation() {
+		return new CyclingLine<>(getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
 	}
 
 }

@@ -23,7 +23,7 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 			T holder = scoreboard.getKey();
 			String newValue = getValue(holder);
 			if (!newValue.equals(scoreboard.getValue())) {
-				holder.update(this);
+				holder.update(this, newValue);
 				scoreboard.setValue(newValue);
 			}
 		}
@@ -35,7 +35,7 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 			if (sholder == holder) {
 				String newValue = getValue(holder);
 				if (!newValue.equals(scoreboard.getValue())) {
-					holder.update(this);
+					holder.update(this, newValue);
 					scoreboard.setValue(newValue);
 				}
 				return;

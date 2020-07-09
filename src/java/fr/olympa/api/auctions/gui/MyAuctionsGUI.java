@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.auctions.Auction;
 import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.economy.MoneyPlayerInterface;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
@@ -23,8 +24,9 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 	private AuctionsManager manager;
 
 	public MyAuctionsGUI(AuctionsManager manager, MoneyPlayerInterface player) {
-		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 5);
-		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§bRevenir aux ventes"));
+		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 4);
+		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§b← Revenir aux ventes"));
+		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§a✦ Vendre un objet"));
 		this.manager = manager;
 		this.player = player;
 	}
@@ -32,7 +34,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 	@Override
 	public ItemStack getItemStack(Auction object) {
 		ItemStack item = object.getShownItem();
-		ItemUtils.loreAdd(item, "§8---------------------");
+		ItemUtils.loreAdd(item, "");
 		if (object.bought) {
 			ItemUtils.loreAdd(item, "§6§lVendu !", "§e> §oClique pour récupérer tes gains");
 		}else if (object.hasExpired()) {
@@ -48,7 +50,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 		if (existing.bought) {
 			try {
 				manager.terminateAuction(existing);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %f (taxes retirées).", manager.getTaxManager().pay(player, existing.price));
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu %s (taxes retirées).", OlympaMoney.format(manager.getTaxManager().pay(player, existing.price)));
 			}catch (SQLException e) {
 				e.printStackTrace();
 				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de ton paiement.");
@@ -57,7 +59,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 			try {
 				manager.terminateAuction(existing);
 				SpigotUtils.giveItems(p, existing.item);
-				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as annulé ta vente.");
+				Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as clôturé ta vente.");
 			}catch (SQLException e) {
 				e.printStackTrace();
 				Prefix.ERROR.sendMessage(p, "Une erreur est survenue lors de la suppression de cette vente.");
@@ -68,7 +70,11 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 	
 	@Override
 	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
-		if (barSlot == 2) manager.openAuctionsGUI(p);
+		if (barSlot == 1) {
+			manager.openAuctionsGUI(p);
+		}else if (barSlot == 2) {
+			manager.openAuctionCreationGUI(p);
+		}
 		return true;
 	}
 

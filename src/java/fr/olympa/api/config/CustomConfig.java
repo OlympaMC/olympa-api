@@ -17,7 +17,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
-import fr.olympa.api.lines.AnimLine;
+import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.region.shapes.ChunkCuboid;
 import fr.olympa.api.region.shapes.ChunkPolygon;
@@ -41,7 +41,7 @@ public class CustomConfig extends YamlConfiguration {
 		ConfigurationSerialization.registerClass(WorldRegion.class);
 
 		ConfigurationSerialization.registerClass(FixedLine.class);
-		ConfigurationSerialization.registerClass(AnimLine.class);
+		ConfigurationSerialization.registerClass(CyclingLine.class);
 	}
 
 	private InputStream resource;

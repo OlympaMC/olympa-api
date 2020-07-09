@@ -96,7 +96,7 @@ public class Auction {
 
 	public ItemStack getShownItem() {
 		ItemStack item = this.item.clone();
-		ItemUtils.loreAdd(item, "", "§8---------------------", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), hasExpired() ? "" : "§eExpire dans §6" + getTimeBeforeExpiration());
+		ItemUtils.loreAdd(item, "", "§8§m---------------------", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), hasExpired() ? "" : "§eExpire dans §6" + getTimeBeforeExpiration());
 		return item;
 	}
 

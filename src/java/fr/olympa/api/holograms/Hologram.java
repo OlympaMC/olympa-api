@@ -30,9 +30,7 @@ public class Hologram extends AbstractObservable {
 	private final boolean persistent;
 	
 	Hologram(int id, Location bottom, boolean persistent, AbstractLine<HologramLine>... lines) {
-		this.bottom = bottom.clone();
-		this.bottom.setPitch(0);
-		this.bottom.setYaw(0);
+		setBottom(bottom);
 		
 		this.id = id;
 		this.entityMetadata = new FixedMetadataValue(OlympaCore.getInstance(), id);
@@ -47,6 +45,12 @@ public class Hologram extends AbstractObservable {
 
 	public Location getBottom() {
 		return bottom;
+	}
+	
+	private void setBottom(Location newBottom) {
+		bottom = newBottom.clone();
+		bottom.setPitch(0);
+		bottom.setYaw(0);
 	}
 	
 	public int getID() {
@@ -90,7 +94,7 @@ public class Hologram extends AbstractObservable {
 	}
 
 	public void move(Location newBottom) {
-		this.bottom = newBottom.clone();
+		setBottom(newBottom);
 		lines.forEach(HologramLine::updatePosition);
 		update();
 	}
@@ -151,7 +155,7 @@ public class Hologram extends AbstractObservable {
 			entity.setInvulnerable(true);
 			entity.setPersistent(false);
 			entity.setMetadata("hologram", entityMetadata);
-			update(line);
+			update(line, line.getValue(this));
 			line.addHolder(this);
 		}
 
@@ -173,12 +177,11 @@ public class Hologram extends AbstractObservable {
 		}
 		
 		@Override
-		public void update(AbstractLine<HologramLine> line) {
+		public void update(AbstractLine<HologramLine> line, String newValue) {
 			if (entity == null) return;
-			String value = line.getValue(this);
-			if (!"".equals(value)) {
+			if (!"".equals(newValue)) {
 				entity.setCustomNameVisible(true);
-				entity.setCustomName(value);
+				entity.setCustomName(newValue);
 			}else entity.setCustomNameVisible(false);
 		}
 	}

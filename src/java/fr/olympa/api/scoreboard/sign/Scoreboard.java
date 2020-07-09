@@ -60,7 +60,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	@Override
-	public void update(AbstractLine<Scoreboard<T>> line) {
+	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
 		needsUpdate(); // TODO update seulement la ligne
 	}
 	

@@ -9,7 +9,7 @@ import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
-import fr.olympa.api.lines.AnimLine;
+import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.utils.ColorUtils;
@@ -110,7 +110,7 @@ public class HologramsCommand extends ComplexCommand {
 
 	private AbstractLine<HologramLine> createLine(String string) {
 		if (string.equalsIgnoreCase("animation")) {
-			return AnimLine.olympaAnimation();
+			return CyclingLine.olympaAnimation();
 		}else return new FixedLine<>(ColorUtils.color(string));
 	}
 

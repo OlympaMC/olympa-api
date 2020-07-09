@@ -73,7 +73,7 @@ public class HologramsManager implements Listener {
 	private Observer updateHologram(int id, Hologram hologram) {
 		return () -> {
 			try {
-				hologramsYaml.set(String.valueOf(id), hologram.serialize());
+				hologramsYaml.set(String.valueOf(id), hologram == null ? null : hologram.serialize());
 				hologramsYaml.save(hologramsFile);
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -84,12 +84,12 @@ public class HologramsManager implements Listener {
 	public boolean deleteHologram(Hologram hologram) {
 		if (holograms.remove(hologram.getID()) == null) return false;
 		hologram.destroy();
-		updateHologram(hologram.getID(), null).changed();
+		if (hologram.isPersistent()) updateHologram(hologram.getID(), null).changed();
 		return true;
 	}
 
 	public void unload() {
-		new ArrayList<>(holograms.values()).forEach(this::deleteHologram);
+		holograms.values().forEach(Hologram::destroy);
 	}
 
 	@EventHandler
