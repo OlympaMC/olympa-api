@@ -61,7 +61,7 @@ public class Matcher {
 		return matchDate.matcher(date).find();
 	}
 
-	public static boolean isDisocrdTag(String tag) {
+	public static boolean isDiscordTag(String tag) {
 		return matchTagDiscord.matcher(tag).find();
 	}
 
