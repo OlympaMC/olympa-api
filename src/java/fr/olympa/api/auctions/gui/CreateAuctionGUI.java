@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.auctions.AuctionsManager;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.editor.parsers.NumberParser;
 import fr.olympa.api.gui.OlympaGUI;
@@ -38,7 +39,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 		}
 
 		inv.setItem(13, ItemUtils.item(Material.EMERALD, "§aDéfinis le prix"));
-		inv.setItem(14, setDurationItem(ItemUtils.item(Material.CLOCK, null, "§e§l> Clic droit : §eAugmenter de 12 heures", "§e§l> Clic gauche : §eDiminuer de 12 heures")));
+		inv.setItem(14, setDurationItem(ItemUtils.item(Material.CLOCK, null, "§e§l> Clic gauche : §eAugmenter de 12 heures", "§e§l> Clic droit : §eDiminuer de 12 heures")));
 
 		inv.setItem(16, ItemUtils.done);
 	}
@@ -60,16 +61,16 @@ public class CreateAuctionGUI extends OlympaGUI {
 			new TextEditor<>(p, (price) -> {
 				this.price = price;
 				if (this.price > manager.getPriceMax()) this.price = manager.getPriceMax();
-				ItemUtils.lore(current, "", "§ePrix : §6§l" + this.price);
+				ItemUtils.lore(current, "", "§ePrix : §6§l" + OlympaMoney.format(this.price));
 				create(p);
 			}, () -> create(p), false, new NumberParser<>(Double.class, true, true)).enterOrLeave();
 		}else if (slot == 14) {
-			if (click.isRightClick()) {
+			if (click.isLeftClick()) {
 				if (duration < manager.getDemidaysMax()) {
 					duration++;
 					setDurationItem(current);
 				}
-			}else if (click.isLeftClick()) {
+			}else if (click.isRightClick()) {
 				if (duration > manager.getDemidaysMin()) {
 					duration--;
 					setDurationItem(current);

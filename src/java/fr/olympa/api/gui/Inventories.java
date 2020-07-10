@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -79,15 +80,13 @@ public class Inventories implements Listener {
 	}
 
 	@EventHandler
-	public void onClick(InventoryClickEvent e) {
+	public synchronized void onClick(InventoryClickEvent e) {
 		Player p = (Player) e.getWhoClicked();
 		Inventory inv = e.getClickedInventory();
 		ItemStack current = e.getCurrentItem();
 
 		OlympaGUI gui = getGUI(e.getView().getTopInventory());
-		if (gui == null) {
-			return;
-		}
+		if (gui == null) return;
 
 		e.setCancelled(false);
 
@@ -97,6 +96,9 @@ public class Inventories implements Listener {
 			}
 			return;
 		}
+		
+		if (gui.noDoubleClick() && e.getClick() == ClickType.DOUBLE_CLICK) return;
+		
 		if (e.getCursor().getType() == Material.AIR) {
 			if (current == null || current.getType() == Material.AIR) {
 				return;

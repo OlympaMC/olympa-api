@@ -22,7 +22,7 @@ public class ScoreboardSigns implements Cloneable {
 	protected ArrayList<VirtualTeam> lines = new ArrayList<>();
 	protected ArrayList<VirtualTeam> oldLines = new ArrayList<>();
 	private final Player player;
-	private int maxSize = 0;
+	protected int maxSize = 0;
 	private String displayName;
 	
 	public ScoreboardSigns(Player player, String displayName, String objectiveName, int maxSize) {
@@ -145,11 +145,10 @@ public class ScoreboardSigns implements Cloneable {
 		if (line > 14 || line < 0 || !created)
 			return;
 		
-		int score = getScore(line);
 		VirtualTeam team = getOrCreateTeam(value);
 		for (Object packet : team.sendLine())
 			Reflection.sendPacket(player, packet);
-		Reflection.sendPacket(player, sendScore(score, team.getCurrentPlayer()));
+		Reflection.sendPacket(player, sendScore(getScore(line), team.getCurrentPlayer()));
 		team.reset();
 	}
 	

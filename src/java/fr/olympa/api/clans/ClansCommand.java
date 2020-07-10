@@ -44,6 +44,10 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 			return;
 		}
 		String name = cmd.getFrom(0);
+		if (name.length() > manager.getMaxClanNameLength()) {
+			sendError(manager.stringClanNameTooLong, manager.getMaxClanNameLength());
+			return;
+		}
 		if (manager.clanExists(name)) {
 			sendError(manager.stringClanAlreadyExists);
 			return;

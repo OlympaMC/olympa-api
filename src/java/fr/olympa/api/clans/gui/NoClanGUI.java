@@ -34,6 +34,10 @@ public class NoClanGUI<T extends Clan<T>> extends OlympaGUI {
 		case 1:
 			Prefix.DEFAULT.sendMessage(p, manager.stringChooseName);
 			new TextEditor<String>(p, (msg) -> {
+				if (msg.length() > manager.getMaxClanNameLength()) {
+					Prefix.DEFAULT_BAD.sendMessage(p, manager.stringClanNameTooLong, manager.getMaxClanNameLength());
+					return;
+				}
 				try {
 					manager.createClan(AccountProvider.get(p.getUniqueId()), msg);
 				}catch (SQLException e) {

@@ -84,9 +84,9 @@ public class SpigotUtils {
 		double y = loc.getY();
 		double z = loc.getZ();
 		if ((int) loc.getPitch() != 0) {
-			int pitch = (int) loc.getPitch();
 			int yaw = (int) loc.getYaw();
-			return world + " " + x + " " + y + " " + z + " " + pitch + " " + yaw;
+			int pitch = (int) loc.getPitch();
+			return world + " " + x + " " + y + " " + z + " " + yaw + " " + pitch;
 		}
 		return world + " " + x + " " + y + " " + z;
 	}
@@ -99,9 +99,9 @@ public class SpigotUtils {
 			double y = Double.parseDouble(coords[2]);
 			double z = Double.parseDouble(coords[3]);
 			if (coords.length == 6) {
-				float pitch = Float.parseFloat(coords[4]);
-				float yaw = Float.parseFloat(coords[5]);
-				return new Location(w, x, y, z, pitch, yaw);
+				float yaw = Float.parseFloat(coords[4]);
+				float pitch = Float.parseFloat(coords[5]);
+				return new Location(w, x, y, z, yaw, pitch);
 			}
 			return new Location(w, x, y, z);
 		}
