@@ -17,10 +17,9 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 	private AuctionsManager manager;
 
 	public AuctionsGUI(AuctionsManager manager) {
-		super("Hôtel des Ventes", DyeColor.CYAN, manager.getOngoingAuctions(), 6);
+		super("Hôtel des Ventes", DyeColor.CYAN, manager.getOngoingAuctions(), 5);
 		this.manager = manager;
-		setBarItem(2, ItemUtils.item(Material.DIAMOND, "§aVendre un objet"));
-		setBarItem(3, ItemUtils.item(Material.CHEST, "§aMes objets"));
+		setBarItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets"));
 	}
 
 	@Override
@@ -36,8 +35,6 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 	@Override
 	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
 		if (barSlot == 2) {
-			manager.openAuctionCreationGUI(p);
-		}else if (barSlot == 3) {
 			manager.openMyAuctionsGUI(p);
 		}
 		return true;

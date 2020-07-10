@@ -10,7 +10,7 @@ public class MachineInfo {
 
 	private long memFree, memUsed, memeTotal, allThreadsCreated;
 	private double cpuUsage, memUsage;
-	private int cores, threads, availableProcessors;
+	private int cores, threads;
 
 	public MachineInfo() {
 		Runtime r = Runtime.getRuntime();
@@ -18,7 +18,6 @@ public class MachineInfo {
 		memFree = r.freeMemory() / 1048576L;
 		memeTotal = r.maxMemory() / 1048576L;
 		memUsage = (double) memUsed / (double) memeTotal * 100.0;
-		availableProcessors = r.availableProcessors();
 
 		OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();
 		cpuUsage = osMXBean.getSystemLoadAverage();

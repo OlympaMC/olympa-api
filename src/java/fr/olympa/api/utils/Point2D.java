@@ -1,5 +1,6 @@
 package fr.olympa.api.utils;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 
 public class Point2D {
@@ -16,6 +17,11 @@ public class Point2D {
 		this.z = loc.getBlockZ();
 	}
 
+	public Point2D(Chunk chunk) {
+		this.x = chunk.getX();
+		this.z = chunk.getZ();
+	}
+	
 	public String toString() {
 		return x + "|" + z;
 	}
@@ -29,6 +35,7 @@ public class Point2D {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == this) return true;
 		if (obj instanceof Point2D) {
 			Point2D other = (Point2D) obj;
 			return other.x == x && other.z == z;

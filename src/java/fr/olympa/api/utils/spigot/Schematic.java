@@ -114,7 +114,7 @@ public class Schematic {
 
 	}
 	
-	static class EmptyBuildBlock{
+	public static class EmptyBuildBlock {
 
 		public int x, y, z;
 
@@ -130,7 +130,7 @@ public class Schematic {
 
 	}
 	
-	static class DataBuildBlock extends EmptyBuildBlock {
+	public static class DataBuildBlock extends EmptyBuildBlock {
 
 		public BlockData data;
 		public NBTTagCompound tileEntity;

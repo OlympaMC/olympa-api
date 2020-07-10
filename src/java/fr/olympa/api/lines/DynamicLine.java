@@ -12,10 +12,10 @@ public class DynamicLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 		this(value, null);
 	}
 
-	public DynamicLine(Function<T, String> value, Observable observable) {
+	public DynamicLine(Function<T, String> value, Observable globalObservable) {
 		this.value = value;
 
-		if (observable != null) observable.observe("dynamic_line_" + hashCode(), this::updateGlobal);
+		if (globalObservable != null) globalObservable.observe("dynamic_line_" + hashCode(), this::updateGlobal);
 	}
 
 	@Override

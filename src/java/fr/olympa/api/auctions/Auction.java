@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.economy.MoneyPlayerInterface;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
@@ -57,7 +58,7 @@ public class Auction {
 		}
 		if (buyer.getGameMoney().withdraw(price)) {
 			SpigotUtils.giveItems(p, item);
-			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %f ont été retirés de ton compte !", price);
+			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %s ont été retirés de ton compte !", OlympaMoney.format(price));
 			try {
 				manager.boughtAuction(this);
 			}catch (SQLException e) {
@@ -96,7 +97,7 @@ public class Auction {
 
 	public ItemStack getShownItem() {
 		ItemStack item = this.item.clone();
-		ItemUtils.loreAdd(item, "", "§8---------------------", "", "§ePrix: §6§l" + price, "§eProposé par §6§l" + player.getName(), hasExpired() ? "" : "§eExpire dans §6" + getTimeBeforeExpiration());
+		ItemUtils.loreAdd(item, "", "§8§m---------------------", "", "§ePrix: §6§l" + OlympaMoney.format(price), "§eProposé par §6§l" + player.getName(), hasExpired() ? "" : "§eExpire dans §6" + getTimeBeforeExpiration());
 		return item;
 	}
 

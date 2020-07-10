@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.FixedLine;
@@ -18,51 +18,69 @@ import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class Hologram extends AbstractObservable implements LinesHolder<Hologram>, ConfigurationSerializable {
+public class Hologram extends AbstractObservable {
 
 	private static final double LINE_SPACING = 0.3;
 
-	private final List<Line> lines = new ArrayList<>();
+	private final List<HologramLine> lines = new ArrayList<>();
 	private Location bottom;
 
-	final int internalID;
+	private final int id;
+	private final FixedMetadataValue entityMetadata;
+	private final boolean persistent;
 	
-	public Hologram(Location bottom, AbstractLine<Hologram>... lines) {
-		this.bottom = bottom.clone();
-		this.bottom.setPitch(0);
-		this.bottom.setYaw(0);
+	Hologram(int id, Location bottom, boolean persistent, AbstractLine<HologramLine>... lines) {
+		setBottom(bottom);
 		
-		internalID = OlympaCore.getInstance().getHologramsManager().addHologram(this);
+		this.id = id;
+		this.entityMetadata = new FixedMetadataValue(OlympaCore.getInstance(), id);
+		this.persistent = persistent;
 
-		for (AbstractLine<Hologram> line : lines) {
+		for (AbstractLine<HologramLine> line : lines) {
 			addLine(line);
 		}
+		
+		spawnEntities();
 	}
 
 	public Location getBottom() {
 		return bottom;
 	}
 	
+	private void setBottom(Location newBottom) {
+		bottom = newBottom.clone();
+		bottom.setPitch(0);
+		bottom.setYaw(0);
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public boolean isPersistent() {
+		return persistent;
+	}
+	
 	public boolean containsArmorStand(ArmorStand stand) {
-		for (Line line : lines) {
+		for (HologramLine line : lines) {
 			if (line.entity.equals(stand)) return true;
 		}
 		return false;
 	}
 
-	public void addLine(AbstractLine<Hologram> line) {
-		lines.add(new Line(line));
-		lines.forEach(Line::updatePosition);
+	public void addLine(AbstractLine<HologramLine> line) {
+		lines.add(new HologramLine(line));
+		lines.forEach(HologramLine::updatePosition);
 		update();
 	}
 
-	public void removeLine(AbstractLine<Hologram> line) {
+	public void removeLine(AbstractLine<HologramLine> line) {
 		for (int i = 0; i < lines.size(); i++) {
-			Line hline = lines.get(i);
+			HologramLine hline = lines.get(i);
 			if (hline.line == line) {
-				hline.destroy();
+				hline.destroyEntity();
 				lines.remove(i);
-				lines.forEach(Line::updatePosition);
+				lines.forEach(HologramLine::updatePosition);
 				update();
 				break;
 			}
@@ -70,87 +88,101 @@ public class Hologram extends AbstractObservable implements LinesHolder<Hologram
 	}
 
 	public void removeLine(int index) {
-		lines.remove(index).destroy();
-		lines.forEach(Line::updatePosition);
+		lines.remove(index).destroyEntity();
+		lines.forEach(HologramLine::updatePosition);
 		update();
 	}
 
-	@Override
-	public void update(AbstractLine<Hologram> line) {
-		for (Line hline : lines) {
-			if (hline.line == line) {
-				hline.updateText();
-				break;
-			}
-		}
-	}
-
 	public void move(Location newBottom) {
-		this.bottom = newBottom.clone();
-		lines.forEach(Line::updatePosition);
+		setBottom(newBottom);
+		lines.forEach(HologramLine::updatePosition);
 		update();
 	}
 
 	@Override
 	public String toString() {
-		return lines.stream().map(x -> x.line.getValue(this)).collect(Collectors.joining("§7§l | "));
+		return lines.stream().map(x -> x.line.getValue(x)).collect(Collectors.joining("§7§l | §r"));
 	}
 
 	public void remove() {
 		OlympaCore.getInstance().getHologramsManager().deleteHologram(this);
+	}
+	
+	void destroyEntities() {
+		lines.forEach(HologramLine::destroyEntity);
+	}
+	
+	void spawnEntities() {
+		lines.forEach(HologramLine::spawnEntity);
+	}
+	
+	void destroy() {
 		clearObservers();
-		lines.forEach(Line::destroy);
+		destroyEntities();
 		lines.clear();
 	}
 
-	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();
-		map.put("bottom", SpigotUtils.convertLocationToString(getBottom()));
+		map.put("bottom", SpigotUtils.convertLocationToString(bottom));
 		map.put("lines", lines.stream().map(x -> {
-			AbstractLine<Hologram> line = x.line;
+			AbstractLine<HologramLine> line = x.line;
 			if (line instanceof ConfigurationSerializable) return line;
 			return new FixedLine<>("§c" + line.getClass().getSimpleName() + " cannot be serialized");
 		}).collect(Collectors.toList()));
 		return map;
 	}
 
-	public static Hologram deserialize(Map<String, Object> map) {
-		return new Hologram(SpigotUtils.convertStringToLocation((String) map.get("bottom")), ((List<AbstractLine<Hologram>>) map.get("lines")).toArray(AbstractLine[]::new));
+	static Hologram deserialize(Map<String, Object> map, int id, boolean persistent) {
+		return new Hologram(id, SpigotUtils.convertStringToLocation((String) map.get("bottom")), persistent, ((List<AbstractLine<HologramLine>>) map.get("lines")).toArray(AbstractLine[]::new));
 	}
 
-	class Line {
-		private final AbstractLine<Hologram> line;
-		private final ArmorStand entity;
+	public class HologramLine implements LinesHolder<HologramLine> {
+		private final AbstractLine<HologramLine> line;
+		private ArmorStand entity;
 
-		public Line(AbstractLine<Hologram> line) {
+		public HologramLine(AbstractLine<HologramLine> line) {
 			this.line = line;
-			this.entity = getBottom().getWorld().spawn(getBottom(), ArmorStand.class);
+		}
+		
+		private void spawnEntity() {
+			if (entity != null) return;
+			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);
 			entity.setSmall(true);
 			entity.setVisible(false);
 			entity.setInvulnerable(true);
-			entity.getPersistentDataContainer().set(HologramsManager.HOLOGRAM, PersistentDataType.INTEGER, internalID);
-			line.addHolder(Hologram.this);
-			updateText();
+			entity.setPersistent(false);
+			entity.setMetadata("hologram", entityMetadata);
+			update(line, line.getValue(this));
+			line.addHolder(this);
 		}
 
+		private void destroyEntity() {
+			if (entity != null) {
+				entity.remove();
+				entity = null;
+			}
+			line.removeHolder(this);
+		}
+		
+		public Location getPosition() {
+			return bottom.clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0);
+		}
+		
 		public void updatePosition() {
-			entity.teleport(getBottom().clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0));
+			if (entity == null) return;
+			entity.teleport(getPosition());
 		}
-
-		public void updateText() {
-			String value = line.getValue(Hologram.this);
-			if (!"".equals(value)) {
+		
+		@Override
+		public void update(AbstractLine<HologramLine> line, String newValue) {
+			if (entity == null) return;
+			if (!"".equals(newValue)) {
 				entity.setCustomNameVisible(true);
-				entity.setCustomName(value);
+				entity.setCustomName(newValue);
 			}else entity.setCustomNameVisible(false);
-		}
-
-		public void destroy() {
-			line.removeHolder(Hologram.this);
-			entity.remove();
 		}
 	}
 

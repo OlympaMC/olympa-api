@@ -100,6 +100,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	public String stringItemLeave = "Quitter le clan";
 	public String stringAddedMoney = "Tu viens d'ajouter %s à la cagnotte du clan !";
 	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
+	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
 	
 	public String stringItemDisband = "§cDémenteler le clan";
 	
@@ -153,6 +154,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	
 	public Set<Entry<Integer, T>> getClans() {
 		return clans.entrySet();
+	}
+	
+	public int getMaxClanNameLength() {
+		return 16;
 	}
 	
 	public T createClan(ClanPlayerInterface<T> p, String name) throws SQLException {
@@ -248,6 +253,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 			statement.setInt(1, clan.getID());
 			statement.executeUpdate();
 			plugin.sendMessage("Clan " + clan.getName() + " supprimé.");
+			clans.remove(clan.getID());
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			plugin.getLogger().severe("Le groupe " + clan.getID() + " n'a pas pu être supprimé de la base de données.");

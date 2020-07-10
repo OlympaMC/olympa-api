@@ -142,7 +142,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		}else if (slot == slotDisband()) {
 			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
 		}else if (slot == slotMoney()) {
-			Prefix.INFO.sendMessage(p, "Indique la quantité d'argent que tu veux mettre dans la cagnotte.");
+			Prefix.DEFAULT.sendMessage(p, "Indique la quantité d'argent que tu veux mettre dans la cagnotte.");
 			new TextEditor<>(p, (amount) -> {
 				player.getGameMoney().withdraw(amount);
 				clan.getMoney().give(amount);

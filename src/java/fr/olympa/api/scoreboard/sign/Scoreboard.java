@@ -60,7 +60,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	@Override
-	public void update(AbstractLine<Scoreboard<T>> line) {
+	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
 		needsUpdate(); // TODO update seulement la ligne
 	}
 	
@@ -90,7 +90,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void initScoreboard() {
-		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, SbUtils.generateRandomPassword(16), manager.lines.size());
+		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, SbUtils.generateRandomPassword(16), lines.size());
 		sb.create();
 		int sbLine = 0;
 		for (Line line : lines) {
@@ -123,6 +123,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		sb.create();
 		int sbLine = 0;
 		updateLock.lock();
+		sb.maxSize = lines.size();
 		for (Line line : lines) {
 			String[] value = line.getLines(p);
 			for (String internalLine : value)
