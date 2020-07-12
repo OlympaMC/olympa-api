@@ -13,11 +13,11 @@ import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
-public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
+public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> extends ComplexCommand {
 
-	private ClansManager<T> manager;
+	private ClansManager<T, D> manager;
 
-	public ClansCommand(ClansManager<T> manager, String name, String description, OlympaPermission permission, String... aliases) {
+	public ClansCommand(ClansManager<T, D> manager, String name, String description, OlympaPermission permission, String... aliases) {
 		super(manager.plugin, name, description, permission, aliases);
 		this.manager = manager;
 	}
@@ -26,10 +26,10 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 	public boolean noArguments(CommandSender sender) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			ClanPlayerInterface<T> olp = AccountProvider.get(p.getUniqueId());
+			ClanPlayerInterface<T, D> olp = AccountProvider.get(p.getUniqueId());
 			T clan = olp.getClan();
 			if (clan == null) {
-				new NoClanGUI<T>(p, manager).create(p);
+				new NoClanGUI<>(p, manager).create(p);
 			}else manager.provideManagementGUI(olp).create(p);
 			return true;
 		}
@@ -38,7 +38,7 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 
 	@Cmd (player = true, min = 1, syntax = "<nom>")
 	public void create(CommandContext cmd) {
-		ClanPlayerInterface<T> player = getOlympaPlayer();
+		ClanPlayerInterface<T, D> player = getOlympaPlayer();
 		if (player.getClan() != null) {
 			sendError(manager.stringYouAlreadyInClan);
 			return;
@@ -129,7 +129,7 @@ public class ClansCommand<T extends Clan<T>> extends ComplexCommand {
 	}
 
 	protected T getPlayerClan(boolean chief) {
-		ClanPlayerInterface<T> p = getOlympaPlayer();
+		ClanPlayerInterface<T, D> p = getOlympaPlayer();
 		T clan = (T) p.getClan();
 		if (clan == null){
 			sendError(manager.stringMustBeInClan);

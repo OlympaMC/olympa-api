@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.clans.Clan;
+import fr.olympa.api.clans.ClanPlayerData;
 import fr.olympa.api.clans.ClansManager;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.gui.Inventories;
@@ -17,11 +18,11 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 
-public class NoClanGUI<T extends Clan<T>> extends OlympaGUI {
+public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> extends OlympaGUI {
 
-	private ClansManager<T> manager;
+	private ClansManager<T, D> manager;
 
-	public NoClanGUI(Player p, ClansManager<T> manager) {
+	public NoClanGUI(Player p, ClansManager<T, D> manager) {
 		super(manager.stringInventoryJoin, InventoryType.HOPPER);
 		this.manager = manager;
 
@@ -55,7 +56,7 @@ public class NoClanGUI<T extends Clan<T>> extends OlympaGUI {
 			}).enterOrLeave();
 			break;
 		case 3:
-			new InvitationsGUI<T>(p, manager).create(p);
+			new InvitationsGUI<>(p, manager).create(p);
 			break;
 		}
 		return true;

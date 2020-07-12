@@ -23,23 +23,23 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
-public abstract class Clan<T extends Clan<T>> {
+public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> {
 
-	protected final ClansManager<T> manager;
+	protected final ClansManager<T, D> manager;
 	protected final int id;
 
-	protected Map<OlympaPlayerInformations, ClanPlayerData<T>> members = new HashMap<>(8);
+	protected Map<OlympaPlayerInformations, D> members = new HashMap<>(8);
 	private OlympaPlayerInformations chief;
 	private String name;
 	private int maxSize;
 	private OlympaMoney money;
 	private long created;
 
-	public Clan(ClansManager<T> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
+	public Clan(ClansManager<T, D> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
 		this(manager, id, name, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
 	}
 
-	public Clan(ClansManager<T> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
+	public Clan(ClansManager<T, D> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
 		this.manager = manager;
 		this.id = id;
 		this.name = name;
@@ -50,7 +50,7 @@ public abstract class Clan<T extends Clan<T>> {
 		this.money.observe("clan_update_db", this::updateMoney);
 	}
 
-	public boolean addPlayer(ClanPlayerInterface<T> p) {
+	public boolean addPlayer(ClanPlayerInterface<T, D> p) {
 		if (members.size() >= getMaxSize())
 			return false;
 		p.setClan((T) this);
@@ -86,7 +86,7 @@ public abstract class Clan<T extends Clan<T>> {
 	}
 
 	public void executeAllPlayers(Consumer<Player> consumer) {
-		for (ClanPlayerData<T> member : members.values())
+		for (ClanPlayerData<T, D> member : members.values())
 			if (member.isConnected()) consumer.accept(member.getConnectedPlayer().getPlayer());
 	}
 
@@ -102,7 +102,7 @@ public abstract class Clan<T extends Clan<T>> {
 		return maxSize;
 	}
 
-	public Collection<ClanPlayerData<T>> getMembers() {
+	public Collection<D> getMembers() {
 		return members.values();
 	}
 
@@ -126,7 +126,7 @@ public abstract class Clan<T extends Clan<T>> {
 		return created;
 	}
 
-	public void memberJoin(ClanPlayerInterface<T> member) {
+	public void memberJoin(ClanPlayerInterface<T, D> member) {
 		members.get(member.getInformation()).playerJoin(member);
 
 		//List<String> names = members.values().stream().map(x -> x.getKey().getName()).collect(Collectors.toList());
@@ -134,11 +134,11 @@ public abstract class Clan<T extends Clan<T>> {
 		//NMS.sendPacket(NMS.addPlayersToTeam(manager.clan, names), p);
 	}
 
-	public void memberLeave(ClanPlayerInterface<T> p) {
+	public void memberLeave(ClanPlayerInterface<T, D> p) {
 		members.get(p.getInformation()).playerLeaves();
 	}
 
-	protected void removedOnlinePlayer(ClanPlayerInterface<T> oplayer) {
+	protected void removedOnlinePlayer(ClanPlayerInterface<T, D> oplayer) {
 		// packets pour mettre le suffix des autres joueurs en rouge pour le partant
 		Player player = oplayer.getPlayer();
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
@@ -154,7 +154,7 @@ public abstract class Clan<T extends Clan<T>> {
 	public void removePlayer(OlympaPlayerInformations pinfo, boolean message) {
 		if (message)
 			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
-		ClanPlayerData<T> member = members.remove(pinfo);
+		D member = members.remove(pinfo);
 		// packets pour mettre le joueur partant sans suffix pour tous le monde
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, "");

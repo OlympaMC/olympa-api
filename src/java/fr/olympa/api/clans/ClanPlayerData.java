@@ -2,17 +2,17 @@ package fr.olympa.api.clans;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
 
-public class ClanPlayerData<T extends Clan<T>> {
+public abstract class ClanPlayerData<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> {
 	
 	protected final OlympaPlayerInformations playerInformations;
 	
-	protected ClanPlayerInterface<T> player;
+	protected ClanPlayerInterface<T, D> player;
 	
 	public ClanPlayerData(OlympaPlayerInformations informations) {
 		this.playerInformations = informations;
 	}
 	
-	public void playerJoin(ClanPlayerInterface<T> player) {
+	public void playerJoin(ClanPlayerInterface<T, D> player) {
 		this.player = player;
 	}
 	
@@ -28,7 +28,7 @@ public class ClanPlayerData<T extends Clan<T>> {
 		return player != null;
 	}
 	
-	public ClanPlayerInterface<T> getConnectedPlayer() {
+	public ClanPlayerInterface<T, D> getConnectedPlayer() {
 		return player;
 	}
 	

@@ -23,7 +23,7 @@ import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.utils.Prefix;
 
-public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
+public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> extends OlympaGUI {
 
 	private static ItemStack noMember = ItemUtils.skullCustom("§cPas de membre", "ewogICJ0aW1lc3RhbXAiIDogMTU5MTQzNzg2Njk4MywKICAicHJvZmlsZUlkIiA6ICI2MDZlMmZmMGVkNzc0ODQyOWQ2Y2UxZDMzMjFjNzgzOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfUXVlc3Rpb24iLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZTA2M2NhZmI0NjdhNWM4ZGU0M2VjNzg2MTkzOTlmMzY5ZjRhNTI0MzRkYTgwMTdhOTgzY2RkOTI1MTZhMCIKICAgIH0KICB9Cn0=");
 	private static ItemStack noMemberInvite = ItemUtils.skullCustom("§bInviter un nouveau membre", "ewogICJ0aW1lc3RhbXAiIDogMTU5MTQzNzg2Njk4MywKICAicHJvZmlsZUlkIiA6ICI2MDZlMmZmMGVkNzc0ODQyOWQ2Y2UxZDMzMjFjNzgzOCIsCiAgInByb2ZpbGVOYW1lIiA6ICJNSEZfUXVlc3Rpb24iLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZTA2M2NhZmI0NjdhNWM4ZGU0M2VjNzg2MTkzOTlmMzY5ZjRhNTI0MzRkYTgwMTdhOTgzY2RkOTI1MTZhMCIKICAgIH0KICB9Cn0=");
@@ -32,15 +32,15 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 	private ItemStack leaveChief;
 	private ItemStack disband;
 
-	protected final ClansManager<T> manager;
-	protected final ClanPlayerInterface<T> player;
+	protected final ClansManager<T, D> manager;
+	protected final ClanPlayerInterface<T, D> player;
 	protected final OlympaPlayerInformations playerInformations;
 	protected final T clan;
 
 	protected boolean isChief;
 	private List<OlympaPlayerInformations> playersOrder = new ArrayList<>();
 
-	public ClanManagementGUI(ClanPlayerInterface<T> p, ClansManager<T> manager, int rows) {
+	public ClanManagementGUI(ClanPlayerInterface<T, D> p, ClansManager<T, D> manager, int rows) {
 		super(manager.stringInventoryManage, rows);
 		this.player = p;
 		this.manager = manager;
@@ -65,7 +65,7 @@ public class ClanManagementGUI<T extends Clan<T>> extends OlympaGUI {
 		inv.setItem(slotLeave(), isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(slotDisband(), disband);
 
-		for (ClanPlayerData<T> entry : clan.getMembers()) {
+		for (D entry : clan.getMembers()) {
 			OlympaPlayerInformations member = entry.getPlayerInformations();
 			int slot = slotPlayerFirst() + playersOrder.size();
 			Consumer<ItemStack> callback = item -> inv.setItem(slot, item);

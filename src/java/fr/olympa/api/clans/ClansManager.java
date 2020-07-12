@@ -37,7 +37,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class ClansManager<T extends Clan<T>> implements Listener {
+public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> implements Listener {
 	
 	//	private static ScoreboardTeam createOrGetTeam(Scoreboard sc, String name, ChatColor color) throws ReflectiveOperationException {
 	//		Team team = sc.getTeam(name);
@@ -160,7 +160,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		return 16;
 	}
 	
-	public T createClan(ClanPlayerInterface<T> p, String name) throws SQLException {
+	public T createClan(ClanPlayerInterface<T, D> p, String name) throws SQLException {
 		PreparedStatement statement = createClanStatement.getStatement();
 		statement.setString(1, name);
 		statement.setLong(2, p.getId());
@@ -180,11 +180,9 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	
 	protected abstract T provideClan(int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
 	
-	protected ClanPlayerData<T> createClanData(OlympaPlayerInformations informations) {
-		return new ClanPlayerData<>(informations);
-	}
+	protected abstract D createClanData(OlympaPlayerInformations informations);
 	
-	public ClanManagementGUI<T> provideManagementGUI(ClanPlayerInterface<T> player) {
+	public ClanManagementGUI<T, D> provideManagementGUI(ClanPlayerInterface<T, D> player) {
 		return new ClanManagementGUI<>(player, this, 2);
 	}
 	
@@ -208,7 +206,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	}
 	
 	public void invite(T clan, Player inviter, Player targetPlayer) {
-		ClanPlayerInterface<T> target = AccountProvider.get(targetPlayer.getUniqueId());
+		ClanPlayerInterface<T, D> target = AccountProvider.get(targetPlayer.getUniqueId());
 		if (target.getClan() != null) {
 			Prefix.DEFAULT_BAD.sendMessage(inviter, stringAlreadyInClan);
 			return;
@@ -268,7 +266,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(OlympaPlayerLoadEvent e) {
-		ClanPlayerInterface<T> oplayer = e.getOlympaPlayer();
+		ClanPlayerInterface<T, D> oplayer = e.getOlympaPlayer();
 		//		String name = e.getPlayer().getName();
 		//		if (!enemiesBukkit.hasEntry(name)) {
 		//			enemiesBukkit.addEntry(name);
@@ -282,7 +280,7 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		ClanPlayerInterface<T> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
+		ClanPlayerInterface<T, D> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
 		if (oplayer == null)
 			return;
 		T clan = oplayer.getClan();
@@ -295,10 +293,10 @@ public abstract class ClansManager<T extends Clan<T>> implements Listener {
 		for (Entry<Integer, T> entry : this.getClans()) {
 			T clan = entry.getValue();
 			String clanName = entry.getValue().getName();
-			Collection<ClanPlayerData<T>> members = clan.getMembers();
+			Collection<D> members = clan.getMembers();
 			ChatColor chatColor = members.stream().anyMatch(e -> e.getPlayerInformations().getUUID().equals(p.getUniqueId())) ? ChatColor.GREEN : ChatColor.RED;
 			Nametag nameTag = new Nametag(null, " " + chatColor + clanName);
-			for (ClanPlayerData<T> m : members) nameTagApi.updateFakeNameTag(m.getPlayerInformations().getName(), nameTag, Arrays.asList(p));
+			for (D m : members) nameTagApi.updateFakeNameTag(m.getPlayerInformations().getName(), nameTag, Arrays.asList(p));
 		}
 	}
 	
