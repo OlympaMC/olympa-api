@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.scoreboard.tab.Nametag;
@@ -54,19 +53,18 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		if (members.size() >= getMaxSize())
 			return false;
 		p.setClan((T) this);
-		// packets pour mettre le nouveau joueur en vert pour les anciens
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, " §a" + this.getName());
 		nameTagApi.updateFakeNameTag(p.getPlayer(), nametag, getPlayers());
-		//Player[] players = getPlayersArray();
-		//List<String> joiner = Arrays.asList(p.getName());
-		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.enemies, joiner), players);
-		//NMS.sendPacket(NMS.addPlayersToTeam(manager.clan, joiner), players);
-		// packets pour mettre les autres joueurs en vert pour le nouveau
 		for (Player player : getPlayers()) nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
 		members.put(p.getInformation(), manager.createClanData(p.getInformation()));
 		memberJoin(p);
 		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
+		try {
+			manager.insertPlayerInClan(p, this);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return true;
 	}
 
@@ -75,8 +73,8 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
 
-	public boolean contains(OlympaPlayer p) {
-		return members.containsKey(p.getInformation());
+	public boolean contains(OlympaPlayerInformations informations) {
+		return members.containsKey(informations);
 	}
 
 	public void disband() {
@@ -106,6 +104,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return members.values();
 	}
 
+	public D getMember(OlympaPlayerInformations player) {
+		return members.get(player);
+	}
+	
 	public int getMembersAmount() {
 		return members.size();
 	}
@@ -128,10 +130,6 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	public void memberJoin(ClanPlayerInterface<T, D> member) {
 		members.get(member.getInformation()).playerJoin(member);
-
-		//List<String> names = members.values().stream().map(x -> x.getKey().getName()).collect(Collectors.toList());
-		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.enemies, names), p);
-		//NMS.sendPacket(NMS.addPlayersToTeam(manager.clan, names), p);
 	}
 
 	public void memberLeave(ClanPlayerInterface<T, D> p) {
@@ -139,15 +137,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	protected void removedOnlinePlayer(ClanPlayerInterface<T, D> oplayer) {
-		// packets pour mettre le suffix des autres joueurs en rouge pour le partant
 		Player player = oplayer.getPlayer();
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, " §c" + this.getName());
 		for (Player otherP : getPlayers()) nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));
-		// packets pour mettre les autres joueurs en rouge pour le partant
-		//List<String> names = members.values().stream().map(x -> x.getKey().getName()).collect(Collectors.toList());
-		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.clan, names), player);
-		//NMS.sendPacket(NMS.addPlayersToTeam(manager.enemies, names), player);
 		oplayer.setClan(null);
 	}
 
@@ -155,26 +148,18 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		if (message)
 			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
 		D member = members.remove(pinfo);
-		// packets pour mettre le joueur partant sans suffix pour tous le monde
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, "");
 		nameTagApi.updateFakeNameTag(pinfo.getName(), nametag, Bukkit.getOnlinePlayers());
-		// packets pour mettre le joueur partant en rouge pour les restants
-		//Player[] players = getPlayersArray();
-		//List<String> leaver = Arrays.asList(pinfo.getName());
-		//NMS.sendPacket(NMS.removePlayersFromTeam(manager.clan, leaver), players);
-		//NMS.sendPacket(NMS.addPlayersToTeam(manager.enemies, leaver), players);
 
+		try {
+			manager.removePlayerFromClan(pinfo);
+		}catch (SQLException e) {
+			e.printStackTrace();
+			broadcast("Une erreur est survenue.");
+		}
 		if (member.isConnected()) {
 			removedOnlinePlayer(member.getConnectedPlayer());
-		}else {
-			try {
-				manager.removeOfflinePlayerFromClan(pinfo);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				broadcast("Une erreur est survenue.");
-			}
-			return;
 		}
 	}
 

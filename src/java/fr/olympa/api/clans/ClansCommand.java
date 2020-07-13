@@ -120,7 +120,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		}
 
 		OlympaPlayer target = AccountProvider.get(cmd.<Player>getArgument(0).getUniqueId());
-		if (!clan.contains(target)) {
+		if (!clan.contains(target.getInformation())) {
 			sendError(manager.stringPlayerNotInClan, target.getName());
 			return;
 		}
