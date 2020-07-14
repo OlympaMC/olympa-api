@@ -32,4 +32,8 @@ public abstract class ClanPlayerData<T extends Clan<T, D>, D extends ClanPlayerD
 		return player;
 	}
 	
+	public boolean isChief() {
+		return player.getClan().getChief().equals(playerInformations);
+	}
+	
 }

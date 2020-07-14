@@ -34,18 +34,18 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 
 	protected final ClansManager<T, D> manager;
 	protected final ClanPlayerInterface<T, D> player;
-	protected final OlympaPlayerInformations playerInformations;
+	protected final D playerData;
 	protected final T clan;
 
 	protected boolean isChief;
-	private List<OlympaPlayerInformations> playersOrder = new ArrayList<>();
+	private List<D> playersOrder = new ArrayList<>();
 
 	public ClanManagementGUI(ClanPlayerInterface<T, D> p, ClansManager<T, D> manager, int rows) {
 		super(manager.stringInventoryManage, rows);
 		this.player = p;
 		this.manager = manager;
-		this.playerInformations = p.getInformation();
 		this.clan = (T) p.getClan();
+		this.playerData = clan.getMember(p.getInformation());
 
 		leave = ItemUtils.item(Material.OAK_DOOR, "§c" + manager.stringItemLeave);
 		leaveChief = ItemUtils.item(Material.OAK_DOOR, "§c§m" + manager.stringItemLeave, manager.stringItemLeaveChiefLore);
@@ -58,28 +58,59 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 		inv.clear();
 		playersOrder.clear();
 
-		isChief = clan.getChief() == playerInformations;
+		isChief = playerData.isChief();
 
 		inv.setItem(slotInformations(), getInformationsItem());
 		inv.setItem(slotMoney(), ItemUtils.item(Material.EMERALD, "§aMettre de l'argent dans la cagnotte", "§eCagnotte : §6§l" + clan.getMoney().getFormatted()));
 		inv.setItem(slotLeave(), isChief ? leaveChief : leave);
 		if (isChief) inv.setItem(slotDisband(), disband);
 
-		for (D entry : clan.getMembers()) {
-			OlympaPlayerInformations member = entry.getPlayerInformations();
-			int slot = slotPlayerFirst() + playersOrder.size();
+		for (D player : clan.getMembers()) {
+			int slot = getPlayerSlot(playersOrder.size());
 			Consumer<ItemStack> callback = item -> inv.setItem(slot, item);
-			if (isChief) {
-				String[] lore = member == playerInformations ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
-				ItemUtils.skull(callback, "§a" + member.getName(), member.getName(), lore);
-			}else {
-				ItemUtils.skull(callback, "§a" + member.getName(), member.getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
-			}
-			playersOrder.add(member);
+			setMemberItem(player, callback);
+			playersOrder.add(player);
 		}
 		for (int id = playersOrder.size(); id < clan.getMaxSize(); id++) {
-			inv.setItem(slotPlayerFirst() + id, isChief ? noMemberInvite : noMember);
+			inv.setItem(getPlayerSlot(id), isChief ? noMemberInvite : noMember);
 		}
+	}
+
+	private void setMemberItem(D member, Consumer<ItemStack> callback) {
+		if (isChief) {
+			String[] lore = member == playerData ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
+			ItemUtils.skull(callback, "§a" + member.getPlayerInformations().getName(), member.getPlayerInformations().getName(), lore);
+		}else {
+			ItemUtils.skull(callback, "§a" + member.getPlayerInformations().getName(), member.getPlayerInformations().getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
+		}
+	}
+	
+	private void memberItemClick(Player p, ClickType click, D member) {
+		if (member == playerData) return;
+		BiConsumer<T, OlympaPlayerInformations> consumer;
+		String msg;
+		if (click == ClickType.LEFT) {
+			consumer = (clan, info) -> clan.removePlayer(info, true);
+			msg = String.format(manager.stringSureKick, member.getPlayerInformations().getName());
+		}else if (click == ClickType.RIGHT) {
+			consumer = Clan::setChief;
+			msg = String.format(manager.stringSureChief, member.getPlayerInformations().getName());
+		}else return;
+		new ConfirmGUI(() -> {
+			consumer.accept(clan, member.getPlayerInformations());
+			refreshInventory();
+			create(p);
+		}, () -> {
+			this.create(p);
+		}, msg).create(p);
+	}
+	
+	protected int getPlayerSlot(int id) {
+		return 9 + id;
+	}
+	
+	protected int getPlayerID(int slot) {
+		return slot - 9;
 	}
 
 	protected int slotInformations() {
@@ -88,10 +119,6 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 
 	protected int slotMoney() {
 		return 8;
-	}
-
-	protected int slotPlayerFirst() {
-		return 9;
 	}
 
 	protected int slotDisband() {
@@ -109,35 +136,22 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == slotLeave()) {
 			if (!isChief) {
-				new ConfirmGUI(() -> clan.removePlayer(playerInformations, true), () -> this.create(p), manager.stringSureLeave).create(p);
+				new ConfirmGUI(() -> clan.removePlayer(playerData.getPlayerInformations(), true), () -> this.create(p), manager.stringSureLeave).create(p);
 			}
-		}else if (isChief && slot >= slotPlayerFirst() && slot < slotPlayerFirst() + clan.getMaxSize()) {
-			if (playersOrder.size() <= slot - slotPlayerFirst()) {
-				Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur à inviter.");
-				new TextEditor<Player>(p, (target) -> {
-					manager.invite(clan, p, target);
-					refreshInventory();
-					create(p);
-				}, () -> this.create(p), false, PlayerParser.PLAYER_PARSER).enterOrLeave();
-			}else {
-				OlympaPlayerInformations member = playersOrder.get(slot - slotPlayerFirst());
-				if (member == playerInformations) return true;
-				BiConsumer<T, OlympaPlayerInformations> consumer;
-				String msg;
-				if (click == ClickType.LEFT){
-					consumer = (clan, info) -> clan.removePlayer(info, true);
-					msg = String.format(manager.stringSureKick, member.getName());
-				}else if (click == ClickType.RIGHT) {
-					consumer = Clan::setChief;
-					msg = String.format(manager.stringSureChief, member.getName());
-				}else return true;
-				new ConfirmGUI(() -> {
-					consumer.accept(clan, member);
-					refreshInventory();
-					create(p);
-				}, () -> {
-					this.create(p);
-				}, msg).create(p);
+		}else if (isChief) {
+			int playerID = getPlayerID(slot);
+			if (slot >= 0 && playerID < clan.getMaxSize()) {
+				if (playersOrder.size() <= playerID) {
+					Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur à inviter.");
+					new TextEditor<Player>(p, (target) -> {
+						manager.invite(clan, p, target);
+						refreshInventory();
+						create(p);
+					}, () -> this.create(p), false, PlayerParser.PLAYER_PARSER).enterOrLeave();
+				}else {
+					D member = playersOrder.get(playerID);
+					memberItemClick(p, click, member);
+				}
 			}
 		}else if (slot == slotDisband()) {
 			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);

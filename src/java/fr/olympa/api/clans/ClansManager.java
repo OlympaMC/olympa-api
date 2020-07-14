@@ -3,6 +3,7 @@ package fr.olympa.api.clans;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -51,10 +51,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	private final OlympaStatement createClanStatement;
 	private final OlympaStatement removeClanStatement;
-	public final OlympaStatement updateClanNameStatement;
-	public final OlympaStatement updateClanChiefStatement;
-	public final OlympaStatement updateClanMoneyStatement;
-	public final OlympaStatement updateClanMaxStatement;
 	private final OlympaStatement insertPlayerInClanStatement;
 	private final OlympaStatement removePlayerInClanStatement;
 	
@@ -70,7 +66,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringClanJoined = "Tu viens de rejoindre le clan §l\"%s\"§r§a !";
 	public String stringClanFull = "Ce clan n'a plus la place pour accueillir un autre joueur...";
 	public String stringCantLeaveChief = "Tu ne peux pas quitter le clan en en étant le chef. Transfère la direction de celui-ci à un autre joueur.";
-	public String stringCantChiefSelf = "Tu ne peux pas te transférer la direction de ton propre.";
+	public String stringCantChiefSelf = "Tu ne peux pas te transférer la direction de ton propre clan.";
 	public String stringPlayerNotInClan = "Le joueur %s ne fait pas partie du clan.";
 	public String stringMustBeInClan = "Tu dois appartenir à un clan pour faire cette commande.";
 	public String stringMustBeChief = "Tu dois être le chef du clan pour effectuer cette commande.";
@@ -91,8 +87,12 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringAddedMoney = "Tu viens d'ajouter %s à la cagnotte du clan !";
 	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
 	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
-	
 	public String stringItemDisband = "§cDémenteler le clan";
+	
+	protected Column<T> nameColumn;
+	protected Column<T> chiefColumn;
+	protected Column<T> sizeColumn;
+	protected Column<T> moneyColumn;
 	
 	public ClansManager(OlympaAPIPlugin plugin, String clansName, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
@@ -101,21 +101,16 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		this.clansTable = "`" + clansName + "`";
 		this.playersTable = "`" + clansName + "_players`";
 		
-		StringJoiner columnsJoiner = new StringJoiner(", ");
-		columnsJoiner = addDBClansCollums(columnsJoiner);
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + clansTable + " (" +
-				columnsJoiner.toString() +
-				",  PRIMARY KEY (`id`))");
+		List<Column<T>> clansCollums = addDBClansCollums(new ArrayList<>());
+		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + clansTable + " (" + Column.toParameters(clansCollums) + ")");
+		Column.setUpdatable(clansCollums, playersTable, "`id`", Types.INTEGER, T::getID);
 		
-		List<Column> playersCollums = addDBPlayersCollums(new ArrayList<>());
+		List<Column<D>> playersCollums = addDBPlayersCollums(new ArrayList<>());
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + playersTable + " (" + Column.toParameters(playersCollums) + ")");
+		Column.setUpdatable(playersCollums, playersTable, "`player_id`", Types.BIGINT, x -> x.getPlayerInformations().getId());
 		
 		createClanStatement = new OlympaStatement("INSERT INTO " + clansTable + " (`name`, `chief`) VALUES (?, ?)", true);
 		removeClanStatement = new OlympaStatement("DELETE FROM " + clansTable + " WHERE (`id` = ?)");
-		updateClanNameStatement = new OlympaStatement("UPDATE " + clansTable + " SET `name` = ? WHERE (`id` = ?)");
-		updateClanChiefStatement = new OlympaStatement("UPDATE " + clansTable + " SET `chief` = ? WHERE (`id` = ?)");
-		updateClanMaxStatement = new OlympaStatement("UPDATE " + clansTable + " SET `max_size` = ? WHERE (`id` = ?)");
-		updateClanMoneyStatement = new OlympaStatement("UPDATE " + clansTable + " SET `money` = ? WHERE (`id` = ?)");
 		
 		insertPlayerInClanStatement = new OlympaStatement("INSERT INTO " + playersTable + " (`player_id`, `clan`) VALUES (?, ?)");
 		removePlayerInClanStatement = new OlympaStatement("UPDATE " + playersTable + " SET `clan` = -1 WHERE (`player_id` = ?)");
@@ -170,19 +165,19 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	protected abstract D provideClanData(OlympaPlayerInformations informations, ResultSet resultSet) throws SQLException;
 	
-	public StringJoiner addDBClansCollums(StringJoiner columnsJoiner) {
-		columnsJoiner.add("`id` int(11) unsigned NOT NULL AUTO_INCREMENT");
-		columnsJoiner.add("`name` varchar(45) NOT NULL");
-		columnsJoiner.add("`chief` bigint(20) NOT NULL");
-		columnsJoiner.add("`max_size` tinyint(1) NOT NULL DEFAULT " + defaultMaxSize);
-		columnsJoiner.add("`money` DOUBLE NOT NULL DEFAULT 0");
-		columnsJoiner.add("`created` DATE NOT NULL DEFAULT curdate()");
-		return columnsJoiner;
+	public List<Column<T>> addDBClansCollums(List<Column<T>> columns) {
+		columns.add(new Column<T>("id", "int(11) unsigned NOT NULL AUTO_INCREMENT").setPrimaryKey(true));
+		columns.add(nameColumn = new Column<T>("name", "varchar(45) NOT NULL").setUpdatable(true));
+		columns.add(chiefColumn = new Column<T>("chief", "bigint(20) NOT NULL").setUpdatable(true));
+		columns.add(sizeColumn = new Column<T>("max_size", "tinyint(1) NOT NULL DEFAULT " + defaultMaxSize).setUpdatable(true));
+		columns.add(moneyColumn = new Column<T>("money", "DOUBLE NOT NULL DEFAULT 0").setUpdatable(true));
+		columns.add(new Column<T>("created", "DATE NOT NULL DEFAULT curdate()"));
+		return columns;
 	}
 	
-	public List<Column> addDBPlayersCollums(List<Column> columns) {
-		columns.add(new Column("player_id", "BIGINT NON NULL", true));
-		columns.add(new Column("clan", "INT NON NULL"));
+	public List<Column<D>> addDBPlayersCollums(List<Column<D>> columns) {
+		columns.add(new Column<D>("player_id", "BIGINT NOT NULL").setPrimaryKey(true));
+		columns.add(new Column<D>("clan", "INT NOT NULL"));
 		return columns;
 	}
 	

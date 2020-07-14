@@ -1,7 +1,7 @@
 package fr.olympa.api.clans;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,6 +128,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return created;
 	}
 
+	public <M extends ClansManager<T, D>> M getClansManager() {
+		return (M) manager;
+	}
+	
 	public void memberJoin(ClanPlayerInterface<T, D> member) {
 		members.get(member.getInformation()).playerJoin(member);
 	}
@@ -165,54 +169,38 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	public void setChief(OlympaPlayerInformations p) {
 		try {
-			PreparedStatement statement = manager.updateClanChiefStatement.getStatement();
-			statement.setLong(1, p.getId());
-			statement.setInt(2, id);
-			statement.executeUpdate();
+			manager.chiefColumn.updateValue((T) this, chief.getId(), Types.INTEGER);
 			this.chief = p;
 			broadcast(String.format(manager.stringPlayerChief, p.getName()));
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			broadcast("Une erreur est survenue.");
+		}catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public void setMaxSize(int maxSize) {
 		try {
-			PreparedStatement statement = manager.updateClanMaxStatement.getStatement();
-			statement.setInt(1, maxSize);
-			statement.setInt(2, id);
-			statement.executeUpdate();
+			manager.sizeColumn.updateValue((T) this, maxSize, Types.INTEGER);
 			this.maxSize = maxSize;
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			broadcast("Une erreur est survenue.");
+		}catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public void setName(String name) {
 		try {
-			PreparedStatement statement = manager.updateClanNameStatement.getStatement();
-			statement.setString(1, name);
-			statement.setInt(2, id);
-			statement.executeUpdate();
+			manager.nameColumn.updateValue((T) this, name, Types.VARCHAR);
 			this.name = name;
 			broadcast(manager.stringNameChange);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			broadcast("Une erreur est survenue.");
+		}catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
 	private void updateMoney() {
 		try {
-			PreparedStatement statement = manager.updateClanMoneyStatement.getStatement();
-			statement.setDouble(1, money.get());
-			statement.setInt(2, id);
-			statement.executeUpdate();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			broadcast("Une erreur est survenue.");
+			manager.moneyColumn.updateValue((T) this, money.get(), Types.DOUBLE);
+		}catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -1,6 +1,9 @@
 package fr.olympa.api.clans;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,6 +23,22 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 	public ClansCommand(ClansManager<T, D> manager, String name, String description, OlympaPermission permission, String... aliases) {
 		super(manager.plugin, name, description, permission, aliases);
 		this.manager = manager;
+		super.addArgumentParser("CLANPLAYER", (player) -> {
+			ClanPlayerInterface<T, D> p = getOlympaPlayer();
+			T clan = (T) p.getClan();
+			if (clan == null) return Collections.EMPTY_LIST;
+			return clan.getMembers().stream().map(x -> x.getPlayerInformations().getName()).collect(Collectors.toList());
+		}, arg -> {
+			ClanPlayerInterface<T, D> p = getOlympaPlayer();
+			T clan = (T) p.getClan();
+			if (clan == null) return null;
+			Optional<D> optional = clan.getMembers().stream().filter(x -> x.getPlayerInformations().getName().equalsIgnoreCase(arg)).findFirst();
+			if (optional.isPresent()) {
+				sendError(manager.stringPlayerNotInClan, arg);
+				return null;
+			}
+			return optional.get();
+		});
 	}
 
 	@Override
