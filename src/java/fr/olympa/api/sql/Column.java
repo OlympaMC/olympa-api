@@ -82,7 +82,7 @@ public class Column<T> {
 			public void update(T object, Object sqlObject, int sqlType) throws SQLException {
 				PreparedStatement statement = updateStatement.getStatement();
 				statement.setObject(1, sqlObject, sqlType);
-				statement.setObject(determinantColumnType, determinantSupplier.apply(object), determinantColumnType);
+				statement.setObject(2, determinantSupplier.apply(object), determinantColumnType);
 				statement.executeUpdate();
 			}
 		}));

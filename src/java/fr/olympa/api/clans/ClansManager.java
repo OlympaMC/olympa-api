@@ -103,7 +103,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		
 		List<Column<T>> clansCollums = addDBClansCollums(new ArrayList<>());
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + clansTable + " (" + Column.toParameters(clansCollums) + ")");
-		Column.setUpdatable(clansCollums, playersTable, "`id`", Types.INTEGER, T::getID);
+		Column.setUpdatable(clansCollums, clansTable, "`id`", Types.INTEGER, T::getID);
 		
 		List<Column<D>> playersCollums = addDBPlayersCollums(new ArrayList<>());
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + playersTable + " (" + Column.toParameters(playersCollums) + ")");

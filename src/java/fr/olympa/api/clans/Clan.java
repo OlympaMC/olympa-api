@@ -69,7 +69,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public void broadcast(String message) {
-		String finalMessage = ColorUtils.color(Prefix.DEFAULT + "§6" + name + " §e: " + message + " Terminé.");
+		String finalMessage = ColorUtils.color(Prefix.DEFAULT + "§6" + name + " : §e" + message + " Terminé.");
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
 

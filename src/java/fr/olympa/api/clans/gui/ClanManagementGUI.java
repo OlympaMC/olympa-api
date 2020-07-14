@@ -138,9 +138,10 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 			if (!isChief) {
 				new ConfirmGUI(() -> clan.removePlayer(playerData.getPlayerInformations(), true), () -> this.create(p), manager.stringSureLeave).create(p);
 			}
+			return true;
 		}else if (isChief) {
 			int playerID = getPlayerID(slot);
-			if (slot >= 0 && playerID < clan.getMaxSize()) {
+			if (playerID >= 0 && playerID < clan.getMaxSize()) {
 				if (playersOrder.size() <= playerID) {
 					Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur à inviter.");
 					new TextEditor<Player>(p, (target) -> {
@@ -152,10 +153,13 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 					D member = playersOrder.get(playerID);
 					memberItemClick(p, click, member);
 				}
+				return true;
+			}else if (slot == slotDisband()) {
+				new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
+				return true;
 			}
-		}else if (slot == slotDisband()) {
-			new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
-		}else if (slot == slotMoney()) {
+		}
+		if (slot == slotMoney()) {
 			Prefix.DEFAULT.sendMessage(p, "Indique la quantité d'argent que tu veux mettre dans la cagnotte.");
 			new TextEditor<>(p, (amount) -> {
 				player.getGameMoney().withdraw(amount);
