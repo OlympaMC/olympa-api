@@ -3,6 +3,7 @@ package fr.olympa.api.scoreboard.sign;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,6 +51,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	public void addLine(AbstractLine<Scoreboard<T>> line) {
 		updateLock.lock();
 		lines.add(lines.size() - manager.footer.size(), new Line(line));
+		line.addHolder(this);
 		updateLock.unlock();
 		// TODO update uniquement la ligné ajouté
 		needsUpdate();
@@ -121,15 +123,22 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		sb.lines.clear();
 		sb.created = false;
 		sb.create();
-		int sbLine = 0;
+		
 		updateLock.lock();
-		sb.maxSize = lines.size();
-		for (Line line : lines) {
-			String[] value = line.getLines(p);
-			for (String internalLine : value)
-				sb.setLine(sbLine++, internalLine);
-		}
+		List<String> strings = new ArrayList<>(lines.size());
+		lines.forEach(x -> {
+			for (String line : x.getLines(p)) {
+				strings.add(line);
+			}
+		});
 		updateLock.unlock();
+		
+		sb.maxSize = strings.size();
+		int sbLine = 0;
+		for (String line : strings) {
+			sb.setLine(sbLine++, line);
+		}
+		
 		sb.display();
 		sb.destroy(oldName);
 		sb.destroyTeam(sb.oldLines);

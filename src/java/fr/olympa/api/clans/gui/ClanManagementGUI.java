@@ -14,6 +14,7 @@ import fr.olympa.api.clans.Clan;
 import fr.olympa.api.clans.ClanPlayerData;
 import fr.olympa.api.clans.ClanPlayerInterface;
 import fr.olympa.api.clans.ClansManager;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.editor.parsers.MoneyAmountParser;
 import fr.olympa.api.editor.parsers.PlayerParser;
@@ -166,7 +167,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 				clan.getMoney().give(amount);
 				refreshInventory();
 				create(p);
-				Prefix.DEFAULT_GOOD.sendMessage(p, String.format(manager.stringAddedMoney, amount));
+				Prefix.DEFAULT_GOOD.sendMessage(p, manager.stringAddedMoney, OlympaMoney.format(amount));
 			}, () -> create(p), false, new MoneyAmountParser(player)).enterOrLeave();
 		}
 		return true;

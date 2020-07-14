@@ -113,7 +113,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		removeClanStatement = new OlympaStatement("DELETE FROM " + clansTable + " WHERE (`id` = ?)");
 		
 		insertPlayerInClanStatement = new OlympaStatement("INSERT INTO " + playersTable + " (`player_id`, `clan`) VALUES (?, ?)");
-		removePlayerInClanStatement = new OlympaStatement("UPDATE " + playersTable + " SET `clan` = -1 WHERE (`player_id` = ?)");
+		removePlayerInClanStatement = new OlympaStatement("DELETE FROM  " + playersTable + " WHERE (`player_id` = ?)");
 		
 		PreparedStatement getPlayersInClanStatement = new OlympaStatement("SELECT * FROM " + playersTable + " WHERE (`clan` = ?)").getStatement();
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable);
@@ -156,6 +156,8 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	/* Abstraction */
+	
+	protected abstract String getClansCommand();
 	
 	protected abstract T createClan(int id, String name, OlympaPlayerInformations chief, int maxSize);
 	
@@ -263,7 +265,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		
 		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getName()));
 		for (BaseComponent comp : texts) {
-			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clans accept " + clan.getName()));
+			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + getClansCommand() + " accept " + clan.getName()));
 			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
 		}
 		targetPlayer.spigot().sendMessage(texts);

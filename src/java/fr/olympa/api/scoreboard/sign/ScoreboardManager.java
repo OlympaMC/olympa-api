@@ -2,6 +2,7 @@ package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,13 +72,11 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 	public void unload() {
 		HandlerList.unregisterAll(this);
 
-		for (Scoreboard<T> s : scoreboards.values()) {
-			s.unload();
+		for (Iterator<Scoreboard<T>> iterator = scoreboards.values().iterator(); iterator.hasNext();) {
+			Scoreboard<T> scoreboard = iterator.next();
+			scoreboard.unload();
+			iterator.remove();
 		}
-		if (!scoreboards.isEmpty()) {
-			plugin.getServer().getConsoleSender().sendMessage(scoreboards.size() + " scoreboards deleted.");
-		}
-		scoreboards.clear();
 	}
 
 }
