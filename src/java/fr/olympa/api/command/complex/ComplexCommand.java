@@ -219,7 +219,7 @@ public class ComplexCommand extends OlympaCommand {
 	 * @param commandsClassInstance Instance of the Class
 	 */
 	public void registerCommandsClass(Object commandsClassInstance) {
-		for (Method method : commandsClassInstance.getClass().getDeclaredMethods())
+		for (Method method : commandsClassInstance.getClass().getMethods())
 			if (method.isAnnotationPresent(Cmd.class)) {
 				Cmd cmd = method.getDeclaredAnnotation(Cmd.class);
 				if (method.getParameterCount() == 1)
@@ -232,7 +232,7 @@ public class ComplexCommand extends OlympaCommand {
 						continue;
 					}
 				OlympaCore.getInstance()
-						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + commandsClassInstance.getClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
+						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}
 	}
 

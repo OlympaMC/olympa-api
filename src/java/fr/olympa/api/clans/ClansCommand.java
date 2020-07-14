@@ -20,8 +20,8 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 
 	private ClansManager<T, D> manager;
 
-	public ClansCommand(ClansManager<T, D> manager, String name, String description, OlympaPermission permission, String... aliases) {
-		super(manager.plugin, name, description, permission, aliases);
+	public ClansCommand(ClansManager<T, D> manager, String command, String description, OlympaPermission permission, String... aliases) {
+		super(manager.plugin, command, description, permission, aliases);
 		this.manager = manager;
 		super.addArgumentParser("CLANPLAYER", (player) -> {
 			ClanPlayerInterface<T, D> p = getOlympaPlayer();

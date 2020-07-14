@@ -17,8 +17,6 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.scoreboard.tab.Nametag;
-import fr.olympa.api.utils.ColorUtils;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -68,8 +66,12 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return true;
 	}
 
+	protected String format(String message) {
+		return "§6§l" + name + " §7➤ §e" + message + " Terminé.";
+	}
+	
 	public void broadcast(String message) {
-		String finalMessage = ColorUtils.color(Prefix.DEFAULT + "§6" + name + " : §e" + message + " Terminé.");
+		String finalMessage = format(message);
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
 
