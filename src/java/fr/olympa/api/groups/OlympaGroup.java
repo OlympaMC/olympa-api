@@ -18,6 +18,7 @@ public enum OlympaGroup {
 	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%rank ", ":&r", false),
 	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&e%rank ", ":&r", false),
 	RESP_STAFF(9, 65, OlympaServer.ALL, "Resp._Staff", "Resp. Staff", "&c%rank ", ":&r", true),
+	RESP_COM(5, 80, OlympaServer.ALL, "Resp._Communication", "Resp. Communication", "&3%rank ", ":&r", true),
 	RESP_ANIMATION(10, 60, OlympaServer.ALL, "Resp._Animateur", "Resp. Animateur", "&3%rank ", ":&r", true),
 	RESP_BUILDER(11, 55, OlympaServer.ALL, "Resp. Buildeur", "Resp. Buildeur", "&a%rank ", ":&r", true),
 	DEVP(19, 51, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%rank ", ":&r", false),
