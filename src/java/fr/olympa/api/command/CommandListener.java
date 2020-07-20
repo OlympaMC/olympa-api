@@ -15,6 +15,8 @@ public class CommandListener implements Listener {
 
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+		if (event.isCancelled())
+			return;
 		String[] message = event.getMessage().substring(1).split(" ");
 
 		String command = message[0].toLowerCase();
@@ -27,6 +29,8 @@ public class CommandListener implements Listener {
 
 	@EventHandler
 	public void onServerCommand(ServerCommandEvent event) {
+		if (event.isCancelled())
+			return;
 		String[] message = event.getCommand().split(" ");
 
 		String command = message[0].toLowerCase();

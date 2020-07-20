@@ -50,7 +50,7 @@ public enum Prefix {
 	public ChatColor getColor2() {
 		return color2;
 	}
-	
+
 	public void sendMessage(CommandSender sender, String msg, Object... args) {
 		sender.sendMessage(formatMessage(msg, args));
 	}
@@ -61,7 +61,7 @@ public enum Prefix {
 	}
 
 	public String formatMessage(String msg, Object... args) {
-		return String.format(ColorUtils.color(prefix + msg), args);
+		return ColorUtils.color(String.format(prefix + msg, args));
 	}
 
 	private void setPrefix(final String prefix) {
