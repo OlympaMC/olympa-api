@@ -2,6 +2,7 @@ package fr.olympa.api.utils;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public class Point2D {
 
@@ -20,6 +21,10 @@ public class Point2D {
 	public Point2D(Chunk chunk) {
 		this.x = chunk.getX();
 		this.z = chunk.getZ();
+	}
+	
+	public Chunk asChunk(World world) {
+		return world.getChunkAt(x, z);
 	}
 	
 	public String toString() {
