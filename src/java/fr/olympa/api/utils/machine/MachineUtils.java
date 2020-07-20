@@ -91,13 +91,13 @@ public class MachineUtils {
 
 				out2 = new TextComponent(TextComponent.fromLegacyText("§3Monde §b" + world.getName() + "§3: "));
 
-				TextComponent out3 = new TextComponent(TextComponent.fromLegacyText("§b" + chunks.length + "§3 chunks "));
+				TextComponent out3 = new TextComponent(TextComponent.fromLegacyText("§b" + chunks.length + "§3 chunks"));
 				out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eChunks (region de 16x16) chargés dans le monde")));
 				out2.addExtra(out3);
 				out2.addExtra(" ");
 				Collection<Chunk> forceChunks = world.getForceLoadedChunks();
 				if (!forceChunks.isEmpty()) {
-					out3 = new TextComponent(TextComponent.fromLegacyText("(" + forceChunks.size() + " forcés) "));
+					out3 = new TextComponent(TextComponent.fromLegacyText("(" + forceChunks.size() + " forcés)"));
 					out3.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eLes chunks forcés sont les chunks du spawn du monde §6ou §edes chunks victime de Chunk Loader.")));
 					out2.addExtra(out3);
 					out2.addExtra(" ");

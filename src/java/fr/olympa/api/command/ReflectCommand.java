@@ -2,9 +2,9 @@ package fr.olympa.api.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -74,7 +74,7 @@ public class ReflectCommand extends Command {
 		if (customResponse != null)
 			return customResponse;
 
-		Collection<List<CommandArgument>> defaultArgs = exe.args.values();
+		Set<List<CommandArgument>> defaultArgs = exe.args.keySet();
 		if (defaultArgs.isEmpty())
 			return null;
 		Iterator<List<CommandArgument>> iterator = defaultArgs.iterator();

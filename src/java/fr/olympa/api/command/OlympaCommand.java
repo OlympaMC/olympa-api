@@ -33,7 +33,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	protected Plugin plugin;
 	protected List<String> aliases;
-	protected LinkedHashMap<Boolean, List<CommandArgument>> args = new LinkedHashMap<>();
+	protected LinkedHashMap<List<CommandArgument>, Boolean> args = new LinkedHashMap<>();
 	protected String command;
 	protected String description;
 	protected OlympaPermission permission;
@@ -67,7 +67,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	@Override
 	public void addCommandArguments(boolean isMandatory, List<CommandArgument> ca) {
-		args.put(isMandatory, ca);
+		args.put(ca, isMandatory);
 	}
 
 	@Override
@@ -101,12 +101,12 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	private void build() {
 		usageString = args.entrySet().stream().map(entry -> {
-			boolean isMandatory = entry.getKey();
-			List<CommandArgument> ca = entry.getValue();
+			boolean isMandatory = entry.getValue();
+			List<CommandArgument> ca = entry.getKey();
 			return (isMandatory ? "<" : "[") + ca.stream().map(c -> c.getArgName()).collect(Collectors.joining("|")) + (isMandatory ? ">" : "]");
 		}).collect(Collectors.joining(" "));
 		if (minArg == null)
-			minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
+			minArg = (int) args.entrySet().stream().filter(entry -> entry.getValue()).count();
 	}
 
 	@Override
