@@ -73,7 +73,6 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(new CommandListener(), this);
 		pluginManager.registerEvents(regions = new RegionManager(), this);
 
-		regions = new RegionManager();
 		try {
 			pluginManager.registerEvents(holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml")), this);
 		} catch (IOException e) {

@@ -21,9 +21,16 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class ComplexCommand extends OlympaCommand {
+	
+	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
 
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
@@ -33,12 +40,18 @@ public class ComplexCommand extends OlympaCommand {
 		public OlympaPermission perm;
 		public Method method;
 		public Object commands;
+		public String name;
 
 		InternalCommand(Cmd cmd, Method method, Object commandsClass) {
 			this.cmd = cmd;
-			perm = OlympaPermission.permissions.get(cmd.permissionName());
 			this.method = method;
 			commands = commandsClass;
+			perm = OlympaPermission.permissions.get(cmd.permissionName());
+			name = method.getName();
+		}
+		
+		boolean canRun() {
+			return hasPermission(perm) && (!cmd.player() || !isConsole());
 		}
 	}
 
@@ -95,6 +108,11 @@ public class ComplexCommand extends OlympaCommand {
 			if (result == null) sendError("Le monde %s n'existe pas.", x);
 			return result;
 		});
+		addArgumentParser("SUBCOMMAND", sender -> commands.keySet().stream().flatMap(List::stream).collect(Collectors.toList()), x -> {
+			InternalCommand result = getCommand(x);
+			if (result == null) sendError("La commande %s n'existe pas.", x);
+			return result;
+		});
 		
 		registerCommandsClass(this);
 	}
@@ -138,7 +156,7 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		if (!cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender)) {
+		if (!hasPermission(internal.perm)) {
 			sendDoNotHavePermission();
 			return true;
 		}
@@ -184,8 +202,7 @@ public class ComplexCommand extends OlympaCommand {
 
 		if (args.length == 1)
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
-				String perm = en.getValue().cmd.permissionName();
-				if (perm != null && this.hasPermission(perm))
+				if (en.getValue().canRun())
 					find.add(en.getKey().get(0));
 			}
 		else if (args.length >= 2) {
@@ -219,7 +236,14 @@ public class ComplexCommand extends OlympaCommand {
 	 * @param commandsClassInstance Instance of the Class
 	 */
 	public void registerCommandsClass(Object commandsClassInstance) {
-		for (Method method : commandsClassInstance.getClass().getMethods())
+		Class<?> clazz = commandsClassInstance.getClass();
+		do {
+			registerCommandsClass(clazz, commandsClassInstance);
+		}while ((clazz = clazz.getSuperclass()) != null);
+	}
+	
+	private void registerCommandsClass(Class<?> clazz, Object commandsClassInstance) {
+		for (Method method : clazz.getDeclaredMethods())
 			if (method.isAnnotationPresent(Cmd.class)) {
 				Cmd cmd = method.getDeclaredAnnotation(Cmd.class);
 				if (method.getParameterCount() == 1)
@@ -234,6 +258,39 @@ public class ComplexCommand extends OlympaCommand {
 				OlympaCore.getInstance()
 						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}
+	}
+	
+	@Cmd (args = "SUBCOMMAND", syntax = "[commande]")
+	public void help(CommandContext cmd) {
+		if (cmd.getArgumentsLength() == 0) {
+			sendMessage(Prefix.DEFAULT, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + String.join(", ", aliases) + ")"));
+			if (description != null) sendMessage(Prefix.DEFAULT, "§e%s", description);
+			for (InternalCommand command : commands.values()) {
+				if (!command.canRun()) continue;
+				sender.spigot().sendMessage(getHelpCommandComponent(command));
+			}
+		}else {
+			InternalCommand command = cmd.getArgument(0);
+			if (!command.canRun()) {
+				sendIncorrectSyntax();
+				return;
+			}
+			sender.spigot().sendMessage(getHelpCommandComponent(command));
+		}
+	}
+	
+	private TextComponent getHelpCommandComponent(InternalCommand command) {
+		String fullCommand = "/" + super.command + " " + command.name;
+		
+		TextComponent component = new TextComponent();
+		component.setHoverEvent(COMMAND_HOVER);
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, fullCommand + " "));
+		
+		for (BaseComponent commandCompo : TextComponent.fromLegacyText("§7➤ §6" + fullCommand + " §e" + command.cmd.syntax())) {
+			component.addExtra(commandCompo);
+		}
+		
+		return component;
 	}
 
 }
