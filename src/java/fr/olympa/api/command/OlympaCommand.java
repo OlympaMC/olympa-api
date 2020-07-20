@@ -40,7 +40,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected Player player;
 	protected CommandSender sender;
 	protected String usageString;
-	protected Integer minArg = 0;
+	protected Integer minArg;
 	protected boolean allowConsole = true;
 	protected boolean isAsynchronous = false;
 
@@ -105,7 +105,8 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			List<CommandArgument> ca = entry.getValue();
 			return (isMandatory ? "<" : "[") + ca.stream().map(c -> c.getArgName()).collect(Collectors.joining("|")) + (isMandatory ? ">" : "]");
 		}).collect(Collectors.joining(" "));
-		minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
+		if (minArg == null)
+			minArg = (int) args.entrySet().stream().filter(entry -> entry.getKey()).count();
 	}
 
 	@Override

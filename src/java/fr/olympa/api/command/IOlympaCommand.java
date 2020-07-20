@@ -1,6 +1,7 @@
 package fr.olympa.api.command;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,14 @@ public interface IOlympaCommand {
 	default void sendUnknownPlayer(String name) {
 		sendError("Le joueur &4%s&c est introuvable.", name);
 		// TODO check historique player
+	}
+
+	default void sendUnknownPlayer(String name, CharSequence... potentialsNames) {
+		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.length == 0 ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
+	}
+
+	default void sendUnknownPlayer(String name, Collection<? extends CharSequence> potentialsNames) {
+		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.size() == 0 ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
 	}
 
 	void sendMessage(Prefix prefix, String message, Object... args);
@@ -99,6 +108,10 @@ public interface IOlympaCommand {
 	}
 
 	void addCommandArguments(boolean isMandatory, List<CommandArgument> ca);
+
+	default void addCommandArguments(boolean isMandatory, CommandArgument... cas) {
+		addCommandArguments(isMandatory, Arrays.asList(cas));
+	}
 
 	default void addArgs(boolean isMandatory, List<String> arg) {
 		addCommandArguments(isMandatory, arg.stream().map(CommandArgument::new).collect(Collectors.toList()));
