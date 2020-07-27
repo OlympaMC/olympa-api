@@ -13,8 +13,8 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public enum ProtocolAPI {
 
-	V1_16_1(736, false),
-	V1_16(735, false),
+	V1_16_1(736),
+	V1_16(735),
 	V1_15_2(578),
 	V1_15_1(575),
 	V1_15(573),
@@ -81,9 +81,13 @@ public enum ProtocolAPI {
 	}
 
 	public static ProtocolAPI getLastVersion() {
-		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.isAllow()).findFirst().orElse(null);
+		return Arrays.stream(ProtocolAPI.values()).filter(ProtocolAPI::isAllowed).findFirst().orElse(null);
 	}
 
+	public static ProtocolAPI getFirstVersion() {
+		return Arrays.stream(ProtocolAPI.values()).filter(ProtocolAPI::isAllowed).reduce((first, second) -> second).orElse(null);
+	}
+	
 	public static List<ProtocolAPI> gets(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
 	}
@@ -131,7 +135,7 @@ public enum ProtocolAPI {
 		return protocolNumber;
 	}
 
-	public boolean isAllow() {
+	public boolean isAllowed() {
 		return allow;
 	}
 
