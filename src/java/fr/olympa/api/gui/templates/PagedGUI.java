@@ -44,7 +44,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		setBarItem(0, previousPage);
 		setBarItem(rows - 1, nextPage);
 
-		for (int i = 0; i < rows; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
+		setSeparatorItems(color);
 		
 		setItems();
 	}
@@ -74,6 +74,10 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		int slot = mainSlot + (2 * line);
 		inv.setItem(slot, is);
 		return slot;
+	}
+	
+	protected void setSeparatorItems(DyeColor color) {
+		for (int i = 0; i < rows; i++) inv.setItem(i * 9 + 7, ItemUtils.itemSeparator(color));
 	}
 	
 	protected int setBarItem(int barSlot, ItemStack is) {

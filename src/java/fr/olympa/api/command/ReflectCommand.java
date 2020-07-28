@@ -41,9 +41,12 @@ public class ReflectCommand extends Command {
 						exe.sendDoNotHavePermission();
 					return false;
 				}
-		} else if (!exe.allowConsole) {
-			exe.sendImpossibleWithConsole();
-			return false;
+		}else {
+			exe.player = null;
+			if (!exe.allowConsole) {
+				exe.sendImpossibleWithConsole();
+				return false;
+			}
 		}
 		if (args.length < exe.minArg) {
 			exe.sendUsage(label);
@@ -63,12 +66,17 @@ public class ReflectCommand extends Command {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+		exe.sender = sender;
 		if (sender instanceof Player) {
+			exe.player = (Player) sender;
 			if (!exe.hasPermission())
 				return null;
-		} else if (!exe.allowConsole) {
-			exe.sendImpossibleWithConsole();
-			return null;
+		}else {
+			exe.player = null;
+			if (!exe.allowConsole) {
+				exe.sendImpossibleWithConsole();
+				return null;
+			}
 		}
 		List<String> customResponse = exe.onTabComplete(sender, this, alias, args);
 		if (customResponse != null)

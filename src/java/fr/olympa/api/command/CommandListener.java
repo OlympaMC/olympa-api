@@ -54,9 +54,12 @@ public class CommandListener implements Listener {
 						exe.sendDoNotHavePermission();
 					return;
 				}
-		} else if (!exe.allowConsole) {
-			exe.sendImpossibleWithConsole();
-			return;
+		}else {
+			exe.player = null;
+			if (!exe.allowConsole) {
+				exe.sendImpossibleWithConsole();
+				return;
+			}
 		}
 		if (args.length - 1 < exe.minArg) {
 			exe.sendUsage(label);

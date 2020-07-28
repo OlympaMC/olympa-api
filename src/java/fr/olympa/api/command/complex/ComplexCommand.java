@@ -202,8 +202,9 @@ public class ComplexCommand extends OlympaCommand {
 
 		if (args.length == 1)
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
-				if (en.getValue().canRun())
+				if (en.getValue().canRun()) {
 					find.add(en.getKey().get(0));
+				}
 			}
 		else if (args.length >= 2) {
 			int index = args.length - 2;
