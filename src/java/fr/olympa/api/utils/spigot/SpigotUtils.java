@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -209,6 +210,14 @@ public class SpigotUtils {
 
 	public static boolean isSameLocation(Location location1, Location location2) {
 		return location1.getWorld() == location2.getWorld() && location1.getBlockX() == location2.getBlockX() && location1.getBlockY() == location2.getBlockY() && location1.getBlockZ() == location2.getBlockZ();
+	}
+
+	public static boolean isSameChunk(Chunk chunk1, Chunk chunk2) {
+		return chunk1.getWorld() == chunk2.getWorld() && chunk1.getX() == chunk2.getX() && chunk1.getZ() == chunk2.getZ();
+	}
+
+	public static boolean isSameLocationXZ(Location location1, Location location2) {
+		return location1.getWorld() == location2.getWorld() && location1.getBlockX() == location2.getBlockX() && location1.getBlockZ() == location2.getBlockZ();
 	}
 
 	public static boolean isSamePlayer(Player player, Player target) {

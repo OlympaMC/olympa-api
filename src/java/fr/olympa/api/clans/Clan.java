@@ -54,13 +54,14 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, " §a" + this.getName());
 		nameTagApi.updateFakeNameTag(p.getPlayer(), nametag, getPlayers());
-		for (Player player : getPlayers()) nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
+		for (Player player : getPlayers())
+			nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
 		members.put(p.getInformation(), manager.createClanData(p.getInformation()));
 		memberJoin(p);
 		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
 		try {
 			manager.insertPlayerInClan(p, this);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return true;
@@ -69,7 +70,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	protected String format(String message) {
 		return "§6§l" + name + " §7➤ §e" + message + " Terminé.";
 	}
-	
+
 	public void broadcast(String message) {
 		String finalMessage = format(message);
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
@@ -81,13 +82,15 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	public void disband() {
 		broadcast(manager.stringClanDisband);
-		for (OlympaPlayerInformations member : members.keySet()) removePlayer(member, false);
+		for (OlympaPlayerInformations member : members.keySet())
+			removePlayer(member, false);
 		manager.removeClan((T) this);
 	}
 
 	public void executeAllPlayers(Consumer<Player> consumer) {
 		for (ClanPlayerData<T, D> member : members.values())
-			if (member.isConnected()) consumer.accept(member.getConnectedPlayer().getPlayer());
+			if (member.isConnected())
+				consumer.accept(member.getConnectedPlayer().getPlayer());
 	}
 
 	public OlympaPlayerInformations getChief() {
@@ -109,7 +112,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	public D getMember(OlympaPlayerInformations player) {
 		return members.get(player);
 	}
-	
+
 	public int getMembersAmount() {
 		return members.size();
 	}
@@ -130,10 +133,14 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return created;
 	}
 
+	public boolean isSameClan(T clan) {
+		return this.id == clan.getID();
+	}
+
 	public <M extends ClansManager<T, D>> M getClansManager() {
 		return (M) manager;
 	}
-	
+
 	public void memberJoin(ClanPlayerInterface<T, D> member) {
 		members.get(member.getInformation()).playerJoin(member);
 	}
@@ -146,7 +153,8 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		Player player = oplayer.getPlayer();
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, " §c" + this.getName());
-		for (Player otherP : getPlayers()) nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));
+		for (Player otherP : getPlayers())
+			nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));
 		oplayer.setClan(null);
 	}
 
@@ -160,13 +168,12 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 		try {
 			manager.removePlayerFromClan(pinfo);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			broadcast("Une erreur est survenue.");
 		}
-		if (member.isConnected()) {
+		if (member.isConnected())
 			removedOnlinePlayer(member.getConnectedPlayer());
-		}
 	}
 
 	public void setChief(OlympaPlayerInformations p) {
@@ -174,7 +181,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 			manager.chiefColumn.updateValue((T) this, chief.getId(), Types.INTEGER);
 			this.chief = p;
 			broadcast(String.format(manager.stringPlayerChief, p.getName()));
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -183,7 +190,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		try {
 			manager.sizeColumn.updateValue((T) this, maxSize, Types.INTEGER);
 			this.maxSize = maxSize;
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -193,15 +200,15 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 			manager.nameColumn.updateValue((T) this, name, Types.VARCHAR);
 			this.name = name;
 			broadcast(manager.stringNameChange);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void updateMoney() {
 		try {
 			manager.moneyColumn.updateValue((T) this, money.get(), Types.DOUBLE);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
