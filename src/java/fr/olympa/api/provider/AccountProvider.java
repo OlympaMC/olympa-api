@@ -20,8 +20,17 @@ public class AccountProvider implements OlympaAccount {
 		return (T) cache.get(uuid);
 	}
 
+	public static <T extends OlympaPlayer> T get(String name) throws SQLException {
+		OlympaPlayer olympaPlayer = null/*= AccountProvider.getFromCache(name)*/;
+		//		if (olympaPlayer == null)
+		//			olympaPlayer = AccountProvider.getFromRedis(name);
+		if (olympaPlayer == null)
+			olympaPlayer = AccountProvider.getFromDatabase(name);
+		return (T) olympaPlayer;
+	}
+
 	public static OlympaPlayerInformations getPlayerInformations(long id) {
-		return (OlympaPlayerInformations) cachedInformations.get(id);
+		return cachedInformations.get(id);
 	}
 
 	public static OlympaPlayer getFromDatabase(String name) throws SQLException {
