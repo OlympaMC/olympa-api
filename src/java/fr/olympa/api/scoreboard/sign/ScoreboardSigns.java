@@ -16,7 +16,7 @@ import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardScore;
 import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
 
 public class ScoreboardSigns implements Cloneable {
-	
+
 	protected String objectiveName;
 	protected boolean created;
 	protected ArrayList<VirtualTeam> lines = new ArrayList<>();
@@ -24,20 +24,20 @@ public class ScoreboardSigns implements Cloneable {
 	private final Player player;
 	protected int maxSize = 0;
 	private String displayName;
-	
+
 	public ScoreboardSigns(Player player, String displayName, String objectiveName, int maxSize) {
 		this.player = player;
 		this.displayName = displayName;
 		this.objectiveName = objectiveName.length() > 16 ? objectiveName.substring(0, 16) : objectiveName;
 		this.maxSize = maxSize;
 	}
-	
+
 	public void changeDisplayName(String name) throws ClassNotFoundException {
 		objectiveName = name;
 		if (created)
 			Reflection.sendPacket(player, createObjectivePacket(2, objectiveName));
 	}
-	
+
 	@Override
 	public ScoreboardSigns clone() {
 		try {
@@ -47,56 +47,56 @@ public class ScoreboardSigns implements Cloneable {
 			return null;
 		}
 	}
-	
+
 	private boolean containsValue(String value) {
 		return lines.stream().anyMatch(l -> l.getValue().equalsIgnoreCase(value));
 	}
-	
+
 	public void create() {
 		if (created)
 			return;
 		Reflection.sendPacket(player, createObjectivePacket(0, objectiveName));
 		created = true;
 	}
-	
+
 	private Object createObjectivePacket(int mode, String objectiveName) {
 		Object packet = new PacketPlayOutScoreboardObjective();
 		Reflection.setField(packet, "a", objectiveName);
 		Reflection.setField(packet, "d", mode);
-		
+
 		if (mode == 0 || mode == 2) {
 			Reflection.setField(packet, "b", new ChatComponentText(displayName));
 			Reflection.setField(packet, "c", EnumScoreboardHealthDisplay.INTEGER);
 		}
 		return packet;
 	}
-	
+
 	public void destroy() {
 		if (!created)
 			destroy(objectiveName);
 		destroyTeam(lines);
 		created = false;
 	}
-	
+
 	public void destroy(String objectiveName) {
 		if (!created) {
 			Reflection.sendPacket(player, createObjectivePacket(1, objectiveName));
 			created = false;
 		}
 	}
-	
+
 	public void destroyTeam(List<VirtualTeam> teams) {
 		for (VirtualTeam team : teams)
 			if (team != null)
 				Reflection.sendPacket(player, team.removeTeam());
 	}
-	
+
 	public void display() {
 		if (!created)
 			return;
 		Reflection.sendPacket(player, setObjectiveSlot());
 	}
-	
+
 	private VirtualTeam getOrCreateTeam(String value) {
 		while (containsValue(value))
 			value = value + "§r";
@@ -117,6 +117,9 @@ public class ScoreboardSigns implements Cloneable {
 		if (team == null) {
 			team = new VirtualTeam(teamName);
 			team.setValue(finalValue);
+			Set<String> actualValue = lines.stream().map(t -> t.getCurrentPlayer().toLowerCase()).collect(Collectors.toSet());
+			while (actualValue.contains(team.getCurrentPlayer().toLowerCase()))
+				team.currentPlayer = team.getCurrentPlayer() + "§r";
 			lines.add(team);
 			if (lines.size() > maxSize)
 				maxSize = lines.size();
@@ -127,11 +130,11 @@ public class ScoreboardSigns implements Cloneable {
 		}
 		return team;
 	}
-	
+
 	private int getScore(int i) {
 		return maxSize - i;
 	}
-	
+
 	private Object sendScore(int score, String teamPlayer) {
 		Object packet = new PacketPlayOutScoreboardScore();
 		Reflection.setField(packet, "a", teamPlayer);
@@ -140,23 +143,23 @@ public class ScoreboardSigns implements Cloneable {
 		Reflection.setField(packet, "d", Action.CHANGE);
 		return packet;
 	}
-	
+
 	public void setLine(int line, String value) {
 		if (line > 14 || line < 0 || !created)
 			return;
-		
+
 		VirtualTeam team = getOrCreateTeam(value);
 		for (Object packet : team.sendLine())
 			Reflection.sendPacket(player, packet);
 		Reflection.sendPacket(player, sendScore(getScore(line), team.getCurrentPlayer()));
 		team.reset();
 	}
-	
+
 	private Object setObjectiveSlot() {
 		Object packet = new PacketPlayOutScoreboardDisplayObjective();
 		Reflection.setField(packet, "a", 1);
 		Reflection.setField(packet, "b", objectiveName);
-		
+
 		return packet;
 	}
 }

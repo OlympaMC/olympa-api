@@ -7,13 +7,15 @@ import java.util.List;
 import fr.olympa.api.utils.Reflection;
 import fr.olympa.api.utils.spigot.ProtocolAPI;
 import net.minecraft.server.v1_15_R1.ChatComponentText;
+import net.minecraft.server.v1_15_R1.EnumChatFormat;
 import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardTeam;
 
 public class VirtualTeam {
+
 	private final String name;
 	private String prefix;
 	private String suffix;
-	private String currentPlayer;
+	protected String currentPlayer;
 	private String oldPlayer;
 	private String cachedValue;
 
@@ -56,7 +58,11 @@ public class VirtualTeam {
 		Reflection.setField(packet, "c", new ChatComponentText(prefix));
 		Reflection.setField(packet, "d", new ChatComponentText(suffix));
 		Reflection.setField(packet, "j", 0);
-		Reflection.setField(packet, "e", "always");
+
+		// USLESS FOR scoreboard sign
+		//		Reflection.setField(packet, "e", EnumTeamPush.ALWAYS.e);
+		//		Reflection.setField(packet, "f", EnumNameTagVisibility.ALWAYS.e);
+		Reflection.setField(packet, "g", EnumChatFormat.GRAY);
 
 		return packet;
 	}
@@ -103,67 +109,60 @@ public class VirtualTeam {
 	public Iterable<Object> sendLine() {
 		List<Object> packets = new ArrayList<>();
 
-		if (first) {
+		if (first)
 			packets.add(createTeam());
-		} else if (prefixChanged || suffixChanged) {
+		else if (prefixChanged || suffixChanged)
 			packets.add(updateTeam());
-		}
 
 		if (first || playerChanged) {
-			if (oldPlayer != null) {
+			if (oldPlayer != null)
 				packets.add(addOrRemovePlayer(4, oldPlayer));
-			}
 			packets.add(addOrRemovePlayer(3, currentPlayer));
 		}
 
-		if (first) {
+		if (first)
 			first = false;
-		}
 
 		return packets;
 	}
 
 	private void setPlayer(String name) {
-		if (currentPlayer == null || !currentPlayer.equals(name)) {
+		if (currentPlayer == null || !currentPlayer.equals(name))
 			playerChanged = true;
-		}
 		oldPlayer = currentPlayer;
 		currentPlayer = name;
 	}
 
 	private void setPrefix(String prefix) {
-		if (this.prefix == null || !this.prefix.equals(prefix)) {
+		if (this.prefix == null || !this.prefix.equals(prefix))
 			prefixChanged = true;
-		}
 		this.prefix = prefix;
 	}
 
 	private void setSuffix(String suffix) {
-		if (this.suffix == null || !this.suffix.equals(prefix)) {
+		if (this.suffix == null || !this.suffix.equals(prefix))
 			suffixChanged = true;
-		}
 		this.suffix = suffix;
 	}
 
 	public void setValue(String value) {
 		if (value.length() <= 16) {
 			setPrefix("");
-			setSuffix("");
 			setPlayer(value);
+			setSuffix("");
 		} else if (value.length() <= 32) {
 			setPrefix(value.substring(0, 16));
 			setPlayer(value.substring(16));
 			setSuffix("");
-		} else if (value.length() <= 48) {
-			setPrefix(value.substring(0, 16));
-			setPlayer(value.substring(16, 32));
-			setSuffix(value.substring(32));
 		} else if (ProtocolAPI.V1_13.isSupported()) {
 			setPrefix(value.substring(0, 16));
 			setPlayer(value.substring(16, 32));
 			setSuffix(value.substring(32));
 		} else {
-			throw new IllegalArgumentException("Too long value for < 1.13 ! Max 48 characters, value was " + value.length() + " !");
+			setPrefix(value.substring(0, 16));
+			setPlayer(value.substring(16, 32));
+			setSuffix(value.substring(32, 48));
+			new IllegalArgumentException("Too long value for < 1.13 ! Max 48 characters, value was " + value.length() + " !").printStackTrace();
 		}
 		cachedValue = value;
 	}
