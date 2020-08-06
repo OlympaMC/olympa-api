@@ -75,8 +75,21 @@ public class OlympaPermission {
 		this.lockPermission = lockPermission;
 	}
 
-	public OlympaGroup getGroup() {
+	public OlympaGroup getMinGroup() {
 		return minGroup;
+	}
+
+	public OlympaGroup[] getAllowedGroups() {
+		return allowedGroups;
+	}
+
+	public OlympaGroup[] getAllGroupsAllowed() {
+		List<OlympaGroup> allowGroupsList = new ArrayList<>();
+		if (minGroup != null)
+			allowGroupsList.addAll(Arrays.stream(OlympaGroup.values()).filter(g -> g.getPower() >= minGroup.getPower()).collect(Collectors.toList()));
+		if (allowedGroups != null)
+			allowGroupsList.addAll(Arrays.asList(allowedGroups));
+		return allowGroupsList.stream().sorted((o1, o2) -> o1.getPower() - o2.getPower()).toArray(OlympaGroup[]::new);
 	}
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
@@ -108,12 +121,25 @@ public class OlympaPermission {
 
 	}
 
-	public void addAllowGroup(OlympaGroup group) {
+	public void allowGroup(OlympaGroup group) {
 		if (lockPermission)
 			return;
-		List<OlympaGroup> allowGroupsList = new ArrayList<>(Arrays.asList(allowedGroups));
+		List<OlympaGroup> allowGroupsList = new ArrayList<>();
+		if (allowedGroups != null)
+			allowGroupsList.addAll(Arrays.asList(allowedGroups));
 		allowGroupsList.add(group);
 		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
+	}
+
+	public boolean disallowGroup(OlympaGroup group) {
+		if (lockPermission)
+			return false;
+		List<OlympaGroup> allowGroupsList = new ArrayList<>();
+		if (allowedGroups != null)
+			allowGroupsList.addAll(Arrays.asList(allowedGroups));
+		boolean b = allowGroupsList.remove(group);
+		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
+		return b;
 	}
 
 	public void lockPermission() {
@@ -150,6 +176,10 @@ public class OlympaPermission {
 
 	public void sendMessage(String message) {
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)), null);
+	}
+
+	public boolean isLocked() {
+		return lockPermission;
 	}
 
 }
