@@ -98,6 +98,10 @@ public class OlympaPermission {
 		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
 	}
 
+	public void setMinGroup(OlympaGroup group) {
+		minGroup = group;
+	}
+
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups());
 	}
