@@ -2,10 +2,12 @@ package fr.olympa.api.permission;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -24,9 +26,9 @@ import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
-	
+
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
-	
+
 	public static void registerPermissions(Class<?> clazz) {
 		try {
 			int initialSize = permissions.size();
@@ -39,27 +41,27 @@ public class OlympaPermission {
 			ex.printStackTrace();
 		}
 	}
-	
-	OlympaGroup min_group = null;
-	OlympaGroup[] groups_allow = null;
-	
-	public OlympaPermission(OlympaGroup min_group) {
-		this.min_group = min_group;
+
+	OlympaGroup minGroup = null;
+	OlympaGroup[] allowedGroups = null;
+
+	public OlympaPermission(OlympaGroup minGroup) {
+		this.minGroup = minGroup;
 	}
-	
-	public OlympaPermission(OlympaGroup... groups_allowGroup) {
-		groups_allow = groups_allowGroup;
+
+	public OlympaPermission(OlympaGroup... allowedGroups) {
+		this.allowedGroups = allowedGroups;
 	}
-	
-	public OlympaPermission(OlympaGroup[] groups_allowGroup, OlympaGroup min_group) {
-		this.min_group = min_group;
-		groups_allow = groups_allowGroup;
+
+	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups) {
+		this.minGroup = minGroup;
+		this.allowedGroups = allowedGroups;
 	}
-	
+
 	public OlympaGroup getGroup() {
-		return min_group;
+		return minGroup;
 	}
-	
+
 	public void getPlayers(Consumer<? super Set<Player>> success) {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProvider.<OlympaPlayer>get(player.getUniqueId()))).collect(Collectors.toSet());
@@ -82,37 +84,44 @@ public class OlympaPermission {
 		if (!playersWithNoPerm.isEmpty() && noPerm != null)
 			noPerm.accept(playersWithPerm);
 	}
-	
+
 	public boolean hasPermission(OlympaGroup group) {
-		return min_group != null && group.getPower() >= min_group.getPower()
-				|| groups_allow != null && Arrays.stream(groups_allow).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
-		
+		return minGroup != null && group.getPower() >= minGroup.getPower()
+				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
+
 	}
-	
+
+	// TODO set to protected
+	public void addAllowGroup(OlympaGroup group) {
+		List<OlympaGroup> allowGroupsList = new ArrayList<>(Arrays.asList(allowedGroups));
+		allowGroupsList.add(group);
+		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
+	}
+
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups());
 	}
-	
+
 	public boolean hasPermission(TreeMap<OlympaGroup, Long> groups) {
 		return groups.entrySet().stream().anyMatch(entry -> this.hasPermission(entry.getKey()));
 	}
-	
+
 	public boolean hasPermission(UUID uniqueId) {
 		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
 	}
-	
+
 	public boolean hasSenderPermission(CommandSender sender) {
 		if (sender instanceof Player)
 			return this.hasPermission(((Player) sender).getUniqueId());
 		return true;
 	}
-	
+
 	public void sendMessage(BaseComponent baseComponent) {
 		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponent)), null);
 	}
-	
+
 	public void sendMessage(String message) {
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)), null);
 	}
-	
+
 }

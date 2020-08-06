@@ -5,14 +5,14 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-@SuppressWarnings ("unused")
+@SuppressWarnings("unused")
 public class OlympaStatement {
-	
+
 	public enum StatementType {
 		INSERT("INTO"),
 		SELECT,
 		UPDATE;
-		
+
 		String supp;
 
 		private StatementType() {
@@ -33,7 +33,7 @@ public class OlympaStatement {
 
 	private String statement;
 	private boolean returnGeneratedKeys;
-	
+
 	public OlympaStatement(StatementType type, String tableName, String... keys) {
 		if (type != StatementType.INSERT) {
 			new Exception("Wrong StatementType." + type.name() + ". Must be StatementType." + StatementType.INSERT.name() + ".").printStackTrace();
@@ -48,19 +48,18 @@ public class OlympaStatement {
 		sj.add(sj2.toString());
 		sj.add("VALUES");
 		sj2 = new StringJoiner(", ", "(", ")");
-		for (@SuppressWarnings("unused")
-		String key : keys)
+		for (String key : keys)
 			sj2.add("?");
 		sj.add(sj2.toString());
 
 		statement = sj.toString() + ";";
 		returnGeneratedKeys = true;
 	}
-	
+
 	public OlympaStatement(StatementType type, String tableName, String what, String[] keys) {
 		this(type, tableName, new String[] { what }, keys);
 	}
-	
+
 	public OlympaStatement(StatementType type, String tableName, String[] what, String... keys) {
 		if (type != StatementType.SELECT && type != StatementType.UPDATE) {
 			new Exception("Wrong StatementType." + type.name() + ". Must be StatementType." + StatementType.SELECT.name() + " or StatementType." + StatementType.UPDATE.name() + ".").printStackTrace();
@@ -89,24 +88,24 @@ public class OlympaStatement {
 		}
 		statement = sj.toString() + ";";
 	}
-	
+
 	public OlympaStatement(String statement) {
 		this(statement, false);
 	}
-	
+
 	public OlympaStatement(String statement, boolean returnGeneratedKeys) {
 		this.statement = statement;
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
-	
+
 	private PreparedStatement prepared;
-	
+
 	public PreparedStatement getStatement() throws SQLException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public String getStatementCommand() {
 		return statement;
 	}
-	
+
 }
