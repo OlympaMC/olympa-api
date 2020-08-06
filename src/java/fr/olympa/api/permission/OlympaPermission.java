@@ -44,18 +44,35 @@ public class OlympaPermission {
 
 	OlympaGroup minGroup = null;
 	OlympaGroup[] allowedGroups = null;
+	boolean lockPermission = false;
 
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
+	}
+
+	public OlympaPermission(OlympaGroup minGroup, boolean lockPermission) {
+		this.minGroup = minGroup;
+		this.lockPermission = lockPermission;
 	}
 
 	public OlympaPermission(OlympaGroup... allowedGroups) {
 		this.allowedGroups = allowedGroups;
 	}
 
+	public OlympaPermission(boolean lockPermission, OlympaGroup... allowedGroups) {
+		this.lockPermission = lockPermission;
+		this.allowedGroups = allowedGroups;
+	}
+
 	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups) {
 		this.minGroup = minGroup;
 		this.allowedGroups = allowedGroups;
+	}
+
+	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups, boolean lockPermission) {
+		this.minGroup = minGroup;
+		this.allowedGroups = allowedGroups;
+		this.lockPermission = lockPermission;
 	}
 
 	public OlympaGroup getGroup() {
@@ -91,14 +108,21 @@ public class OlympaPermission {
 
 	}
 
-	// TODO set to protected
 	public void addAllowGroup(OlympaGroup group) {
+		if (lockPermission)
+			return;
 		List<OlympaGroup> allowGroupsList = new ArrayList<>(Arrays.asList(allowedGroups));
 		allowGroupsList.add(group);
 		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
 	}
 
+	public void lockPermission() {
+		lockPermission = true;
+	}
+
 	public void setMinGroup(OlympaGroup group) {
+		if (lockPermission)
+			return;
 		minGroup = group;
 	}
 
