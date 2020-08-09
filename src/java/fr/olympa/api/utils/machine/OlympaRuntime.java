@@ -23,13 +23,15 @@ public class OlympaRuntime {
 	public static Thread action(String command, Consumer<String> function) {
 		return new Thread(() -> {
 			try {
+				String out = Prefix.DEFAULT.toString();
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
 				while ((line = br.readLine()) != null) {
-					if (line.isEmpty())
+					if (line.isEmpty()) {
 						continue;
-					String out = Prefix.DEFAULT + line.replace("0;", "").replace("", "")
+					}
+					out += line.replace("0;", "").replace("", "")
 							.replace("[0m", "§f")
 							.replace("[1m", "§l")
 							.replace("[4m", "§n")
@@ -52,18 +54,20 @@ public class OlympaRuntime {
 							.replace("[91m", "§d")
 							.replace("[91m", "§b")
 							.replace("[97m", "§f");
-					if (function != null)
-						function.accept(out);
 					System.out.println(out);
+				}
+				if (function != null) {
+					function.accept(out);
 				}
 				br.close();
 				p.waitFor();
 			} catch (Exception e) {
 				String out = Prefix.DEFAULT + "&4ERROR&c " + e.getMessage();
-				if (function != null)
+				if (function != null) {
 					function.accept(out);
-				e.printStackTrace();
+				}
 				System.out.println(out);
+				e.printStackTrace();
 			}
 		}, "Start command " + command);
 	}
