@@ -34,6 +34,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 		this.uuid = uuid;
 		this.name = name;
 		this.ip = ip;
+		groups.put(OlympaGroup.PLAYER, 0L);
 	}
 
 	@Override
@@ -44,9 +45,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public void addGroup(OlympaGroup group, long time) {
 		groups.put(group, time);
-		if (groups.size() > 1 && groups.containsKey(OlympaGroup.PLAYER)) {
-			removeGroup(OlympaGroup.PLAYER);
-		}
 	}
 
 	@Override
@@ -86,7 +84,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaGroup getGroup() {
-		return groups.isEmpty() ? OlympaGroup.PLAYER : groups.firstKey();
+		return groups.firstKey();
 	}
 
 	@Override

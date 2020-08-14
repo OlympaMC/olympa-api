@@ -151,5 +151,6 @@ public enum OlympaGroup {
 	public void giveBukkitPermissions(Player bukkitPlayer) {
 		PermissionAttachment attachment = bukkitPlayer.addAttachment(OlympaCore.getInstance());
 		runtimePermissions.forEach(perm -> attachment.setPermission(perm, true));
+		bukkitPlayer.recalculatePermissions();
 	}
 }
