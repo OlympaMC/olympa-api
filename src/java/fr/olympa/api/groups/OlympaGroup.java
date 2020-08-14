@@ -1,13 +1,19 @@
 package fr.olympa.api.groups;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.core.spigot.OlympaCore;
 
 public enum OlympaGroup {
 
@@ -64,6 +70,8 @@ public enum OlympaGroup {
 	final String prefix;
 	final String chatSufix;
 	private boolean highStaff;
+	
+	public List<String> runtimePermissions = new ArrayList<>();
 
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix, boolean highStaff) {
 		this.id = id;
@@ -138,5 +146,10 @@ public enum OlympaGroup {
 
 	public OlympaServer getServer() {
 		return server;
+	}
+	
+	public void giveBukkitPermissions(Player bukkitPlayer) {
+		PermissionAttachment attachment = bukkitPlayer.addAttachment(OlympaCore.getInstance());
+		runtimePermissions.forEach(perm -> attachment.setPermission(perm, true));
 	}
 }

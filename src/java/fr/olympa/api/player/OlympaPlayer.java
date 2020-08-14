@@ -22,8 +22,6 @@ public interface OlympaPlayer {
 
 	OlympaPlayer clone();
 
-	long getDiscordId();
-
 	String getEmail();
 
 	long getFirstConnection();
@@ -95,8 +93,6 @@ public interface OlympaPlayer {
 	void setAfk(boolean afk);
 
 	void setConnected(boolean connected);
-
-	void setDiscordId(long discordId);
 
 	void setEmail(String email);
 

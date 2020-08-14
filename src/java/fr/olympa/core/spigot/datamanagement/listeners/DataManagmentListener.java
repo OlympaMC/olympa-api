@@ -43,6 +43,9 @@ public class DataManagmentListener implements Listener {
 		}
 
 		event.setJoinMessage(ColorUtils.color("&7[&a+&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
+		
+		olympaPlayer.getGroups().keySet().forEach(group -> group.giveBukkitPermissions(player));
+		
 		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer, false);
 		Bukkit.getPluginManager().callEvent(loginevent);
 	}

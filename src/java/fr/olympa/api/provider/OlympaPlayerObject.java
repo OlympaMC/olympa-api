@@ -68,12 +68,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public long getDiscordId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public String getEmail() {
 		// TODO Auto-generated method stub
 		return null;
@@ -267,12 +261,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void setConnected(boolean connected) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setDiscordId(long discordId) {
 		// TODO Auto-generated method stub
 
 	}
