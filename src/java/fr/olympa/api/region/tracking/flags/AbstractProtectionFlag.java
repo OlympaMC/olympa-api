@@ -35,7 +35,7 @@ public abstract class AbstractProtectionFlag extends Flag {
 	}
 	
 	protected void handleCancellable(Cancellable event, Player player, boolean cancel) {
-		if (overrideBypassProtection || !BypassCommand.bypasses.contains(player)) event.setCancelled(cancel);
+		if (overrideBypassProtection || player == null || !BypassCommand.bypasses.contains(player)) event.setCancelled(cancel);
 	}
 
 }
