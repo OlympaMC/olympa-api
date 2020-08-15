@@ -78,8 +78,53 @@ public class Polygon extends AbstractRegion {
 	public boolean isIn(World world, int x, int y, int z) {
 		if (world != this.world) return false;
 		if (y < minY || y > maxY) return false;
-		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
-
+		
+		boolean inside = false;
+		int npoints = points.size();
+		int xNew, zNew;
+		int xOld, zOld;
+		int x1, z1;
+		int x2, z2;
+		long crossproduct;
+		int i;
+		
+		xOld = points.get(npoints - 1).getX();
+		zOld = points.get(npoints - 1).getZ();
+		
+		for (i = 0; i < npoints; i++) {
+			xNew = points.get(i).getX();
+			zNew = points.get(i).getZ();
+			//Check for corner
+			if (xNew == x && zNew == z) {
+				return true;
+			}
+			if (xNew > xOld) {
+				x1 = xOld;
+				x2 = xNew;
+				z1 = zOld;
+				z2 = zNew;
+			}else {
+				x1 = xNew;
+				x2 = xOld;
+				z1 = zNew;
+				z2 = zOld;
+			}
+			if (x1 <= x && z <= x2) {
+				crossproduct = ((long) z - (long) z1) * (long) (x2 - x1) - ((long) z2 - (long) z1) * (long) (x - x1);
+				if (crossproduct == 0) {
+					if ((z1 <= z) == (z <= z2)) return true; // on edge
+				}else if (crossproduct < 0 && (x1 != x)) {
+					inside = !inside;
+				}
+			}
+			xOld = xNew;
+			zOld = zNew;
+		}
+		
+		return inside;
+		
+		/*if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
+		
 		int i, j;
 		boolean result = false;
 		for (i = 0, j = points.size() - 1; i < points.size(); j = i++) {
@@ -88,7 +133,7 @@ public class Polygon extends AbstractRegion {
 				result = !result;
 			}
 		}
-		return result;
+		return result;*/
 	}
 
 	@Override

@@ -322,7 +322,9 @@ public class RegionManager implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
-		fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
+		if (e.getClickedBlock().getType() == Material.FLOWER_POT) {
+			fireEvent(e.getClickedBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getClickedBlock()));
+		}else fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
 	}
 
 	@EventHandler

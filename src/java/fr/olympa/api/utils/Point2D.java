@@ -23,6 +23,14 @@ public class Point2D {
 		this.z = chunk.getZ();
 	}
 	
+	public int getX() {
+		return x;
+	}
+	
+	public int getZ() {
+		return z;
+	}
+	
 	public Chunk asChunk(World world) {
 		return world.getChunkAt(x, z);
 	}
