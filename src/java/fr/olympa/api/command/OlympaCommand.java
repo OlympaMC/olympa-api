@@ -37,6 +37,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected Plugin plugin;
 	protected List<String> aliases;
 	protected LinkedHashMap<List<CommandArgument>, Boolean> args = new LinkedHashMap<>();
+	protected List<String> allCommands;
 	protected String command;
 	protected String description;
 	protected OlympaPermission permission;
@@ -76,6 +77,10 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		return aliases;
 	}
 	
+	public List<String> getAllCommands() {
+		return allCommands;
+	}
+	
 	public String getDescription() {
 		return description;
 	}
@@ -101,8 +106,22 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	}
 
 	@Override
+	public boolean isConsole() {
+		return player == null;
+	}
+	
+	@Override
+	public boolean isConsoleAllowed() {
+		return allowConsole;
+	}
+	
+	@Override
 	public void setAllowConsole(boolean allowConsole) {
 		this.allowConsole = allowConsole;
+	}
+	
+	public OlympaPermission getPermission() {
+		return permission;
 	}
 
 	@Override
@@ -122,6 +141,9 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		}).collect(Collectors.joining(" "));
 		if (minArg == null)
 			minArg = (int) args.entrySet().stream().filter(entry -> entry.getValue()).count();
+		allCommands = new ArrayList<>();
+		allCommands.add(command);
+		allCommands.addAll(aliases);
 	}
 
 	@Override
@@ -140,10 +162,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	@Override
 	public void registerPreProcess() {
 		build();
-		List<String> commandsAdd = new ArrayList<>();
-		commandsAdd.add(command);
-		commandsAdd.addAll(aliases);
-		commandPreProcess.put(commandsAdd, this);
+		commandPreProcess.put(allCommands, this);
 		commands.add(this);
 	}
 
@@ -177,6 +196,11 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	@Override
 	public void sendUsage(String label) {
 		sendMessage(Prefix.USAGE, "/%s %s", label, usageString);
+	}
+	
+	public void sendHelp(CommandSender sender) {
+		Prefix.DEFAULT.sendMessage(sender, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + String.join(", ", aliases) + ")"));
+		if (description != null) Prefix.DEFAULT.sendMessage(sender, "§e%s", description);
 	}
 
 	public static void unRegisterCommand(PluginCommand... cmds) {
@@ -219,15 +243,5 @@ public abstract class OlympaCommand implements IOlympaCommand {
 				return null;
 			}
 		return cmap;
-	}
-
-	@Override
-	public boolean isConsole() {
-		return player == null;
-	}
-
-	@Override
-	public boolean isConsoleAllowed() {
-		return allowConsole;
 	}
 }

@@ -32,7 +32,7 @@ public class CommandListener implements Listener {
 		String[] message = fullCommand.split(" ");
 
 		String command = message[0].toLowerCase();
-		if (command.contains(":") && OlympaAPIPermissions.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
+		if (command.contains(":") && !OlympaAPIPermissions.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
 			Prefix.DEFAULT_BAD.sendMessage(sender, "Par mesure de sécurité, les commandes avec namespace sont désactivées.");
 			event.setCancelled(true);
 			return;

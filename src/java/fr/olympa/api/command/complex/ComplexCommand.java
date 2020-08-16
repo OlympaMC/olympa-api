@@ -21,7 +21,6 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -261,15 +260,19 @@ public class ComplexCommand extends OlympaCommand {
 			}
 	}
 	
+	@Override
+	public void sendHelp(CommandSender sender) {
+		super.sendHelp(sender);
+		for (InternalCommand command : commands.values()) {
+			if (!command.canRun()) continue;
+			sender.spigot().sendMessage(getHelpCommandComponent(command));
+		}
+	}
+	
 	@Cmd (args = "SUBCOMMAND", syntax = "[commande]")
 	public void help(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			sendMessage(Prefix.DEFAULT, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + String.join(", ", aliases) + ")"));
-			if (description != null) sendMessage(Prefix.DEFAULT, "§e%s", description);
-			for (InternalCommand command : commands.values()) {
-				if (!command.canRun()) continue;
-				sender.spigot().sendMessage(getHelpCommandComponent(command));
-			}
+			sendHelp(sender);
 		}else {
 			InternalCommand command = cmd.getArgument(0);
 			if (!command.canRun()) {
