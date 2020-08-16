@@ -109,7 +109,7 @@ public class Polygon extends AbstractRegion {
 				z1 = zNew;
 				z2 = zOld;
 			}
-			if (x1 <= x && z <= x2) {
+			if (x1 <= x && x <= x2) {
 				crossproduct = ((long) z - (long) z1) * (long) (x2 - x1) - ((long) z2 - (long) z1) * (long) (x - x1);
 				if (crossproduct == 0) {
 					if ((z1 <= z) == (z <= z2)) return true; // on edge
