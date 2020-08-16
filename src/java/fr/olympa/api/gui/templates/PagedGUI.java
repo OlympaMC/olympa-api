@@ -33,7 +33,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	
 	protected PagedGUI(String name, DyeColor color, List<T> objects, int rows) {
 		super(name, rows);
-		if (rows < 2) throw new IllegalArgumentException("Rows must be higher than 2");
+		if (rows <= 1) throw new IllegalArgumentException("Rows must be higher than 1");
 		this.rows = rows;
 		this.itemsPerPage = 7 * rows;
 		this.inventoryName = name;

@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -28,6 +30,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 @SuppressWarnings("unchecked")
 public abstract class OlympaCommand implements IOlympaCommand {
 
+	public static Set<OlympaCommand> commands = new HashSet<>();
 	protected static Map<List<String>, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
 
@@ -63,6 +66,18 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		this.command = command;
 		this.description = description;
 		this.aliases = Arrays.asList(aliases);
+	}
+	
+	public String getCommand() {
+		return command;
+	}
+	
+	public List<String> getAliases() {
+		return aliases;
+	}
+	
+	public String getDescription() {
+		return description;
 	}
 
 	@Override
@@ -119,15 +134,17 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			reflectCommand.setDescription(description);
 		reflectCommand.setExecutor(this);
 		getCommandMap().register("Olympa", reflectCommand);
+		commands.add(this);
 	}
 
 	@Override
 	public void registerPreProcess() {
 		build();
-		List<String> commands = new ArrayList<>();
-		commands.add(command);
-		commands.addAll(aliases);
-		commandPreProcess.put(commands, this);
+		List<String> commandsAdd = new ArrayList<>();
+		commandsAdd.add(command);
+		commandsAdd.addAll(aliases);
+		commandPreProcess.put(commandsAdd, this);
+		commands.add(this);
 	}
 
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {

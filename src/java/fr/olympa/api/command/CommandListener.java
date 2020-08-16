@@ -4,41 +4,44 @@ import java.util.Arrays;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class CommandListener implements Listener {
 
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (event.isCancelled())
-			return;
-		String[] message = event.getMessage().substring(1).split(" ");
-
-		String command = message[0].toLowerCase();
-		OlympaCommand cmd = OlympaCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(entry -> entry.getValue()).findFirst().orElse(null);
-		if (cmd == null)
-			return;
-		event.setCancelled(true);
-		sendcommand(cmd, message, event.getPlayer());
+		processCommand(event, event.getMessage().substring(1), event.getPlayer());
 	}
-
+	
 	@EventHandler
 	public void onServerCommand(ServerCommandEvent event) {
+		processCommand(event, event.getCommand(), event.getSender());
+	}
+	
+	private void processCommand(Cancellable event, String fullCommand, CommandSender sender) {
 		if (event.isCancelled())
 			return;
-		String[] message = event.getCommand().split(" ");
+		String[] message = fullCommand.split(" ");
 
 		String command = message[0].toLowerCase();
+		if (command.contains(":") && OlympaAPIPermissions.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
+			Prefix.DEFAULT_BAD.sendMessage(sender, "Par mesure de sécurité, les commandes avec namespace sont désactivées.");
+			event.setCancelled(true);
+			return;
+		}
 		OlympaCommand cmd = OlympaCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(entry -> entry.getValue()).findFirst().orElse(null);
 		if (cmd == null)
 			return;
 		event.setCancelled(true);
-		sendcommand(cmd, message, event.getSender());
+		sendcommand(cmd, message, sender);
 	}
 
 	private void sendcommand(OlympaCommand exe, String[] args, CommandSender sender) {

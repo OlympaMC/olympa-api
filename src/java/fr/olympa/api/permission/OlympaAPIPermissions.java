@@ -16,4 +16,6 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission COMMAND_IMAGEMAP = new OlympaPermission(OlympaGroup.DEV);
 	public static final OlympaPermission COMMAND_BYPASS_REGIONS = new OlympaPermission(OlympaGroup.DEV);
 
+	public static final OlympaPermission NAMESPACED_COMMANDS = new OlympaPermission(OlympaGroup.RESP_TECH);
+	
 }

@@ -30,7 +30,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 	private boolean finished = false;
 
 	public CreateAuctionGUI(AuctionsManager manager) {
-		super("Mettre aux enchères", 3);
+		super("Mettre en vente", 3);
 		this.manager = manager;
 
 		ItemStack item = ItemUtils.item(Material.GRAY_STAINED_GLASS_PANE, "§7Dépose l'item à vendre");
@@ -38,7 +38,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 			inv.setItem(slot, item);
 		}
 
-		inv.setItem(13, ItemUtils.item(Material.EMERALD, "§aDéfinis le prix"));
+		inv.setItem(13, ItemUtils.item(Material.EMERALD, "§aΩ Définis le prix"));
 		inv.setItem(14, setDurationItem(ItemUtils.item(Material.CLOCK, null, "§e§l> Clic gauche : §eAugmenter de 12 heures", "§e§l> Clic droit : §eDiminuer de 12 heures")));
 
 		inv.setItem(16, ItemUtils.done);
