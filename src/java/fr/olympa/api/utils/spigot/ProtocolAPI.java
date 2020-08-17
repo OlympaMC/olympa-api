@@ -13,6 +13,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public enum ProtocolAPI {
 
+	V1_16_2(751),
 	V1_16_1(736),
 	V1_16(735),
 	V1_15_2(578),

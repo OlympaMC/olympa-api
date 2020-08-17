@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.permissions.PermissionAttachment;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.groups.OlympaGroup;
@@ -17,6 +18,7 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.provider.OlympaPlayerInformationsObject;
 import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class DataManagmentListener implements Listener {
 
@@ -44,7 +46,9 @@ public class DataManagmentListener implements Listener {
 
 		event.setJoinMessage(ColorUtils.color("&7[&a+&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
 		
-		olympaPlayer.getGroups().keySet().forEach(group -> group.giveBukkitPermissions(player));
+		PermissionAttachment attachment = player.addAttachment(OlympaCore.getInstance());
+		olympaPlayer.getGroups().keySet().forEach(group -> group.runtimePermissions.forEach(perm -> attachment.setPermission(perm, true)));
+		player.recalculatePermissions();
 		
 		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer, false);
 		Bukkit.getPluginManager().callEvent(loginevent);
