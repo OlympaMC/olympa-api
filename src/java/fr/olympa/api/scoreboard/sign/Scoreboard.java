@@ -13,14 +13,13 @@ import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.core.spigot.OlympaCore;
 
-// TODO gestion animation pour éviter refresh tous les ticks
 // TODO gestion multi scoreboard
 public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesHolder<Scoreboard<T>> {
 	
 	private final T p;
 	
 	private ScoreboardManager<T> manager;
-	private ScoreboardSigns sb;
+	private FastBoard sb;
 	private LinkedList<Line> lines = new LinkedList<>();
 
 	private Lock lock = new ReentrantLock();
@@ -57,7 +56,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		needsUpdate();
 	}
 	
-	public ScoreboardSigns getScoreboard() {
+	public FastBoard getScoreboard() {
 		return sb;
 	}
 	
@@ -92,20 +91,19 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void initScoreboard() {
-		sb = new ScoreboardSigns(p.getPlayer(), manager.displayName, SbUtils.generateRandomPassword(16), lines.size());
-		sb.create();
-		int sbLine = 0;
+		sb = new FastBoard(p.getPlayer());
+		sb.updateTitle(manager.displayName);
+		List<String> rawLines = new ArrayList<>();
 		for (Line line : lines) {
 			String[] value = line.getLines(p);
-			for (String internalLine : value)
-				sb.setLine(sbLine++, internalLine);
+			for (String internalLine : value) rawLines.add(internalLine);
 		}
-		sb.display();
+		sb.updateLines(rawLines);
 	}
 	
 	public void unload() {
 		interrupt();
-		if (sb != null) sb.destroy();
+		if (sb != null) sb.delete();
 		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
 			iterator.next().line.removeHolder(this);
 			iterator.remove();
@@ -113,17 +111,6 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void updateScoreboard() {
-		String oldName = new String(sb.objectiveName);
-		String name;
-		do
-			name = SbUtils.generateRandomPassword(16);
-		while (name.equalsIgnoreCase(oldName));
-		sb.objectiveName = name;
-		sb.oldLines = (ArrayList<VirtualTeam>) sb.lines.clone();
-		sb.lines.clear();
-		sb.created = false;
-		sb.create();
-		
 		updateLock.lock();
 		List<String> strings = new ArrayList<>(lines.size());
 		lines.forEach(x -> {
@@ -133,16 +120,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		});
 		updateLock.unlock();
 		
-		sb.maxSize = strings.size();
-		int sbLine = 0;
-		for (String line : strings) {
-			sb.setLine(sbLine++, line);
-		}
-		
-		sb.display();
-		sb.destroy(oldName);
-		sb.destroyTeam(sb.oldLines);
-		sb.oldLines.clear();
+		sb.updateLines(strings);
 	}
 	
 	class Line {
