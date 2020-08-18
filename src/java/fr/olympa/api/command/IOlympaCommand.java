@@ -67,6 +67,10 @@ public interface IOlympaCommand {
 		sendMessage(Prefix.DEFAULT_BAD, message, args);
 	}
 
+	default void sendDefault(String message, Object... args) {
+		sendMessage(Prefix.DEFAULT, message, args);
+	}
+	
 	void sendUsage(String label);
 
 	void sendComponents(BaseComponent... components);
