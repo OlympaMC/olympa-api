@@ -56,5 +56,7 @@ public @interface Cmd {
 	 * @return name of the permission
 	 */
 	public String permissionName() default "";
+	
+	public boolean hide() default false;
 
 }

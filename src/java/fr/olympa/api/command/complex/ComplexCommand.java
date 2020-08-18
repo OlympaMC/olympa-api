@@ -201,7 +201,7 @@ public class ComplexCommand extends OlympaCommand {
 
 		if (args.length == 1)
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
-				if (en.getValue().canRun()) {
+				if (!en.getValue().cmd.hide() || en.getValue().canRun()) {
 					find.add(en.getKey().get(0));
 				}
 			}
@@ -264,7 +264,7 @@ public class ComplexCommand extends OlympaCommand {
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		for (InternalCommand command : commands.values()) {
-			if (!command.canRun()) continue;
+			if (command.cmd.hide() || !command.canRun()) continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
 	}

@@ -56,7 +56,7 @@ public class FastBoard {
 		
 		id = "fb-" + Double.toString(Math.random()).substring(2, 10);
 		
-		below13 = OlympaCore.getInstance().getProtocolSupport().getPlayerVersion(player).ordinal() > ProtocolAPI.V1_13.ordinal();
+		below13 = (OlympaCore.getInstance().getProtocolSupport() == null ? ProtocolAPI.getDefaultProtocol() : OlympaCore.getInstance().getProtocolSupport().getPlayerVersion(player)).ordinal() > ProtocolAPI.V1_13.ordinal();
 		
 		try {
 			sendObjectivePacket(ObjectiveMode.CREATE);

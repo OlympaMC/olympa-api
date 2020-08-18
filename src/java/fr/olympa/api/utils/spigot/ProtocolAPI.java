@@ -3,13 +3,9 @@ package fr.olympa.api.utils.spigot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-
-import fr.olympa.core.spigot.OlympaCore;
 
 public enum ProtocolAPI {
 
@@ -77,8 +73,7 @@ public enum ProtocolAPI {
 	}
 
 	public static ProtocolAPI getDefaultProtocol() {
-		String version = getVersion();
-		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getName().equals(version)).findFirst().orElse(null);
+		return get(getVersion());
 	}
 
 	public static ProtocolAPI getLastVersion() {
@@ -94,13 +89,7 @@ public enum ProtocolAPI {
 	}
 
 	public static String getVersion() {
-		String ver = Bukkit.getVersion();
-		Matcher matcher = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?").matcher(ver);
-		if (!matcher.find()) {
-			OlympaCore.getInstance().sendMessage("&cUnable to detect erver version in fr.olympa.apis.utils.ProtocolAPI.");
-			return null;
-		}
-		return matcher.group();
+		return Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
 	}
 
 	public static String getVersionSupportedToString() {

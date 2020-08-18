@@ -8,6 +8,7 @@ import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.provider.AccountProvider;
 
 public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand {
 
@@ -62,7 +63,7 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 	}
 
 	private OlympaMoney getGameMoney(Player p) {
-		return super.<T>getOlympaPlayer().getGameMoney();
+		return AccountProvider.<T>get(p.getUniqueId()).getGameMoney();
 	}
 
 }
