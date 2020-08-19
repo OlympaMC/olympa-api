@@ -82,7 +82,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 			String[] lore = member == playerData ? new String[] { "§6§lChef" } : new String[] { "§7Clic §lgauche§r§7 : §cÉjecter", "§7Clic §ldroit§r§7 : §6Transférer la direction" };
 			ItemUtils.skull(callback, "§a" + member.getPlayerInformations().getName(), member.getPlayerInformations().getName(), lore);
 		}else {
-			ItemUtils.skull(callback, "§a" + member.getPlayerInformations().getName(), member.getPlayerInformations().getName(), clan.getChief() == member ? "§6§lChef" : "§eMembre");
+			ItemUtils.skull(callback, "§a" + member.getPlayerInformations().getName(), member.getPlayerInformations().getName(), clan.getChief() == member.getPlayerInformations() ? "§6§lChef" : "§eMembre");
 		}
 	}
 	
