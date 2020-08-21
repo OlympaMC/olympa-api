@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +34,7 @@ import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.MoistureChangeEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -241,7 +244,7 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onEntityInteract(PlayerInteractEntityEvent e) {
-		if (e.getRightClicked() instanceof ItemFrame) fireEvent(e.getRightClicked().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getRightClicked()));
+		if (e.getRightClicked() instanceof ItemFrame || e.getRightClicked() instanceof ArmorStand) fireEvent(e.getRightClicked().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getRightClicked()));
 	}
 
 	@EventHandler
@@ -330,6 +333,11 @@ public class RegionManager implements Listener {
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
 		fireEvent(e.getEntity().getLocation(), DamageFlag.class, x -> x.damageEvent(e));
+	}
+	
+	@EventHandler
+	public void onDamage(EntityDamageByEntityEvent e) {
+		if (e.getEntityType() == EntityType.ARMOR_STAND && e.getDamager() instanceof Player) fireEvent(e.getEntity().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, (Player) e.getDamager(), e.getEntity()));
 	}
 	
 	@EventHandler
