@@ -286,6 +286,15 @@ public class Utils {
 			list2.set(i, list2.get(i).replaceAll(toReplace, replaced));
 		return list2;
 	}
+	
+	public static <T> T[] arrayAdd(T[] array, T... add) {
+		T[] array2 = (T[]) new Object[array.length + add.length];
+		System.arraycopy(array, 0, array2, 0, array.length);
+		for (int i = 0; i < add.length; i++) {
+			array2[array.length + i] = add[i];
+		}
+		return array2;
+	}
 
 	/**
 	 * Permet d'arrondir un double avec x nombre après la virgule

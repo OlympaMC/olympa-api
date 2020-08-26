@@ -1,6 +1,7 @@
 package fr.olympa.api.region.tracking;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,8 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class RegionManager implements Listener {
 
+	public static final Comparator<TrackedRegion> REGION_COMPARATOR = (o1, o2) -> Integer.compare(o1.getPriority().getSlot(), o2.getPriority().getSlot());
+	
 	private final Map<String, TrackedRegion> trackedRegions = new HashMap<>();
 	private final Map<World, TrackedRegion> worldRegions = new HashMap<>();
 
@@ -138,12 +141,16 @@ public class RegionManager implements Listener {
 	}
 
 	public <T extends Flag> void fireEvent(Location location, Class<T> flagClass, Consumer<T> consumer) {
-		trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(RegionComparator.COMPARATOR).forEach(x -> {
+		trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(REGION_COMPARATOR).forEach(x -> {
 			T flag = x.getFlag(flagClass);
 			if (flag != null) consumer.accept(flag);
 		});
 	}
-
+	
+	public TrackedRegion getMostImportantRegion(Location location) {
+		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(REGION_COMPARATOR).findAny().get();
+	}
+	
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onWorldLoad(WorldInitEvent e) {
 		registerWorld(e.getWorld());

@@ -12,8 +12,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Flag {
 
-	private BaseComponent[] greeting;
-	private BaseComponent[] farewell;
+	private BaseComponent[] greeting, farewell;
 	private ChatMessageType position;
 
 	private ActionResult entry = ActionResult.ALLOW;
