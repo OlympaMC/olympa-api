@@ -73,10 +73,20 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class RegionManager implements Listener {
 
+	/**
+	 * Compare les priorités des régions de la plus faible à la plus forte
+	 */
 	public static final Comparator<TrackedRegion> REGION_COMPARATOR = (o1, o2) -> Integer.compare(o1.getPriority().getSlot(), o2.getPriority().getSlot());
+	
+	/**
+	 * Compare les priorités des régions de la plus forte à la plus faible
+	 */
+	public static final Comparator<TrackedRegion> REGION_COMPARATOR_INVERT = (o1, o2) -> Integer.compare(o2.getPriority().getSlot(), o1.getPriority().getSlot());
 	
 	private final Map<String, TrackedRegion> trackedRegions = new HashMap<>();
 	private final Map<World, TrackedRegion> worldRegions = new HashMap<>();
+	
+	private final Map<String, Consumer<WorldTrackingEvent>> trackAwait = new HashMap<>();
 
 	private final Map<Player, Set<TrackedRegion>> inRegions = new HashMap<>();
 
@@ -109,7 +119,10 @@ public class RegionManager implements Listener {
 		worldRegions.put(world, region);
 		trackedRegions.put(region.getID(), region);
 		OlympaCore.getInstance().sendMessage("Région globale enregistrée pour le monde §e" + world.getName());
-		Bukkit.getPluginManager().callEvent(new WorldTrackingEvent(world, region));
+		WorldTrackingEvent event = new WorldTrackingEvent(world, region);
+		Bukkit.getPluginManager().callEvent(event);
+		Consumer<WorldTrackingEvent> consumer = trackAwait.remove(world.getName());
+		if (consumer != null) consumer.accept(event);
 	}
 
 	private void unregisterWorld(World world) {
@@ -117,6 +130,10 @@ public class RegionManager implements Listener {
 		if (region == null) return;
 		unregisterRegion(region.getID());
 		OlympaCore.getInstance().sendMessage("Région globale supprimée pour le monde §e" + world.getName());
+	}
+	
+	public void awaitWorldTracking(String worldName, Consumer<WorldTrackingEvent> consumer) {
+		trackAwait.put(worldName, consumer);
 	}
 
 	public boolean isIn(Player p, String id) {
@@ -148,7 +165,7 @@ public class RegionManager implements Listener {
 	}
 	
 	public TrackedRegion getMostImportantRegion(Location location) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(REGION_COMPARATOR).findAny().get();
+		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).sorted(REGION_COMPARATOR_INVERT).findFirst().get();
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)

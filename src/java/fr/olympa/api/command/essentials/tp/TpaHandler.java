@@ -48,7 +48,7 @@ public class TpaHandler implements Listener {
 	private void invalidate(RemovalNotification<Player, Request> notif) {
 		if (notif.getValue().task != null) {
 			notif.getValue().task.cancel();
-			if (notif.getKey().isOnline()) Prefix.BAD.sendMessage(notif.getKey(), "La téléportation a été annulée.");
+			if (notif.getValue().from.isOnline()) Prefix.BAD.sendMessage(notif.getValue().from, "La téléportation a été annulée.");
 		}
 	}
 
@@ -75,28 +75,29 @@ public class TpaHandler implements Listener {
 	public void sendRequestTo(Player player, Player target) {
 		if (!testRequest(player, target)) return;
 		requests.invalidate(player);
-		addRequest(player, new Request(player, target));
+		addRequest(target, new Request(player, target));
 		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l----------- TPA -----------"));
 		base.addExtra("\n\n");
 		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§2" + player.getName() + "§7 veut se téléporter à toi.")));
 		base.addExtra("\n");
 		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
 		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§2Accepte la téléportation §lVERS§2 toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "tpayes " + player.getName()));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + player.getName()));
 		base.addExtra(tp);
 		base.addExtra(" ");
 		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
 		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§4Refuse la téléportation §lVERS§c toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "tpano " + player.getName()));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + player.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
 		target.spigot().sendMessage(base);
+		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 
 	public void sendRequestHere(Player player, Player target) {
 		if (!testRequest(player, target)) return;
 		requests.invalidate(player);
-		addRequest(player, new Request(target, player));
+		addRequest(target, new Request(target, player));
 		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l----------- TPA -----------"));
 		base.addExtra("\n\n");
 		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§4" + player.getName() + "§7 veut que §lTU§7 te téléporte à §lLUI§7.")));
@@ -112,6 +113,7 @@ public class TpaHandler implements Listener {
 		base.addExtra(tp);
 		base.addExtra("\n\n");
 		target.spigot().sendMessage(base);
+		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 	
 	public void acceptRequest(Player player) {
@@ -138,7 +140,8 @@ public class TpaHandler implements Listener {
 				request.from.teleport(request.to.getLocation());
 			}else Prefix.DEFAULT_BAD.sendMessage(player, "Le joueur qui t'as envoyé une demande de téléportation est maintenant hors-ligne.");
 		}, TELEPORTATION_TICKS);
-		Prefix.INFO.sendMessage(player, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
+		Prefix.INFO.sendMessage(request.from, "Téléportation à %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+		Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
 	}
 	
 	public void refuseRequest(Player player) {
@@ -155,7 +158,8 @@ public class TpaHandler implements Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
 		if (!SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) {
-			requests.invalidate(e.getPlayer());
+			Request request = requests.getIfPresent(e.getPlayer());
+			if (request != null && request.task != null) requests.invalidate(e.getPlayer());
 		}
 	}
 	
