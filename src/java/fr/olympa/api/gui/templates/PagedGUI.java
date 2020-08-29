@@ -27,18 +27,19 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	private int maxPage;
 	
 	protected List<T> objects;
-	private final String inventoryName;
 	private int rows;
 	private int itemsPerPage;
+	
+	private final String observableCode;
 	
 	protected PagedGUI(String name, DyeColor color, List<T> objects, int rows) {
 		super(name, rows);
 		if (rows <= 1) throw new IllegalArgumentException("Rows must be higher than 1");
 		this.rows = rows;
 		this.itemsPerPage = 7 * rows;
-		this.inventoryName = name;
 		this.objects = objects;
-		if (objects instanceof Observable) ((Observable) objects).observe(name, this::itemChanged);
+		this.observableCode = name + hashCode();
+		if (objects instanceof Observable) ((Observable) objects).observe(observableCode, this::itemChanged);
 		calculateMaxPage();
 		
 		setBarItem(0, previousPage);
@@ -136,7 +137,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	
 	@Override
 	public boolean onClose(Player p) {
-		if (objects instanceof Observable) ((Observable) objects).unobserve(inventoryName);
+		if (objects instanceof Observable) ((Observable) objects).unobserve(observableCode);
 		inv = null;
 		return true;
 	}
