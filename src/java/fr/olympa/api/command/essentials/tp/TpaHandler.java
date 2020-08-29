@@ -74,7 +74,7 @@ public class TpaHandler implements Listener {
 
 	public void sendRequestTo(Player player, Player target) {
 		if (!testRequest(player, target)) return;
-		requests.invalidate(player);
+		requests.invalidate(player); 
 		addRequest(target, new Request(player, target));
 		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l----------- TPA -----------"));
 		base.addExtra("\n\n");
@@ -104,12 +104,12 @@ public class TpaHandler implements Listener {
 		base.addExtra("\n");
 		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
 		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§2Accepte de te téléporter à " + player.getName() + ".")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "tpahereyes " + player.getName()));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpahereyes " + player.getName()));
 		base.addExtra(tp);
 		base.addExtra(" ");
 		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
 		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§4Refuse de te téléporter à " + player.getName() + ".")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "tpahereno " + player.getName()));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpahereno " + player.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
 		target.spigot().sendMessage(base);
