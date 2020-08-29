@@ -69,8 +69,10 @@ public class Hologram extends AbstractObservable {
 	}
 
 	public void addLine(AbstractLine<HologramLine> line) {
-		lines.add(new HologramLine(line));
+		HologramLine holoLine = new HologramLine(line);
+		lines.add(holoLine);
 		lines.forEach(HologramLine::updatePosition);
+		holoLine.spawnEntity();
 		update();
 	}
 
