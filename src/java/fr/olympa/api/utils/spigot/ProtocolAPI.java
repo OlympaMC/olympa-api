@@ -68,6 +68,10 @@ public enum ProtocolAPI {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).findFirst().orElse(null);
 	}
 
+	public static List<ProtocolAPI> getAll(int protocolNumber) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
+	}
+
 	public static ProtocolAPI get(String version) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getName().equals(version)).findFirst().orElse(null);
 	}
@@ -83,7 +87,7 @@ public enum ProtocolAPI {
 	public static ProtocolAPI getFirstVersion() {
 		return Arrays.stream(ProtocolAPI.values()).filter(ProtocolAPI::isAllowed).reduce((first, second) -> second).orElse(null);
 	}
-	
+
 	public static List<ProtocolAPI> gets(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
 	}
