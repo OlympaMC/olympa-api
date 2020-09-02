@@ -1,6 +1,7 @@
 package fr.olympa.api.customevents;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -47,24 +48,42 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 
 	private OlympaPlayer olympaPlayer;
 	private Player player;
-	private OlympaGroup groupChange;
+	private OlympaGroup[] groupsChanges;
+	private long timeStamp;
+	private Consumer<? super Boolean> done;
 
-	public AsyncOlympaPlayerChangeGroupEvent(Player player, ChangeType olympaGroupChangeType, OlympaPlayer olympaPlayer, OlympaGroup groupChange) {
+	public long getTimeStamp() {
+		return timeStamp;
+	}
+
+	public Consumer<? super Boolean> getDone() {
+		return done;
+	}
+
+	public AsyncOlympaPlayerChangeGroupEvent(Player player, ChangeType olympaGroupChangeType, OlympaPlayer olympaPlayer, OlympaGroup... groupsChanges) {
 		super(true);
 		this.player = player;
 		this.olympaGroupChangeType = olympaGroupChangeType;
 		this.olympaPlayer = olympaPlayer;
-		this.groupChange = groupChange;
+		this.groupsChanges = groupsChanges;
+	}
 
-		isAsynchronous();
+	public AsyncOlympaPlayerChangeGroupEvent(Player player, ChangeType olympaGroupChangeType, OlympaPlayer olympaPlayer, Consumer<? super Boolean> done, long timeStamp, OlympaGroup... groupsChanges) {
+		super(true);
+		this.player = player;
+		this.olympaGroupChangeType = olympaGroupChangeType;
+		this.olympaPlayer = olympaPlayer;
+		this.timeStamp = timeStamp;
+		this.done = done;
+		this.groupsChanges = groupsChanges;
 	}
 
 	public ChangeType getChangeType() {
 		return olympaGroupChangeType;
 	}
 
-	public OlympaGroup getGroupChange() {
-		return groupChange;
+	public OlympaGroup[] getGroupsChanges() {
+		return groupsChanges;
 	}
 
 	@Override
