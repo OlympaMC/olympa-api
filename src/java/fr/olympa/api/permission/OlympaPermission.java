@@ -44,6 +44,7 @@ public class OlympaPermission {
 
 	OlympaGroup minGroup = null;
 	OlympaGroup[] allowedGroups = null;
+	UUID[] allowedBypass = null;
 	boolean lockPermission = false;
 
 	public OlympaPermission(OlympaGroup minGroup) {
@@ -77,6 +78,14 @@ public class OlympaPermission {
 
 	public OlympaGroup getMinGroup() {
 		return minGroup;
+	}
+
+	public UUID[] getAllowedBypass() {
+		return allowedBypass;
+	}
+
+	public boolean isInAllowedBypass(UUID uuid) {
+		return Arrays.stream(allowedBypass).anyMatch(u -> u.equals(uuid));
 	}
 
 	public OlympaGroup[] getAllowedGroups() {
@@ -115,20 +124,37 @@ public class OlympaPermission {
 			noPerm.accept(playersWithPerm);
 	}
 
-	public boolean hasPermission(OlympaGroup group) {
-		return minGroup != null && group.getPower() >= minGroup.getPower()
-				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(group_allow -> group_allow.getPower() == group.getPower());
-
+	public boolean allowPlayer(Player player) {
+		if (lockPermission)
+			return false;
+		List<UUID> allowBypassList = new ArrayList<>();
+		if (allowedBypass != null)
+			allowBypassList.addAll(Arrays.asList(allowedBypass));
+		allowBypassList.add(player.getUniqueId());
+		allowedBypass = allowBypassList.stream().toArray(UUID[]::new);
+		return true;
 	}
 
-	public void allowGroup(OlympaGroup group) {
+	public boolean allowGroup(OlympaGroup group) {
 		if (lockPermission)
-			return;
+			return false;
 		List<OlympaGroup> allowGroupsList = new ArrayList<>();
 		if (allowedGroups != null)
 			allowGroupsList.addAll(Arrays.asList(allowedGroups));
 		allowGroupsList.add(group);
 		allowedGroups = allowGroupsList.stream().toArray(OlympaGroup[]::new);
+		return true;
+	}
+
+	public boolean disallowPlayer(Player player) {
+		if (lockPermission)
+			return false;
+		List<UUID> allowBypassList = new ArrayList<>();
+		if (allowedBypass != null)
+			allowBypassList.addAll(Arrays.asList(allowedBypass));
+		boolean b = allowBypassList.remove(player.getUniqueId());
+		allowedGroups = allowBypassList.stream().toArray(OlympaGroup[]::new);
+		return b;
 	}
 
 	public boolean disallowGroup(OlympaGroup group) {
@@ -152,16 +178,22 @@ public class OlympaPermission {
 		minGroup = group;
 	}
 
+	public boolean hasPermission(UUID uniqueId) {
+		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
+	}
+
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
-		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups());
+		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()));
 	}
 
 	public boolean hasPermission(TreeMap<OlympaGroup, Long> groups) {
 		return groups.entrySet().stream().anyMatch(entry -> this.hasPermission(entry.getKey()));
 	}
 
-	public boolean hasPermission(UUID uniqueId) {
-		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
+	public boolean hasPermission(OlympaGroup group) {
+		return minGroup != null && group.getPower() >= minGroup.getPower()
+				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower());
+
 	}
 
 	public boolean hasSenderPermission(CommandSender sender) {

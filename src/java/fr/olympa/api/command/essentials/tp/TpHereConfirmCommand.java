@@ -2,24 +2,31 @@ package fr.olympa.api.command.essentials.tp;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.OlympaCommand;
 
-public class TpnoCommand extends OlympaCommand {
+public class TpHereConfirmCommand extends OlympaCommand {
 
 	private TpaHandler handler;
-	
-	TpnoCommand(TpaHandler handler) {
-		super(handler.plugin, "tpano", "Refuse la dernière demande de téléportation.", handler.permission, "tpno", "tparefuse");
+
+	TpHereConfirmCommand(TpaHandler handler) {
+		super(handler.plugin, "tphereyes", "Refuse la dernière demande de téléportation.", handler.permission, "tphereyes", "tparefuse");
 		this.handler = handler;
 		setAllowConsole(false);
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		handler.refuseRequest(player);
+		Player target = Bukkit.getPlayer(args[0]);
+		if (target == null) {
+			sendUnknownPlayer(args[0]);
+			return false;
+		}
+		handler.refuseRequest(player, target);
 		return false;
 	}
 

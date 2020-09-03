@@ -22,15 +22,28 @@ public class AccountProvider implements OlympaAccount {
 
 	public static <T extends OlympaPlayer> T get(String name) throws SQLException {
 		OlympaPlayer olympaPlayer = null/*= AccountProvider.getFromCache(name)*/;
-		//		if (olympaPlayer == null)
-		//			olympaPlayer = AccountProvider.getFromRedis(name);
+		//				if (olympaPlayer == null)
+		//					olympaPlayer = AccountProvider.getFromRedis(name);
 		if (olympaPlayer == null)
 			olympaPlayer = AccountProvider.getFromDatabase(name);
 		return (T) olympaPlayer;
 	}
 
+	public static <T extends OlympaPlayer> T get(long id) throws SQLException {
+		OlympaPlayer olympaPlayer = null/*= AccountProvider.getFromCache(name)*/;
+		//				if (olympaPlayer == null)
+		//					olympaPlayer = AccountProvider.getFromRedis(name);
+		if (olympaPlayer == null)
+			olympaPlayer = AccountProvider.getFromDatabase(id);
+		return (T) olympaPlayer;
+	}
+
 	public static OlympaPlayerInformations getPlayerInformations(long id) {
 		return cachedInformations.get(id);
+	}
+
+	public static OlympaPlayer getFromDatabase(long id) throws SQLException {
+		throw new UnsupportedOperationException();
 	}
 
 	public static OlympaPlayer getFromDatabase(String name) throws SQLException {

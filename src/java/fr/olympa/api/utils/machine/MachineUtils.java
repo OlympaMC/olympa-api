@@ -22,6 +22,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class MachineUtils {
 
+	private static Boolean isPapermc;
+
 	public static TextComponent getInfos() {
 		MachineInfo machine = new MachineInfo();
 		LinkSpigotBungee main = LinkSpigotBungee.Provider.link;
@@ -80,7 +82,7 @@ public class MachineUtils {
 				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + versionsString + "§3."));
 			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Bukkit API: §b" + Bukkit.getBukkitVersion().replace("-SNAPSHOT", "") + "§3."));
-			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? TPS.isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
+			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
 			out.addExtra(" ");
 			out.addExtra(out2);
 			for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
@@ -110,5 +112,15 @@ public class MachineUtils {
 			out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3.")));
 		}
 		return out;
+	}
+
+	private static boolean isPaper() {
+		if (isPapermc == null)
+			try {
+				isPapermc = Class.forName("com.destroystokyo.paper.VersionHistoryManager.VersionData") != null;
+			} catch (ClassNotFoundException e) {
+				isPapermc = false;
+			}
+		return isPapermc;
 	}
 }

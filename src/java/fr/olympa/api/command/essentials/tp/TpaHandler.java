@@ -1,7 +1,9 @@
 package fr.olympa.api.command.essentials.tp;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -16,9 +18,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
 
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -26,148 +31,196 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class TpaHandler implements Listener {
-	
+
 	private static final int TELEPORTATION_SECONDS = 3;
 	private static final int TELEPORTATION_TICKS = TELEPORTATION_SECONDS * 20;
-	
-	private Cache<Player, Request> requests = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
-	
+
+	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
+
 	Plugin plugin;
 	OlympaPermission permission;
 
 	public TpaHandler(Plugin plugin, OlympaPermission permission) {
 		this.plugin = plugin;
 		this.permission = permission;
-		
+
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
-		new TpnoCommand(this).register();
-		new TpyesCommand(this).register();
+		//		new TpHereConfirmCommand(this).register();
+		new TpConfirmCommand(this).register();
 	}
-	
-	private void invalidate(RemovalNotification<Player, Request> notif) {
-		if (notif.getValue().task != null) {
-			notif.getValue().task.cancel();
-			if (notif.getValue().from.isOnline()) Prefix.BAD.sendMessage(notif.getValue().from, "La téléportation a été annulée.");
+
+	private void invalidate(RemovalNotification<Request, Player> notif) {
+		Request request = notif.getKey();
+		if (request.task != null)
+			request.task.cancel();
+		else if (notif.getCause() == RemovalCause.EXPIRED) {
+			if (request.from.isOnline())
+				Prefix.BAD.sendMessage(request.from, "La téléportation vers &4%s&c a expiré.", request.to.getName());
+			if (request.to.isOnline())
+				Prefix.BAD.sendMessage(request.to, "La téléportation de &4%s&c §lVERS§c toi a expiré.", request.from.getName());
 		}
+
 	}
 
 	public void addRequest(Player player, Request request) {
-		requests.put(player, request);
+		requests.put(request, player);
+	}
+
+	public Request getRequest(Player creator, Player target) {
+		UUID playerUUID = creator.getUniqueId();
+		UUID targetUUID = target.getUniqueId();
+		return requests.asMap().entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) && entry.getKey().to.getUniqueId().equals(targetUUID))
+				.map(Entry::getKey).findFirst().orElse(null);
+	}
+
+	public List<Request> getRequestsByPlayerTeleported(Player target) {
+		return requests.asMap().entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
 	}
 
 	public void removeAllRequests(Player player) {
-		requests.invalidate(player);
-		Set<Entry<Player, Request>> toRemoved = requests.asMap().entrySet().stream().filter(entry -> entry.getKey().equals(player)).collect(Collectors.toSet());
-		if (!toRemoved.isEmpty())
-			requests.invalidateAll(toRemoved);
+		UUID playerUUID = player.getUniqueId();
+		requests.asMap().entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) || entry.getKey().from.getUniqueId().equals(playerUUID)
+				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(r -> requests.invalidate(r));
 	}
-	
-	private boolean testRequest(Player player, Player target) {
-		Request request = requests.getIfPresent(target);
-		if (request != null && request.task != null) {
-			Prefix.DEFAULT_BAD.sendMessage(player, "Ce joueur est déjà en train de se téléporter.");
+
+	private boolean testRequest(Player creator, Player target) {
+		Request request = getRequest(creator, target);
+		if (request != null) {
+			Prefix.DEFAULT_BAD.sendMessage(creator, "Tu as déjà envoyé une demande à &4%s&c.", target.getName());
 			return false;
 		}
 		return true;
 	}
 
-	public void sendRequestTo(Player player, Player target) {
-		if (!testRequest(player, target)) return;
-		requests.invalidate(player); 
-		addRequest(target, new Request(player, target));
-		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l----------- TPA -----------"));
+	public void sendRequestTo(Player creator, Player target) {
+		if (!testRequest(creator, target))
+			return;
+		addRequest(creator, new Request(creator, target));
+		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e----------§6 TPA §m§l§e----------"));
 		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§2" + player.getName() + "§7 veut se téléporter à toi.")));
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§2" + creator.getName() + "§e veut se téléporter à toi.")));
 		base.addExtra("\n");
 		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§2Accepte la téléportation §lVERS§2 toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + player.getName()));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Accepte la téléportation §lVERS§2 toi.")));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra(" ");
 		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§4Refuse la téléportation §lVERS§c toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + player.getName()));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§4Refuse la téléportation §lVERS§c toi.")));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e----------------------------")));
 		target.spigot().sendMessage(base);
-		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as envoyé une requête à §2%s§a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 
-	public void sendRequestHere(Player player, Player target) {
-		if (!testRequest(player, target)) return;
-		requests.invalidate(player);
-		addRequest(target, new Request(target, player));
-		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l----------- TPA -----------"));
+	public void sendRequestHere(Player creator, Player target) {
+		if (!testRequest(creator, target))
+			return;
+		addRequest(creator, new Request(target, creator));
+		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e----------§6 TPA §m§l§e----------"));
 		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§4" + player.getName() + "§7 veut que §lTU§7 te téléporte à §lLUI§7.")));
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.")));
 		base.addExtra("\n");
 		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§2Accepte de te téléporter à " + player.getName() + ".")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpahereyes " + player.getName()));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Accepte de te téléporter à " + creator.getName() + ".")));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra(" ");
 		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, TextComponent.fromLegacyText("§4Refuse de te téléporter à " + player.getName() + ".")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpahereno " + player.getName()));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§4Refuse de te téléporter à " + creator.getName() + ".")));
+		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e----------------------------")));
 		target.spigot().sendMessage(base);
-		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as envoyé une requête à §2%s§a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
-	
-	public void acceptRequest(Player player) {
-		Request request = requests.getIfPresent(player.getUniqueId());
+
+	public void acceptRequest(Player target, Player creator) {
+		Request request = getRequest(creator, target);
 		if (request == null) {
-			Prefix.DEFAULT_BAD.sendMessage(player, "Tu n'as pas de demande de téléportation en attente...");
+			Prefix.DEFAULT_BAD.sendMessage(target, "Tu n'as pas de demande de téléportation en attente...");
 			return;
 		}
-		
-		if (!request.from.isOnline() && !request.to.isOnline()) {
-			Prefix.DEFAULT_BAD.sendMessage(player, "Le joueur qui t'as envoyé une demande de téléportation est maintenant hors-ligne.");
+
+		if (!creator.isOnline()) {
+			Prefix.DEFAULT_BAD.sendMessage(target, "&4%s&c est maintenant hors-ligne.");
 			return;
 		}
-		
+
 		if (request.task != null) {
-			Prefix.DEFAULT_BAD.sendMessage(player, "Tu es déjà en train de te faire téléporter !");
+			Prefix.DEFAULT_BAD.sendMessage(target, "Tu es déjà en train de te faire téléporter !");
 			return;
 		}
-		
-		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			if (request.from.isOnline() && request.to.isOnline()) {
-				Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as été téléporté à §e%s§a.", request.to.getName());
-				Prefix.DEFAULT_GOOD.sendMessage(player, "§e%s §as'est téléporté à toi.", request.from.getName());
-				request.from.teleport(request.to.getLocation());
-			}else Prefix.DEFAULT_BAD.sendMessage(player, "Le joueur qui t'as envoyé une demande de téléportation est maintenant hors-ligne.");
-		}, TELEPORTATION_TICKS);
+
 		Prefix.INFO.sendMessage(request.from, "Téléportation à %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
 		Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
+		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+			if (request.from.isOnline() && request.to.isOnline()) {
+				String tune = AccountProvider.get(request.from.getUniqueId()).getGender().getTurne();
+				Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
+				Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
+				request.from.teleport(request.to.getLocation());
+				requests.invalidate(request);
+			} else if (!request.from.isOnline() && request.to.isOnline())
+				try {
+					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProvider(request.from.getUniqueId()).get().getGender().getTurne());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			else if (!request.to.isOnline() && request.from.isOnline())
+				try {
+					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProvider(request.to.getUniqueId()).get().getGender().getTurne());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+		}, TELEPORTATION_TICKS);
 	}
-	
-	public void refuseRequest(Player player) {
-		requests.invalidate(player);
-		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as refusé la dernière demande de téléportation.");
+
+	public void refuseRequest(Player target, Player creator) {
+		Request request = getRequest(creator, target);
+		if (request == null) {
+			Prefix.DEFAULT_BAD.sendMessage(target, "Tu n'as pas de demande de téléportation en attente...");
+			return;
+		}
+		requests.invalidate(request);
+		if (creator.isOnline())
+			Prefix.DEFAULT_BAD.sendMessage(creator, "&4%s&c a refusé la demande de téléportation.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(target, "Tu as refusé la demande de téléportation de &2%s&a.", creator.getName());
 	}
-	
+
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		removeAllRequests(player);
 	}
-	
+
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
-		if (!SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) {
-			Request request = requests.getIfPresent(e.getPlayer());
-			if (request != null && request.task != null) requests.invalidate(e.getPlayer());
-		}
+		if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
+			return;
+		Player player = e.getPlayer();
+		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
+		List<Request> requestsTarget = getRequestsByPlayerTeleported(player);
+		requestsTarget.forEach(r -> {
+			if (r != null && r.task != null) {
+				requests.invalidate(r);
+				Prefix.DEFAULT_BAD.sendMessage(player, "Téléportation annulée, bouges pas !.");
+				Prefix.DEFAULT_BAD.sendMessage(r.to, "Téléportation de &4%s&c &lVERS&c toi a été annulée, %s a bougé pendant la tp.", player.getName(), olympaPlayer.getGender().getPronoun());
+			}
+		});
+
 	}
-	
+
 	class Request {
 		private Player from;
 		private Player to;
 		private BukkitTask task;
-		
+
 		public Request(Player from, Player to) {
 			this.from = from;
 			this.to = to;
