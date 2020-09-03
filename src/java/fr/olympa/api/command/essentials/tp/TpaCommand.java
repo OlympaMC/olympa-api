@@ -12,11 +12,12 @@ import fr.olympa.api.command.OlympaCommand;
 public class TpaCommand extends OlympaCommand {
 
 	private TpaHandler handler;
-	
+
 	TpaCommand(TpaHandler handler) {
 		super(handler.plugin, "tpa", "Permet de se téléporter à un autre joueur.", handler.permission, "tpto");
 		this.handler = handler;
 		addArgs(true, "joueur");
+		minArg = 1;
 		setAllowConsole(false);
 	}
 

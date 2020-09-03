@@ -44,6 +44,7 @@ public class OlympaPermission {
 
 	OlympaGroup minGroup = null;
 	OlympaGroup[] allowedGroups = null;
+	boolean disabled = false;
 	UUID[] allowedBypass = null;
 	boolean lockPermission = false;
 
@@ -191,8 +192,8 @@ public class OlympaPermission {
 	}
 
 	public boolean hasPermission(OlympaGroup group) {
-		return minGroup != null && group.getPower() >= minGroup.getPower()
-				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower());
+		return (!disabled || group.isHighStaff()) && (minGroup != null && group.getPower() >= minGroup.getPower()
+				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower()));
 
 	}
 
@@ -214,4 +215,11 @@ public class OlympaPermission {
 		return lockPermission;
 	}
 
+	public void disable() {
+		disabled = true;
+	}
+
+	public void enable() {
+		disabled = false;
+	}
 }
