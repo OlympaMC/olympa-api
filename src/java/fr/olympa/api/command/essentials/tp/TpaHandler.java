@@ -35,7 +35,7 @@ public class TpaHandler implements Listener {
 	private static final int TELEPORTATION_SECONDS = 3;
 	private static final int TELEPORTATION_TICKS = TELEPORTATION_SECONDS * 20;
 
-	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
+	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
 
 	Plugin plugin;
 	OlympaPermission permission;
@@ -68,14 +68,22 @@ public class TpaHandler implements Listener {
 	}
 
 	public Request getRequest(Player creator, Player target) {
-		UUID playerUUID = creator.getUniqueId();
+		UUID creatorUUID = creator.getUniqueId();
 		UUID targetUUID = target.getUniqueId();
-		return requests.asMap().entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) && entry.getKey().to.getUniqueId().equals(targetUUID))
+		return requests.asMap().entrySet().stream()
+				.filter(entry -> entry.getValue().getUniqueId().equals(creatorUUID) && (entry.getKey().to.getUniqueId().equals(targetUUID) || entry.getKey().from.getUniqueId().equals(target.getUniqueId())))
 				.map(Entry::getKey).findFirst().orElse(null);
 	}
 
 	public List<Request> getRequestsByPlayerTeleported(Player target) {
 		return requests.asMap().entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
+	}
+
+	public Player getCreatorByTarget(Player target) {
+		UUID targetUUID = target.getUniqueId();
+		return requests.asMap().entrySet().stream().filter(entry -> !entry.getValue().getUniqueId().equals(targetUUID) &&
+				(entry.getKey().from.getUniqueId().equals(targetUUID) || entry.getKey().to.getUniqueId().equals(targetUUID)))
+				.map(Entry::getValue).findFirst().orElse(null);
 	}
 
 	public void removeAllRequests(Player player) {
@@ -156,7 +164,7 @@ public class TpaHandler implements Listener {
 			return;
 		}
 
-		Prefix.INFO.sendMessage(request.from, "Téléportation à %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+		Prefix.INFO.sendMessage(request.from, "Téléportation vers %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
 		Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
 		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			if (request.from.isOnline() && request.to.isOnline()) {
@@ -217,9 +225,9 @@ public class TpaHandler implements Listener {
 	}
 
 	class Request {
-		private Player from;
-		private Player to;
-		private BukkitTask task;
+		public Player from;
+		public Player to;
+		public BukkitTask task;
 
 		public Request(Player from, Player to) {
 			this.from = from;

@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.server.ServerType;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -47,14 +48,30 @@ public class OlympaPermission {
 	boolean disabled = false;
 	UUID[] allowedBypass = null;
 	boolean lockPermission = false;
+	protected ServerType serverType = ServerType.SPIGOT;
 
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
 	}
 
+	public ServerType getServerType() {
+		return serverType;
+	}
+
+	public OlympaPermission(OlympaGroup minGroup, ServerType serverType) {
+		this.minGroup = minGroup;
+		this.serverType = serverType;
+	}
+
 	public OlympaPermission(OlympaGroup minGroup, boolean lockPermission) {
 		this.minGroup = minGroup;
 		this.lockPermission = lockPermission;
+	}
+
+	public OlympaPermission(OlympaGroup minGroup, boolean lockPermission, ServerType serverType) {
+		this.minGroup = minGroup;
+		this.lockPermission = lockPermission;
+		this.serverType = serverType;
 	}
 
 	public OlympaPermission(OlympaGroup... allowedGroups) {
@@ -71,10 +88,23 @@ public class OlympaPermission {
 		this.allowedGroups = allowedGroups;
 	}
 
+	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups, ServerType serverType) {
+		this.minGroup = minGroup;
+		this.allowedGroups = allowedGroups;
+		this.serverType = serverType;
+	}
+
 	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups, boolean lockPermission) {
 		this.minGroup = minGroup;
 		this.allowedGroups = allowedGroups;
 		this.lockPermission = lockPermission;
+	}
+
+	public OlympaPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups, boolean lockPermission, ServerType serverType) {
+		this.minGroup = minGroup;
+		this.allowedGroups = allowedGroups;
+		this.lockPermission = lockPermission;
+		this.serverType = serverType;
 	}
 
 	public OlympaGroup getMinGroup() {
@@ -91,6 +121,10 @@ public class OlympaPermission {
 
 	public OlympaGroup[] getAllowedGroups() {
 		return allowedGroups;
+	}
+
+	public OlympaGroup[] clearAllowedGroups() {
+		return allowedGroups = null;
 	}
 
 	public OlympaGroup[] getAllGroupsAllowed() {

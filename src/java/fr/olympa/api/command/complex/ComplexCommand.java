@@ -28,7 +28,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ComplexCommand extends OlympaCommand {
-	
+
 	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
 
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
@@ -48,7 +48,7 @@ public class ComplexCommand extends OlympaCommand {
 			perm = OlympaPermission.permissions.get(cmd.permissionName());
 			name = method.getName();
 		}
-		
+
 		boolean canRun() {
 			return hasPermission(perm) && (!cmd.player() || !isConsole());
 		}
@@ -57,7 +57,7 @@ public class ComplexCommand extends OlympaCommand {
 	private class ArgumentParser {
 		private Function<CommandSender, List<String>> tabArgumentsFunction;
 		private Function<String, Object> supplyArgumentFunction;
-		
+
 		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
 			this.tabArgumentsFunction = tabArgumentsFunction;
 			this.supplyArgumentFunction = supplyArgumentFunction;
@@ -65,11 +65,11 @@ public class ComplexCommand extends OlympaCommand {
 	}
 
 	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
-	
+
 	public InternalCommand getCommand(String argName) {
 		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue()).orElse(null);
 	}
-	
+
 	public boolean containsCommand(String argName) {
 		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()));
 	}
@@ -104,29 +104,31 @@ public class ComplexCommand extends OlympaCommand {
 		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
 		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
 			World result = Bukkit.getWorld(x);
-			if (result == null) sendError("Le monde %s n'existe pas.", x);
+			if (result == null)
+				sendError("Le monde %s n'existe pas.", x);
 			return result;
 		});
 		addArgumentParser("SUBCOMMAND", sender -> commands.keySet().stream().flatMap(List::stream).collect(Collectors.toList()), x -> {
 			InternalCommand result = getCommand(x);
-			if (result == null) sendError("La commande %s n'existe pas.", x);
+			if (result == null)
+				sendError("La commande %s n'existe pas.", x);
 			return result;
 		});
-		
+
 		registerCommandsClass(this);
 	}
 
 	public <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass) {
 		List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
 		addArgumentParser(name, sender -> values, playerInput -> {
-			for (T each : enumClass.getEnumConstants()) {
-				if (each.name().equalsIgnoreCase(playerInput)) return each;
-			}
+			for (T each : enumClass.getEnumConstants())
+				if (each.name().equalsIgnoreCase(playerInput))
+					return each;
 			sendError("La valeur %s n'existe pas.", playerInput);
 			return null;
 		});
 	}
-	
+
 	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
 		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
 	}
@@ -171,9 +173,11 @@ public class ComplexCommand extends OlympaCommand {
 		Object[] argsCmd = new Object[args.length - 1];
 		for (int i = 1; i < args.length; i++) {
 			String arg = args[i];
-			String type = i > cmd.args().length ? "" : cmd.args()[i - 1];
+			String[] types = (i > cmd.args().length ? "" : cmd.args()[i - 1]).split("\\|");
 			Object result = null;
-			ArgumentParser parser = parsers.get(type);
+			ArgumentParser parser = parsers.entrySet().stream().filter(entry -> Arrays.stream(types)
+					.anyMatch(type -> entry.getKey().equals(type) && entry.getValue().tabArgumentsFunction.apply(sender).contains(arg)))
+					.map(Entry::getValue).findFirst().orElse(null);
 			if (parser != null)
 				result = parser.supplyArgumentFunction.apply(arg);
 			else
@@ -201,9 +205,8 @@ public class ComplexCommand extends OlympaCommand {
 
 		if (args.length == 1)
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
-				if (!en.getValue().cmd.hide() || en.getValue().canRun()) {
+				if (!en.getValue().cmd.hide() || en.getValue().canRun())
 					find.add(en.getKey().get(0));
-				}
 			}
 		else if (args.length >= 2) {
 			int index = args.length - 2;
@@ -216,12 +219,14 @@ public class ComplexCommand extends OlympaCommand {
 			if (!internal.cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender))
 				return tmp;
 			sel = args[index + 1];
-			String type = needed[index];
-			ArgumentParser parser = parsers.get(type);
-			if (parser != null)
-				find.addAll(parser.tabArgumentsFunction.apply(sender));
-			else
-				find.addAll(Arrays.asList(type.split("\\|")));
+			String[] types = needed[index].split("\\|");
+			for (String type : types) {
+				ArgumentParser parser = parsers.get(type);
+				if (parser != null)
+					find.addAll(parser.tabArgumentsFunction.apply(sender));
+				else
+					find.addAll(Arrays.asList(type));
+			}
 		} else
 			return tmp;
 
@@ -237,11 +242,11 @@ public class ComplexCommand extends OlympaCommand {
 	 */
 	public void registerCommandsClass(Object commandsClassInstance) {
 		Class<?> clazz = commandsClassInstance.getClass();
-		do {
+		do
 			registerCommandsClass(clazz, commandsClassInstance);
-		}while ((clazz = clazz.getSuperclass()) != null);
+		while ((clazz = clazz.getSuperclass()) != null);
 	}
-	
+
 	private void registerCommandsClass(Class<?> clazz, Object commandsClassInstance) {
 		for (Method method : clazz.getDeclaredMethods())
 			if (method.isAnnotationPresent(Cmd.class)) {
@@ -259,21 +264,22 @@ public class ComplexCommand extends OlympaCommand {
 						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}
 	}
-	
+
 	@Override
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		for (InternalCommand command : commands.values()) {
-			if (command.cmd.hide() || !command.canRun()) continue;
+			if (command.cmd.hide() || !command.canRun())
+				continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
 	}
-	
-	@Cmd (args = "SUBCOMMAND", syntax = "[commande]")
+
+	@Cmd(args = "SUBCOMMAND", syntax = "[commande]")
 	public void help(CommandContext cmd) {
-		if (cmd.getArgumentsLength() == 0) {
+		if (cmd.getArgumentsLength() == 0)
 			sendHelp(sender);
-		}else {
+		else {
 			InternalCommand command = cmd.getArgument(0);
 			if (!command.canRun()) {
 				sendIncorrectSyntax();
@@ -282,18 +288,17 @@ public class ComplexCommand extends OlympaCommand {
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
 	}
-	
+
 	private TextComponent getHelpCommandComponent(InternalCommand command) {
 		String fullCommand = "/" + super.command + " " + command.name;
-		
+
 		TextComponent component = new TextComponent();
 		component.setHoverEvent(COMMAND_HOVER);
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, fullCommand + " "));
-		
-		for (BaseComponent commandCompo : TextComponent.fromLegacyText("§7➤ §6" + fullCommand + " §e" + command.cmd.syntax())) {
+
+		for (BaseComponent commandCompo : TextComponent.fromLegacyText("§7➤ §6" + fullCommand + " §e" + command.cmd.syntax()))
 			component.addExtra(commandCompo);
-		}
-		
+
 		return component;
 	}
 

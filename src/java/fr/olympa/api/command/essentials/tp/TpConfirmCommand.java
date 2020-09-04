@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.utils.Prefix;
 
 public class TpConfirmCommand extends OlympaCommand {
 
@@ -21,15 +22,24 @@ public class TpConfirmCommand extends OlympaCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Player target = Bukkit.getPlayer(args[0]);
-		if (target == null) {
-			sendUnknownPlayer(args[0]);
-			return false;
+		Player creator;
+		if (args.length == 0) {
+			creator = handler.getCreatorByTarget(player);
+			if (creator == null) {
+				sendMessage(Prefix.DEFAULT_BAD, "Tu n'a pas de demande de téléportation en attente.");
+				return false;
+			}
+		} else {
+			creator = Bukkit.getPlayer(args[0]);
+			if (creator == null) {
+				sendUnknownPlayer(args[0]);
+				return false;
+			}
 		}
 		if (label.contains("yes") || label.contains("accept"))
-			handler.acceptRequest(player, target);
+			handler.acceptRequest(player, creator);
 		else if (label.contains("no") || label.contains("refuse"))
-			handler.refuseRequest(player, target);
+			handler.refuseRequest(player, creator);
 		else
 			sendError();
 		return false;
