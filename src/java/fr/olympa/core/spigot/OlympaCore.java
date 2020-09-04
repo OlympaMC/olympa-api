@@ -34,6 +34,28 @@ public class OlympaCore extends OlympaSpigot {
 
 	private HologramsManager holograms;
 	private RegionManager regions;
+	private String lastVersion = "unknown";
+	private String firstVersion = "unknown";
+
+	public String getLastVersion() {
+		return lastVersion;
+	}
+
+	public void setLastVersion(String lastVersion) {
+		this.lastVersion = lastVersion;
+	}
+
+	public String getFirstVersion() {
+		return firstVersion;
+	}
+
+	public String getRangeVersion() {
+		return firstVersion + " à " + lastVersion;
+	}
+
+	public void setFirstVersion(String firstVersion) {
+		this.firstVersion = firstVersion;
+	}
 
 	@Override
 	public IProtocolSupport getProtocolSupport() {

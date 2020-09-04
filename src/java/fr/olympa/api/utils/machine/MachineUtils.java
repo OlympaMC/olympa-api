@@ -12,7 +12,6 @@ import org.bukkit.entity.LivingEntity;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.hook.IProtocolSupport;
 import fr.olympa.api.utils.Utils;
-import fr.olympa.api.utils.spigot.ProtocolAPI;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.api.utils.spigot.TPSUtils;
 import fr.olympa.core.spigot.OlympaCore;
@@ -63,23 +62,15 @@ public class MachineUtils {
 		out.addExtra("\n");
 
 		if (main.isSpigot()) {
+			out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + ((OlympaCore) main).getRangeVersion() + "§3."));
 			IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 			if (protocolSupport != null) {
-				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + protocolSupport.getRangeVersion() + "§3."));
 				String unSupVer = protocolSupport.getVersionUnSupportedInRange();
 				if (!unSupVer.isBlank()) {
 					out2.addExtra(new TextComponent(TextComponent.fromLegacyText("§4[§c!§4]§3.")));
 					out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§4Versions non supportées: §c" + unSupVer + "§4.")));
 				}
 				out.addExtra(out2);
-			} else {
-				String versionsString = "erreur";
-				try {
-					versionsString = ProtocolAPI.getVersionSupportedToString();
-				} catch (Exception e) {
-					versionsString = "erreur : " + e.getMessage();
-				}
-				out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + versionsString + "§3."));
 			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Bukkit API: §b" + Bukkit.getBukkitVersion().replace("-SNAPSHOT", "") + "§3."));
 			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));

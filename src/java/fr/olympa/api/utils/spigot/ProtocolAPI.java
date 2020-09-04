@@ -101,6 +101,11 @@ public enum ProtocolAPI {
 		return vers.isEmpty() ? null : String.join(", ", vers);
 	}
 
+	public static String[] getVersionSupportedArray() {
+		List<String> vers = getVersionSupported();
+		return new String[] { vers.get(vers.size() - 1), vers.get(0) };
+	}
+
 	public static List<String> getVersionSupported() {
 		ProtocolAPI defaultProto = getDefaultProtocol();
 		if (defaultProto != null)

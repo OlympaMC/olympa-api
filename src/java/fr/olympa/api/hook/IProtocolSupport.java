@@ -14,12 +14,17 @@ public interface IProtocolSupport {
 
 	String getBigVersion(String version);
 
-	String getRangeVersion();
+	String[] getRangeVersionArray();
+
+	default String getRangeVersion() {
+		String[] array = getRangeVersionArray();
+		return array[0] + " à " + array[1];
+	}
 
 	String getVersionUnSupportedInRange();
 
 	String getVersionSupported();
-	
+
 	ProtocolAPI getPlayerVersion(Player p);
 
 }
