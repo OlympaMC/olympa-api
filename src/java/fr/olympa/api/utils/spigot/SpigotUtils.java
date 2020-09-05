@@ -283,8 +283,8 @@ public class SpigotUtils {
 		return false;
 	}
 
-	public static boolean removeItems(Inventory inv, ItemStack i) {
-		if (i.getAmount() <= 0)
+	public static boolean removeItems(Inventory inv, ItemStack i, int amount) {
+		if (amount <= 0)
 			throw new IllegalArgumentException("Item cannot have a negative or zero amount");
 		ItemStack[] items = inv.getContents();
 		for (int slot = 0; slot < items.length; slot++) {
@@ -292,15 +292,15 @@ public class SpigotUtils {
 			if (item == null)
 				continue;
 			if (item.isSimilar(i)) {
-				if (item.getAmount() == i.getAmount()) {
+				if (item.getAmount() == amount) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
 					return true;
 				}
-				if (item.getAmount() > i.getAmount()) {
-					item.setAmount(item.getAmount() - i.getAmount());
+				if (item.getAmount() > amount) {
+					item.setAmount(item.getAmount() - amount);
 					return true;
-				} else if (item.getAmount() < i.getAmount()) {
-					i.setAmount(i.getAmount() - item.getAmount());
+				}else if (item.getAmount() < amount) {
+					amount -= item.getAmount();
 					inv.setItem(slot, new ItemStack(Material.AIR));
 				}
 			}

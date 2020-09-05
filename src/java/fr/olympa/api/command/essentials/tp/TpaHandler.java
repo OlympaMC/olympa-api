@@ -26,6 +26,7 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.SpigotUtils;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -105,22 +106,7 @@ public class TpaHandler implements Listener {
 		if (!testRequest(creator, target))
 			return;
 		addRequest(creator, new Request(creator, target));
-		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e----------§6 TPA §m§l§e----------"));
-		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§2" + creator.getName() + "§e veut se téléporter à toi.")));
-		base.addExtra("\n");
-		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Accepte la téléportation §lVERS§2 toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + creator.getName()));
-		base.addExtra(tp);
-		base.addExtra(" ");
-		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§4Refuse la téléportation §lVERS§c toi.")));
-		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + creator.getName()));
-		base.addExtra(tp);
-		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e----------------------------")));
-		target.spigot().sendMessage(base);
+		target.spigot().sendMessage(getCompo(creator, "§2" + creator.getName() + "§e veut se téléporter à toi.", "§2Accepte la téléportation §lVERS§2 toi.", "§4Refuse la téléportation §lVERS§c toi."));
 		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 
@@ -128,23 +114,27 @@ public class TpaHandler implements Listener {
 		if (!testRequest(creator, target))
 			return;
 		addRequest(creator, new Request(target, creator));
-		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e----------§6 TPA §m§l§e----------"));
+		target.spigot().sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
+		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
+	}
+	
+	private BaseComponent getCompo(Player creator, String message, String yesDesc, String noDesc) {
+		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e--------------§6 TPA §m§l§e--------------"));
 		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.")));
-		base.addExtra("\n");
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText(message)));
+		base.addExtra("\n           ");
 		TextComponent tp = new TextComponent(TextComponent.fromLegacyText("§2[§aOUI§2]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§2Accepte de te téléporter à " + creator.getName() + ".")));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(yesDesc)));
 		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpayes " + creator.getName()));
 		base.addExtra(tp);
-		base.addExtra(" ");
-		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNon§4]"));
-		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§4Refuse de te téléporter à " + creator.getName() + ".")));
+		base.addExtra("     ");
+		tp = new TextComponent(TextComponent.fromLegacyText("§4[§cNON§4]"));
+		tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(noDesc)));
 		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e----------------------------")));
-		target.spigot().sendMessage(base);
-		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e--------------------------------")));
+		return base;
 	}
 
 	public void acceptRequest(Player target, Player creator) {
