@@ -39,27 +39,22 @@ public class OlympaItemBuild implements Cloneable {
 
 		customModelData = itemStack.getItemMeta().getCustomModelData();
 		enchantments = itemStack.getEnchantments();
-		if (enchantments != null && enchantments.isEmpty()) {
+		if (enchantments != null && enchantments.isEmpty())
 			enchantments = null;
-		}
 
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta.hasDisplayName()) {
+		if (itemMeta.hasDisplayName())
 			name = itemMeta.getDisplayName();
-		}
 
-		if (itemMeta.hasLore()) {
+		if (itemMeta.hasLore())
 			lore = itemMeta.getLore();
-		}
 
 		Set<ItemFlag> flags = itemMeta.getItemFlags();
-		if (!flags.isEmpty()) {
+		if (!flags.isEmpty())
 			itemFlags = flags.toArray(new ItemFlag[0]);
-		}
 
-		if (itemMeta.isUnbreakable()) {
+		if (itemMeta.isUnbreakable())
 			unbreakable = true;
-		}
 	}
 
 	public OlympaItemBuild(Material material, String name) {
@@ -92,39 +87,29 @@ public class OlympaItemBuild implements Cloneable {
 	@SuppressWarnings("deprecation")
 	public ItemStack build() {
 		ItemStack itemStack = new ItemStack(material, 1);
-		if (size != null) {
+		if (size != null)
 			itemStack.setAmount(size);
-		}
 
-		if (durability != null) {
+		if (durability != null)
 			itemStack.setDurability(durability);
-		}
-		if (enchantments != null && !enchantments.isEmpty()) {
-			if (hasEnchantmentsUnsafe()) {
+		if (enchantments != null && !enchantments.isEmpty())
+			if (hasEnchantmentsUnsafe())
 				itemStack.addUnsafeEnchantments(enchantments);
-			} else {
+			else
 				itemStack.addEnchantments(enchantments);
-			}
-		}
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (name != null) {
+		if (name != null)
 			itemMeta.setDisplayName(ColorUtils.color(name));
-		}
-		if (customModelData != null) {
+		if (customModelData != null)
 			itemMeta.setCustomModelData(customModelData);
-		}
-		if (lore != null) {
+		if (lore != null)
 			itemMeta.setLore(ColorUtils.color(lore));
-		}
-		if (itemFlags != null) {
+		if (itemFlags != null)
 			itemMeta.addItemFlags(itemFlags);
-		}
-		if (player != null) {
+		if (player != null)
 			((SkullMeta) itemMeta).setOwningPlayer(player);
-		}
-		if (unbreakable != null) {
+		if (unbreakable != null)
 			itemMeta.setUnbreakable(true);
-		}
 		itemStack.setItemMeta(itemMeta);
 		return itemStack;
 	}
@@ -154,9 +139,8 @@ public class OlympaItemBuild implements Cloneable {
 
 	public OlympaItemBuild enchantment(Enchantment enchantment, int level) {
 		OlympaItemBuild olympaItemBuild = clone();
-		if (olympaItemBuild.enchantments == null) {
+		if (olympaItemBuild.enchantments == null)
 			olympaItemBuild.enchantments = new HashMap<>();
-		}
 		olympaItemBuild.enchantments.put(enchantment, level);
 		return olympaItemBuild;
 	}
@@ -207,8 +191,8 @@ public class OlympaItemBuild implements Cloneable {
 
 	public OlympaItemBuild skullowner(OfflinePlayer player) {
 		OlympaItemBuild olympaItemBuild = clone();
-		this.player = player;
-		material = Material.PLAYER_HEAD;
+		olympaItemBuild.player = player;
+		olympaItemBuild.material = Material.PLAYER_HEAD;
 		return olympaItemBuild;
 	}
 

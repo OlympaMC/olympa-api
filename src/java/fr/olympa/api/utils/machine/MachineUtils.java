@@ -108,7 +108,7 @@ public class MachineUtils {
 	private static boolean isPaper() {
 		if (isPapermc == null)
 			try {
-				isPapermc = Class.forName("com.destroystokyo.paper.VersionHistoryManager.VersionData") != null;
+				isPapermc = Class.forName("com.destroystokyo.paper.VersionHistoryManager$VersionData") != null;
 			} catch (ClassNotFoundException e) {
 				isPapermc = false;
 			}

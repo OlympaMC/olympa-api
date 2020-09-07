@@ -39,12 +39,10 @@ public class Inventories implements Listener {
 	}
 
 	public static void closeWithoutExit(Player p) {
-		if (!g.containsKey(p)) {
+		if (!g.containsKey(p))
 			return;
-		}
-		if (p.getOpenInventory().getType() == InventoryType.CRAFTING) {
+		if (p.getOpenInventory().getType() == InventoryType.CRAFTING)
 			return;
-		}
 		close = true;
 		p.closeInventory();
 	}
@@ -58,20 +56,15 @@ public class Inventories implements Listener {
 	}
 
 	private static OlympaGUI getGUI(Inventory inv) {
-		if (inv == null) {
+		if (inv == null)
 			return null;
-		}
 		InventoryHolder holder = inv.getHolder();
-		if (holder != null && holder instanceof OlympaGUI) {
+		if (holder != null && holder instanceof OlympaGUI)
 			return (OlympaGUI) holder;
-		}
-		if (notHoldable.contains(inv.getType())) {
-			for (OlympaGUI gui : g.values()) {
-				if (gui.getInventory().equals(inv)) {
+		if (notHoldable.contains(inv.getType()))
+			for (OlympaGUI gui : g.values())
+				if (gui.getInventory().equals(inv))
 					return gui;
-				}
-			}
-		}
 		return null;
 	}
 
@@ -80,32 +73,37 @@ public class Inventories implements Listener {
 	}
 
 	@EventHandler
-	public synchronized void onClick(InventoryClickEvent e) {
-		Player p = (Player) e.getWhoClicked();
-		Inventory inv = e.getClickedInventory();
-		ItemStack current = e.getCurrentItem();
+	public synchronized void onClick(InventoryClickEvent event) {
+		Player p = (Player) event.getWhoClicked();
+		try {
+			Inventory inv = event.getClickedInventory();
+			ItemStack current = event.getCurrentItem();
 
-		OlympaGUI gui = getGUI(e.getView().getTopInventory());
-		if (gui == null) return;
+			OlympaGUI gui = getGUI(event.getView().getTopInventory());
+			if (gui == null)
+				return;
 
-		e.setCancelled(false);
+			event.setCancelled(false);
 
-		if (inv == p.getInventory()) {
-			if (e.isShiftClick() && current.getType() != Material.AIR) {
-				e.setCancelled(gui.onMoveItem(p, current));
-			}
-			return;
-		}
-		
-		if (gui.noDoubleClick() && e.getClick() == ClickType.DOUBLE_CLICK) return;
-		
-		if (e.getCursor().getType() == Material.AIR) {
-			if (current == null || current.getType() == Material.AIR) {
+			if (inv == p.getInventory()) {
+				if (event.isShiftClick() && current.getType() != Material.AIR)
+					event.setCancelled(gui.onMoveItem(p, current));
 				return;
 			}
-			e.setCancelled(gui.onClick(p, current, e.getSlot(), e.getClick()));
-		} else {
-			e.setCancelled(gui.onClickCursor(p, current, e.getCursor(), e.getSlot()));
+
+			if (gui.noDoubleClick() && event.getClick() == ClickType.DOUBLE_CLICK)
+				return;
+
+			if (event.getCursor().getType() == Material.AIR) {
+				if (current == null || current.getType() == Material.AIR)
+					return;
+				event.setCancelled(gui.onClick(p, current, event.getSlot(), event.getClick()));
+			} else
+				event.setCancelled(gui.onClickCursor(p, current, event.getCursor(), event.getSlot()));
+		} catch (Exception e) {
+			event.setCancelled(true);
+			closeAndExit(p);
+			e.printStackTrace();
 		}
 	}
 
@@ -118,12 +116,10 @@ public class Inventories implements Listener {
 		}
 		if (g.containsKey(p)) {
 			OlympaGUI gui = g.get(p);
-			if (!e.getInventory().equals(gui.getInventory())) {
+			if (!e.getInventory().equals(gui.getInventory()))
 				return;
-			}
-			if (gui.onClose(p)) {
+			if (gui.onClose(p))
 				g.remove(p);
-			}
 		}
 	}
 
