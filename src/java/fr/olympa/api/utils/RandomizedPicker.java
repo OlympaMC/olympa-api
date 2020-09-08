@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import fr.olympa.api.utils.AbstractRandomizedPicker.Chanced;
+import fr.olympa.api.utils.RandomizedPicker.Chanced;
 
-public interface AbstractRandomizedPicker<T extends Chanced> {
+public interface RandomizedPicker<T extends Chanced> {
 
 	public default List<T> pick(Random random) {
 		int itemAmount = getMinItems() == getMaxItems() ? getMinItems() : Math.max(getMinItems(), getMinItems() + random.nextInt(getMaxItems() - getMinItems()));
@@ -47,6 +47,43 @@ public interface AbstractRandomizedPicker<T extends Chanced> {
 		 * @return chance que l'évenement soit arrive. <tt>-1</tt> si c'est un évenement obligatoire.
 		 */
 		public abstract double getChance();
+	}
+	
+	public class FixedPicker<T extends Chanced> implements RandomizedPicker<T> {
+		
+		private int min, max;
+		private List<T> objects, always;
+		
+		public FixedPicker(int min, int max, List<T> objects) {
+			this.min = min;
+			this.max = max;
+			for (T obj : objects) {
+				if (obj.getChance() == -1) {
+					always.add(obj);
+				}else objects.add(obj);
+			}
+		}
+		
+		@Override
+		public int getMinItems() {
+			return min;
+		}
+		
+		@Override
+		public int getMaxItems() {
+			return max;
+		}
+		
+		@Override
+		public List<T> getObjectList() {
+			return objects;
+		}
+		
+		@Override
+		public List<T> getAlwaysObjectList() {
+			return always;
+		}
+		
 	}
 
 }

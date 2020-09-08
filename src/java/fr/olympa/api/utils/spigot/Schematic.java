@@ -14,7 +14,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers.NBT;
-import org.bukkit.util.Vector;
 
 import net.minecraft.server.v1_15_R1.BlockPosition;
 import net.minecraft.server.v1_15_R1.NBTBase;
@@ -26,7 +25,6 @@ import net.minecraft.server.v1_15_R1.TileEntity;
 public class Schematic {
 
 	public String name;
-	public Vector schematicOrigin;
 	public EmptyBuildBlock[][][] blocks;
 
 	public short width, height, length;
@@ -51,12 +49,11 @@ public class Schematic {
 	}
 
 	public static Schematic load(File file) throws Exception {
-		if (!file.exists()) throw (new FileNotFoundException("File not found"));
+		if (!file.exists()) throw new FileNotFoundException("File not found");
 
 		FileInputStream fis = new FileInputStream(file);
 		NBTTagCompound nbt = NBTCompressedStreamTools.a(fis);
-
-		Vector origin = new Vector();
+		fis.close();
 
 		short width = nbt.getShort("Width");
 		short height = nbt.getShort("Height");
@@ -108,8 +105,6 @@ public class Schematic {
         }
 
 		out.name = file.getName();
-		out.schematicOrigin = origin;
-		fis.close();
 		return out;
 
 	}
