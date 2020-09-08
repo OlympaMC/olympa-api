@@ -10,33 +10,39 @@ public class TPSUtils {
 
 	// A ajuster
 	public static String getCPUUsageColor(int cpuUsage) {
-		if (cpuUsage < 25) {
+		if (cpuUsage < 25)
 			return ChatColor.GREEN + String.valueOf(cpuUsage);
-		} else if (cpuUsage < 50) {
+		else if (cpuUsage < 50)
 			return ChatColor.GOLD + String.valueOf(cpuUsage);
-		} else {
+		else
 			return ChatColor.RED + String.valueOf(cpuUsage);
-		}
 	}
 
 	// A ajuster
 	public static String getRamUsageColor(int ramUsage) {
-		if (ramUsage < 50) {
+		if (ramUsage < 50)
 			return ChatColor.GREEN + String.valueOf(ramUsage);
-		} else if (ramUsage < 75) {
+		else if (ramUsage < 75)
 			return ChatColor.GOLD + String.valueOf(ramUsage);
-		} else {
+		else
 			return ChatColor.RED + String.valueOf(ramUsage);
-		}
 	}
 
 	public static String getTpsColor(double tps) {
-		if (tps >= 18) {
+		if (tps >= 18)
 			return ChatColor.GREEN + format.format(tps);
-		} else if (tps >= 16) {
+		else if (tps >= 16)
 			return ChatColor.GOLD + format.format(tps);
-		} else {
+		else
 			return ChatColor.RED + format.format(tps);
-		}
+	}
+
+	public static String getPingColor(int ping) {
+		if (ping < 50)
+			return ChatColor.GREEN + String.valueOf(ping);
+		else if (ping < 80)
+			return ChatColor.GOLD + String.valueOf(ping);
+		else
+			return ChatColor.RED + String.valueOf(ping);
 	}
 }

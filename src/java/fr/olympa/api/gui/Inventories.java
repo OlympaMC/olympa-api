@@ -18,6 +18,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import fr.olympa.api.utils.Prefix;
+
 public class Inventories implements Listener {
 
 	private static Map<Player, OlympaGUI> g = new HashMap<>();
@@ -103,6 +105,7 @@ public class Inventories implements Listener {
 		} catch (Exception e) {
 			event.setCancelled(true);
 			closeAndExit(p);
+			p.sendMessage(Prefix.ERROR.formatMessage("Une erreur est survenue : &4%s&c.", e.getMessage() == null ? e.getClass().getName() : e.getMessage()));
 			e.printStackTrace();
 		}
 	}

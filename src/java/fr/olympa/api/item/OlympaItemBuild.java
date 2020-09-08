@@ -1,6 +1,6 @@
 package fr.olympa.api.item;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +30,8 @@ public class OlympaItemBuild implements Cloneable {
 	private ItemFlag[] itemFlags;
 	private Boolean unbreakable;
 	private OfflinePlayer player;
+
+	//	private ItemStack cache;
 
 	@SuppressWarnings("deprecation")
 	public OlympaItemBuild(ItemStack itemStack) {
@@ -66,26 +68,40 @@ public class OlympaItemBuild implements Cloneable {
 		this.name = name;
 	}
 
-	public OlympaItemBuild addlore(String... lore) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.lore.addAll(Arrays.asList(lore));
-		return olympaItemBuild;
+	public OlympaItemBuild addLore(String... lore) {
+		if (this.lore == null)
+			this.lore = new ArrayList<>();
+		for (String l : lore)
+			this.lore.add(l);
+		//		cache = null;
+		return this;
+	}
+
+	public OlympaItemBuild addLoreBefore(String... lore) {
+		if (this.lore == null)
+			this.lore = new ArrayList<>();
+		for (int i = 0; lore.length > i; i++)
+			this.lore.add(0, lore[lore.length - 1 - i]);
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild addName(String name) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.name += name;
-		return olympaItemBuild;
+		this.name += name;
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild breakable() {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.unbreakable = true;
-		return olympaItemBuild;
+		unbreakable = true;
+		//		cache = null;
+		return this;
 	}
 
 	@SuppressWarnings("deprecation")
 	public ItemStack build() {
+		//		if (cache != null)
+		//			return cache;
 		ItemStack itemStack = new ItemStack(material, 1);
 		if (size != null)
 			itemStack.setAmount(size);
@@ -111,6 +127,7 @@ public class OlympaItemBuild implements Cloneable {
 		if (unbreakable != null)
 			itemMeta.setUnbreakable(true);
 		itemStack.setItemMeta(itemMeta);
+		//		cache = itemStack;
 		return itemStack;
 	}
 
@@ -125,36 +142,36 @@ public class OlympaItemBuild implements Cloneable {
 	}
 
 	public OlympaItemBuild customModelData(int customModelData) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.customModelData = customModelData;
-		return olympaItemBuild;
+		this.customModelData = customModelData;
+		//		cache = null;
+		return this;
 	}
 
 	@Deprecated
 	public OlympaItemBuild durability(short durability) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.durability = durability;
-		return olympaItemBuild;
+		this.durability = durability;
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild enchantment(Enchantment enchantment, int level) {
-		OlympaItemBuild olympaItemBuild = clone();
-		if (olympaItemBuild.enchantments == null)
-			olympaItemBuild.enchantments = new HashMap<>();
-		olympaItemBuild.enchantments.put(enchantment, level);
-		return olympaItemBuild;
+		if (enchantments == null)
+			enchantments = new HashMap<>();
+		enchantments.put(enchantment, level);
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild enchantment(Map<Enchantment, Integer> enchantments) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.enchantments = enchantments;
-		return olympaItemBuild;
+		this.enchantments = enchantments;
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild flag(ItemFlag... itemFlags) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.itemFlags = itemFlags;
-		return olympaItemBuild;
+		this.itemFlags = itemFlags;
+		//		cache = null;
+		return this;
 	}
 
 	private boolean hasEnchantmentsUnsafe() {
@@ -162,47 +179,54 @@ public class OlympaItemBuild implements Cloneable {
 	}
 
 	public OlympaItemBuild lore(String... lore) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.lore = Arrays.asList(lore);
-		return olympaItemBuild;
+		if (this.lore == null)
+			this.lore = new ArrayList<>();
+		for (String l : lore)
+			this.lore.add(l);
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild name(String name) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.name = name;
-		return olympaItemBuild;
+		this.name = name;
+		//		cache = null;
+		return this;
 	}
 
 	public void setEnchantments(Map<Enchantment, Integer> enchantments) {
 		this.enchantments = enchantments;
+		//		cache = null;
 	}
 
 	public OlympaItemBuild setLore(int i, String lore) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.lore.set(i, olympaItemBuild.lore.get(i) + lore);
-		return olympaItemBuild;
+		if (this.lore == null)
+			this.lore = new ArrayList<>();
+		this.lore.set(i, this.lore.get(i) + lore);
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild size(int size) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.size = size;
-		return olympaItemBuild;
+		this.size = size;
+		//		cache = null;
+		return this;
 	}
 
 	public OlympaItemBuild skullowner(OfflinePlayer player) {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.player = player;
-		olympaItemBuild.material = Material.PLAYER_HEAD;
-		return olympaItemBuild;
+		this.player = player;
+		material = Material.PLAYER_HEAD;
+		//		cache = null;
+		return this;
 	}
 
+	@SuppressWarnings("deprecation")
 	public OlympaItemBuild skullowner(String playerName) {
 		return skullowner(Bukkit.getOfflinePlayer(playerName));
 	}
 
 	public OlympaItemBuild unbreakable() {
-		OlympaItemBuild olympaItemBuild = clone();
-		olympaItemBuild.unbreakable = true;
-		return olympaItemBuild;
+		unbreakable = true;
+		//		cache = null;
+		return this;
 	}
 }
