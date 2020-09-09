@@ -29,7 +29,7 @@ public class ReportStatusInfo {
 		return status;
 	}
 
-	public long getTime() {
+	public Long getTime() {
 		return time;
 	}
 }

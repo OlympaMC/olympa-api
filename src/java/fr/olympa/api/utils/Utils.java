@@ -214,7 +214,7 @@ public class Utils {
 		return list.get(new Random().nextInt(list.size()));
 	}
 
-	public static UUID getUUID(String uuid) {
+	public static UUID getUUID(String uuid) throws IllegalArgumentException {
 		return UUID.fromString(uuid.contains("-") ? uuid : uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
 	}
 
@@ -286,13 +286,12 @@ public class Utils {
 			list2.set(i, list2.get(i).replaceAll(toReplace, replaced));
 		return list2;
 	}
-	
+
 	public static <T> T[] arrayAdd(T[] array, T... add) {
 		T[] array2 = (T[]) new Object[array.length + add.length];
 		System.arraycopy(array, 0, array2, 0, array.length);
-		for (int i = 0; i < add.length; i++) {
+		for (int i = 0; i < add.length; i++)
 			array2[array.length + i] = add[i];
-		}
 		return array2;
 	}
 
@@ -347,6 +346,10 @@ public class Utils {
 	}
 
 	public static String timestampToDuration(long timestamp) {
+		return timestampToDuration(timestamp, 2);
+	}
+
+	public static String timestampToDuration(long timestamp, int precision) {
 
 		long now = Utils.getCurrentTimeInSeconds();
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
@@ -407,7 +410,7 @@ public class Utils {
 		for (String message : msg) {
 			if (message != null)
 				msgs.add(message);
-			if (msgs.size() >= 2)
+			if (msgs.size() >= precision)
 				break;
 		}
 		return String.join(", ", msgs);

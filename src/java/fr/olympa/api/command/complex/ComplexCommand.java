@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -32,6 +34,7 @@ public class ComplexCommand extends OlympaCommand {
 	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
 
 	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
+	private static final List<String> UUIDS = Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString().replace("-", ""));
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
 
 	public class InternalCommand {
@@ -93,6 +96,16 @@ public class ComplexCommand extends OlympaCommand {
 			}
 			return null;
 		});
+		addArgumentParser("UUID", sender -> UUIDS, x -> {
+			try {
+				return Utils.getUUID(x);
+			} catch (IllegalArgumentException e) {
+				String random = UUID.randomUUID().toString();
+				sendError(x + " doit être un uuid sous la forme &4%s&c ou &4%&c.", random, random.replace("-", ""));
+			}
+			return null;
+		});
+
 		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
 			try {
 				return Double.parseDouble(x);

@@ -50,7 +50,7 @@ public class ReportUtils {
 		tc.setColor(ChatColor.DARK_PURPLE);
 		out.addExtra(tc);
 		out.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique pour avoir plus d'info").color(ChatColor.YELLOW).create()));
-		out.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reportsee " + report.getId()));
+		out.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report see " + report.getId()));
 		return out;
 	}
 }

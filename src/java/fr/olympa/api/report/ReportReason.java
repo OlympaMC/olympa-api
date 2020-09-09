@@ -10,7 +10,7 @@ import fr.olympa.api.item.OlympaItemBuild;
 
 public enum ReportReason {
 
-	CHAT(1, "Chat abusif"),
+	CHAT(1, "Chat Abusif"),
 	CHEAT_AURA(2, "Cheat Combat"),
 	CHEAT_XRAY(3, "Cheat XRay"),
 	CHEAT_FLY(4, "Cheat Fly"),
@@ -40,7 +40,11 @@ public enum ReportReason {
 	//	}
 
 	public static ReportReason get(String name) {
-		return Arrays.stream(ReportReason.values()).filter(itemGui -> itemGui.name().equals(name)).findFirst().orElse(null);
+		return Arrays.stream(ReportReason.values()).filter(itemGui -> itemGui.name().equalsIgnoreCase(name)).findFirst().orElse(null);
+	}
+
+	public static ReportReason getByReason(String reason) {
+		return Arrays.stream(ReportReason.values()).filter(itemGui -> itemGui.getReason().equalsIgnoreCase(reason)).findFirst().orElse(null);
 	}
 
 	int id;
@@ -65,5 +69,9 @@ public enum ReportReason {
 
 	public String getReason() {
 		return reason;
+	}
+
+	public String getReasonClear() {
+		return reason.replace(" ", "_");
 	}
 }

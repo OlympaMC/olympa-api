@@ -78,6 +78,7 @@ public class OlympaStatement {
 			sj.add(sj2.toString());
 		}
 		statement = sj.toString() + ";";
+		returnGeneratedKeys = true;
 	}
 
 	public OlympaStatement(String statement) {
