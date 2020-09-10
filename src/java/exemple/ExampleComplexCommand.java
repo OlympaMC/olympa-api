@@ -1,5 +1,7 @@
 package exemple;
 
+import java.util.UUID;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -25,7 +27,8 @@ public class ExampleComplexCommand extends ComplexCommand {
 		new ExempleGUI().create(getPlayer());
 	}
 
-	@Cmd (args = { "PLAYERS", "" }, min = 1, permissionName = "EXEMPLE_LOL")
+	// /complex lol <player>
+	@Cmd(args = { "PLAYERS", "" }, min = 1, permissionName = "EXEMPLE_LOL")
 	public void lol(CommandContext cmd) {
 		Player p = cmd.getArgument(0);
 		p.sendMessage(cmd.getArgument(1, "valeurDef"));
@@ -34,6 +37,13 @@ public class ExampleComplexCommand extends ComplexCommand {
 	@Cmd(player = true, permissionName = "EXEMPLE_NYAN")
 	public void nyan(CommandContext cmd) {
 		getPlayer().setVelocity(getPlayer().getLocation().getDirection().multiply(3));
+	}
+
+	// /complex <uuid>
+	@Cmd(otherArg = true, args = "UUID")
+	public void peuxImporteLeNom(CommandContext cmd) {
+		UUID uuid = cmd.getArgument(0);
+		sender.sendMessage("uuid: " + uuid.toString());
 	}
 
 }
