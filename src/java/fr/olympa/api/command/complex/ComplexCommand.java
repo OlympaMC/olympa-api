@@ -33,8 +33,9 @@ public class ComplexCommand extends OlympaCommand {
 
 	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
 
-	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3", "...");
-	private static final List<String> UUIDS = Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString().replace("-", ""));
+	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
+	private static final String uuid = UUID.randomUUID().toString();
+	private static final List<String> UUIDS = Arrays.asList(uuid, uuid.replace("-", ""));
 	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
 
 	public class InternalCommand {
@@ -60,73 +61,89 @@ public class ComplexCommand extends OlympaCommand {
 	private class ArgumentParser {
 		private Function<CommandSender, List<String>> tabArgumentsFunction;
 		private Function<String, Object> supplyArgumentFunction;
+		private Function<String, String> wrongArgTypeMessageFunction;
 
+		/**
+		 * @Deprecated
+		 *
+		 * Il est possible d'utiliser le tabArgumentsFunction pour vérifier le type de l'arguement.
+		 * Il suffit de mettre le message d'erreur dans errorMessageArgumentFunction plutôt que dans tabArgumentsFunction sinon le message d'erreur sera envoyé avec que le plugin le gère.
+		 *
+		 * Utilise plutôt {@link #ArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction) ArgumentParser}.
+		 */
+		@Deprecated
 		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
 			this.tabArgumentsFunction = tabArgumentsFunction;
 			this.supplyArgumentFunction = supplyArgumentFunction;
+		}
+
+		/**
+		 *
+		 * @param tabArgumentsFunction
+		 * @param supplyArgumentFunction
+		 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
+		 */
+		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction) {
+			this.tabArgumentsFunction = tabArgumentsFunction;
+			this.supplyArgumentFunction = supplyArgumentFunction;
+			this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
 		}
 	}
 
 	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
 
 	public InternalCommand getCommand(String argName) {
-		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue()).orElse(null);
+		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue())
+				.orElse(commands.entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(entry -> entry.getValue()).findFirst().orElse(null));
 	}
 
 	public boolean containsCommand(String argName) {
-		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()));
+		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()) || entry.getValue().cmd.otherArg());
 	}
 
 	private final Map<String, ArgumentParser> parsers = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
 		super(plugin, command, description, permission, alias);
 
 		addArgumentParser("PLAYERS", sender -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
-			Player result = Bukkit.getPlayerExact(x);
-			if (result == null)
-				sendUnknownPlayer(x);
-			return result;
-		});
+			return Bukkit.getPlayerExact(x);
+		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
 			try {
 				return Integer.parseInt(x);
 			} catch (NumberFormatException e) {
-				sendError(x + " doit être un nombre entier.");
+				return null;
 			}
-			return null;
-		});
+		}, x -> String.format("&4%s&c doit être un nombre entier", x));
 		addArgumentParser("UUID", sender -> UUIDS, x -> {
 			try {
 				return Utils.getUUID(x);
 			} catch (IllegalArgumentException e) {
-				String random = UUID.randomUUID().toString();
-				sendError(x + " doit être un uuid sous la forme &4%s&c ou &4%&c.", random, random.replace("-", ""));
+				return null;
 			}
-			return null;
+		}, x -> {
+			String random = UUID.randomUUID().toString();
+			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
 		});
-
 		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
 			try {
 				return Double.parseDouble(x);
 			} catch (NumberFormatException e) {
-				sendError(x + " doit être un nombre décimal.");
+				return null;
 			}
-			return null;
-		});
+		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
 		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
 		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
-			World result = Bukkit.getWorld(x);
-			if (result == null)
-				sendError("Le monde %s n'existe pas.", x);
-			return result;
-		});
-		addArgumentParser("SUBCOMMAND", sender -> commands.keySet().stream().flatMap(List::stream).collect(Collectors.toList()), x -> {
+			return Bukkit.getWorld(x);
+		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
+		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			InternalCommand result = getCommand(x);
-			if (result == null)
-				sendError("La commande %s n'existe pas.", x);
+			if (result != null && result.cmd.otherArg())
+				return null;
 			return result;
-		});
+		}, x -> String.format("La commande &4%s&c n'existe pas", x));
 
 		registerCommandsClass(this);
 	}
@@ -144,6 +161,10 @@ public class ComplexCommand extends OlympaCommand {
 
 	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
 		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
+	}
+
+	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
+		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
 	public boolean noArguments(CommandSender sender) {
@@ -183,21 +204,47 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		Object[] argsCmd = new Object[args.length - 1];
-		for (int i = 1; i < args.length; i++) {
-			String arg = args[i];
-			String[] types = (i > cmd.args().length ? "" : cmd.args()[i - 1]).split("\\|");
+		int i1 = 1;
+		if (cmd.otherArg())
+			i1 = 0;
+		Object[] argsCmd = new Object[args.length - i1];
+		for (int i2 = 0; i2 < argsCmd.length; i2++) {
+			String arg = args[i1++];
+			String[] types = (i2 >= cmd.args().length ? "" : cmd.args()[i2]).split("\\|");
 			Object result = null;
-			ArgumentParser parser = parsers.entrySet().stream().filter(entry -> Arrays.stream(types)
-					.anyMatch(type -> entry.getKey().equals(type) && entry.getValue().tabArgumentsFunction.apply(sender).contains(arg)))
-					.map(Entry::getValue).findFirst().orElse(null);
-			if (parser != null)
-				result = parser.supplyArgumentFunction.apply(arg);
-			else
+			List<ArgumentParser> potentialParsers = parsers.entrySet().stream().filter(entry -> Arrays.stream(types).anyMatch(type -> entry.getKey().equals(type)))
+					.map(Entry::getValue).collect(Collectors.toList());
+			boolean hasStringType = potentialParsers.size() != types.length;
+			if (potentialParsers.isEmpty())
 				result = arg;
-			if (result == null)
-				return true;
-			argsCmd[i - 1] = result;
+			else {
+				ArgumentParser parser = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).findFirst().orElse(null);
+				if (parser != null)
+					result = parser.supplyArgumentFunction.apply(arg);
+				else
+					// TODO : Choose between 2 parses here
+					for (ArgumentParser p : potentialParsers) {
+						result = p.supplyArgumentFunction.apply(arg);
+						if (result != null)
+							break;
+					}
+				if (result == null && !hasStringType) {
+					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
+						this.sendIncorrectSyntax();
+						return true;
+					} else if (!potentialParsers.isEmpty()) {
+						sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
+								.map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", ""))
+								.collect(Collectors.joining(" &4&lou&c ")));
+						if (potentialParsers.size() <= 1)
+							return true;
+					}
+					this.sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());
+					return true;
+				}
+			}
+
+			argsCmd[i2] = result;
 		}
 
 		try {
@@ -215,38 +262,46 @@ public class ComplexCommand extends OlympaCommand {
 		List<String> tmp = new ArrayList<>();
 		List<String> find = new ArrayList<>();
 		String sel = args[0];
-
-		if (args.length == 1)
-			for (Entry<List<String>, InternalCommand> en : commands.entrySet()) { // PERMISSIONS
-				if (!en.getValue().cmd.hide() || en.getValue().canRun())
+		if (args.length == 1) {
+			for (Entry<List<String>, InternalCommand> en : commands.entrySet())
+				if (en.getValue().cmd.otherArg())
+					find.addAll(findPotentialArgs(args));
+				else if (!en.getValue().cmd.hide() || en.getValue().canRun())
 					find.add(en.getKey().get(0));
-			}
-		else if (args.length >= 2) {
-			int index = args.length - 2;
-			if (!containsCommand(sel))
-				return tmp;
-			InternalCommand internal = getCommand(sel);
-			String[] needed = internal.cmd.args();
-			if (needed.length <= index)
-				return tmp;
-			if (!internal.cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender))
-				return tmp;
-			sel = args[index + 1];
-			String[] types = needed[index].split("\\|");
-			for (String type : types) {
-				ArgumentParser parser = parsers.get(type);
-				if (parser != null)
-					find.addAll(parser.tabArgumentsFunction.apply(sender));
-				else
-					find.addAll(Arrays.asList(type));
-			}
+		} else if (args.length >= 2) {
+			find = findPotentialArgs(args);
+			sel = args[args.length - 1];
 		} else
 			return tmp;
-
 		for (String arg : find)
 			if (arg.toLowerCase().startsWith(sel.toLowerCase()))
 				tmp.add(arg);
 		return tmp;
+	}
+
+	private List<String> findPotentialArgs(String[] args) {
+		List<String> find = new ArrayList<>();
+		int index = args.length - 2;
+		String sel = args[0];
+		if (!containsCommand(sel))
+			return find;
+		InternalCommand internal = getCommand(sel);
+		String[] needed = internal.cmd.args();
+		if (internal.cmd.otherArg())
+			index++;
+		else if (args.length == 1)
+			return find;
+		if (needed.length <= index || !internal.cmd.permissionName().isEmpty() && !internal.perm.hasSenderPermission(sender))
+			return find;
+		String[] types = needed[index].split("\\|");
+		for (String type : types) {
+			ArgumentParser parser = parsers.get(type);
+			if (parser != null)
+				find.addAll(parser.tabArgumentsFunction.apply(sender));
+			else
+				find.add(type);
+		}
+		return find;
 	}
 
 	/**
@@ -282,7 +337,7 @@ public class ComplexCommand extends OlympaCommand {
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		for (InternalCommand command : commands.values()) {
-			if (command.cmd.hide() || !command.canRun())
+			if (!command.canRun())
 				continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
@@ -293,6 +348,10 @@ public class ComplexCommand extends OlympaCommand {
 		if (cmd.getArgumentsLength() == 0)
 			sendHelp(sender);
 		else {
+			if (!(cmd.getArgument(0) instanceof InternalCommand)) {
+				sendIncorrectSyntax();
+				return;
+			}
 			InternalCommand command = cmd.getArgument(0);
 			if (!command.canRun()) {
 				sendIncorrectSyntax();
@@ -303,8 +362,11 @@ public class ComplexCommand extends OlympaCommand {
 	}
 
 	private TextComponent getHelpCommandComponent(InternalCommand command) {
-		String fullCommand = "/" + super.command + " " + command.name;
-
+		String fullCommand;
+		if (!command.cmd.otherArg())
+			fullCommand = "/" + super.command + " " + command.name;
+		else
+			fullCommand = "/" + super.command;
 		TextComponent component = new TextComponent();
 		component.setHoverEvent(COMMAND_HOVER);
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, fullCommand + " "));

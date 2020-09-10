@@ -2,8 +2,9 @@ package fr.olympa.api.command.complex;
 
 import java.util.StringJoiner;
 
+@SuppressWarnings("unchecked")
 public class CommandContext {
-	
+
 	public final ComplexCommand command;
 	public final String label;
 	private final Object[] args;
@@ -17,7 +18,7 @@ public class CommandContext {
 	public int getArgumentsLength() {
 		return args.length;
 	}
-	
+
 	public <T> T getArgument(int id) {
 		return (T) args[id];
 	}
@@ -25,7 +26,7 @@ public class CommandContext {
 	public <T> T getArgument(int id, T def) {
 		return id < args.length ? (T) args[id] : def;
 	}
-	
+
 	public String getFrom(int arg) {
 		if (arg >= args.length)
 			throw new ArrayIndexOutOfBoundsException(arg);
@@ -34,5 +35,5 @@ public class CommandContext {
 			joiner.add(args[i].toString());
 		return joiner.toString();
 	}
-	
+
 }

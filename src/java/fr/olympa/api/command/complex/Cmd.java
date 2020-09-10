@@ -13,7 +13,7 @@ import fr.olympa.api.permission.OlympaPermission;
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Cmd {
-	
+
 	/**
 	 * If true, the command will not be executed if the executor is not a Player
 	 * @return true if the command <i>need</i> to be executed by a player
@@ -49,14 +49,16 @@ public @interface Cmd {
 	 * @return syntaxe attendue
 	 */
 	public String syntax() default "";
-	
+
 	/**
 	 * Required permission to execute this command (if empty, no permission will be required)<br>
 	 * Final permission will be fetched in {@link OlympaPermission#permissions}
 	 * @return name of the permission
 	 */
 	public String permissionName() default "";
-	
+
 	public boolean hide() default false;
+
+	public boolean otherArg() default false;
 
 }

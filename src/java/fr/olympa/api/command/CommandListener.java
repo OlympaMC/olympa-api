@@ -20,12 +20,12 @@ public class CommandListener implements Listener {
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		processCommand(event, event.getMessage().substring(1), event.getPlayer());
 	}
-	
+
 	@EventHandler
 	public void onServerCommand(ServerCommandEvent event) {
 		processCommand(event, event.getCommand(), event.getSender());
 	}
-	
+
 	private void processCommand(Cancellable event, String fullCommand, CommandSender sender) {
 		if (event.isCancelled())
 			return;
@@ -57,7 +57,7 @@ public class CommandListener implements Listener {
 						exe.sendDoNotHavePermission();
 					return;
 				}
-		}else {
+		} else {
 			exe.player = null;
 			if (!exe.allowConsole) {
 				exe.sendImpossibleWithConsole();
