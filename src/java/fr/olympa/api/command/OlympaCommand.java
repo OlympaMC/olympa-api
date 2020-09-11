@@ -47,6 +47,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected Integer minArg;
 	protected boolean allowConsole = true;
 	protected boolean isAsynchronous = false;
+	public ReflectCommand reflectCommand;
 
 	public OlympaCommand(Plugin plugin, String command, OlympaPermission permission, String... aliases) {
 		this.plugin = plugin;
@@ -155,6 +156,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		if (description != null)
 			reflectCommand.setDescription(description);
 		reflectCommand.setExecutor(this);
+		this.reflectCommand = reflectCommand;
 		getCommandMap().register("Olympa", reflectCommand);
 		commands.add(this);
 	}

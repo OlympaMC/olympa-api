@@ -2,6 +2,7 @@ package fr.olympa.api.utils;
 
 import java.util.regex.Pattern;
 
+@Deprecated
 public class Matcher {
 
 	private static Pattern matchDate = Pattern.compile("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}");

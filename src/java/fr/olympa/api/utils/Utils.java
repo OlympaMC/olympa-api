@@ -214,6 +214,10 @@ public class Utils {
 		return list.get(new Random().nextInt(list.size()));
 	}
 
+	/**
+	 * Utilise RegexMatcher.UUID.parse(uuid)
+	 */
+	@Deprecated
 	public static UUID getUUID(String uuid) throws IllegalArgumentException {
 		return UUID.fromString(uuid.contains("-") ? uuid : uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
 	}
