@@ -66,7 +66,7 @@ public class HologramsManager implements Listener {
 		return hologram;
 	}
 
-	Hologram getHologram(int id) {
+	public Hologram getHologram(int id) {
 		return holograms.get(id);
 	}
 
@@ -83,6 +83,14 @@ public class HologramsManager implements Listener {
 
 	public boolean deleteHologram(Hologram hologram) {
 		if (holograms.remove(hologram.getID()) == null) return false;
+		hologram.destroy();
+		if (hologram.isPersistent()) updateHologram(hologram.getID(), null).changed();
+		return true;
+	}
+	
+	public boolean deleteHologram(int id) {
+		Hologram hologram = holograms.remove(id);
+		if (hologram == null) return false;
 		hologram.destroy();
 		if (hologram.isPersistent()) updateHologram(hologram.getID(), null).changed();
 		return true;
