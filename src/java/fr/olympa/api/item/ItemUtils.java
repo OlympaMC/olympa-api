@@ -260,8 +260,11 @@ public class ItemUtils {
 	 */
 	public static String getName(ItemStack is){
 		if (is == null) return null;
-		if (!is.hasItemMeta() || !is.getItemMeta().hasDisplayName()) return is.getType().name();
-		return is.getItemMeta().getDisplayName();
+		if (is.hasItemMeta()) {
+			ItemMeta meta = is.getItemMeta();
+			if (meta.hasDisplayName()) return meta.getDisplayName();
+		}
+		return is.getType().name();
 	}
 	
 	public static boolean hasEnchant(ItemStack is, Enchantment en){
