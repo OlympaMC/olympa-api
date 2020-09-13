@@ -9,7 +9,7 @@ import fr.olympa.api.utils.RandomizedPicker.Chanced;
 public interface RandomizedPicker<T extends Chanced> {
 
 	public default List<T> pick(Random random) {
-		int itemAmount = getMinItems() == getMaxItems() ? getMinItems() : Math.max(getMinItems(), getMinItems() + random.nextInt(getMaxItems() - getMinItems()));
+		int itemAmount = random.nextInt((getMaxItems() - getMinItems()) + 1) + getMinItems();
 
 		List<T> objects = new ArrayList<>(itemAmount);
 
@@ -19,7 +19,7 @@ public interface RandomizedPicker<T extends Chanced> {
 		}
 		if (itemAmount <= 0) return objects;
 
-		double objectsChanceSum = getObjectList().stream().mapToDouble(T::getChance).sum();
+		double objectsChanceSum = getObjectList().stream().mapToDouble(T::getChance).sum() + getEmptyChance();
 		for (int dropCount = 0; dropCount < itemAmount; dropCount++) {
 			double hitValue = objectsChanceSum * random.nextDouble();
 			double runningValue = 0;
@@ -41,6 +41,10 @@ public interface RandomizedPicker<T extends Chanced> {
 	public abstract List<T> getObjectList();
 
 	public abstract List<T> getAlwaysObjectList();
+	
+	public default double getEmptyChance() {
+		return 0;
+	}
 
 	public interface Chanced {
 		/**
@@ -52,15 +56,18 @@ public interface RandomizedPicker<T extends Chanced> {
 	public class FixedPicker<T extends Chanced> implements RandomizedPicker<T> {
 		
 		private int min, max;
-		private List<T> objects, always;
+		private double emptyChance;
+		private List<T> objects = new ArrayList<>();
+		private List<T> always = new ArrayList<>();
 		
-		public FixedPicker(int min, int max, List<T> objects) {
+		public FixedPicker(int min, int max, double emptyChance, List<T> objects) {
 			this.min = min;
 			this.max = max;
+			this.emptyChance = emptyChance;
 			for (T obj : objects) {
 				if (obj.getChance() == -1) {
-					always.add(obj);
-				}else objects.add(obj);
+					this.always.add(obj);
+				}else this.objects.add(obj);
 			}
 		}
 		
@@ -82,6 +89,11 @@ public interface RandomizedPicker<T extends Chanced> {
 		@Override
 		public List<T> getAlwaysObjectList() {
 			return always;
+		}
+		
+		@Override
+		public double getEmptyChance() {
+			return emptyChance;
 		}
 		
 	}
