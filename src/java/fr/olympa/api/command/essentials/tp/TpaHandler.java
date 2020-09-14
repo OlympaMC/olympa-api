@@ -119,7 +119,7 @@ public class TpaHandler implements Listener {
 	}
 	
 	private BaseComponent getCompo(Player creator, String message, String yesDesc, String noDesc) {
-		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§m§l§e--------------§6 TPA §m§l§e--------------"));
+		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§e§m§l--------------§6§l TPA §e§m§l--------------"));
 		base.addExtra("\n\n");
 		base.addExtra(new TextComponent(TextComponent.fromLegacyText(message)));
 		base.addExtra("\n           ");
@@ -133,7 +133,7 @@ public class TpaHandler implements Listener {
 		tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpano " + creator.getName()));
 		base.addExtra(tp);
 		base.addExtra("\n\n");
-		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§m§l§e--------------------------------")));
+		base.addExtra(new TextComponent(TextComponent.fromLegacyText("§e§m§l--------------------------------")));
 		return base;
 	}
 

@@ -103,7 +103,7 @@ public class RegionManager implements Listener {
 	public TrackedRegion registerRegion(Region region, String id, EventPriority priority, Flag... flags) {
 		Validate.notNull(region, id + " is a null region");
 		Validate.isTrue(!id.endsWith("_global"), "The region ID cannot end with _global");
-		Validate.isTrue(!trackedRegions.containsKey(id), "A region with ID" + id + " already exists");
+		Validate.isTrue(!trackedRegions.containsKey(id), "A region with ID " + id + " already exists");
 		TrackedRegion tracked = new TrackedRegion(region, id, priority, flags);
 		trackedRegions.put(id, tracked);
 		return tracked;
