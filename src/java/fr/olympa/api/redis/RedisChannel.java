@@ -23,5 +23,7 @@ public enum RedisChannel {
 
 	SPIGOT_LOBBY_MINIGAME_SCORE,
 	SPIGOT_REPORT_SEND,
+
+	SITE_GROUP_CHANGE,
 	;
 }

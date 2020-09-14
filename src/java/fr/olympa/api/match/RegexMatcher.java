@@ -14,7 +14,7 @@ public class RegexMatcher {
 	public static MatcherPattern FAKE_IP = new MatcherPattern("\\d{1,3}(\\.\\d{1,3}){3}");
 	public static MatcherPattern FAKE_UUID = new MatcherPattern("[0-9a-z]{8}-([0-9a-z]{4}-){3}[0-9a-z]{12}");
 	public static MatcherPattern EMAIL = new MatcherPattern("(.+)@(.+)\\.(.+)");
-	public static MatcherPattern DISCORD_TAG = new MatcherPattern(".*#[0-9]{4}");
+	public static MatcherPattern DISCORD_TAG = new MatcherPattern(".{2,32}#[0-9]{4}");
 
 	public static MatcherPattern DATE = new MatcherPattern("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 	public static MatcherPattern DOUBLE = new MatcherPattern("-?\\d+(.\\d+)?");

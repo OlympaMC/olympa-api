@@ -45,7 +45,6 @@ public enum OlympaGroup {
 	 */
 	public static OlympaGroup getById(int id) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getId() == id).findFirst().orElse(null);
-
 	}
 
 	/**
@@ -66,7 +65,7 @@ public enum OlympaGroup {
 	final String prefix;
 	final String chatSufix;
 	private boolean highStaff;
-	
+
 	public List<String> runtimePermissions = new ArrayList<>();
 
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix, boolean highStaff) {

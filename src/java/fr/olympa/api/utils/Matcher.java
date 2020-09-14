@@ -16,7 +16,7 @@ public class Matcher {
 	private static Pattern matchUsername = Pattern.compile("(?iu)^[\\w_]{3,16}$");
 	private static Pattern matchUuid = Pattern.compile("^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$");
 	private static Pattern matchEmail = Pattern.compile("^(.+)@(.+)\\.(.+)$");
-	private static Pattern matchTagDiscord = Pattern.compile(".*#[0-9]{4}");
+	private static Pattern matchTagDiscord = Pattern.compile(".+#[0-9]{4}");
 
 	public static String getDate(String date) {
 		return matchDate.matcher(date).group();
