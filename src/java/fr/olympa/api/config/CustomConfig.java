@@ -44,8 +44,7 @@ public class CustomConfig extends YamlConfiguration {
 		ConfigurationSerialization.registerClass(CyclingLine.class);
 	}
 
-	private InputStream resource;
-	private File file;
+	private File configFile;
 
 	private String filename;
 	private Plugin plugin;
@@ -56,25 +55,23 @@ public class CustomConfig extends YamlConfiguration {
 
 	public CustomConfig(Plugin plugin, String filename) {
 		this.plugin = plugin;
-		if (!filename.toLowerCase().endsWith(".yml")) {
+		if (!filename.toLowerCase().endsWith(".yml"))
 			filename += ".yml";
-		}
 		this.filename = filename;
-		file = new File(plugin.getDataFolder(), this.filename);
-		resource = plugin.getResource(filename);
+		configFile = new File(plugin.getDataFolder(), this.filename);
 	}
 
 	public void eraseFile() {
-		file.delete();
+		configFile.delete();
 		try {
-			file.createNewFile();
+			configFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public File getFile() {
-		return file;
+		return configFile;
 	}
 
 	@Override
@@ -89,36 +86,30 @@ public class CustomConfig extends YamlConfiguration {
 
 	public Double getVersion() {
 		Object obj = this.get("version");
-		if (obj instanceof Number) {
+		if (obj instanceof Number)
 			return ((Number) obj).doubleValue();
-		} else if (obj != null) {
+		else if (obj != null)
 			try {
 				return Double.valueOf(obj.toString());
 			} catch (NumberFormatException e) {
 				return null;
 			}
-		}
 		return null;
 	}
 
-	public boolean hasResource() {
-		return resource != null;
-	}
-
 	public void load() {
-		File folder = file.getParentFile();
-		if (!folder.exists()) {
+		File folder = configFile.getParentFile();
+		if (!folder.exists())
 			folder.mkdir();
-		}
 		try {
-			if (!file.exists()) {
-				file.createNewFile();
-				if (resource != null) {
-					ByteStreams.copy(resource, new FileOutputStream(file));
-				}
-				this.load(file);
+			InputStream resource = getRessource();
+			if (!configFile.exists()) {
+				configFile.createNewFile();
+				if (resource != null)
+					ByteStreams.copy(resource, new FileOutputStream(configFile));
+				this.load(configFile);
 			} else {
-				this.load(file);
+				this.load(configFile);
 				CustomConfig resourceConfig = new CustomConfig();
 				Double resourceConfigVersion = null;
 
@@ -127,38 +118,46 @@ public class CustomConfig extends YamlConfiguration {
 					resourceConfigVersion = resourceConfig.getVersion();
 
 					Double version = getVersion();
-					if (resourceConfigVersion != null && version != null) {
+					if (resourceConfigVersion != null && version != null)
 						if (resourceConfigVersion > version) {
-							ByteStreams.copy(resource, new FileOutputStream(file));
-							this.load(file);
-							Bukkit.getLogger().log(Level.SEVERE, ChatColor.GREEN + "Config updated: " + filename);
+							configFile.renameTo(new File(folder, configFile.getName() + " V" + version));
+							configFile = new File(folder, filename);
+							configFile.createNewFile();
+							ByteStreams.copy(getRessource(), new FileOutputStream(configFile));
+							this.load(configFile);
+							Bukkit.getLogger().log(Level.INFO, ChatColor.GREEN + "Config updated: " + filename);
 						}
-					}
 				}
-
 			}
 		} catch (IOException | InvalidConfigurationException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to load config: " + filename);
+			System.err.println("Unable to load config: " + filename);
 			e.printStackTrace();
 		}
 	}
 
 	public void save() {
 		try {
-			this.save(file);
+			this.save(configFile);
 		} catch (IOException e) {
-			Bukkit.getLogger().log(Level.SEVERE, ChatColor.RED + "Unable to save config: " + filename);
+			System.err.println("Unable to save config: " + filename);
 			e.printStackTrace();
 		}
 	}
 
 	public void saveIfNotExists() {
-		if (!file.exists()) {
+		if (!configFile.exists())
 			plugin.saveResource(filename, true);
-		}
 	}
 
 	public void set(String path, Location location) {
 		this.set(path, SpigotUtils.convertLocationToString(location));
+	}
+
+	public InputStream getRessource() {
+		return plugin.getResource(filename);
+	}
+
+	public boolean hasResource() {
+		return getRessource() != null;
 	}
 }
