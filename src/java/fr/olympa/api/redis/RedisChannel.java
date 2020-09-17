@@ -25,5 +25,7 @@ public enum RedisChannel {
 	SPIGOT_REPORT_SEND,
 
 	SITE_GROUP_CHANGE,
+	SPIGOT_COMMAND,
+	BUNGEE_COMMAND,
 	;
 }
