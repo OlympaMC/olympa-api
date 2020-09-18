@@ -34,7 +34,7 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	public OlympaTask getTask() {
 		return task;
 	}
-	
+
 	public INametagApi getNameTagApi() {
 		return nameTagApi;
 	}

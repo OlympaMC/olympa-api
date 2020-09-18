@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
+import fr.olympa.api.customevents.SpigotConfigReloadEvent;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.region.shapes.ChunkCuboid;
@@ -30,6 +31,7 @@ import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
 import fr.olympa.api.region.shapes.WorldRegion;
 import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class CustomConfig extends YamlConfiguration {
@@ -111,12 +113,17 @@ public class CustomConfig extends YamlConfiguration {
 		return null;
 	}
 
+	public void reload() throws FileNotFoundException, IOException, InvalidConfigurationException {
+		loadUnSafe();
+		plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this));
+	}
+
 	public void loadUnSafe() throws FileNotFoundException, IOException, InvalidConfigurationException {
 		File folder = configFile.getParentFile();
 		if (!folder.exists())
 			folder.mkdir();
 		InputStream resource = getRessource();
-		if (!configFile.exists()) {
+		if (!configFile.exists() || Utils.isEmptyFile(configFile)) {
 			configFile.createNewFile();
 			if (resource != null)
 				ByteStreams.copy(resource, new FileOutputStream(configFile));

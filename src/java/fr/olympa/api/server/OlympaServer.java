@@ -11,7 +11,7 @@ public enum OlympaServer {
 	AUTH("Authentification", true),
 	LOBBY("Lobby", true),
 	DEV("Développement", false, OlympaAPIPermissions.CONNECT_SERVER_DEV),
-	BUILDEUR("Buildeur", true, OlympaAPIPermissions.CONNECT_SERVER_BUILDER),
+	BUILDEUR("Buildeur", false, OlympaAPIPermissions.CONNECT_SERVER_BUILDER),
 	ZTA("Olympa ZTA", false),
 	CREATIF("Créatif", false),
 	LG("Loup-Garou", true),

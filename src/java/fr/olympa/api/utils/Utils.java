@@ -1,8 +1,10 @@
 package fr.olympa.api.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -469,5 +471,12 @@ public class Utils {
 	 */
 	public static String withOrWithoutS(int i) {
 		return i < 2 ? "" : "s";
+	}
+
+	public static boolean isEmptyFile(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		boolean b = br.readLine() == null;
+		br.close();
+		return b;
 	}
 }

@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public enum Prefix {
 
@@ -62,6 +64,10 @@ public enum Prefix {
 
 	public String formatMessage(String msg, Object... args) {
 		return ColorUtils.color(String.format(prefix + msg, args));
+	}
+
+	public BaseComponent[] formatMessageB(String msg, Object... args) {
+		return TextComponent.fromLegacyText(ColorUtils.color(String.format(prefix + msg, args)));
 	}
 
 	private void setPrefix(final String prefix) {
