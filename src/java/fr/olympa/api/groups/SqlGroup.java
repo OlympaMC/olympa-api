@@ -26,12 +26,12 @@ public class SqlGroup {
 	}
 
 	static String tableName = "commun.groups";
-	private static OlympaStatement insertPlayerStatement = new OlympaStatement(StatementType.INSERT, tableName, "id", "name", "name_fem", "power", "prefix", "chatSuffix", "highStaff", "server");
+	private static OlympaStatement insertPlayerStatement = new OlympaStatement(StatementType.INSERT, tableName, "id", "name", "name_fem", "power", "prefix", "chat_suffix", "high_staff", "server");
 
 	public static void insert(OlympaGroup group) throws SQLException {
 		PreparedStatement statement = insertPlayerStatement.getStatement();
 		int i = 1;
-		statement.setLong(i++, group.getId());
+		statement.setInt(i++, group.getId());
 		statement.setString(i++, group.getName(Gender.MALE));
 		statement.setString(i++, group.getName(Gender.FEMALE));
 		statement.setInt(i++, group.getPower());
@@ -44,7 +44,7 @@ public class SqlGroup {
 
 	}
 
-	private static OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, tableName, "id", new String[] { "name", "name_fem", "power", "prefix", "chatSuffix", "highStaff", "server" });
+	private static OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, tableName, "id", new String[] { "name", "name_fem", "power", "prefix", "chat_suffix", "high_staff", "server" });
 
 	public static void update(OlympaGroup group) throws SQLException {
 		PreparedStatement statement = updateStatement.getStatement();
@@ -56,7 +56,7 @@ public class SqlGroup {
 		statement.setString(i++, group.getChatSuffix());
 		statement.setInt(i++, Utils.booleanToBinary(group.isHighStaff()));
 		statement.setString(i++, group.getServer().name());
-		statement.setLong(i++, group.getId());
+		statement.setInt(i++, group.getId());
 		insertPlayerStatement.execute(statement);
 	}
 
@@ -80,8 +80,8 @@ public class SqlGroup {
 		ResultSet resultSet = insertPlayerStatement.executeQuery(statement);
 		if (resultSet.next())
 			b = group.getName(Gender.UNSPECIFIED).equals(resultSet.getString("name")) && group.getName(Gender.FEMALE).equals(resultSet.getString("name_fem"))
-					&& group.getPower() == resultSet.getInt("power") && group.getPrefix().equals(resultSet.getString("prefix")) && group.getChatSuffix().equals(resultSet.getString("chatSuffix"))
-					&& Utils.booleanToBinary(group.isHighStaff()) == resultSet.getInt("highStaff") && group.getServer().name().equals(resultSet.getString("server"));
+					&& group.getPower() == resultSet.getInt("power") && group.getPrefix().equals(resultSet.getString("prefix")) && group.getChatSuffix().equals(resultSet.getString("chat_suffix"))
+					&& Utils.booleanToBinary(group.isHighStaff()) == resultSet.getInt("high_staff") && group.getServer().name().equals(resultSet.getString("server"));
 		resultSet.close();
 		return b;
 	}

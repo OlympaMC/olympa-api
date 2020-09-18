@@ -106,7 +106,8 @@ public class OlympaStatement {
 		try {
 			return statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + this.statement, e.getCause());
+			e.printStackTrace();
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + this.statement);
 		}
 	}
 

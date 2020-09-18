@@ -1,10 +1,13 @@
 package fr.olympa.api.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -31,6 +34,16 @@ import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class CustomConfig extends YamlConfiguration {
 
+	private static List<CustomConfig> configs = new ArrayList<>();
+
+	public static List<CustomConfig> getConfigs() {
+		return configs;
+	}
+
+	public static CustomConfig getConfig(String name) {
+		return configs.stream().filter(c -> c.getName().equals(name)).findFirst().orElse(configs.stream().filter(c -> c.fileName.equals(name)).findFirst().orElse(null));
+	}
+
 	{
 		ConfigurationSerialization.registerClass(Cuboid.class);
 		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
@@ -46,7 +59,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	private File configFile;
 
-	private String filename;
+	private String fileName;
 	private Plugin plugin;
 
 	public CustomConfig() {
@@ -57,8 +70,9 @@ public class CustomConfig extends YamlConfiguration {
 		this.plugin = plugin;
 		if (!filename.toLowerCase().endsWith(".yml"))
 			filename += ".yml";
-		this.filename = filename;
-		configFile = new File(plugin.getDataFolder(), this.filename);
+		fileName = filename;
+		configFile = new File(plugin.getDataFolder(), fileName);
+		configs.add(this);
 	}
 
 	public void eraseFile() {
@@ -97,56 +111,64 @@ public class CustomConfig extends YamlConfiguration {
 		return null;
 	}
 
-	public void load() {
+	public void loadUnSafe() throws FileNotFoundException, IOException, InvalidConfigurationException {
 		File folder = configFile.getParentFile();
 		if (!folder.exists())
 			folder.mkdir();
-		try {
-			InputStream resource = getRessource();
-			if (!configFile.exists()) {
-				configFile.createNewFile();
-				if (resource != null)
-					ByteStreams.copy(resource, new FileOutputStream(configFile));
-				this.load(configFile);
-			} else {
-				this.load(configFile);
-				CustomConfig resourceConfig = new CustomConfig();
-				Double resourceConfigVersion = null;
+		InputStream resource = getRessource();
+		if (!configFile.exists()) {
+			configFile.createNewFile();
+			if (resource != null)
+				ByteStreams.copy(resource, new FileOutputStream(configFile));
+			this.load(configFile);
+		} else {
+			this.load(configFile);
+			CustomConfig resourceConfig = new CustomConfig();
+			Double resourceConfigVersion = null;
 
-				if (resource != null) {
-					resourceConfig.load(new InputStreamReader(resource));
-					resourceConfigVersion = resourceConfig.getVersion();
+			if (resource != null) {
+				resourceConfig.load(new InputStreamReader(resource));
+				resourceConfigVersion = resourceConfig.getVersion();
 
-					Double version = getVersion();
-					if (resourceConfigVersion != null && version != null)
-						if (resourceConfigVersion > version) {
-							configFile.renameTo(new File(folder, configFile.getName() + " V" + version));
-							configFile = new File(folder, filename);
-							configFile.createNewFile();
-							ByteStreams.copy(getRessource(), new FileOutputStream(configFile));
-							this.load(configFile);
-							Bukkit.getLogger().log(Level.INFO, ChatColor.GREEN + "Config updated: " + filename);
-						}
-				}
+				Double version = getVersion();
+				if (resourceConfigVersion != null && version != null)
+					if (resourceConfigVersion > version) {
+						configFile.renameTo(new File(folder, configFile.getName() + " V" + version));
+						configFile = new File(folder, fileName);
+						configFile.createNewFile();
+						ByteStreams.copy(getRessource(), new FileOutputStream(configFile));
+						this.load(configFile);
+						Bukkit.getLogger().log(Level.INFO, ChatColor.GREEN + "Config updated: " + fileName);
+					}
 			}
+		}
+	}
+
+	public void load() {
+		try {
+			loadUnSafe();
 		} catch (IOException | InvalidConfigurationException e) {
-			System.err.println("Unable to load config: " + filename);
+			System.err.println("Unable to load config: " + fileName);
 			e.printStackTrace();
 		}
 	}
 
+	public void saveUnSafe() throws IOException {
+		this.save(configFile);
+	}
+
 	public void save() {
 		try {
-			this.save(configFile);
+			saveUnSafe();
 		} catch (IOException e) {
-			System.err.println("Unable to save config: " + filename);
+			System.err.println("Unable to save config: " + fileName);
 			e.printStackTrace();
 		}
 	}
 
 	public void saveIfNotExists() {
 		if (!configFile.exists())
-			plugin.saveResource(filename, true);
+			plugin.saveResource(fileName, true);
 	}
 
 	public void set(String path, Location location) {
@@ -154,10 +176,15 @@ public class CustomConfig extends YamlConfiguration {
 	}
 
 	public InputStream getRessource() {
-		return plugin.getResource(filename);
+		return plugin.getResource(fileName);
 	}
 
 	public boolean hasResource() {
 		return getRessource() != null;
+	}
+
+	@Override
+	public String getName() {
+		return plugin.getDescription().getName() + "/" + fileName;
 	}
 }

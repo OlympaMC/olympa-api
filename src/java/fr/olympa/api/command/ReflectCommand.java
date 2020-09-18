@@ -12,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
@@ -41,7 +42,7 @@ public class ReflectCommand extends Command {
 						exe.sendDoNotHavePermission();
 					return false;
 				}
-		}else {
+		} else {
 			exe.player = null;
 			if (!exe.allowConsole) {
 				exe.sendImpossibleWithConsole();
@@ -71,7 +72,7 @@ public class ReflectCommand extends Command {
 			exe.player = (Player) sender;
 			if (!exe.hasPermission())
 				return null;
-		}else {
+		} else {
 			exe.player = null;
 			if (!exe.allowConsole) {
 				exe.sendImpossibleWithConsole();
@@ -99,6 +100,9 @@ public class ReflectCommand extends Command {
 			if (ca.getPermission() != null && !ca.getPermission().hasPermission((OlympaPlayer) exe.getOlympaPlayer()) || !ca.hasRequireArg(args, i))
 				continue;
 			switch (ca.getArgName().toLowerCase()) {
+			case "configs":
+				potentialArgs.addAll(CustomConfig.getConfigs().stream().map(CustomConfig::getName).collect(Collectors.toList()));
+				break;
 			case "joueur":
 				potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 				break;

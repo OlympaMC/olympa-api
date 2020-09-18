@@ -21,8 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -112,14 +112,14 @@ public class ComplexCommand extends OlympaCommand {
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
 			try {
-				return Integer.parseInt(x);
-			} catch (NumberFormatException e) {
+				return RegexMatcher.INT.parse(x);
+			} catch (IllegalArgumentException e) {
 				return null;
 			}
 		}, x -> String.format("&4%s&c doit être un nombre entier", x));
 		addArgumentParser("UUID", sender -> UUIDS, x -> {
 			try {
-				return Utils.getUUID(x);
+				return RegexMatcher.UUID.parse(x);
 			} catch (IllegalArgumentException e) {
 				return null;
 			}
@@ -129,7 +129,7 @@ public class ComplexCommand extends OlympaCommand {
 		});
 		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
 			try {
-				return Double.parseDouble(x);
+				return RegexMatcher.DOUBLE.parse(x);
 			} catch (NumberFormatException e) {
 				return null;
 			}
