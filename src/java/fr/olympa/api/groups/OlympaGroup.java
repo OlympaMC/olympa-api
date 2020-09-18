@@ -37,6 +37,7 @@ public enum OlympaGroup {
 	CREA_CONSTRUCTOR(22, 1, OlympaServer.CREATIF, "Constructeur", "Constructrice", "&9%s ", ":&r", false),
 	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%s ", ":&r", false),
 	CREA_CREATOR(24, 3, OlympaServer.CREATIF, "Créateur", "Créatrice", "&6%s ", ":&r", false);
+
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -68,14 +69,14 @@ public enum OlympaGroup {
 
 	public List<String> runtimePermissions = new ArrayList<>();
 
-	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSufix, boolean highStaff) {
+	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff) {
 		this.id = id;
 		this.power = power;
 		this.server = server;
 		this.name = name;
 		this.nameFem = nameFem;
 		this.prefix = ColorUtils.color(prefix);
-		chatSuffix = ColorUtils.color(chatSufix);
+		this.chatSuffix = ColorUtils.color(chatSuffix);
 		this.highStaff = highStaff;
 	}
 
@@ -139,7 +140,7 @@ public enum OlympaGroup {
 	}
 
 	public String getPrefix(Gender gender) {
-		return ColorUtils.color(String.join(prefix, getName(gender)));
+		return ColorUtils.color(String.format(prefix, getName(gender)));
 	}
 
 	public OlympaServer getServer() {

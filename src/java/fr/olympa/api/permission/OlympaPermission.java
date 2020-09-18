@@ -116,7 +116,7 @@ public class OlympaPermission {
 	}
 
 	public boolean isInAllowedBypass(UUID uuid) {
-		return Arrays.stream(allowedBypass).anyMatch(u -> u.equals(uuid));
+		return allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(u -> u.equals(uuid));
 	}
 
 	public OlympaGroup[] getAllowedGroups() {
@@ -226,8 +226,8 @@ public class OlympaPermission {
 	}
 
 	public boolean hasPermission(OlympaGroup group) {
-		return (!disabled || group.isHighStaff()) && (minGroup != null && group.getPower() >= minGroup.getPower()
-				|| allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower()));
+		return (!disabled || group.isHighStaff())
+				&& (minGroup != null && group.getPower() >= minGroup.getPower() || allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower()));
 
 	}
 
