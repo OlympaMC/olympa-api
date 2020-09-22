@@ -9,16 +9,16 @@ import java.util.StringJoiner;
 
 import fr.olympa.api.LinkSpigotBungee;
 
-@SuppressWarnings("unused")
 public class OlympaStatement {
 
-	public static void formatTableName(String tableName) {
+	public static String formatTableName(String tableName) {
 		if (!tableName.startsWith("`"))
 			if (tableName.contains(".")) {
 				int i = tableName.indexOf(".");
-				tableName = "`" + tableName.substring(0, i) + "`.`" + tableName.substring(i + 1, tableName.length() + 1) + "`";
+				tableName = "`" + tableName.substring(0, i) + "`.`" + tableName.substring(i + 1, tableName.length()) + "`";
 			} else
 				tableName = "`" + tableName + "`";
+		return tableName;
 	}
 
 	IStatementType type;
@@ -37,7 +37,8 @@ public class OlympaStatement {
 			sj.add(sj2.toString());
 			sj.add("VALUES");
 			sj2 = new StringJoiner(", ", "(", ")");
-			for (String key : keys)
+			int i = -1;
+			while (++i < keys.length)
 				sj2.add("?");
 			sj.add(sj2.toString());
 		} else {
@@ -102,20 +103,20 @@ public class OlympaStatement {
 		return statement;
 	}
 
-	public int execute(PreparedStatement statement) throws SQLException {
+	public int execute() throws SQLException {
 		try {
-			return statement.executeUpdate();
+			return getStatement().executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + this.statement);
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement);
 		}
 	}
 
-	public ResultSet executeQuery(PreparedStatement statement) throws SQLException {
+	public ResultSet executeQuery() throws SQLException {
 		try {
-			return statement.executeQuery();
+			return getStatement().executeQuery();
 		} catch (SQLException e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + this.statement, e.getCause());
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e.getCause());
 		}
 	}
 }

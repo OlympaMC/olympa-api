@@ -9,7 +9,8 @@ import fr.olympa.api.sql.OlympaStatement;
 import fr.olympa.api.sql.StatementType;
 import fr.olympa.api.utils.Utils;
 
-public class SqlGroup {
+@SuppressWarnings("deprecation")
+public class SQLGroup {
 
 	public static void init() {
 		for (OlympaGroup group : OlympaGroup.values())
@@ -38,8 +39,8 @@ public class SqlGroup {
 		statement.setString(i++, group.getPrefix());
 		statement.setString(i++, group.getChatSuffix());
 		statement.setInt(i++, Utils.booleanToBinary(group.isHighStaff()));
-		statement.setString(i++, group.getServer().name());
-		insertPlayerStatement.execute(statement);
+		statement.setString(i, group.getServer().name());
+		insertPlayerStatement.execute();
 		statement.close();
 
 	}
@@ -56,8 +57,8 @@ public class SqlGroup {
 		statement.setString(i++, group.getChatSuffix());
 		statement.setInt(i++, Utils.booleanToBinary(group.isHighStaff()));
 		statement.setString(i++, group.getServer().name());
-		statement.setInt(i++, group.getId());
-		insertPlayerStatement.execute(statement);
+		statement.setInt(i, group.getId());
+		updateStatement.execute();
 	}
 
 	private static OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, tableName, "id", null);
@@ -66,7 +67,7 @@ public class SqlGroup {
 		boolean b = false;
 		PreparedStatement statement = selectStatement.getStatement();
 		statement.setInt(1, group.getId());
-		ResultSet resultSet = insertPlayerStatement.executeQuery(statement);
+		ResultSet resultSet = selectStatement.executeQuery();
 		if (resultSet.next())
 			b = true;
 		resultSet.close();
@@ -77,7 +78,7 @@ public class SqlGroup {
 		Boolean b = null;
 		PreparedStatement statement = selectStatement.getStatement();
 		statement.setInt(1, group.getId());
-		ResultSet resultSet = insertPlayerStatement.executeQuery(statement);
+		ResultSet resultSet = selectStatement.executeQuery();
 		if (resultSet.next())
 			b = group.getName(Gender.UNSPECIFIED).equals(resultSet.getString("name")) && group.getName(Gender.FEMALE).equals(resultSet.getString("name_fem"))
 					&& group.getPower() == resultSet.getInt("power") && group.getPrefix().equals(resultSet.getString("prefix")) && group.getChatSuffix().equals(resultSet.getString("chat_suffix"))

@@ -28,9 +28,8 @@ public class OlympaRuntime {
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
 				while ((line = br.readLine()) != null) {
-					if (line.isEmpty()) {
+					if (line.isEmpty())
 						continue;
-					}
 					out += line.replace("0;", "").replace("", "")
 							.replace("[0m", "§f")
 							.replace("[1m", "§l")
@@ -54,18 +53,16 @@ public class OlympaRuntime {
 							.replace("[91m", "§d")
 							.replace("[91m", "§b")
 							.replace("[97m", "§f");
-					System.out.println(out);
 				}
-				if (function != null) {
+				if (function != null)
 					function.accept(out);
-				}
 				br.close();
 				p.waitFor();
+				System.out.println(out);
 			} catch (Exception e) {
 				String out = Prefix.DEFAULT + "&4ERROR&c " + e.getMessage();
-				if (function != null) {
+				if (function != null)
 					function.accept(out);
-				}
 				System.out.println(out);
 				e.printStackTrace();
 			}
