@@ -8,6 +8,6 @@ public interface OlympaPluginInterface {
 
 	OlympaTask getTask();
 
-	void sendMessage(String message);
+	void sendMessage(String message, Object... args);
 
 }
