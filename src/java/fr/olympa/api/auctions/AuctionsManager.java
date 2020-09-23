@@ -20,7 +20,7 @@ import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.economy.tax.TaxManager;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;

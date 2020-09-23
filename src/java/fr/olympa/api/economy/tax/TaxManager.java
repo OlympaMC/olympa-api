@@ -8,7 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.sql.OlympaStatement;
+import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class TaxManager {

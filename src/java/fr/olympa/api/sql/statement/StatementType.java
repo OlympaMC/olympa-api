@@ -1,4 +1,4 @@
-package fr.olympa.api.sql;
+package fr.olympa.api.sql.statement;
 
 public class StatementType {
 
@@ -6,5 +6,6 @@ public class StatementType {
 	public static final StatementTypeInsertDelete DELETE = new StatementTypeInsertDelete("DELETE FROM");
 	public static final StatementTypeSelectUpdate SELECT = new StatementTypeSelectUpdate("SELECT");
 	public static final StatementTypeSelectUpdate UPDATE = new StatementTypeSelectUpdate("UPDATE");
+	public static final StatementTypeDefault TRUNCATE = new StatementTypeDefault("TRUNCATE");
 
 }

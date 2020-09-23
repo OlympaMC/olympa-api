@@ -1,8 +1,8 @@
-package fr.olympa.api.sql;
+package fr.olympa.api.sql.statement;
 
 public class StatementTypeInsertDelete extends IStatementType {
 
-	StatementTypeInsertDelete(String command) {
+	public StatementTypeInsertDelete(String command) {
 		super(command);
 	}
 }

@@ -1,4 +1,4 @@
-package fr.olympa.api.sql;
+package fr.olympa.api.sql.statement;
 
 public class StatementTypeSelectUpdate extends IStatementType {
 

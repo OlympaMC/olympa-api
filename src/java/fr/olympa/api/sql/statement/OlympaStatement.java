@@ -1,4 +1,4 @@
-package fr.olympa.api.sql;
+package fr.olympa.api.sql.statement;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,6 +78,15 @@ public class OlympaStatement {
 			Arrays.stream(what).forEach(w -> sj2.add("`" + w + "` = ?"));
 			sj.add(sj2.toString());
 		}
+		statement = sj.toString() + ";";
+		returnGeneratedKeys = true;
+	}
+
+	public OlympaStatement(StatementTypeDefault type, String tableName) {
+		this.type = type;
+		StringJoiner sj = new StringJoiner(" ");
+		sj.add(type.get());
+		sj.add(tableName);
 		statement = sj.toString() + ";";
 		returnGeneratedKeys = true;
 	}
