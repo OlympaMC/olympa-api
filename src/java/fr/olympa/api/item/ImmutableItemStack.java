@@ -8,6 +8,8 @@ import org.bukkit.material.MaterialData;
 
 public class ImmutableItemStack extends ItemStack {
 
+	private ItemStack realItemStack;
+	
 	public ImmutableItemStack(ItemStack item){
 		super(item);
 	}
@@ -42,6 +44,12 @@ public class ImmutableItemStack extends ItemStack {
 	
 	public int removeEnchantment(Enchantment ench){
 		throw new UnsupportedOperationException("This ItemStack instance is immutable");
+	}
+	
+	@Override
+	public boolean isSimilar(ItemStack stack) {
+		if (realItemStack == null) realItemStack = toMutableStack();
+		return realItemStack.isSimilar(stack);
 	}
 	
 	public ItemStack toMutableStack() {
