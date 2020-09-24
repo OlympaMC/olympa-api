@@ -34,7 +34,6 @@ public interface IOlympaCommand {
 
 	default void sendUnknownPlayer(String name) {
 		sendError("Le joueur &4%s&c est introuvable.", name);
-		// TODO check historique player
 	}
 
 	default void sendUnknownPlayer(String name, CharSequence... potentialsNames) {
@@ -42,7 +41,7 @@ public interface IOlympaCommand {
 	}
 
 	default void sendUnknownPlayer(String name, Collection<? extends CharSequence> potentialsNames) {
-		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.size() == 0 ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
+		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.isEmpty() ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
 	}
 
 	void sendMessage(Prefix prefix, String message, Object... args);
@@ -70,7 +69,7 @@ public interface IOlympaCommand {
 	default void sendDefault(String message, Object... args) {
 		sendMessage(Prefix.DEFAULT, message, args);
 	}
-	
+
 	void sendUsage(String label);
 
 	void sendComponents(BaseComponent... components);

@@ -175,7 +175,7 @@ public class ComplexCommand extends OlympaCommand {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
 			if (!noArguments(sender))
-				this.sendIncorrectSyntax();
+				sendError("Syntaxe incorrecte. Essaye &4/%s help&c.", label);
 			return true;
 		}
 
@@ -196,11 +196,13 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		if (args.length - 1 < cmd.min()) {
+		int minArg = cmd.min();
+		if (cmd.otherArg())
+			minArg--;
+		if (args.length - 1 < minArg) {
 			if ("".equals(cmd.syntax()))
 				this.sendIncorrectSyntax();
-			else
-				this.sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());
+			this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
 			return true;
 		}
 
@@ -239,7 +241,7 @@ public class ComplexCommand extends OlympaCommand {
 						if (potentialParsers.size() <= 1)
 							return true;
 					}
-					this.sendIncorrectSyntax(internal.method.getName() + " " + cmd.syntax());
+					this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
 					return true;
 				}
 			}
@@ -376,5 +378,4 @@ public class ComplexCommand extends OlympaCommand {
 
 		return component;
 	}
-
 }

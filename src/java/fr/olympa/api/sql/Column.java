@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 
+import fr.olympa.api.sql.statement.OlympaStatement;
+
 public class Column<T> {
 	
 	private final String name;

@@ -5,8 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fr.olympa.api.player.Gender;
-import fr.olympa.api.sql.OlympaStatement;
-import fr.olympa.api.sql.StatementType;
+import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.sql.statement.StatementType;
 import fr.olympa.api.utils.Utils;
 
 @SuppressWarnings("deprecation")
