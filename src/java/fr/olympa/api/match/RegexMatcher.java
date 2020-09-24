@@ -17,9 +17,9 @@ public class RegexMatcher {
 	public static MatcherPattern DISCORD_TAG = new MatcherPattern(".{2,32}#[0-9]{4}");
 
 	public static MatcherPattern DATE = new MatcherPattern("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-	public static MatcherPattern DOUBLE = new MatcherPattern("-?\\d+(.\\d+)?");
-	public static MatcherPattern INT = new MatcherPattern("-?\\d+", x -> Integer.parseInt(x), Integer.class);
-	public static MatcherPattern NUMBER = new MatcherPattern("\\d+", x -> Integer.parseInt(x), Integer.class);
+	public static MatcherPattern DOUBLE = new MatcherPattern("-?\\d+(.\\d+)?", Double::parseDouble, Double.class);
+	public static MatcherPattern INT = new MatcherPattern("-?\\d+", Integer::parseInt, Integer.class);
+	public static MatcherPattern NUMBER = new MatcherPattern("\\d+", Integer::parseInt, Integer.class);
 	public static MatcherPattern DIGIT = new MatcherPattern("\\d", x -> {
 		Integer i = Integer.parseInt(x);
 		if (i >= 0 && i <= 10)

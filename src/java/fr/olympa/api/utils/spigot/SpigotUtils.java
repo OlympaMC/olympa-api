@@ -268,15 +268,14 @@ public class SpigotUtils {
 	}
 
 	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
+		if (amount <= 0) return true;
 		for (ItemStack item : inv.getContents()) {
 			if (item == null)
 				continue;
 			if (item.isSimilar(i)) {
-				if (item.getAmount() == amount)
+				if (item.getAmount() >= amount)
 					return true;
-				if (item.getAmount() > amount)
-					return true;
-				else if (item.getAmount() < amount)
+				else
 					amount -= item.getAmount();
 			}
 		}

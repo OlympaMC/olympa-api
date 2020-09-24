@@ -54,7 +54,7 @@ public class ComplexCommand extends OlympaCommand {
 		}
 
 		boolean canRun() {
-			return hasPermission(perm) && (!cmd.player() || !isConsole());
+			return cmd.hide() || (hasPermission(perm) && (!cmd.player() || !isConsole()));
 		}
 	}
 
