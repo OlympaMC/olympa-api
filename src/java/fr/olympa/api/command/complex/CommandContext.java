@@ -5,11 +5,11 @@ import java.util.StringJoiner;
 @SuppressWarnings("unchecked")
 public class CommandContext {
 
-	public final ComplexCommand command;
+	public final IComplexCommand command;
 	public final String label;
 	private final Object[] args;
 
-	public CommandContext(ComplexCommand command, Object[] args, String label) {
+	public CommandContext(IComplexCommand command, Object[] args, String label) {
 		this.command = command;
 		this.args = args;
 		this.label = label;

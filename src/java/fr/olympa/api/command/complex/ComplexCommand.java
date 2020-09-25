@@ -13,8 +13,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,23 +27,16 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class ComplexCommand extends OlympaCommand {
+public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
-	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
-
-	private static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
-	private static final String uuid = UUID.randomUUID().toString();
-	private static final List<String> UUIDS = Arrays.asList(uuid, uuid.replace("-", ""));
-	private static final List<String> BOOLEAN = Arrays.asList("true", "false");
-
-	public class InternalCommand {
+	public class SpigotInternalCommand {
 		public Cmd cmd;
 		public OlympaPermission perm;
 		public Method method;
 		public Object commands;
 		public String name;
 
-		InternalCommand(Cmd cmd, Method method, Object commandsClass) {
+		SpigotInternalCommand(Cmd cmd, Method method, Object commandsClass) {
 			this.cmd = cmd;
 			this.method = method;
 			commands = commandsClass;
@@ -58,10 +49,9 @@ public class ComplexCommand extends OlympaCommand {
 		}
 	}
 
-	private class ArgumentParser {
-		private Function<CommandSender, List<String>> tabArgumentsFunction;
-		private Function<String, Object> supplyArgumentFunction;
-		private Function<String, String> wrongArgTypeMessageFunction;
+	public class SpigotArgumentParser extends ArgumentParser {
+
+		public Function<CommandSender, List<String>> tabArgumentsFunction;
 
 		/**
 		 * @Deprecated
@@ -69,12 +59,12 @@ public class ComplexCommand extends OlympaCommand {
 		 * Il est possible d'utiliser le tabArgumentsFunction pour vérifier le type de l'arguement.
 		 * Il suffit de mettre le message d'erreur dans errorMessageArgumentFunction plutôt que dans tabArgumentsFunction sinon le message d'erreur sera envoyé avec que le plugin le gère.
 		 *
-		 * Utilise plutôt {@link #ArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction) ArgumentParser}.
+		 * Utilise plutôt {@link #ComplexUtils(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction) ComplexUtils}.
 		 */
-		@Deprecated
-		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
+		@Deprecated(forRemoval = true)
+		public SpigotArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
+			super(supplyArgumentFunction);
 			this.tabArgumentsFunction = tabArgumentsFunction;
-			this.supplyArgumentFunction = supplyArgumentFunction;
 		}
 
 		/**
@@ -83,71 +73,14 @@ public class ComplexCommand extends OlympaCommand {
 		 * @param supplyArgumentFunction
 		 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
 		 */
-		public ArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction) {
+		public SpigotArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction) {
+			super(supplyArgumentFunction, wrongArgTypeMessageFunction);
 			this.tabArgumentsFunction = tabArgumentsFunction;
-			this.supplyArgumentFunction = supplyArgumentFunction;
-			this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
 		}
+
 	}
 
-	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
-
-	public InternalCommand getCommand(String argName) {
-		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue())
-				.orElse(commands.entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(entry -> entry.getValue()).findFirst().orElse(null));
-	}
-
-	public boolean containsCommand(String argName) {
-		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()) || entry.getValue().cmd.otherArg());
-	}
-
-	private final Map<String, ArgumentParser> parsers = new HashMap<>();
-
-	@SuppressWarnings("unchecked")
-	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... alias) {
-		super(plugin, command, description, permission, alias);
-
-		addArgumentParser("PLAYERS", sender -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
-			return Bukkit.getPlayerExact(x);
-		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
-		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
-			try {
-				return RegexMatcher.INT.parse(x);
-			} catch (IllegalArgumentException e) {
-				return null;
-			}
-		}, x -> String.format("&4%s&c doit être un nombre entier", x));
-		addArgumentParser("UUID", sender -> UUIDS, x -> {
-			try {
-				return RegexMatcher.UUID.parse(x);
-			} catch (IllegalArgumentException e) {
-				return null;
-			}
-		}, x -> {
-			String random = UUID.randomUUID().toString();
-			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
-		});
-		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
-			try {
-				return RegexMatcher.DOUBLE.parse(x);
-			} catch (NumberFormatException e) {
-				return null;
-			}
-		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
-		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
-		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
-			return Bukkit.getWorld(x);
-		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
-		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
-			InternalCommand result = getCommand(x);
-			if (result != null && result.cmd.otherArg())
-				return null;
-			return result;
-		}, x -> String.format("La commande &4%s&c n'existe pas", x));
-
-		registerCommandsClass(this);
-	}
-
+	@Override
 	public <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass) {
 		List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.toList());
 		addArgumentParser(name, sender -> values, playerInput -> {
@@ -159,12 +92,61 @@ public class ComplexCommand extends OlympaCommand {
 		});
 	}
 
+	@Deprecated(forRemoval = true)
 	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
-		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
+		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
 	}
 
 	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
-		parsers.put(name, new ArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
+		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
+	}
+
+	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
+	protected static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
+	private static final String uuid = UUID.randomUUID().toString();
+	protected static final List<String> UUIDS = Arrays.asList(uuid, uuid.replace("-", ""));
+	protected static final List<String> BOOLEAN = Arrays.asList("true", "false");
+	public final Map<List<String>, SpigotInternalCommand> commands = new HashMap<>();
+	private final Map<String, SpigotArgumentParser> parsers = new HashMap<>();
+
+	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... aliases) {
+		super(plugin, command, description, permission, aliases);
+		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
+			if (RegexMatcher.INT.is(x))
+				return RegexMatcher.INT.parse(x);
+			return null;
+		}, x -> String.format("&4%s&c doit être un nombre entier", x));
+		addArgumentParser("UUID", sender -> UUIDS, x -> {
+			if (RegexMatcher.UUID.is(x))
+				return RegexMatcher.UUID.parse(x);
+			return null;
+		}, x -> {
+			String random = UUID.randomUUID().toString();
+			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
+		});
+		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
+			if (RegexMatcher.DOUBLE.is(x))
+				return RegexMatcher.DOUBLE.parse(x);
+			return null;
+		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
+		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
+		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
+			SpigotInternalCommand result = getCommand(x);
+			if (result != null && result.cmd.otherArg())
+				return null;
+			return result;
+		}, x -> String.format("La commande &4%s&c n'existe pas", x));
+		registerCommandsClass(this);
+	}
+
+	public SpigotInternalCommand getCommand(String argName) {
+		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue())
+				.orElse(commands.entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(entry -> entry.getValue()).findFirst().orElse(null));
+	}
+
+	@Override
+	public boolean containsCommand(String argName) {
+		return commands.entrySet().stream().anyMatch(entry -> entry.getKey().contains(argName.toLowerCase()) || entry.getValue().cmd.otherArg());
 	}
 
 	public boolean noArguments(CommandSender sender) {
@@ -179,7 +161,7 @@ public class ComplexCommand extends OlympaCommand {
 			return true;
 		}
 
-		InternalCommand internal = getCommand(args[0]);
+		SpigotInternalCommand internal = getCommand(args[0]);
 		if (internal == null) {
 			sendError("La commande n'existe pas.");
 			return true;
@@ -214,18 +196,18 @@ public class ComplexCommand extends OlympaCommand {
 			String arg = args[i1++];
 			String[] types = (i2 >= cmd.args().length ? "" : cmd.args()[i2]).split("\\|");
 			Object result = null;
-			List<ArgumentParser> potentialParsers = parsers.entrySet().stream().filter(entry -> Arrays.stream(types).anyMatch(type -> entry.getKey().equals(type)))
+			List<SpigotArgumentParser> potentialParsers = parsers.entrySet().stream().filter(entry -> Arrays.stream(types).anyMatch(type -> entry.getKey().equals(type)))
 					.map(Entry::getValue).collect(Collectors.toList());
 			boolean hasStringType = potentialParsers.size() != types.length;
 			if (potentialParsers.isEmpty())
 				result = arg;
 			else {
-				ArgumentParser parser = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).findFirst().orElse(null);
+				SpigotArgumentParser parser = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).findFirst().orElse(null);
 				if (parser != null)
 					result = parser.supplyArgumentFunction.apply(arg);
 				else
 					// TODO : Choose between 2 parses here
-					for (ArgumentParser p : potentialParsers) {
+					for (SpigotArgumentParser p : potentialParsers) {
 						result = p.supplyArgumentFunction.apply(arg);
 						if (result != null)
 							break;
@@ -265,7 +247,7 @@ public class ComplexCommand extends OlympaCommand {
 		List<String> find = new ArrayList<>();
 		String sel = args[0];
 		if (args.length == 1) {
-			for (Entry<List<String>, InternalCommand> en : commands.entrySet())
+			for (Entry<List<String>, SpigotInternalCommand> en : commands.entrySet())
 				if (en.getValue().cmd.otherArg())
 					find.addAll(findPotentialArgs(args));
 				else if (!en.getValue().cmd.hide() || en.getValue().canRun())
@@ -287,7 +269,7 @@ public class ComplexCommand extends OlympaCommand {
 		String sel = args[0];
 		if (!containsCommand(sel))
 			return find;
-		InternalCommand internal = getCommand(sel);
+		SpigotInternalCommand internal = getCommand(sel);
 		String[] needed = internal.cmd.args();
 		if (internal.cmd.otherArg())
 			index++;
@@ -297,7 +279,7 @@ public class ComplexCommand extends OlympaCommand {
 			return find;
 		String[] types = needed[index].split("\\|");
 		for (String type : types) {
-			ArgumentParser parser = parsers.get(type);
+			SpigotArgumentParser parser = parsers.get(type);
 			if (parser != null)
 				find.addAll(parser.tabArgumentsFunction.apply(sender));
 			else
@@ -310,6 +292,7 @@ public class ComplexCommand extends OlympaCommand {
 	 * Register all available commands from an instance of a Class
 	 * @param commandsClassInstance Instance of the Class
 	 */
+	@Override
 	public void registerCommandsClass(Object commandsClassInstance) {
 		Class<?> clazz = commandsClassInstance.getClass();
 		do
@@ -327,7 +310,7 @@ public class ComplexCommand extends OlympaCommand {
 						argNames.add(method.getName().toLowerCase());
 						if (cmd.aliases() != null)
 							argNames.addAll(Arrays.asList(cmd.aliases()));
-						commands.put(argNames, new InternalCommand(cmd, method, commandsClassInstance));
+						commands.put(argNames, new SpigotInternalCommand(cmd, method, commandsClassInstance));
 						continue;
 					}
 				OlympaCore.getInstance()
@@ -338,23 +321,24 @@ public class ComplexCommand extends OlympaCommand {
 	@Override
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
-		for (InternalCommand command : commands.values()) {
+		for (SpigotInternalCommand command : commands.values()) {
 			if (!command.canRun())
 				continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
 	}
 
+	@Override
 	@Cmd(args = "SUBCOMMAND", syntax = "[commande]")
 	public void help(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0)
 			sendHelp(sender);
 		else {
-			if (!(cmd.getArgument(0) instanceof InternalCommand)) {
+			if (!(cmd.getArgument(0) instanceof SpigotInternalCommand)) {
 				sendIncorrectSyntax();
 				return;
 			}
-			InternalCommand command = cmd.getArgument(0);
+			SpigotInternalCommand command = cmd.getArgument(0);
 			if (!command.canRun()) {
 				sendIncorrectSyntax();
 				return;
@@ -363,12 +347,12 @@ public class ComplexCommand extends OlympaCommand {
 		}
 	}
 
-	private TextComponent getHelpCommandComponent(InternalCommand command) {
+	private TextComponent getHelpCommandComponent(SpigotInternalCommand command) {
 		String fullCommand;
 		if (!command.cmd.otherArg())
-			fullCommand = "/" + super.command + " " + command.name;
+			fullCommand = "/" + this.command + " " + command.name;
 		else
-			fullCommand = "/" + super.command;
+			fullCommand = "/" + this.command;
 		TextComponent component = new TextComponent();
 		component.setHoverEvent(COMMAND_HOVER);
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, fullCommand + " "));
@@ -378,4 +362,5 @@ public class ComplexCommand extends OlympaCommand {
 
 		return component;
 	}
+
 }
