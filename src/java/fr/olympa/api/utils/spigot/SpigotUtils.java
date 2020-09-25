@@ -268,15 +268,14 @@ public class SpigotUtils {
 	}
 
 	public static boolean containsItems(Inventory inv, ItemStack i, int amount) {
+		if (amount <= 0) return true;
 		for (ItemStack item : inv.getContents()) {
 			if (item == null)
 				continue;
-			if (item.isSimilar(i)) {
-				if (item.getAmount() == amount)
+			if (i.isSimilar(item)) {
+				if (item.getAmount() >= amount)
 					return true;
-				if (item.getAmount() > amount)
-					return true;
-				else if (item.getAmount() < amount)
+				else
 					amount -= item.getAmount();
 			}
 		}
@@ -291,7 +290,7 @@ public class SpigotUtils {
 			ItemStack item = items[slot];
 			if (item == null)
 				continue;
-			if (item.isSimilar(i)) {
+			if (i.isSimilar(item)) {
 				if (item.getAmount() == amount) {
 					inv.setItem(slot, new ItemStack(Material.AIR));
 					return true;
@@ -310,11 +309,11 @@ public class SpigotUtils {
 
 	public static int getItemAmount(Inventory inv, ItemStack i) {
 		int amount = 0;
-		for (ItemStack is : inv.getContents()) {
-			if (is == null)
+		for (ItemStack item : inv.getContents()) {
+			if (item == null)
 				continue;
-			if (is.isSimilar(i)) {
-				amount += is.getAmount();
+			if (i.isSimilar(item)) {
+				amount += item.getAmount();
 				continue;
 			}
 		}

@@ -58,10 +58,14 @@ public class CreateAuctionGUI extends OlympaGUI {
 		if (slot == 10) return false;
 		if (slot == 13) {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Entre le prix auquel tu veux vendre ton objet.");
-			new TextEditor<>(p, (price) -> {
-				this.price = price;
-				if (this.price > manager.getPriceMax()) this.price = manager.getPriceMax();
-				ItemUtils.lore(current, "", "§ePrix : §6§l" + OlympaMoney.format(this.price));
+			new TextEditor<>(p, price -> {
+				if (price < 1) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Le prix minimal d'un article est de 1%s.", OlympaMoney.OMEGA);
+				}else {
+					this.price = price;
+					if (this.price > manager.getPriceMax()) this.price = manager.getPriceMax();
+					ItemUtils.lore(current, "", "§ePrix : §6§l" + OlympaMoney.format(this.price));
+				}
 				create(p);
 			}, () -> create(p), false, new NumberParser<>(Double.class, true, true)).enterOrLeave();
 		}else if (slot == 14) {

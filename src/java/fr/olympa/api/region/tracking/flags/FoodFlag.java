@@ -5,12 +5,15 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 public class FoodFlag extends AbstractProtectionFlag {
 
-	public FoodFlag(boolean protectedByDefault) {
+	private boolean disableUp;
+	
+	public FoodFlag(boolean protectedByDefault, boolean disableUp) {
 		super(protectedByDefault);
+		this.disableUp = disableUp;
 	}
 
 	public void foodEvent(FoodLevelChangeEvent event) {
-		handleCancellable(event, (Player) event.getEntity());
+		if (disableUp || ((Player) event.getEntity()).getFoodLevel() > event.getFoodLevel()) handleCancellable(event, (Player) event.getEntity());
 	}
 
 }

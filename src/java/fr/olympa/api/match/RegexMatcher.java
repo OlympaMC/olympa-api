@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class RegexMatcher {
-
 	public static final MatcherPattern USERNAME = new MatcherPattern("(?iu)^[\\w_]{3,16}$");
 	public static final MatcherPattern IP = new MatcherPattern("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}");
 
@@ -25,7 +24,7 @@ public class RegexMatcher {
 	public static final MatcherPattern DATE = new MatcherPattern("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> {
 		try {
 			return LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		} catch (DateTimeParseException e) {
+		} catch (DateTimeParseException e2) {
 		}
 		return null;
 	});
@@ -43,6 +42,16 @@ public class RegexMatcher {
 		}
 		return null;
 	}, Integer.class);
+	//	public static MatcherPattern DATE = new MatcherPattern("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+	//	public static MatcherPattern DOUBLE = new MatcherPattern("-?\\d+(.\\d+)?", Double::parseDouble, Double.class);
+	//	public static MatcherPattern INT = new MatcherPattern("-?\\d+", Integer::parseInt, Integer.class);
+	//	public static MatcherPattern NUMBER = new MatcherPattern("\\d+", Integer::parseInt, Integer.class);
+	//	public static MatcherPattern DIGIT = new MatcherPattern("\\d", x -> {
+	//		Integer i = Integer.parseInt(x);
+	//		if (i >= 0 && i <= 10)
+	//			return i;
+	//		return null;
+	//	}, Integer.class);
 	public static final MatcherPattern NUMBER = new MatcherPattern("\\d+", x -> {
 		try {
 			return Integer.parseInt(x);
@@ -60,4 +69,5 @@ public class RegexMatcher {
 		return null;
 	}, Integer.class);
 	public static final MatcherPattern HOUR = new MatcherPattern("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}");
+
 }

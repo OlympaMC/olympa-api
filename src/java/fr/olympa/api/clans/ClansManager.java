@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -306,7 +307,9 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			Collection<D> members = clan.getMembers();
 			ChatColor chatColor = members.stream().anyMatch(e -> e.getPlayerInformations().getUUID().equals(p.getUniqueId())) ? ChatColor.GREEN : ChatColor.RED;
 			Nametag nameTag = new Nametag(null, " " + chatColor + clanName);
-			for (D m : members) nameTagApi.updateFakeNameTag(m.getPlayerInformations().getName(), nameTag, Arrays.asList(p));
+			List<Player> player = Arrays.asList(p);
+			members.stream().filter(D::isConnected).forEach(member -> nameTagApi.updateFakeNameTag(member.getPlayerInformations().getName(), nameTag, player));
+			nameTagApi.updateFakeNameTag(p, nameTag, members.stream().filter(D::isConnected).map(member -> member.getConnectedPlayer().getPlayer()).collect(Collectors.toList()));
 		}
 	}
 	
