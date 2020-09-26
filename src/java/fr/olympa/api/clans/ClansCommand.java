@@ -32,13 +32,8 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 			ClanPlayerInterface<T, D> p = getOlympaPlayer();
 			T clan = (T) p.getClan();
 			if (clan == null) return null;
-			Optional<D> optional = clan.getMembers().stream().filter(x -> x.getPlayerInformations().getName().equalsIgnoreCase(arg)).findFirst();
-			if (optional.isPresent()) {
-				sendError(manager.stringPlayerNotInClan, arg);
-				return null;
-			}
-			return optional.get();
-		});
+			return clan.getMembers().stream().filter(x -> x.getPlayerInformations().getName().equalsIgnoreCase(arg)).findFirst().orElse(null);
+		}, x -> String.format(manager.stringPlayerNotInClan, x));
 	}
 
 	@Override

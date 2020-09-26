@@ -87,14 +87,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			for (T each : enumClass.getEnumConstants())
 				if (each.name().equalsIgnoreCase(playerInput))
 					return each;
-			sendError("La valeur %s n'existe pas.", playerInput);
 			return null;
-		});
-	}
-
-	@Deprecated(forRemoval = true)
-	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
-		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction));
+		}, x -> String.format("La valeur %s n'existe pas.", x));
 	}
 
 	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
@@ -129,7 +123,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 				return RegexMatcher.DOUBLE.parse(x);
 			return null;
 		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
-		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean);
+		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean, null);
 		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			SpigotInternalCommand result = getCommand(x);
 			if (result != null && result.cmd.otherArg())

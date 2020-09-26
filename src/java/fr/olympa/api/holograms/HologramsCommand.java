@@ -28,9 +28,8 @@ public class HologramsCommand extends ComplexCommand {
 				Hologram hologram = holograms.getHologram(Integer.parseInt(arg));
 				if (hologram != null && hologram.isPersistent()) return hologram;
 			}catch (NumberFormatException ex) {}
-			sendError("L'hologramme avec l'ID %s n'existe pas.", arg);
 			return null;
-		});
+		}, x -> String.format("L'hologramme avec l'ID %s n'existe pas.", x));
 	}
 
 	@Cmd (player = true, min = 1, syntax = "<lignes séparées par des |>")

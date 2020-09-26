@@ -207,8 +207,10 @@ public class ItemUtils {
 	}
 
 	public static String[] getLore(ItemStack is) {
-		if (!is.getItemMeta().hasLore()) return null;
-		return is.getItemMeta().getLore().toArray(new String[0]);
+		if (!is.hasItemMeta()) return null;
+		ItemMeta meta = is.getItemMeta();
+		if (!meta.hasLore()) return null;
+		return meta.getLore().toArray(new String[0]);
 	}
 
 	/**
