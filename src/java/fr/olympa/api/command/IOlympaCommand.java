@@ -124,7 +124,7 @@ public interface IOlympaCommand {
 		addCommandArguments(isMandatory, Arrays.stream(args).map(CommandArgument::new).collect(Collectors.toList()));
 	}
 
-	void register();
+	IOlympaCommand register();
 
-	void registerPreProcess();
+	IOlympaCommand registerPreProcess();
 }

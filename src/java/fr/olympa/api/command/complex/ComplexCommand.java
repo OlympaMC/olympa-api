@@ -13,6 +13,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -105,6 +107,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
+		addArgumentParser("PLAYERS", sender -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
+			return Bukkit.getPlayerExact(x);
+		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
 			if (RegexMatcher.INT.is(x))
 				return RegexMatcher.INT.parse(x);
@@ -130,6 +135,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 				return null;
 			return result;
 		}, x -> String.format("La commande &4%s&c n'existe pas", x));
+		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
+			return Bukkit.getWorld(x);
+		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
 		registerCommandsClass(this);
 	}
 

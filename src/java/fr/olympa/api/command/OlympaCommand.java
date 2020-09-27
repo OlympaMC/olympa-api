@@ -148,7 +148,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	}
 
 	@Override
-	public void register() {
+	public OlympaCommand register() {
 		build();
 		ReflectCommand reflectCommand = new ReflectCommand(command);
 		if (aliases != null)
@@ -159,13 +159,15 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		this.reflectCommand = reflectCommand;
 		getCommandMap().register("Olympa", reflectCommand);
 		commands.add(this);
+		return this;
 	}
 
 	@Override
-	public void registerPreProcess() {
+	public OlympaCommand registerPreProcess() {
 		build();
 		commandPreProcess.put(allCommands, this);
 		commands.add(this);
+		return this;
 	}
 
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {
