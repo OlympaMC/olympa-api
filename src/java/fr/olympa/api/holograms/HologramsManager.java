@@ -9,13 +9,13 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.utils.Point2D;
@@ -23,24 +23,29 @@ import fr.olympa.api.utils.observable.Observable.Observer;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class HologramsManager implements Listener {
-	
+
 	private Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
-	
+
 	Map<Integer, Hologram> holograms = new HashMap<>();
 	private int lastID = 0;
 
 	private File hologramsFile;
-	private YamlConfiguration hologramsYaml;
+	private CustomConfig hologramsYaml;
+
+	public File getFile() {
+		return hologramsFile;
+	}
 
 	public HologramsManager(File hologramsFile) throws IOException {
 		this.hologramsFile = hologramsFile;
+		unload();
 
-		hologramsFile.getParentFile().mkdirs();
-		hologramsFile.createNewFile();
-		
+		//		hologramsFile.getParentFile().mkdirs();
+		//		hologramsFile.createNewFile();
+
 		Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> {
-			hologramsYaml = YamlConfiguration.loadConfiguration(hologramsFile);
-
+			hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
+			hologramsYaml.load();
 			for (String key : hologramsYaml.getKeys(false)) {
 				int id = Integer.parseInt(key);
 				lastID = Math.max(id + 1, lastID);
@@ -50,8 +55,7 @@ public class HologramsManager implements Listener {
 				hologram.observe("manager_save", update);
 			}
 		});
-		
-		new HologramsCommand(this).register();
+
 	}
 
 	public Hologram createHologram(Location location, boolean persistent, AbstractLine<HologramLine>... lines) {
@@ -75,24 +79,28 @@ public class HologramsManager implements Listener {
 			try {
 				hologramsYaml.set(String.valueOf(id), hologram == null ? null : hologram.serialize());
 				hologramsYaml.save(hologramsFile);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		};
 	}
 
 	public boolean deleteHologram(Hologram hologram) {
-		if (holograms.remove(hologram.getID()) == null) return false;
+		if (holograms.remove(hologram.getID()) == null)
+			return false;
 		hologram.destroy();
-		if (hologram.isPersistent()) updateHologram(hologram.getID(), null).changed();
+		if (hologram.isPersistent())
+			updateHologram(hologram.getID(), null).changed();
 		return true;
 	}
-	
+
 	public boolean deleteHologram(int id) {
 		Hologram hologram = holograms.remove(id);
-		if (hologram == null) return false;
+		if (hologram == null)
+			return false;
 		hologram.destroy();
-		if (hologram.isPersistent()) updateHologram(hologram.getID(), null).changed();
+		if (hologram.isPersistent())
+			updateHologram(hologram.getID(), null).changed();
 		return true;
 	}
 
@@ -103,27 +111,28 @@ public class HologramsManager implements Listener {
 	@EventHandler
 	public void onChunkUnload(ChunkUnloadEvent e) {
 		List<Integer> holoIDs = null;
-		for (Entity entity : e.getChunk().getEntities()) {
+		for (Entity entity : e.getChunk().getEntities())
 			if (entity.hasMetadata("hologram")) {
 				Hologram hologram = holograms.get(entity.getMetadata("hologram").get(0).asInt());
 				hologram.destroyEntities();
-				if (holoIDs == null) holoIDs = new ArrayList<>();
+				if (holoIDs == null)
+					holoIDs = new ArrayList<>();
 				holoIDs.add(hologram.getID());
 			}
-		}
-		if (holoIDs != null) chunksUnloaded.put(new Point2D(e.getChunk()), holoIDs);
+		if (holoIDs != null)
+			chunksUnloaded.put(new Point2D(e.getChunk()), holoIDs);
 	}
-	
+
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent e) {
 		Point2D point = new Point2D(e.getChunk());
 		List<Integer> list = chunksUnloaded.remove(point);
-		if (list != null) {
+		if (list != null)
 			for (Integer holoID : list) {
 				Hologram hologram = holograms.get(holoID);
-				if (hologram != null) hologram.spawnEntities();
+				if (hologram != null)
+					hologram.spawnEntities();
 			}
-		}
 	}
-	
+
 }

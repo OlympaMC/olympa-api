@@ -62,7 +62,7 @@ public interface OlympaPlayer {
 
 	UUID getPremiumUniqueId();
 
-	long getTeamspeakId();
+	int getTeamspeakId();
 
 	String getTuneChar();
 
@@ -114,7 +114,7 @@ public interface OlympaPlayer {
 
 	void setPremiumUniqueId(UUID premium_uuid);
 
-	void setTeamspeakId(long teamspeakId);
+	void setTeamspeakId(int teamspeakId);
 
 	void setVanish(boolean vanish);
 

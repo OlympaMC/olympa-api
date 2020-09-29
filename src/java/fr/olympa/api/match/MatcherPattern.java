@@ -2,11 +2,17 @@ package fr.olympa.api.match;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 public class MatcherPattern {
+
+	public final static Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
 
 	String regex;
 	Function<String, Object> supplyArgumentFunction;
@@ -32,7 +38,12 @@ public class MatcherPattern {
 	}
 
 	private Pattern getPattern(String regex) {
-		return Pattern.compile(regex);
+		Pattern pattern = cache.getIfPresent(regex);
+		if (pattern == null) {
+			pattern = Pattern.compile(regex);
+			cache.put(regex, pattern);
+		}
+		return pattern;
 	}
 
 	private String wholeWord(boolean wholeWord) {

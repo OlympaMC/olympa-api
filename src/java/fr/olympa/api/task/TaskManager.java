@@ -75,8 +75,13 @@ public class TaskManager implements OlympaTask {
 	}
 
 	@Override
+	public int runTaskLater(Runnable runnable, long delay) {
+		return getScheduler().runTaskLater(plugin, runnable, delay).getTaskId();
+	}
+
+	@Override
 	public int runTaskLater(Runnable runnable, long delay, TimeUnit timeUnit) {
-		return getScheduler().runTaskLater(plugin, runnable, timeUnit.toMillis(delay) / 50).getTaskId();
+		return runTaskLater(runnable, timeUnit.toMillis(delay) / 50l);
 	}
 
 	@Override
@@ -84,7 +89,7 @@ public class TaskManager implements OlympaTask {
 		Integer oldTask = taskList.get(taskName);
 		if (oldTask != null)
 			getTask(oldTask).cancel();
-		int taskId = runTaskLater(taskName, runnable, delay, timeUnit);
+		int taskId = runTaskLater(runnable, delay, timeUnit);
 		addTask(taskName, taskId);
 		this.runTaskLater(() -> {
 			if (taskList.get(taskName) != null && taskList.get(taskName) == taskId)
@@ -94,8 +99,27 @@ public class TaskManager implements OlympaTask {
 	}
 
 	@Override
+	public int runTaskLater(String taskName, Runnable runnable, long delay) {
+		Integer oldTask = taskList.get(taskName);
+		if (oldTask != null)
+			getTask(oldTask).cancel();
+		int taskId = runTaskLater(runnable, delay);
+		addTask(taskName, taskId);
+		this.runTaskLater(() -> {
+			if (taskList.get(taskName) != null && taskList.get(taskName) == taskId)
+				taskList.remove(taskName);
+		}, delay);
+		return taskId;
+	}
+
+	@Override
 	public int scheduleSyncRepeatingTask(Runnable runnable, long delay, long refresh, TimeUnit timeUnit) {
-		return getScheduler().runTaskTimer(plugin, runnable, timeUnit.toMillis(delay) / 50, timeUnit.toMillis(refresh) / 50).getTaskId();
+		return scheduleSyncRepeatingTask(runnable, timeUnit.toMillis(delay) / 50l, timeUnit.toMillis(refresh) / 50l);
+	}
+
+	@Override
+	public int scheduleSyncRepeatingTask(Runnable runnable, long delay, long refresh) {
+		return getScheduler().runTaskTimer(plugin, runnable, delay, refresh).getTaskId();
 	}
 
 	@Override

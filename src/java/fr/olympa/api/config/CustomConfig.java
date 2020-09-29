@@ -64,6 +64,10 @@ public class CustomConfig extends YamlConfiguration {
 	private String fileName;
 	private Plugin plugin;
 
+	public String getFileName() {
+		return fileName;
+	}
+
 	public CustomConfig() {
 		super();
 	}

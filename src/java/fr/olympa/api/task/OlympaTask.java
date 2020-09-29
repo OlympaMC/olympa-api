@@ -84,23 +84,20 @@ public interface OlympaTask {
 
 	int runTaskAsynchronously(String taskName, Runnable runnable);
 
-	@Deprecated(forRemoval = true)
 	default int runTaskLater(Runnable runnable, long tick) {
-		return runTaskLater(runnable, tick * 50, TimeUnit.MILLISECONDS);
+		return runTaskLater(runnable, tick * 50l, TimeUnit.MILLISECONDS);
 	}
 
-	@Deprecated(forRemoval = true)
 	default int runTaskLater(String taskName, Runnable runnable, long tick) {
-		return runTaskLater(taskName, runnable, tick * 50, TimeUnit.MILLISECONDS);
+		return runTaskLater(taskName, runnable, tick * 50l, TimeUnit.MILLISECONDS);
 	}
 
 	int runTaskLater(Runnable runnable, long delay, TimeUnit timeUnit);
 
 	int runTaskLater(String taskName, Runnable runnable, long delay, TimeUnit timeUnit);
 
-	@Deprecated(forRemoval = true)
 	default int scheduleSyncRepeatingTask(Runnable runnable, long delay, long refresh) {
-		return scheduleSyncRepeatingTask(runnable, delay * 50, refresh * 50, TimeUnit.MILLISECONDS);
+		return scheduleSyncRepeatingTask(runnable, delay * 50l, refresh * 50l, TimeUnit.MILLISECONDS);
 	}
 
 	int scheduleSyncRepeatingTask(Runnable runnable, long delay, long refresh, TimeUnit timeUnit);

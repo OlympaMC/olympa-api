@@ -25,7 +25,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	private long id;
 	private TreeMap<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparing(OlympaGroup::getPower).reversed());
 	private Gender gender = Gender.MALE;
-	
+
 	private OlympaPlayerInformations cachedInfos = null;
 
 	private Player cachedPlayer = null;
@@ -111,9 +111,8 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public String getGroupsToHumainString() {
 		return groups.entrySet().stream().map(entry -> {
 			String time = new String();
-			if (entry.getValue() != 0) {
+			if (entry.getValue() != 0)
 				time = " (" + Utils.timestampToDateAndHour(entry.getValue()) + ")";
-			}
 			return entry.getKey().getName(gender) + time;
 		}).collect(Collectors.joining(", "));
 	}
@@ -175,12 +174,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public UUID getPremiumUniqueId() {
 		return uuid;
-	}
-
-	@Override
-	public long getTeamspeakId() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
@@ -320,12 +313,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void setTeamspeakId(long teamspeakId) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setVanish(boolean vanish) {
 		// TODO Auto-generated method stub
 
@@ -335,6 +322,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void setVerifMode(boolean verifMode) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setTeamspeakId(int teamspeakId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getTeamspeakId() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

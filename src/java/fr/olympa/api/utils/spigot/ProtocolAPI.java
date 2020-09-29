@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 
+// https://wiki.vg/Protocol_version_numbers
 public enum ProtocolAPI {
 
 	V1_16_3(753),
@@ -114,8 +115,7 @@ public enum ProtocolAPI {
 		return new ArrayList<>();
 	}
 
-	final private int protocolNumber;
-
+	private final int protocolNumber;
 	private boolean allow = true;
 
 	private ProtocolAPI(int protocolNumber) {
@@ -141,6 +141,6 @@ public enum ProtocolAPI {
 
 	public boolean isSupported() {
 		ProtocolAPI defaultProto = getDefaultProtocol();
-		return getProtocolNumber() <= defaultProto.getProtocolNumber();
+		return defaultProto != null && getProtocolNumber() <= defaultProto.getProtocolNumber();
 	}
 }
