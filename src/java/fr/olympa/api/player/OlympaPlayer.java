@@ -68,8 +68,6 @@ public interface OlympaPlayer {
 
 	UUID getUniqueId();
 
-	boolean isAfk();
-
 	boolean isConnected();
 
 	boolean isGenderFemale();
@@ -80,17 +78,13 @@ public interface OlympaPlayer {
 
 	boolean isVanish();
 
-	boolean isVerifMode();
-
 	void loadDatas(ResultSet resultSet) throws SQLException;
 
-	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson);
+	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish);
 
 	void removeGroup(OlympaGroup group);
 
 	void saveDatas(PreparedStatement statement) throws SQLException;
-
-	void setAfk(boolean afk);
 
 	void setConnected(boolean connected);
 
@@ -118,6 +112,8 @@ public interface OlympaPlayer {
 
 	void setVanish(boolean vanish);
 
-	void setVerifMode(boolean verifMode);
+	int getDiscordOlympaId();
+
+	void setDiscordOlympaId(int discordOlympaId);
 
 }

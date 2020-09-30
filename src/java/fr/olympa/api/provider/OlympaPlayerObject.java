@@ -188,12 +188,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public boolean isAfk() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean isConnected() {
 		return true;
 	}
@@ -221,18 +215,11 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public boolean isVerifMode() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public void loadDatas(ResultSet resultSet) throws SQLException {
 	}
 
 	@Override
-	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson) {
-
+	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish) {
 	}
 
 	@Override
@@ -242,12 +229,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void saveDatas(PreparedStatement statement) throws SQLException {
-	}
-
-	@Override
-	public void setAfk(boolean afk) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -319,12 +300,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void setVerifMode(boolean verifMode) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setTeamspeakId(int teamspeakId) {
 		// TODO Auto-generated method stub
 
@@ -334,6 +309,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public int getTeamspeakId() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int getDiscordOlympaId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDiscordOlympaId(int discordOlympaId) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

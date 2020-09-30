@@ -53,8 +53,16 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		for (Player p : Bukkit.getOnlinePlayers())
-			p.kickPlayer("Server closed");
+		while (Bukkit.getOnlinePlayers().size() > 0) {
+			for (Player p : Bukkit.getOnlinePlayers())
+				p.kickPlayer("Server closed");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
