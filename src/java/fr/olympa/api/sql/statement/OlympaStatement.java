@@ -56,6 +56,22 @@ public class OlympaStatement {
 	}
 
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String... keys) {
+		this(type, tableName, what, 0, 0, keys);
+	}
+
+	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, int offset, int limit, String... keys) {
+		this(type, tableName, what, null, null, limit, offset, keys);
+	}
+
+	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String orderCollumn, Boolean asc, String... keys) {
+		this(type, tableName, what, orderCollumn, asc, 0, 0, keys);
+	}
+
+	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String orderCollumn, Boolean asc, int offset, int limit, String... keys) {
+		this(type, tableName, what, null, orderCollumn, asc, offset, limit, keys);
+	}
+
+	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String[] or, String orderCollumn, Boolean asc, int offset, int limit, String... keys) {
 		this.type = type;
 		StringJoiner sj = new StringJoiner(" ");
 		sj.add(type.get());
@@ -78,6 +94,18 @@ public class OlympaStatement {
 			Arrays.stream(what).forEach(w -> sj2.add("`" + w + "` = ?"));
 			sj.add(sj2.toString());
 		}
+		if (or != null && or.length != 0) {
+			sj.add("OR");
+			StringJoiner sj2 = new StringJoiner(" OR ");
+			Arrays.stream(or).forEach(w -> sj2.add("`" + w + "` = ?"));
+			sj.add(sj2.toString());
+		}
+		if (orderCollumn != null && !orderCollumn.isBlank() && asc != null)
+			sj.add("ORDER BY " + orderCollumn + " " + (asc ? "ASC" : "DESC"));
+		if (limit > 0)
+			sj.add("LIMIT " + limit);
+		if (offset > 0)
+			sj.add("OFFSET " + offset);
 		statement = sj.toString() + ";";
 		returnGeneratedKeys = true;
 	}

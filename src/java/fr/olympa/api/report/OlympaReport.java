@@ -6,10 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Utils;
 
 public class OlympaReport {
@@ -39,7 +42,7 @@ public class OlympaReport {
 	}
 
 	public OlympaReport(ResultSet resultSet) throws SQLException {
-		authorId = resultSet.getLong("id");
+		id = resultSet.getLong("id");
 		targetId = resultSet.getLong("target_id");
 		authorId = resultSet.getLong("author_id");
 		reason = ReportReason.get(resultSet.getInt("reason"));
@@ -132,5 +135,22 @@ public class OlympaReport {
 
 	public String getStatusInfoToJson() {
 		return new Gson().toJson(statusInfo);
+	}
+
+	public List<String> getLore() {
+		List<String> lore = new ArrayList<>();
+		lore.add(String.format("&aN°&2%s", String.valueOf(id)));
+		OlympaPlayerInformations opTarget = AccountProvider.getPlayerInformations(targetId);
+		OlympaPlayerInformations opAuthor = AccountProvider.getPlayerInformations(authorId);
+		lore.add(String.format("&2%s &a->&2 %s", opAuthor.getName(), opTarget.getName()));
+		lore.add(String.format("&aServeur %s", serverName));
+		lore.add(String.format("&aStatus %s", getStatus().getNameColored()));
+		lore.add(String.format("&aRaison &2%s", reason.getReason()));
+		if (note != null && !note.isBlank())
+			lore.add(String.format("&aNote &2%s", note));
+		lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));
+		if (statusInfo.size() > 1)
+			lore.add(String.format("&aDerniers statuts &2%s", statusInfo.stream().skip(1).map(rsi -> rsi.getStatus() + " &a(" + Utils.timestampToDuration(rsi.getTime()) + ")").collect(Collectors.joining("&a, &2"))));
+		return lore;
 	}
 }

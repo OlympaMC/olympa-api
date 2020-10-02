@@ -47,7 +47,11 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		}
 
 		boolean canRun() {
-			return cmd.hide() || (hasPermission(perm) && (!cmd.player() || !isConsole()));
+			return cmd.hide() || hasPermission(perm) && (!cmd.player() || !isConsole());
+		}
+
+		String getSyntax() {
+			return cmd.syntax();
 		}
 	}
 
@@ -142,8 +146,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	}
 
 	public SpigotInternalCommand getCommand(String argName) {
-		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(entry -> entry.getValue())
-				.orElse(commands.entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(entry -> entry.getValue()).findFirst().orElse(null));
+		return commands.entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(Entry::getValue)
+				.orElse(commands.entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(Entry::getValue).findFirst().orElse(null));
 	}
 
 	@Override
@@ -216,7 +220,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 					}
 				if (result == null && !hasStringType) {
 					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
-						this.sendIncorrectSyntax();
+						this.sendIncorrectSyntax(internal);
 						return true;
 					} else if (!potentialParsers.isEmpty()) {
 						sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
@@ -347,6 +351,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			}
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
+	}
+
+	public void sendIncorrectSyntax(SpigotInternalCommand internal) {
+		sendIncorrectSyntax(internal.cmd.syntax());
 	}
 
 	private TextComponent getHelpCommandComponent(SpigotInternalCommand command) {
