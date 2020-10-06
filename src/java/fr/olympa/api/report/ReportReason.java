@@ -71,6 +71,10 @@ public enum ReportReason {
 		return reason;
 	}
 
+	public String getReasonUpper() {
+		return reason.toUpperCase();
+	}
+
 	public String getReasonClear() {
 		return reason.replace(" ", "_");
 	}

@@ -99,14 +99,14 @@ public class ReflectCommand extends Command {
 		for (CommandArgument ca : cas) {
 			if (ca.getPermission() != null && !ca.getPermission().hasPermission((OlympaPlayer) exe.getOlympaPlayer()) || !ca.hasRequireArg(args, i))
 				continue;
-			switch (ca.getArgName().toLowerCase()) {
-			case "configs":
+			switch (ca.getArgName().toUpperCase()) {
+			case "CONFIGS":
 				potentialArgs.addAll(CustomConfig.getConfigs().stream().map(CustomConfig::getName).collect(Collectors.toList()));
 				break;
-			case "joueur":
+			case "JOUEUR":
 				potentialArgs.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 				break;
-			case "time":
+			case "TIME":
 				potentialArgs.addAll(Arrays.asList("1h", "2h", "4h", "6h", "12h", "1j", "2j", "3j", "1semaine", "2semaines", "1mois", "1an"));
 				break;
 			default:

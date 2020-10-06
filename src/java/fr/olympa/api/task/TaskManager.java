@@ -32,7 +32,7 @@ public class TaskManager implements OlympaTask {
 		if (taskExist(taskName)) {
 			int taskId = ((BukkitTask) getTask(taskName)).getTaskId();
 			taskList.remove(taskName);
-			getScheduler().cancelTask(taskId);
+			cancelTaskById(taskId);
 			return true;
 		}
 		return false;

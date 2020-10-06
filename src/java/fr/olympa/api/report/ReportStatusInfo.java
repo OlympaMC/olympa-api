@@ -1,5 +1,10 @@
 package fr.olympa.api.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Utils;
 
 public class ReportStatusInfo {
@@ -31,5 +36,16 @@ public class ReportStatusInfo {
 
 	public Long getTime() {
 		return time;
+	}
+
+	public List<String> getLore() {
+		List<String> lore = new ArrayList<>();
+		OlympaPlayerInformations opAuthor = AccountProvider.getPlayerInformations(idAuthor);
+		lore.add(String.format("&aChangement de &2%s", opAuthor.getName()));
+		lore.add(String.format("&aStatus %s", status.getNameColored()));
+		if (note != null && !note.isBlank())
+			lore.add(String.format("&aNote &2%s", note));
+		lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));
+		return lore;
 	}
 }
