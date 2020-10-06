@@ -60,7 +60,7 @@ public interface RandomizedPicker<T extends Chanced> {
 		private List<T> objects = new ArrayList<>();
 		private List<T> always = new ArrayList<>();
 		
-		public FixedPicker(int min, int max, double emptyChance, List<T> objects) {
+		public FixedPicker(int min, int max, double emptyChance, T... objects) {
 			this.min = min;
 			this.max = max;
 			this.emptyChance = emptyChance;
