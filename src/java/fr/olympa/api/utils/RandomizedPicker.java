@@ -9,7 +9,7 @@ import fr.olympa.api.utils.RandomizedPicker.Chanced;
 public interface RandomizedPicker<T extends Chanced> {
 
 	public default List<T> pick(Random random) {
-		int itemAmount = random.nextInt((getMaxItems() - getMinItems()) + 1) + getMinItems();
+		int itemAmount = Utils.getRandomAmount(random, getMinItems(), getMaxItems());
 
 		List<T> objects = new ArrayList<>(itemAmount);
 
