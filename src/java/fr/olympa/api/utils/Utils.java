@@ -479,4 +479,10 @@ public class Utils {
 		br.close();
 		return b;
 	}
+	
+	public static int getRandomAmount(Random random, int min, int max) {
+		if (min == max) return min;
+		return random.nextInt(max - min + 1) + min;
+	}
+	
 }
