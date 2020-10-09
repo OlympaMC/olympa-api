@@ -38,6 +38,41 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 
 	}
 
+	public class ChangeSource {
+
+		String source;
+		String player;
+
+		public ChangeSource() {
+			source = "console";
+		}
+
+		public ChangeSource(String player) {
+			this.player = player;
+		}
+
+		public String getSource() {
+			return source != null ? source : player;
+		}
+
+		public boolean isPlayer() {
+			return player != null;
+		}
+
+		public boolean isConsole() {
+			return source != null && source.equals("console");
+		}
+
+		public boolean isSite() {
+			return source != null && source.equals("site");
+		}
+
+		public String getPlayer() {
+			return player;
+		}
+
+	}
+
 	public static HandlerList handlers = new HandlerList();
 
 	public static HandlerList getHandlerList() {

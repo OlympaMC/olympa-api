@@ -5,14 +5,14 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class PlayerNameTagEditEvent extends PlayerEvent implements Cancellable {
+public class PlayerNameTagEditEvent extends Event implements Cancellable {
 
 	public static final HandlerList handlers = new HandlerList();
 
@@ -25,6 +25,7 @@ public class PlayerNameTagEditEvent extends PlayerEvent implements Cancellable {
 		return handlers;
 	}
 
+	private Player player;
 	private OlympaPlayer olympaPlayer;
 	private Nametag nameTag;
 	private Nametag previousNameTag;
@@ -34,7 +35,8 @@ public class PlayerNameTagEditEvent extends PlayerEvent implements Cancellable {
 	private Set<Player> targets = new HashSet<>();
 
 	public PlayerNameTagEditEvent(Player player, OlympaPlayer olympaPlayer, Nametag nameTag, Nametag previousNameTag) {
-		super(player);
+		super(true);
+		this.player = player;
 		this.olympaPlayer = olympaPlayer;
 		sortPriority = olympaPlayer.getGroup().getIndex();
 		if (previousNameTag == null)
@@ -47,6 +49,10 @@ public class PlayerNameTagEditEvent extends PlayerEvent implements Cancellable {
 			this.previousNameTag = previousNameTag;
 		cancel = false;
 		forceCreateTeam = false;
+	}
+
+	public Player getPlayer() {
+		return player;
 	}
 
 	@Override
