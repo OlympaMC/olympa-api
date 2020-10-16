@@ -8,12 +8,14 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
+import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
@@ -46,14 +48,16 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
 	public void create(T p) {
 		removePlayerScoreboard(p);
-		scoreboards.put(p, new Scoreboard<>(p, this));
+		Scoreboard<T> scoreboard = new Scoreboard<>(p, this);
+		scoreboards.put(p, scoreboard);
+		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread()));
 	}
 
 	public Scoreboard<T> getPlayerScoreboard(T p) {
 		return scoreboards.get(p);
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onJoin(OlympaPlayerLoadEvent e) {
 		create(e.getOlympaPlayer());
 	}
@@ -64,9 +68,8 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 	}
 
 	public void removePlayerScoreboard(T p) {
-		if (scoreboards.containsKey(p)) {
-			scoreboards.remove(p).unload();
-		}
+		Scoreboard<T> removed = scoreboards.remove(p);
+		if (removed != null) removed.unload();
 	}
 
 	public void unload() {

@@ -52,7 +52,6 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		lines.add(lines.size() - manager.footer.size(), new Line(line));
 		line.addHolder(this);
 		updateLock.unlock();
-		// TODO update uniquement la ligné ajouté
 		needsUpdate();
 	}
 	
@@ -62,7 +61,13 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	@Override
 	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
-		needsUpdate(); // TODO update seulement la ligne
+		for (Line internalLine : lines) {
+			if (internalLine.line == line) {
+				internalLine.setLines(newValue);
+				break;
+			}
+		}
+		needsUpdate();
 	}
 	
 	public void needsUpdate() {
@@ -125,15 +130,24 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	class Line {
 		AbstractLine<Scoreboard<T>> line;
+		String[] cachedLines = null;
 		
 		public Line(AbstractLine<Scoreboard<T>> line) {
 			this.line = line;
 		}
 		
-		public String[] getLines(T player) {
-			String text = line.getValue(Scoreboard.this);
-			return text.split("\\n");
+		public void updateLines(T player) {
+			setLines(line.getValue(Scoreboard.this));
 			//return ChatPaginator.wordWrap(text, 48);
+		}
+		
+		public void setLines(String text) {
+			cachedLines = text.split("\\n");
+		}
+		
+		public String[] getLines(T player) {
+			if (cachedLines == null) updateLines(player);
+			return cachedLines;
 		}
 		
 	}
