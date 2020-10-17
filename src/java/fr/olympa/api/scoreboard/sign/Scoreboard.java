@@ -9,6 +9,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.common.collect.Iterables;
+
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
@@ -96,7 +98,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	@Override
 	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
-		for (Line internalLine : lines) {
+		for (Line internalLine : Iterables.concat(lines, footers)) {
 			if (internalLine.line == line) {
 				internalLine.setLines(newValue);
 				break;
@@ -162,9 +164,11 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 			Line line = lines.get(i);
 			for (String internalLine : line.getLines(p)) {
 				if (linePosition++ >= position) {
-					rawLines.add(internalLine);
+					if (linePosition >= maxLine + position) {
+						if (!internalLine.isEmpty()) rawLines.add(internalLine);
+						break lines;
+					}else rawLines.add(internalLine);
 				}
-				if (linePosition >= maxLine + position) break lines;
 			}
 		}
 		for (Line footer : footers) {
