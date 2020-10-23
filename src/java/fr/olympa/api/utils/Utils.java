@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -34,8 +33,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import org.bukkit.util.ChatPaginator;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -316,17 +313,6 @@ public class Utils {
 
 	public static String secondsToCalendar(int s) {
 		return LocalTime.ofSecondOfDay(s).toString();
-	}
-
-	public static List<String> splitOnSpace(String string, int lineLength) {
-		if (string == null)
-			return null;
-		List<String> ls = new ArrayList<>();
-		if (string.isEmpty()) {
-			ls.add("");
-			return ls;
-		}
-		return new ArrayList<>(Arrays.asList(ChatPaginator.wordWrap(string.replace("{nl}", "\n"), lineLength)));
 	}
 
 	public static List<String> startWords(String word, Iterable<String> allWords) {

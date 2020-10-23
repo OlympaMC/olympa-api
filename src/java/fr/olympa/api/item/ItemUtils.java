@@ -206,6 +206,13 @@ public class ItemUtils {
 		return is;
 	}
 
+	public static ItemStack setRawLore(ItemStack item, List<String> lore) {
+		ItemMeta meta = item.getItemMeta();
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+		return item;
+	}
+	
 	public static String[] getLore(ItemStack is) {
 		if (!is.hasItemMeta()) return null;
 		ItemMeta meta = is.getItemMeta();

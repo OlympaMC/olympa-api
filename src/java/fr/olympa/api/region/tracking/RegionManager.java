@@ -357,6 +357,9 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
+		if (e.getEntityType() == EntityType.PAINTING || e.getEntityType() == EntityType.ITEM_FRAME || e.getEntityType() == EntityType.ARMOR_STAND) {
+			fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
+		}
 		fireEvent(e.getEntity().getLocation(), DamageFlag.class, x -> x.damageEvent(e));
 	}
 	

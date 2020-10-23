@@ -1,6 +1,7 @@
 package fr.olympa.api.region.tracking.flags;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
@@ -14,4 +15,8 @@ public class PhysicsFlag extends AbstractProtectionFlag {
 		handleCancellable(event);
 	}
 
+	public <T extends Event & Cancellable> void entityEvent(T event, Entity entity) {
+		handleCancellable(event);
+	}
+	
 }
