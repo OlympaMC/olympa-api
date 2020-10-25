@@ -30,6 +30,7 @@ public enum OlympaServer {
 		this.name = name;
 		this.multi = multi;
 		this.joinPermission = joinPermission;
+		System.out.println("Name " + (joinPermission == null ? "no perm" : joinPermission.getMinGroup().name()));
 	}
 
 	private OlympaServer(String name, boolean multi, ServerType type) {

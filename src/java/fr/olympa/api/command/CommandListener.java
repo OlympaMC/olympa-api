@@ -22,7 +22,7 @@ public class CommandListener implements Listener {
 	@EventHandler
 	public void onCommandSend(PlayerCommandSendEvent e) {
 		OlympaPlayer player = AccountProvider.get(e.getPlayer().getUniqueId());
-		OlympaCommand.commands.stream().filter(cmd -> cmd.hasPermission(player)).forEach(cmd -> e.getCommands().removeAll(cmd.getAllCommands()));
+		OlympaCommand.commands.stream().filter(cmd -> !cmd.hasPermission(player)).forEach(cmd -> e.getCommands().removeAll(cmd.getAllCommands()));
 	}
 	
 	@EventHandler

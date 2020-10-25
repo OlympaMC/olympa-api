@@ -126,6 +126,18 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		return permission;
 	}
 	
+	@Override
+	public boolean hasPermission() {
+		if (isConsole()) return true;
+		return IOlympaCommand.super.hasPermission();
+	}
+	
+	@Override
+	public boolean hasPermission(OlympaPermission perm) {
+		if (isConsole()) return true;
+		return IOlympaCommand.super.hasPermission(perm);
+	}
+	
 	public boolean hasPermission(CommandSender sender) {
 		if (sender instanceof Player) {
 			return hasPermission(AccountProvider.<OlympaPlayer>get(((Player) sender).getUniqueId()));

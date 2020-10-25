@@ -77,7 +77,7 @@ public interface IOlympaCommand {
 	OlympaPermission getOlympaPermission();
 	
 	default boolean hasPermission(OlympaPermission perm, OlympaPlayer player) {
-		if (perm == null || isConsole()) return true;
+		if (perm == null) return true;
 		if (player == null) return false;
 		return perm.hasPermission(player);
 	}

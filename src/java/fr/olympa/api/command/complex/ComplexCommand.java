@@ -23,6 +23,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -48,6 +49,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 		boolean canRun() {
 			return cmd.hide() || hasPermission(perm, getOlympaPlayer()) && (!cmd.player() || !isConsole());
+		}
+		
+		boolean canRun(CommandSender sender) {
+			return cmd.hide() || (sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player());
 		}
 
 		String getSyntax() {
@@ -256,7 +261,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			for (Entry<List<String>, SpigotInternalCommand> en : commands.entrySet())
 				if (en.getValue().cmd.otherArg())
 					find.addAll(findPotentialArgs(args));
-				else if (!en.getValue().cmd.hide() || en.getValue().canRun())
+				else if (!en.getValue().cmd.hide() || en.getValue().canRun(sender))
 					find.add(en.getKey().get(0));
 		} else if (args.length >= 2) {
 			find = findPotentialArgs(args);
@@ -328,7 +333,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		for (SpigotInternalCommand command : commands.values()) {
-			if (!command.canRun())
+			if (!command.canRun(sender))
 				continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}

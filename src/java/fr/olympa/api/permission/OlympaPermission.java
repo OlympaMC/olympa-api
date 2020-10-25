@@ -33,9 +33,13 @@ public class OlympaPermission {
 	public static void registerPermissions(Class<?> clazz) {
 		try {
 			int initialSize = permissions.size();
-			for (Field f : clazz.getDeclaredFields())
-				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers()))
-					permissions.put(f.getName(), (OlympaPermission) f.get(null));
+			for (Field f : clazz.getDeclaredFields()) {
+				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) {
+					OlympaPermission permission = (OlympaPermission) f.get(null);
+					permission.setName(f.getName());
+					permissions.put(f.getName(), permission);
+				}
+			}
 			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
 		} catch (ReflectiveOperationException ex) {
 			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
@@ -49,9 +53,18 @@ public class OlympaPermission {
 	UUID[] allowedBypass = null;
 	boolean lockPermission = false;
 	protected ServerType serverType = ServerType.SPIGOT;
+	private String name;
 
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	private void setName(String name) {
+		this.name = name;
 	}
 
 	public ServerType getServerType() {
