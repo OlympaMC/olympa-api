@@ -13,6 +13,7 @@ public enum ServerStatus {
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
 	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "soon"),
 	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
+	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
 	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
 	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "dev"),
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null),
