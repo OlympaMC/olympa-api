@@ -19,23 +19,22 @@ public enum OlympaServer {
 
 	private final String name;
 	private final boolean multi;
-	private final OlympaPermission joinPermission;
+	private OlympaPermission joinPermission;
 	private ServerType type = ServerType.SPIGOT;
 
 	private OlympaServer(String name, boolean multi) {
-		this(name, multi, (OlympaPermission) null);
-	}
-
-	private OlympaServer(String name, boolean multi, OlympaPermission joinPermission) {
 		this.name = name;
 		this.multi = multi;
-		this.joinPermission = joinPermission;
-		System.out.println("Name " + (joinPermission == null ? "no perm" : joinPermission.getMinGroup().name()));
 	}
 
 	private OlympaServer(String name, boolean multi, ServerType type) {
-		this(name, multi, (OlympaPermission) null);
+		this(name, multi);
 		this.type = type;
+	}
+
+	private OlympaServer(String name, boolean multi, OlympaPermission joinPermission) {
+		this(name, multi);
+		this.joinPermission = joinPermission;
 	}
 
 	public String getNameCaps() {

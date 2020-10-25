@@ -10,12 +10,12 @@ import net.md_5.bungee.api.ChatColor;
 
 public enum ServerStatus {
 
-	OPEN(1, "Ouvert", ChatColor.GREEN, null, "off"),
-	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "soon"),
-	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
-	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "beta"),
-	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "on"),
-	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "dev"),
+	OPEN(1, "Ouvert", ChatColor.GREEN, null, "Off"),
+	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
+	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta"),
+	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermer"),
+	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "On"),
+	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "Dev"),
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null),
 	CLOSE(10, "Fermé", ChatColor.RED, null, null);
 
@@ -28,11 +28,15 @@ public enum ServerStatus {
 	}
 
 	public static ServerStatus getByCommandArg(String commandArg) {
-		return Arrays.stream(values()).filter(status -> status.getCommandArg() != null && status.commandArg.equalsIgnoreCase(commandArg)).findFirst().orElse(null);
+		return Arrays.stream(values()).filter(status -> status.getCommandArg() != null && status.getCommandArg().equalsIgnoreCase(commandArg)).findFirst().orElse(null);
 	}
 
 	public static List<String> getNames() {
 		return Arrays.stream(values()).filter(status -> status != UNKNOWN).map(ServerStatus::getName).collect(Collectors.toList());
+	}
+
+	public static List<String> getCommandsArgs() {
+		return Arrays.stream(values()).filter(status -> status.getCommandArg() != null).map(ServerStatus::getCommandArg).collect(Collectors.toList());
 	}
 
 	private int id;
