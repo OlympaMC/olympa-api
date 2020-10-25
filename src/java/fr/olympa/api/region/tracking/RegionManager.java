@@ -1,8 +1,10 @@
 package fr.olympa.api.region.tracking;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -202,38 +204,45 @@ public class RegionManager implements Listener {
 
 		Player player = e.getPlayer();
 
-		Set<TrackedRegion> applicable = getApplicableRegions(e.getTo());
 		Set<TrackedRegion> lastRegions = inRegions.get(player);
-
-		Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
-		Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
-
-		ActionResult result = ActionResult.ALLOW;
-
-		for (TrackedRegion enter : entered) {
-			try {
-				for (Flag flag : enter.getFlags()) {
-					result = result.or(flag.enters(player, applicable));
-				}
-			}catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		for (TrackedRegion exit : exited) {
-			try {
-				for (Flag flag : exit.getFlags()) {
-					result = result.or(flag.leaves(player, applicable));
-				}
-			}catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
 		
-		if (result == ActionResult.DENY) {
-			e.setCancelled(true);
-			return;
-		}else if (result == ActionResult.TELEPORT_ELSEWHERE) return;
-		if (!entered.isEmpty() || !exited.isEmpty()) inRegions.put(player, applicable);
+		List<Location> locations = e.getFrom().getWorld() == e.getTo().getWorld() ? SpigotUtils.getLocationsBetween(e.getFrom(), e.getTo(), true) : Arrays.asList(e.getTo());
+		
+		Location old = e.getFrom();
+		for (Location location : locations) {
+			Set<TrackedRegion> applicable = getApplicableRegions(location);
+			
+			Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
+			Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
+			
+			ActionResult result = ActionResult.ALLOW;
+			
+			for (TrackedRegion enter : entered) {
+				try {
+					for (Flag flag : enter.getFlags()) {
+						result = result.or(flag.enters(player, applicable));
+					}
+				}catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			for (TrackedRegion exit : exited) {
+				try {
+					for (Flag flag : exit.getFlags()) {
+						result = result.or(flag.leaves(player, applicable));
+					}
+				}catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			
+			if (result == ActionResult.DENY) break;
+			if (result == ActionResult.TELEPORT_ELSEWHERE) return;
+			
+			lastRegions = applicable;
+			old = location;
+		}
+		if (old != e.getFrom()) inRegions.put(player, lastRegions);
 	}
 
 	@EventHandler

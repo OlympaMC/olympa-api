@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -447,4 +449,55 @@ public class SpigotUtils {
 		return list;
 	}
 
+	public static List<Location> getLocationsBetween(Location pos1, Location pos2, boolean skipFirst) {
+		Validate.isTrue(pos1.getWorld() == pos2.getWorld(), "Worlds are different");
+		World world = pos1.getWorld();
+		
+		
+		int x1 = pos1.getBlockX();
+		int y1 = pos1.getBlockY();
+		int z1 = pos1.getBlockZ();
+		int x2 = pos2.getBlockX();
+		int y2 = pos2.getBlockY();
+		int z2 = pos2.getBlockZ();
+		int tipx = x1;
+		int tipy = y1;
+		int tipz = z1;
+		int dx = Math.abs(x2 - x1);
+		int dy = Math.abs(y2 - y1);
+		int dz = Math.abs(z2 - z1);
+		
+		if (dx + dy + dz == 0) return skipFirst ? Collections.EMPTY_LIST : Arrays.asList(pos1);
+		
+		List<Location> locations = new ArrayList<>();
+		
+		int dMax = Math.max(Math.max(dx, dy), dz);
+		if (dMax == dx) {
+			for (int domstep = skipFirst ? 1 : 0; domstep <= dx; domstep++) {
+				tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
+				tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
+				tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
+				
+				locations.add(new Location(world, tipx, tipy, tipz));
+			}
+		}else if (dMax == dy) {
+			for (int domstep = skipFirst ? 1 : 0; domstep <= dy; domstep++) {
+				tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
+				tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
+				tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+				
+				locations.add(new Location(world, tipx, tipy, tipz));
+			}
+		}else /* if (dMax == dz) */ {
+			for (int domstep = skipFirst ? 1 : 0; domstep <= dz; domstep++) {
+				tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
+				tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2 - y1 > 0 ? 1 : -1));
+				tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2 - x1 > 0 ? 1 : -1));
+				
+				locations.add(new Location(world, tipx, tipy, tipz));
+			}
+		}
+		return locations;
+	}
+	
 }

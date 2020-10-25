@@ -47,7 +47,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		}
 
 		boolean canRun() {
-			return cmd.hide() || hasPermission(perm) && (!cmd.player() || !isConsole());
+			return cmd.hide() || hasPermission(perm, getOlympaPlayer()) && (!cmd.player() || !isConsole());
 		}
 
 		String getSyntax() {
@@ -179,7 +179,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			return true;
 		}
 
-		if (!hasPermission(internal.perm)) {
+		if (!hasPermission(internal.perm, getOlympaPlayer())) {
 			sendDoNotHavePermission();
 			return true;
 		}

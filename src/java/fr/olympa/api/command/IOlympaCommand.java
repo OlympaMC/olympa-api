@@ -74,13 +74,24 @@ public interface IOlympaCommand {
 
 	void sendComponents(BaseComponent... components);
 
+	OlympaPermission getOlympaPermission();
+	
+	default boolean hasPermission(OlympaPermission perm, OlympaPlayer player) {
+		if (perm == null || isConsole()) return true;
+		if (player == null) return false;
+		return perm.hasPermission(player);
+	}
+	
 	default boolean hasPermission(OlympaPermission perm) {
-		if (perm == null || isConsole())
-			return true;
-		OlympaPlayer olympaPlayer = getOlympaPlayer();
-		if (olympaPlayer == null)
-			return false;
-		return perm.hasPermission(olympaPlayer);
+		return hasPermission(perm, getOlympaPlayer());
+	}
+	
+	default boolean hasPermission(OlympaPlayer player) {
+		return hasPermission(getOlympaPermission(), player);
+	}
+	
+	default boolean hasPermission() {
+		return hasPermission(getOlympaPermission(), getOlympaPlayer());
 	}
 
 	default String buildText(int min, String[] args) {
@@ -95,8 +106,6 @@ public interface IOlympaCommand {
 
 	<T extends OlympaPlayer> T getOlympaPlayer();
 
-	boolean hasPermission();
-
 	void setAllowConsole(boolean allowConsole);
 
 	boolean isConsoleAllowed();
@@ -107,7 +116,7 @@ public interface IOlympaCommand {
 		OlympaPermission perm = OlympaPermission.permissions.get(permName);
 		if (perm == null)
 			return false;
-		return this.hasPermission(perm);
+		return this.hasPermission(perm, getOlympaPlayer());
 	}
 
 	void addCommandArguments(boolean isMandatory, List<CommandArgument> ca);

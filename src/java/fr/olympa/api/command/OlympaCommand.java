@@ -121,13 +121,15 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		this.allowConsole = allowConsole;
 	}
 
-	public OlympaPermission getPermission() {
+	@Override
+	public OlympaPermission getOlympaPermission() {
 		return permission;
 	}
-
-	@Override
-	public boolean hasPermission() {
-		return this.hasPermission(permission);
+	
+	public boolean hasPermission(CommandSender sender) {
+		if (sender instanceof Player) {
+			return hasPermission(AccountProvider.<OlympaPlayer>get(((Player) sender).getUniqueId()));
+		}else return isConsoleAllowed();
 	}
 
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
