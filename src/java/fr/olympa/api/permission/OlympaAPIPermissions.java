@@ -17,5 +17,6 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission COMMAND_BYPASS_REGIONS = new OlympaPermission(OlympaGroup.DEV);
 
 	public static final OlympaPermission NAMESPACED_COMMANDS = new OlympaPermission(OlympaGroup.RESP_TECH);
-	
+	public static final OlympaPermission AFK_SEE_IN_TAB = new OlympaPermission(OlympaGroup.GRAPHISTE);
+
 }
