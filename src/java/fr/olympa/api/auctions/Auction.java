@@ -52,10 +52,6 @@ public class Auction {
 	public synchronized void buy(Player p) {
 		if (bought) throw new IllegalStateException("Auction already bought");
 		MoneyPlayerInterface buyer = AccountProvider.get(p.getUniqueId());
-		if (player.equals(buyer.getInformation())) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
-			return;
-		}
 		if (buyer.getGameMoney().withdraw(price)) {
 			SpigotUtils.giveItems(p, item);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %s ont été retirés de ton compte !", OlympaMoney.format(price));

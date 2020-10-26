@@ -13,8 +13,11 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.olympa.api.auctions.Auction;
 import fr.olympa.api.auctions.AuctionsManager;
 import fr.olympa.api.economy.MoneyPlayerInterface;
+import fr.olympa.api.gui.templates.ConfirmGUI;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auction> {
@@ -41,7 +44,15 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 
 	@Override
 	public void click(Auction existing, Player p) {
-		existing.buy(p);
+		if (existing.player.equals(AccountProvider.get(p.getUniqueId()).getInformation())) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
+		}else {
+			new ConfirmGUI(() -> {
+				if (existing.hasExpired() || existing.bought) {
+					Prefix.BAD.sendMessage(p, "Trop tard... cette vente n'est plus disponible.");
+				}else existing.buy(p);
+			}, () -> p.closeInventory(), "Voulez-vous acheter cet objet ?");
+		}
 	}
 
 	@Override
