@@ -318,7 +318,7 @@ public class Utils {
 	public static List<String> startWords(String word, Iterable<String> allWords) {
 		TreeSet<String> startWordList = new TreeSet<>(Collator.getInstance());
 		for (String currentWord : allWords)
-			if (removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase())))
+			if (currentWord != null && removeAccents(currentWord).toLowerCase().startsWith(removeAccents(word.toLowerCase())) && !startWordList.contains(currentWord))
 				startWordList.add(currentWord);
 		return new ArrayList<>(startWordList);
 	}
@@ -342,11 +342,9 @@ public class Utils {
 	}
 
 	public static String timestampToDuration(long timestamp, int precision) {
-
 		long now = Utils.getCurrentTimeInSeconds();
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
-
 		LocalDateTime start;
 		LocalDateTime end;
 		if (timestamp > now) {
@@ -356,23 +354,19 @@ public class Utils {
 			start = timestamp2;
 			end = now2;
 		}
-
 		Duration dur = Duration.between(start.toLocalTime(), end.toLocalTime());
 		LocalDate e = end.toLocalDate();
-
 		if (dur.isNegative()) {
 			dur = dur.plusDays(1);
 			e = e.minusDays(1);
 		}
 		Period per = Period.between(start.toLocalDate(), e);
-
 		long year = per.getYears();
 		long month = per.getMonths();
 		long day = per.getDays();
 		long hour = dur.toHours();
 		long minute = dur.toMinutes() - 60 * dur.toHours();
 		long second = dur.getSeconds() - 60 * dur.toMinutes();
-
 		List<String> msg = new ArrayList<>();
 		if (year > 1)
 			msg.add(year + " ans");
@@ -380,7 +374,6 @@ public class Utils {
 			msg.add(year + " an");
 		if (month != 0)
 			msg.add(month + " mois");
-
 		if (day > 1)
 			msg.add(day + " jours");
 		else if (day == 1)
@@ -397,7 +390,6 @@ public class Utils {
 			msg.add(second + " secondes");
 		else if (second == 1)
 			msg.add(second + " seconde");
-
 		List<String> msgs = new ArrayList<>();
 		for (String message : msg) {
 			if (message != null)
@@ -465,10 +457,11 @@ public class Utils {
 		br.close();
 		return b;
 	}
-	
+
 	public static int getRandomAmount(Random random, int min, int max) {
-		if (min == max) return min;
+		if (min == max)
+			return min;
 		return random.nextInt(max - min + 1) + min;
 	}
-	
+
 }
