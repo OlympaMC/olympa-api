@@ -5,9 +5,8 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
-import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
@@ -60,11 +59,12 @@ public class AfkPlayer {
 		Prefix.DEFAULT_BAD.sendMessage(player, "Tu es désormais &4AFK&c.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null) {
-			Nametag oldNameTag = api.getNametag(player);
+			/*Nametag oldNameTag = api.getNametag(player);
 			lastSuffix = oldNameTag.getSuffix();
 			if (AFK_SUFFIX.contains(lastSuffix))
 				lastSuffix = lastSuffix.replace(AFK_SUFFIX, "");
-			OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(oldNameTag.getPrefix(), lastSuffix + AFK_SUFFIX), players));
+			OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(oldNameTag.getPrefix(), lastSuffix + AFK_SUFFIX), players));*/
+			api.callNametagUpdate(AccountProvider.get(player.getUniqueId()));
 		}
 	}
 
@@ -73,8 +73,10 @@ public class AfkPlayer {
 		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu n'es plus &2AFK&a.");
 		launchTask(player);
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
-		if (api != null)
-			OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(api.getNametag(player).getPrefix(), getLastSuffix()), players));
+		if (api != null) {
+			//OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(api.getNametag(player).getPrefix(), getLastSuffix()), players));
+			api.callNametagUpdate(AccountProvider.get(player.getUniqueId()));
+		}
 	}
 
 	private String getLastSuffix() {

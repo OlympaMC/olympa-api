@@ -5,18 +5,18 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.economy.OlympaMoney;
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.scoreboard.tab.INametagApi;
-import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -52,10 +52,11 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 			return false;
 		p.setClan((T) this);
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
-		Nametag nametag = new Nametag(null, " §a" + this.getName());
+		/*Nametag nametag = new Nametag(null, " §a" + this.getName());
 		nameTagApi.updateFakeNameTag(p.getPlayer(), nametag, getPlayers());
 		for (Player player : getPlayers())
-			nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));
+			nameTagApi.updateFakeNameTag(player, nametag, Arrays.asList(p.getPlayer()));*/
+		nameTagApi.callNametagUpdate(p);
 		members.put(p.getInformation(), manager.createClanData(p.getInformation()));
 		memberJoin(p);
 		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
@@ -129,6 +130,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return members.values().stream().filter(entry -> entry.isConnected()).map(entry -> entry.getConnectedPlayer().getPlayer()).collect(Collectors.toSet());
 	}
 
+	public Set<OlympaPlayer> getOlympaPlayers() {
+		return members.values().stream().filter(entry -> entry.isConnected()).map(D::getConnectedPlayer).collect(Collectors.toSet());
+	}
+	
 	public long getCreationTime() {
 		return created;
 	}
@@ -150,21 +155,23 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	protected void removedOnlinePlayer(ClanPlayerInterface<T, D> oplayer) {
-		Player player = oplayer.getPlayer();
-		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
-		Nametag nametag = new Nametag(null, " §c" + this.getName());
-		for (Player otherP : getPlayers())
-			nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));
 		oplayer.setClan(null);
+		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
+		//Player player = oplayer.getPlayer();
+		/*Nametag nametag = new Nametag(null, " §c" + this.getName());
+		for (Player otherP : getPlayers())
+			nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));*/
+		List<OlympaPlayer> playerQuit = Arrays.asList(oplayer);
+		for (OlympaPlayer otherP : getOlympaPlayers()) nameTagApi.callNametagUpdate(otherP, playerQuit);
 	}
 
 	public void removePlayer(OlympaPlayerInformations pinfo, boolean message) {
 		if (message)
 			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
 		D member = members.remove(pinfo);
-		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
+		/*INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		Nametag nametag = new Nametag(null, "");
-		nameTagApi.updateFakeNameTag(pinfo.getName(), nametag, Bukkit.getOnlinePlayers());
+		nameTagApi.updateFakeNameTag(pinfo.getName(), nametag, Bukkit.getOnlinePlayers());*/
 
 		try {
 			manager.removePlayerFromClan(pinfo);

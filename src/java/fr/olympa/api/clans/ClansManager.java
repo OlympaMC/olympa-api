@@ -5,14 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -27,7 +24,6 @@ import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
-import fr.olympa.api.scoreboard.tab.Nametag;
 import fr.olympa.api.sql.Column;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.utils.ColorUtils;
@@ -138,6 +134,18 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		}
 		resultSet.close();
 		getPlayersInClanStatement.close();
+		
+		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
+		nameTagApi.addNametagHandler(EventPriority.NORMAL, (nametag, player, to) -> {
+			ClanPlayerInterface<T, D> clanPlayer = (ClanPlayerInterface<T, D>) player;
+			ClanPlayerInterface<T, D> clanTo = (ClanPlayerInterface<T, D>) to;
+			if (clanPlayer.getClan() == null) return;
+			ChatColor color;
+			if (clanTo.getClan() != null) {
+				color = clanTo.getClan() == clanPlayer.getClan() ? ChatColor.GREEN : ChatColor.RED;
+			}else color = ChatColor.RED;
+			nametag.appendSuffix(color + clanPlayer.getClan().getName());
+		});
 	}
 	
 	public boolean clanExists(String name) {
@@ -286,7 +294,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			}
 		}
 		
-		this.setSuffix(oplayer.getPlayer());
+		//this.setSuffix(oplayer.getPlayer());
 	}
 	
 	@EventHandler
@@ -299,7 +307,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			clan.memberLeave(oplayer);
 	}
 	
-	public void setSuffix(Player p) {
+	/*public void setSuffix(Player p) {
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		for (Entry<Integer, T> entry : this.getClans()) {
 			T clan = entry.getValue();
@@ -311,6 +319,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			members.stream().filter(D::isConnected).forEach(member -> nameTagApi.updateFakeNameTag(member.getPlayerInformations().getName(), nameTag, player));
 			nameTagApi.updateFakeNameTag(p, nameTag, members.stream().filter(D::isConnected).map(member -> member.getConnectedPlayer().getPlayer()).collect(Collectors.toList()));
 		}
-	}
+	}*/
 	
 }
