@@ -48,11 +48,11 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		}
 
 		boolean canRun() {
-			return cmd.hide() || hasPermission(perm, getOlympaPlayer()) && (!cmd.player() || !isConsole());
+			return hasPermission(perm) && (!cmd.player() || !isConsole());
 		}
 		
 		boolean canRun(CommandSender sender) {
-			return cmd.hide() || (sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player());
+			return (sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player());
 		}
 
 		String getSyntax() {
@@ -138,7 +138,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			return null;
 		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
 		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean, null);
-		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
+		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg() && !e.getValue().cmd.hide()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			SpigotInternalCommand result = getCommand(x);
 			if (result != null && result.cmd.otherArg())
 				return null;
@@ -184,7 +184,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			return true;
 		}
 
-		if (!hasPermission(internal.perm, getOlympaPlayer())) {
+		if (!hasPermission(internal.perm)) {
 			sendDoNotHavePermission();
 			return true;
 		}
@@ -261,7 +261,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			for (Entry<List<String>, SpigotInternalCommand> en : commands.entrySet())
 				if (en.getValue().cmd.otherArg())
 					find.addAll(findPotentialArgs(args));
-				else if (!en.getValue().cmd.hide() || en.getValue().canRun(sender))
+				else if (!en.getValue().cmd.hide() && en.getValue().canRun(sender))
 					find.add(en.getKey().get(0));
 		} else if (args.length >= 2) {
 			find = findPotentialArgs(args);
@@ -333,7 +333,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		for (SpigotInternalCommand command : commands.values()) {
-			if (!command.canRun(sender))
+			if (command.cmd.hide() || !command.canRun(sender))
 				continue;
 			sender.spigot().sendMessage(getHelpCommandComponent(command));
 		}
