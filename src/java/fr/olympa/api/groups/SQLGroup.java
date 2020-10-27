@@ -40,7 +40,7 @@ public class SQLGroup {
 		statement.setString(i++, group.getChatSuffix());
 		statement.setInt(i++, Utils.booleanToBinary(group.isHighStaff()));
 		statement.setString(i, group.getServer().name());
-		insertPlayerStatement.execute();
+		insertPlayerStatement.executeUpdate();
 		statement.close();
 
 	}
@@ -58,7 +58,8 @@ public class SQLGroup {
 		statement.setInt(i++, Utils.booleanToBinary(group.isHighStaff()));
 		statement.setString(i++, group.getServer().name());
 		statement.setInt(i, group.getId());
-		updateStatement.execute();
+		updateStatement.executeUpdate();
+		statement.close();
 	}
 
 	private static OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, tableName, "id", null);

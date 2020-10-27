@@ -23,7 +23,7 @@ public class OlympaStatement {
 
 	IStatementType type;
 	private String statement;
-	private boolean returnGeneratedKeys;
+	private boolean returnGeneratedKeys = false;
 
 	public OlympaStatement(StatementTypeInsertDelete type, String tableName, String... keys) {
 		this.type = type;
@@ -48,7 +48,6 @@ public class OlympaStatement {
 			sj.add(sj2.toString());
 		}
 		statement = sj.toString() + ";";
-		returnGeneratedKeys = true;
 	}
 
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String what, String[] keys) {
@@ -107,7 +106,6 @@ public class OlympaStatement {
 		if (offset > 0)
 			sj.add("OFFSET " + offset);
 		statement = sj.toString() + ";";
-		returnGeneratedKeys = true;
 	}
 
 	public OlympaStatement(StatementTypeDefault type, String tableName) {
@@ -116,7 +114,6 @@ public class OlympaStatement {
 		sj.add(type.get());
 		sj.add(tableName);
 		statement = sj.toString() + ";";
-		returnGeneratedKeys = true;
 	}
 
 	public OlympaStatement(String statement) {
@@ -140,7 +137,12 @@ public class OlympaStatement {
 		return statement;
 	}
 
-	public int execute() throws SQLException {
+	public OlympaStatement returnGeneratedKeys() {
+		returnGeneratedKeys = true;
+		return this;
+	}
+
+	public int executeUpdate() throws SQLException {
 		try {
 			return getStatement().executeUpdate();
 		} catch (SQLException e) {

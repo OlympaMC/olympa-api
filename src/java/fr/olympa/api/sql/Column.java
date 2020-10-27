@@ -86,6 +86,7 @@ public class Column<T> {
 				statement.setObject(1, sqlObject, sqlType);
 				statement.setObject(2, determinantSupplier.apply(object), determinantColumnType);
 				statement.executeUpdate();
+				statement.close();
 			}
 		}));
 	}

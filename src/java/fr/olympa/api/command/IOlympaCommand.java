@@ -37,11 +37,11 @@ public interface IOlympaCommand {
 	}
 
 	default void sendUnknownPlayer(String name, CharSequence... potentialsNames) {
-		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.length == 0 ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
+		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.length == 0 ? "" : " essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
 	}
 
 	default void sendUnknownPlayer(String name, Collection<? extends CharSequence> potentialsNames) {
-		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.isEmpty() ? "" : "essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
+		sendError("Le joueur &4%s&c est introuvable%s.", name, potentialsNames.isEmpty() ? "" : " essaye plutôt avec §4" + String.join("§c, §4", potentialsNames));
 	}
 
 	void sendMessage(Prefix prefix, String message, Object... args);
@@ -75,21 +75,23 @@ public interface IOlympaCommand {
 	void sendComponents(BaseComponent... components);
 
 	OlympaPermission getOlympaPermission();
-	
+
 	default boolean hasPermission(OlympaPermission perm, OlympaPlayer player) {
-		if (perm == null) return true;
-		if (player == null) return false;
+		if (perm == null)
+			return true;
+		if (player == null)
+			return false;
 		return perm.hasPermission(player);
 	}
-	
+
 	default boolean hasPermission(OlympaPermission perm) {
 		return hasPermission(perm, getOlympaPlayer());
 	}
-	
+
 	default boolean hasPermission(OlympaPlayer player) {
 		return hasPermission(getOlympaPermission(), player);
 	}
-	
+
 	default boolean hasPermission() {
 		return hasPermission(getOlympaPermission(), getOlympaPlayer());
 	}

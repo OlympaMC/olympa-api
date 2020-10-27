@@ -23,7 +23,7 @@ public enum Prefix {
 
 	static {
 		for (final Prefix prefix : Prefix.values())
-			prefix.setPrefix(prefix.toStringWithoutFormat().replaceAll("%serverName", "Olympa").replaceAll("%symbole", "➤"));
+			prefix.setPrefix(prefix.toStringWithoutFormat().replace("%serverName", "Olympa").replace("%symbole", "➤"));
 	}
 
 	String prefix;
