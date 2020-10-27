@@ -67,4 +67,10 @@ public class Nametag {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return getPrefix() + "|" + getSuffix();
+	}
+	
 }
