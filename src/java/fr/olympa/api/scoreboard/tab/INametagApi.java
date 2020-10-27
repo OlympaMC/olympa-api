@@ -43,6 +43,8 @@ public interface INametagApi {
 	
 	void sendTeams(Player player);
 	
+	void createPlayerTeam(Player player);
+	
 	void addNametagHandler(EventPriority priority, NametagHandler handler);
 	
 	void callNametagUpdate(OlympaPlayer player);
