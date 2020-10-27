@@ -131,7 +131,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 	}
 
 	protected ItemStack getInformationsItem() {
-		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6" + clan.getName(), "§e§lNombre de membres : §e§o" + clan.getMembersAmount() + "/" + clan.getMaxSize(), "§e§lCagnotte : §6" + clan.getMoney().getFormatted());
+		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6§l" + clan.getName(), "§eNombre de membres : §6§o" + clan.getMembersAmount() + "/" + clan.getMaxSize(), "§eCagnotte : §6§l" + clan.getMoney().getFormatted());
 	}
 
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {

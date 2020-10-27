@@ -79,6 +79,20 @@ public class HologramsCommand extends ComplexCommand {
 		sendSuccess("La ligne a bien été ajoutée à l'hologramme.");
 	}
 
+	@Cmd (player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne> <ligne>")
+	public void editLine(CommandContext cmd) {
+		Hologram hologram = cmd.getArgument(0);
+		hologram.setLine(cmd.getArgumentsLength() == 2 ? FixedLine.EMPTY_LINE : createLine(cmd.getFrom(2)), cmd.getArgument(1));
+		sendSuccess("La ligne a bien été modifiée.");
+	}
+	
+	@Cmd (player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne> <ligne>")
+	public void insertLine(CommandContext cmd) {
+		Hologram hologram = cmd.getArgument(0);
+		hologram.insertLine(cmd.getArgumentsLength() == 2 ? FixedLine.EMPTY_LINE : createLine(cmd.getFrom(2)), cmd.getArgument(1));
+		sendSuccess("La ligne a bien été insérée.");
+	}
+	
 	@Cmd (player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne>")
 	public void removeLine(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);

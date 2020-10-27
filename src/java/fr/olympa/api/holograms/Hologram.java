@@ -67,10 +67,14 @@ public class Hologram extends AbstractObservable {
 		}
 		return false;
 	}
-
+	
 	public void addLine(AbstractLine<HologramLine> line) {
+		insertLine(line, lines.size());
+	}
+
+	public void insertLine(AbstractLine<HologramLine> line, int index) {
 		HologramLine holoLine = new HologramLine(line);
-		lines.add(holoLine);
+		lines.add(index, holoLine);
 		lines.forEach(HologramLine::updatePosition);
 		holoLine.spawnEntity();
 		update();
@@ -93,6 +97,15 @@ public class Hologram extends AbstractObservable {
 		lines.remove(index).destroyEntity();
 		lines.forEach(HologramLine::updatePosition);
 		update();
+	}
+	
+	public void setLine(AbstractLine<HologramLine> line, int index) {
+		if (index >= lines.size()) {
+			addLine(line);
+		}else {
+			removeLine(index);
+			insertLine(line, index);
+		}
 	}
 
 	public void move(Location newBottom) {

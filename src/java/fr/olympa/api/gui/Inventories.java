@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -108,6 +109,13 @@ public class Inventories implements Listener {
 			p.sendMessage(Prefix.ERROR.formatMessage("Une erreur est survenue : &4%s&c.", e.getMessage() == null ? e.getClass().getName() : e.getMessage()));
 			e.printStackTrace();
 		}
+	}
+	
+	@EventHandler
+	public void onDrag(InventoryDragEvent e) {
+		OlympaGUI gui = getGUI(e.getView().getTopInventory());
+		if (gui == null) return;
+		e.setCancelled(true);
 	}
 
 	@EventHandler

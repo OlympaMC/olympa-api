@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.olympa.api.clans.gui.ClanManagementGUI;
@@ -293,8 +294,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 				break;
 			}
 		}
-		
-		//this.setSuffix(oplayer.getPlayer());
 	}
 	
 	@EventHandler
@@ -305,6 +304,13 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		T clan = oplayer.getClan();
 		if (clan != null)
 			clan.memberLeave(oplayer);
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onChat(AsyncPlayerChatEvent e) {
+		ClanPlayerInterface<T, D> target = AccountProvider.get(e.getPlayer().getUniqueId());
+		if (target.getClan() == null) return;
+		e.setFormat("§8[" + target.getClan().getName() + "] " + target.getGroupPrefix() + "%s " + target.getGroup().getChatSuffix() + " %s");
 	}
 	
 	/*public void setSuffix(Player p) {
