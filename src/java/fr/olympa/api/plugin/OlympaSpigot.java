@@ -3,6 +3,7 @@ package fr.olympa.api.plugin;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import fr.olympa.api.afk.AfkHandler;
 import fr.olympa.api.hook.IProtocolSupport;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.server.ServerStatus;
@@ -21,6 +22,8 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public INametagApi getNameTagApi() {
 		return nameTagApi;
 	}
+	
+	public abstract AfkHandler getAfkHandler();
 
 	public abstract IProtocolSupport getProtocolSupport();
 

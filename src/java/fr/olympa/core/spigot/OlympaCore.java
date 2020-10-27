@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
+import fr.olympa.api.afk.AfkHandler;
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.frame.ImageFrameManager;
@@ -116,6 +117,11 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public AfkHandler getAfkHandler() {
 		return null;
 	}
 
