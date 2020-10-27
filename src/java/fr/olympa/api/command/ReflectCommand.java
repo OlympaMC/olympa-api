@@ -109,6 +109,9 @@ public class ReflectCommand extends Command {
 			case "TIME":
 				potentialArgs.addAll(Arrays.asList("1h", "2h", "4h", "6h", "12h", "1j", "2j", "3j", "1semaine", "2semaines", "1mois", "1an"));
 				break;
+			case "NUMBER":
+				potentialArgs.add("0");
+				break;
 			default:
 				potentialArgs.add(ca.getArgName());
 				break;

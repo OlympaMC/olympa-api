@@ -73,7 +73,7 @@ public class MachineUtils {
 				out.addExtra(out2);
 			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Bukkit API: §b" + Bukkit.getBukkitVersion().replace("-SNAPSHOT", "") + "§3."));
-			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? isPaper() ? "Paper" : "Spigot" : "Bukkit" + "§e."))));
+			out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§eServeur sous §6" + (TPS.isSpigot() ? isPaper() ? "PaperSpigot" : "Spigot" : "Bukkit" + "§e."))));
 			out.addExtra(" ");
 			out.addExtra(out2);
 			for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
