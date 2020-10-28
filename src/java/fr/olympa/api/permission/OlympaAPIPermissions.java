@@ -19,4 +19,10 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission NAMESPACED_COMMANDS = new OlympaPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaPermission AFK_SEE_IN_TAB = new OlympaPermission(OlympaGroup.GRAPHISTE);
 
+	// Don't fogot to change it in ZTA
+	public static final OlympaPermission GAMEMODE_COMMAND = new OlympaPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaPermission TP_COMMAND = new OlympaPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaPermission GAMEMODE_COMMAND_CREATIVE = new OlympaPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaPermission FLY_COMMAND = new OlympaPermission(OlympaGroup.GRAPHISTE);
+
 }

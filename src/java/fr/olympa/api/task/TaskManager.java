@@ -30,10 +30,13 @@ public class TaskManager implements OlympaTask {
 	@Override
 	public boolean cancelTaskByName(String taskName) {
 		if (taskExist(taskName)) {
-			int taskId = ((BukkitTask) getTask(taskName)).getTaskId();
 			taskList.remove(taskName);
-			cancelTaskById(taskId);
-			return true;
+			BukkitTask task = (BukkitTask) getTask(taskName);
+			if (task != null) {
+				int taskId = task.getTaskId();
+				cancelTaskById(taskId);
+				return true;
+			}
 		}
 		return false;
 	}
