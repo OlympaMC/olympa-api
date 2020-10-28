@@ -61,6 +61,8 @@ public class CreateAuctionGUI extends OlympaGUI {
 			new TextEditor<>(p, price -> {
 				if (price < 1) {
 					Prefix.DEFAULT_BAD.sendMessage(p, "Le prix minimal d'un article est de 1%s.", OlympaMoney.OMEGA);
+				}else if (price > 1_000_000_000) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "N'exagérons rien...");
 				}else {
 					this.price = price;
 					if (this.price > manager.getPriceMax()) this.price = manager.getPriceMax();

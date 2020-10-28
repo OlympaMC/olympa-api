@@ -127,6 +127,10 @@ public class AuctionsManager {
 	public int getDemidaysMax() {
 		return 10;
 	}
+	
+	public int getMaxAuctions(MoneyPlayerInterface player) {
+		return 20;
+	}
 
 	public <T extends MoneyPlayerInterface> void openAuctionsGUI(Player p) {
 		new AuctionsGUI<T>(this).create(p);
