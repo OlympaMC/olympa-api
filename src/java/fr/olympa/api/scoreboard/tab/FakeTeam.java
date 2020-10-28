@@ -1,6 +1,7 @@
 package fr.olympa.api.scoreboard.tab;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import fr.olympa.api.utils.spigot.ProtocolAPI;
 
@@ -8,7 +9,7 @@ public class FakeTeam {
 
 	private static int ID = 0;
 
-	private final ArrayList<String> members = new ArrayList<>();
+	private final Set<String> members = new HashSet<>();
 	private String name;
 	private String prefix = "";
 	private String suffix = "";
@@ -25,12 +26,10 @@ public class FakeTeam {
 	}
 
 	public void addMember(String player) {
-		if (!members.contains(player)) {
-			members.add(player);
-		}
+		members.add(player);
 	}
 
-	public ArrayList<String> getMembers() {
+	public Set<String> getMembers() {
 		return members;
 	}
 
