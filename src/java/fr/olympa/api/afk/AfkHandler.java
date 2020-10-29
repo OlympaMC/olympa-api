@@ -30,7 +30,7 @@ public class AfkHandler implements Listener {
 	private final Map<UUID, AfkPlayer> lastActions = new HashMap<>();
 
 	public AfkHandler() {
-		OlympaCore.getInstance().getNameTagApi().addNametagHandler(EventPriority.NORMAL, (nametag, player, to) -> {
+		OlympaCore.getInstance().getNameTagApi().addNametagHandler(EventPriority.HIGH, (nametag, player, to) -> {
 			if (isAfk(player.getPlayer())) nametag.appendSuffix(AfkPlayer.AFK_SUFFIX);
 		});
 	}

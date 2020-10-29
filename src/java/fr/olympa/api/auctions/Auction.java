@@ -57,6 +57,8 @@ public class Auction {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %s ont été retirés de ton compte !", OlympaMoney.format(price));
 			try {
 				manager.boughtAuction(this);
+				Player seller = Bukkit.getPlayer(player.getUUID());
+				if (seller != null && seller.isOnline()) Prefix.DEFAULT.sendMessage(seller, "§eUn joueur vient d'acheter ton item §7%s§e ! Retourne à l'Hôtel des Ventes pour récupérer tes gains.");
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}

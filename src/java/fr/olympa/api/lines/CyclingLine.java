@@ -13,7 +13,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class CyclingLine<T extends LinesHolder<T>> extends AbstractLine<T> implements ConfigurationSerializable {
 
-	public static List<String> getAnim(String string, ChatColor normal, ChatColor up) {
+	public static List<String> getAnim(String string, String normal, String up) {
 		final List<String> anim = new ArrayList<>();
 		anim.add(normal + string);
 		for (int i = 0; i < string.length(); i++) {
@@ -78,7 +78,7 @@ public class CyclingLine<T extends LinesHolder<T>> extends AbstractLine<T> imple
 
 	@SuppressWarnings ("rawtypes")
 	public static CyclingLine olympaAnimation() {
-		return new CyclingLine<>(getAnim("play.olympa.fr", ChatColor.DARK_AQUA, ChatColor.AQUA), 1, 10 * 20);
+		return new CyclingLine<>(getAnim("play.olympa.fr", ChatColor.DARK_AQUA.toString(), ChatColor.AQUA.toString()), 1, 10 * 20);
 	}
 
 }

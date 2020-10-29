@@ -199,7 +199,7 @@ public class TpaHandler implements Listener {
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
-		if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
+		if (SpigotUtils.isSameLocationXZ(e.getFrom(), e.getTo()))
 			return;
 		Player player = e.getPlayer();
 		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());

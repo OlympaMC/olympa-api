@@ -146,8 +146,7 @@ public class OlympaStatement {
 		try {
 			return getStatement().executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement);
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e);
 		}
 	}
 
@@ -155,7 +154,7 @@ public class OlympaStatement {
 		try {
 			return getStatement().executeQuery();
 		} catch (SQLException e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e.getCause());
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e);
 		}
 	}
 }

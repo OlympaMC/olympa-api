@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,9 +81,15 @@ public class SpigotUtils {
 	}
 
 	public static String convertBlockLocationToString(Location loc) {
-		return loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+		return loc.getWorld().getName() + " " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
 	}
 
+	private static final NumberFormat HUMAN_FORMAT = new DecimalFormat(".##");
+	
+	public static String convertLocationToHumanString(Location loc) {
+		return loc.getWorld().getName() + " " + HUMAN_FORMAT.format(loc.getX()) + " " + HUMAN_FORMAT.format(loc.getY()) + " " + HUMAN_FORMAT.format(loc.getZ());
+	}
+	
 	public static String convertLocationToString(Location loc) {
 		String world = loc.getWorld().getName();
 		double x = loc.getX();

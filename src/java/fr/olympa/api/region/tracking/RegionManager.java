@@ -359,7 +359,7 @@ public class RegionManager implements Listener {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
 		Material type = e.getClickedBlock().getType();
-		if (type == Material.DAYLIGHT_DETECTOR || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type.name().startsWith("POTTED_")) {
+		if (type == Material.DAYLIGHT_DETECTOR || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type.name().startsWith("POTTED_")) {
 			fireEvent(e.getClickedBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getClickedBlock()));
 		}else fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
@@ -40,7 +41,9 @@ public class Hologram extends AbstractObservable {
 			addLine(line);
 		}
 		
-		spawnEntities();
+		if (Bukkit.isPrimaryThread()) {
+			spawnEntities();
+		}else Bukkit.getScheduler().runTask(OlympaCore.getInstance(), this::spawnEntities);
 	}
 
 	public Location getBottom() {

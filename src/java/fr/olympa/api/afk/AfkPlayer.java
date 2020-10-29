@@ -14,7 +14,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class AfkPlayer {
 
-	public static final String AFK_SUFFIX = " §4[§cAFK§4]";
+	public static final String AFK_SUFFIX = "§4[§cAFK§4]";
 
 	boolean afk;
 	String lastAction;

@@ -43,7 +43,7 @@ public class HologramsCommand extends ComplexCommand {
 	public void list(CommandContext cmd) {
 		StringJoiner joiner = new StringJoiner("\n", "Liste des hologrammes persistants sur ce serveur :\n", "");
 		holograms.holograms.values().stream().filter(Hologram::isPersistent).forEach(holo -> {
-			joiner.add("§b§l" + holo.getID() + "§3 - §b" + holo.toString() + "§3 - §b" + SpigotUtils.convertLocationToString(holo.getBottom()));
+			joiner.add("§b§l" + holo.getID() + "§3 - §b" + holo.toString() + "§3 - §b" + SpigotUtils.convertLocationToHumanString(holo.getBottom()));
 		});
 		sendInfo(joiner.toString());
 	}
