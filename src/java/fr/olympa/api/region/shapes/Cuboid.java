@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -105,7 +106,7 @@ public class Cuboid extends AbstractRegion {
 
 	@Override
 	public Location getRandomLocation() {
-		final Random rand = new Random();
+		final Random rand = ThreadLocalRandom.current();
 		final int x = rand.nextInt(getXWidth()) + this.xMin;
 		final int y = rand.nextInt(getHeight()) + this.yMin;
 		final int z = rand.nextInt(getZWidth()) + this.zMin;

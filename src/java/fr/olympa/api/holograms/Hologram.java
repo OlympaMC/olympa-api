@@ -165,6 +165,7 @@ public class Hologram extends AbstractObservable {
 		
 		private void spawnEntity() {
 			if (entity != null) return;
+			if (!bottom.getChunk().isLoaded()) return;
 			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);

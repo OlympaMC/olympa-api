@@ -25,6 +25,10 @@ public abstract class AbstractProtectionFlag extends Flag {
 	public void setProtectedByDefault(boolean protectedByDefault) {
 		this.protectedByDefault = protectedByDefault;
 	}
+	
+	protected boolean applies(Player player) {
+		return overrideBypassProtection || player == null || !BypassCommand.bypasses.contains(player);
+	}
 
 	protected void handleCancellable(Cancellable event) {
 		handleCancellable(event, null, protectedByDefault);
@@ -35,7 +39,7 @@ public abstract class AbstractProtectionFlag extends Flag {
 	}
 	
 	protected void handleCancellable(Cancellable event, Player player, boolean cancel) {
-		if (overrideBypassProtection || player == null || !BypassCommand.bypasses.contains(player)) event.setCancelled(cancel);
+		if (applies(player)) event.setCancelled(cancel);
 	}
 
 }

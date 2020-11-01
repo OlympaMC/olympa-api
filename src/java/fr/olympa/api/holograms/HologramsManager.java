@@ -38,22 +38,27 @@ public class HologramsManager implements Listener {
 
 	public HologramsManager(File hologramsFile) throws IOException {
 		this.hologramsFile = hologramsFile;
-		unload();
 
 		//		hologramsFile.getParentFile().mkdirs();
 		//		hologramsFile.createNewFile();
 
+		Map<Integer, Map<String, Object>> toDeserialize = new HashMap<>();
+		
+		hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
+		hologramsYaml.load();
+		for (String key : hologramsYaml.getKeys(false)) {
+			int id = Integer.parseInt(key);
+			lastID = Math.max(id + 1, lastID);
+			toDeserialize.put(id, hologramsYaml.getConfigurationSection(key).getValues(false));
+		}
+		
 		Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> {
-			hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
-			hologramsYaml.load();
-			for (String key : hologramsYaml.getKeys(false)) {
-				int id = Integer.parseInt(key);
-				lastID = Math.max(id + 1, lastID);
-				Hologram hologram = Hologram.deserialize(hologramsYaml.getConfigurationSection(key).getValues(false), id, true);
+			toDeserialize.forEach((id, map) -> {
+				Hologram hologram = Hologram.deserialize(map, id, true);
 				holograms.put(id, hologram);
 				Observer update = updateHologram(id, hologram);
 				hologram.observe("manager_save", update);
-			}
+			});
 		});
 
 	}

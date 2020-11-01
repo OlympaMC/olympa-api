@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public class Polygon extends AbstractRegion {
 
 	@Override
 	public Location getRandomLocation() {
-		Random ran = new Random();
+		Random ran = ThreadLocalRandom.current();
 		int x, z;
 		int y = ran.nextInt(maxY - minY) + minY;
 		int xDistance = max.getBlockX() - min.getBlockX();
