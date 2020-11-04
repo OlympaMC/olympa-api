@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 // https://wiki.vg/Protocol_version_numbers
 public enum ProtocolAPI {
 
+	V1_16_4(754),
 	V1_16_3(753),
 	V1_16_2(751),
 	V1_16_1(736),

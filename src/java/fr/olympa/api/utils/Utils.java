@@ -237,17 +237,17 @@ public class Utils {
 
 	public static String intToSymbole(int i) {
 		return String.valueOf(i)
-				.replaceAll("10", "➓")
-				.replaceAll("0", "")
-				.replaceAll("1", "➊")
-				.replaceAll("2", "➋")
-				.replaceAll("3", "➌")
-				.replaceAll("4", "➍")
-				.replaceAll("5", "➎")
-				.replaceAll("6", "➏")
-				.replaceAll("7", "➐")
-				.replaceAll("8", "➑")
-				.replaceAll("9", "➒");
+				.replace("10", "➓")
+				.replace("0", "")
+				.replace("1", "➊")
+				.replace("2", "➋")
+				.replace("3", "➌")
+				.replace("4", "➍")
+				.replace("5", "➎")
+				.replace("6", "➏")
+				.replace("7", "➐")
+				.replace("8", "➑")
+				.replace("9", "➒");
 	}
 
 	public static boolean isJSONValid(String jsonInString) {
@@ -268,9 +268,7 @@ public class Utils {
 	}
 
 	public static String removeAccents(String text) {
-		return text == null ? null
-				: Normalizer.normalize(text, Form.NFD)
-						.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+		return text == null ? null : Normalizer.normalize(text, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
 	public static boolean isEmpty(String string) {

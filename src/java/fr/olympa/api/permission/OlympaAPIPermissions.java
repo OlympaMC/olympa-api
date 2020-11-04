@@ -24,5 +24,9 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission TP_COMMAND = new OlympaPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaPermission GAMEMODE_COMMAND_CREATIVE = new OlympaPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaPermission FLY_COMMAND = new OlympaPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaPermission INVSEE_COMMAND = new OlympaPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaPermission INVSEE_COMMAND_INTERACT = new OlympaPermission(OlympaGroup.MODP);
+	public static final OlympaPermission ECSEE_COMMAND = new OlympaPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaPermission ECSEE_COMMAND_INTERACT = new OlympaPermission(OlympaGroup.MODP);
 
 }
