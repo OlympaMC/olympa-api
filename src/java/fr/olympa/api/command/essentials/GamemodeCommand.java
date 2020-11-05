@@ -88,17 +88,17 @@ public class GamemodeCommand extends OlympaCommand {
 			gm = Gm.getByStartWith(label.substring(2));
 		String targetName = null;
 		if (gm == null) {
-			if (args.length == 1) {
-				target = Bukkit.getPlayer(args[0]);
-				if (target == null) {
-					sendUnknownPlayer(args[0]);
-					return false;
-				}
-				sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est en gamemode &2%s&a.", target.getName(), Gm.get(target.getGameMode()).getName());
-				return true;
-			}
+
 			if (args.length < 2 || (gm = Gm.get(args[0])) == null) {
-				sendUsage(label);
+				if (args.length >= 1) {
+					target = Bukkit.getPlayer(args[0]);
+					if (target == null) {
+						sendUnknownPlayer(args[0]);
+						return false;
+					}
+					sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est en gamemode &2%s&a.", target.getName(), Gm.get(target.getGameMode()).getName());
+					return true;
+				}
 				return false;
 			}
 			targetName = args[1];
