@@ -98,7 +98,7 @@ public class OlympaCore extends OlympaSpigot {
 
 		try {
 			pluginManager.registerEvents(holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml")), this);
-		} catch (IOException e) {
+		}catch (IOException | ReflectiveOperationException e) {
 			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
 			e.printStackTrace();
 		}

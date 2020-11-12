@@ -2,6 +2,7 @@ package fr.olympa.api.holograms;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +10,12 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
@@ -21,22 +25,29 @@ import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.api.utils.observable.Observable.Observer;
 import fr.olympa.core.spigot.OlympaCore;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.server.v1_15_R1.EntityTypes;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
 
 public class HologramsManager implements Listener {
 
-	private Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
+	private final Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
 
 	Map<Integer, Hologram> holograms = new HashMap<>();
 	private int lastID = 0;
 
-	private File hologramsFile;
-	private CustomConfig hologramsYaml;
+	private final File hologramsFile;
+	private final CustomConfig hologramsYaml;
+	
+	private final Field entityType = PacketPlayOutSpawnEntity.class.getDeclaredField("k");
+	private final Field entityID = PacketPlayOutSpawnEntity.class.getDeclaredField("a");
 
 	public File getFile() {
 		return hologramsFile;
 	}
 
-	public HologramsManager(File hologramsFile) throws IOException {
+	public HologramsManager(File hologramsFile) throws IOException, ReflectiveOperationException {
 		this.hologramsFile = hologramsFile;
 
 		//		hologramsFile.getParentFile().mkdirs();
@@ -60,7 +71,9 @@ public class HologramsManager implements Listener {
 				hologram.observe("manager_save", update);
 			});
 		});
-
+		
+		entityType.setAccessible(true);
+		entityID.setAccessible(true);
 	}
 
 	public Hologram createHologram(Location location, boolean persistent, AbstractLine<HologramLine>... lines) {
@@ -138,6 +151,31 @@ public class HologramsManager implements Listener {
 				if (hologram != null)
 					hologram.spawnEntities();
 			}
+	}
+	
+	@EventHandler (priority = EventPriority.LOWEST)
+	public void onJoin(PlayerJoinEvent e) {
+		((CraftPlayer) e.getPlayer()).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", "holograms_visibilty", new ChannelDuplexHandler() {
+			
+			@Override
+			public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
+				if (msg instanceof PacketPlayOutSpawnEntity) {
+					PacketPlayOutSpawnEntity packet = (PacketPlayOutSpawnEntity) msg;
+					if (entityType.get(packet) == EntityTypes.ARMOR_STAND) {
+						int id = entityID.getInt(packet);
+						for (Hologram holo : holograms.values()) {
+							if (holo.containsArmorStand(id)) {
+								if (!holo.isVisibleTo(e.getPlayer())) {
+									System.out.println("HologramsManager.onJoin(...).new ChannelDuplexHandler() {...}.write() cancelled hologram");
+									return; // return = cancel le packet
+								}
+							}
+						}
+					}
+				}
+				super.write(ctx, msg, promise);
+			}
+		});
 	}
 
 }

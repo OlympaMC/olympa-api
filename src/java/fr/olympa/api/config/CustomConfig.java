@@ -125,7 +125,7 @@ public class CustomConfig extends YamlConfiguration {
 	public void loadUnSafe() throws FileNotFoundException, IOException, InvalidConfigurationException {
 		File folder = configFile.getParentFile();
 		if (!folder.exists())
-			folder.mkdir();
+			folder.mkdirs();
 		InputStream resource = getRessource();
 		if (!configFile.exists() || Utils.isEmptyFile(configFile)) {
 			configFile.createNewFile();

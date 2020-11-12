@@ -2,14 +2,19 @@ package fr.olympa.api.holograms;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftArmorStand;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import fr.olympa.api.lines.AbstractLine;
@@ -18,10 +23,15 @@ import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
+import net.minecraft.server.v1_15_R1.EntityArmorStand;
+import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
 
 public class Hologram extends AbstractObservable {
 
 	private static final double LINE_SPACING = 0.3;
+	private static final int VISIBILITY_DISTANCE_SQUARED = 64 * 64;
 
 	private final List<HologramLine> lines = new ArrayList<>();
 	private Location bottom;
@@ -29,6 +39,9 @@ public class Hologram extends AbstractObservable {
 	private final int id;
 	private final FixedMetadataValue entityMetadata;
 	private final boolean persistent;
+	
+	private boolean defaultVisibility = true;
+	private final Set<Player> players = new HashSet<>();
 	
 	Hologram(int id, Location bottom, boolean persistent, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
@@ -64,9 +77,31 @@ public class Hologram extends AbstractObservable {
 		return persistent;
 	}
 	
-	public boolean containsArmorStand(ArmorStand stand) {
+	public void setDefaultVisibility(boolean defaultVisibility) {
+		this.defaultVisibility = defaultVisibility;
+	}
+	
+	public void show(Player p) {
+		if (defaultVisibility) {
+			if (!players.remove(p)) return;
+		}else if (!players.add(p)) return;
+		if (isNear(p)) lines.forEach(line -> line.showTo(p));
+	}
+	
+	public void hide(Player p) {
+		if (defaultVisibility) {
+			if (!players.add(p)) return;
+		}else if (!players.remove(p)) return;
+		if (isNear(p)) lines.forEach(line -> line.hideTo(p));
+	}
+	
+	public boolean isVisibleTo(Player p) {
+		return defaultVisibility != players.contains(p);
+	}
+	
+	public boolean containsArmorStand(int entityID) {
 		for (HologramLine line : lines) {
-			if (line.entity.equals(stand)) return true;
+			if (line.entity.getEntityId() == entityID) return true;
 		}
 		return false;
 	}
@@ -115,6 +150,10 @@ public class Hologram extends AbstractObservable {
 		setBottom(newBottom);
 		lines.forEach(HologramLine::updatePosition);
 		update();
+	}
+	
+	private boolean isNear(Player player) {
+		return player.isOnline() && player.getWorld().equals(bottom.getWorld()) && player.getLocation().distanceSquared(getBottom()) < VISIBILITY_DISTANCE_SQUARED;
 	}
 
 	@Override
@@ -172,6 +211,7 @@ public class Hologram extends AbstractObservable {
 			entity.setSmall(true);
 			entity.setVisible(false);
 			entity.setInvulnerable(true);
+			entity.getEntityId();
 			entity.setPersistent(false);
 			entity.setMetadata("hologram", entityMetadata);
 			update(line, line.getValue(this));
@@ -202,6 +242,18 @@ public class Hologram extends AbstractObservable {
 				entity.setCustomNameVisible(true);
 				entity.setCustomName(newValue);
 			}else entity.setCustomNameVisible(false);
+		}
+		
+		private void hideTo(Player p) {
+			if (entity == null) return;
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entity.getEntityId()));
+		}
+		
+		private void showTo(Player p) {
+			if (entity == null) return;
+			EntityArmorStand nmsEntity = ((CraftArmorStand) entity).getHandle();
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(nmsEntity));
+			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(nmsEntity.getId(), nmsEntity.getDataWatcher(), true));
 		}
 	}
 
