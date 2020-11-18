@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -102,6 +104,20 @@ public class HologramsCommand extends ComplexCommand {
 		}catch (IndexOutOfBoundsException ex) {
 			sendError("Il n'y a pas de ligne avec cet ID.");
 		}
+	}
+	
+	@Cmd (min = 2, args = { "PERSHOLOGRAM", "PLAYERS", "BOOLEAN" }, syntax = "<id de l'hologramme> <joueur> [visibilité]")
+	public void visibility(CommandContext cmd) {
+		Hologram hologram = cmd.getArgument(0);
+		Player p = cmd.getArgument(1);
+		boolean visibility;
+		if (cmd.getArgumentsLength() > 2) {
+			visibility = cmd.getArgument(2);
+		}else {
+			visibility = !hologram.isVisibleTo(p);
+		}
+		hologram.setVisibility(p, visibility);
+		sendSuccess("L'hologramme est désormais %s pour le joueur %s.", visibility ? "visible" : "invisible", p.getName());
 	}
 	
 	/*@Cmd (min = 1, args = "WORLD", syntax = "<world>")
