@@ -107,7 +107,10 @@ public interface OlympaTask {
 	Object getTask(int id);
 
 	default Object getTask(String taskName) {
-		return getTask(getTaskIdByName(taskName));
+		Integer taskId = getTaskIdByName(taskName);
+		if (taskId != null)
+			return getTask(taskId);
+		return null;
 	}
 
 }

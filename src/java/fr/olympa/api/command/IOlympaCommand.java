@@ -50,6 +50,10 @@ public interface IOlympaCommand {
 		sendError("Une erreur est survenu ¯\\_(ツ)_/¯");
 	}
 
+	default void sendError(Throwable throwable) {
+		sendError("Une erreur est survenu ¯\\_(ツ)_/¯ %s", throwable.getMessage());
+	}
+
 	void broadcast(Prefix prefix, String text, Object... args);
 
 	void broadcastToAll(Prefix prefix, String text, Object... args);

@@ -49,6 +49,13 @@ public class RegexMatcher {
 		}
 		return null;
 	}, Integer.class);
+	public static final MatcherPattern LONG = new MatcherPattern("-?\\d+", x -> {
+		try {
+			return Long.parseLong(x);
+		} catch (NumberFormatException e) {
+		}
+		return null;
+	}, Long.class);
 	//	public static MatcherPattern DATE = new MatcherPattern("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 	//	public static MatcherPattern DOUBLE = new MatcherPattern("-?\\d+(.\\d+)?", Double::parseDouble, Double.class);
 	//	public static MatcherPattern INT = new MatcherPattern("-?\\d+", Integer::parseInt, Integer.class);
