@@ -81,6 +81,12 @@ public class Hologram extends AbstractObservable {
 		this.defaultVisibility = defaultVisibility;
 	}
 	
+	public void setVisibility(Player p, boolean visibility) {
+		if (visibility) {
+			show(p);
+		}else hide(p);
+	}
+	
 	public void show(Player p) {
 		if (defaultVisibility) {
 			if (!players.remove(p)) return;
