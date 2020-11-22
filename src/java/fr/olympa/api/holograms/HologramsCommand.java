@@ -37,7 +37,7 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd (player = true, min = 1, syntax = "<lignes séparées par des |>")
 	public void create(CommandContext cmd) {
 		String[] linesStrings = cmd.getFrom(0).split("\\|");
-		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), true, Arrays.stream(linesStrings).map(this::createLine).toArray(AbstractLine[]::new)).getID();
+		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), true, true, Arrays.stream(linesStrings).map(this::createLine).toArray(AbstractLine[]::new)).getID();
 		sendSuccess("Hologramme %d créé.", id);
 	}
 

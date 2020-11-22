@@ -40,15 +40,16 @@ public class Hologram extends AbstractObservable {
 	private final FixedMetadataValue entityMetadata;
 	private final boolean persistent;
 	
-	private boolean defaultVisibility = true;
+	private final boolean defaultVisibility;
 	private final Set<Player> players = new HashSet<>();
 	
-	Hologram(int id, Location bottom, boolean persistent, AbstractLine<HologramLine>... lines) {
+	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
 		
 		this.id = id;
 		this.entityMetadata = new FixedMetadataValue(OlympaCore.getInstance(), id);
 		this.persistent = persistent;
+		this.defaultVisibility = defaultVisibility;
 
 		for (AbstractLine<HologramLine> line : lines) {
 			addLine(line);
@@ -75,10 +76,6 @@ public class Hologram extends AbstractObservable {
 	
 	public boolean isPersistent() {
 		return persistent;
-	}
-	
-	public void setDefaultVisibility(boolean defaultVisibility) {
-		this.defaultVisibility = defaultVisibility;
 	}
 	
 	public void setVisibility(Player p, boolean visibility) {
@@ -197,7 +194,7 @@ public class Hologram extends AbstractObservable {
 	}
 
 	static Hologram deserialize(Map<String, Object> map, int id, boolean persistent) {
-		return new Hologram(id, SpigotUtils.convertStringToLocation((String) map.get("bottom")), persistent, ((List<AbstractLine<HologramLine>>) map.get("lines")).toArray(AbstractLine[]::new));
+		return new Hologram(id, SpigotUtils.convertStringToLocation((String) map.get("bottom")), persistent, true, ((List<AbstractLine<HologramLine>>) map.get("lines")).toArray(AbstractLine[]::new));
 	}
 
 	public class HologramLine implements LinesHolder<HologramLine> {

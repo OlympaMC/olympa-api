@@ -58,6 +58,7 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import com.google.common.collect.Sets;
 
+import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.WorldRegion;
@@ -246,7 +247,11 @@ public class RegionManager implements Listener {
 			lastRegions = applicable;
 			old = location;
 		}
-		if (old != e.getFrom()) inRegions.put(player, lastRegions);
+		if (old != e.getFrom()) {
+			inRegions.put(player, lastRegions);
+			AsyncPlayerMoveRegionsEvent event = new AsyncPlayerMoveRegionsEvent(player, lastRegions);
+			Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
+		}
 	}
 
 	@EventHandler

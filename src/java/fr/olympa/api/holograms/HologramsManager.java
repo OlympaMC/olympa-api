@@ -75,10 +75,10 @@ public class HologramsManager implements Listener {
 		entityType.setAccessible(true);
 		entityID.setAccessible(true);
 	}
-
-	public Hologram createHologram(Location location, boolean persistent, AbstractLine<HologramLine>... lines) {
+	
+	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		int id = lastID++;
-		Hologram hologram = new Hologram(id, location, persistent, lines);
+		Hologram hologram = new Hologram(id, location, persistent, defaultVisibility, lines);
 		holograms.put(id, hologram);
 		if (persistent) {
 			Observer update = updateHologram(id, hologram);

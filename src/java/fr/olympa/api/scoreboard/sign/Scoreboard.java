@@ -14,7 +14,6 @@ import com.google.common.collect.Iterables;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.core.spigot.OlympaCore;
 
 // TODO gestion multi scoreboard
 public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesHolder<Scoreboard<T>> {
@@ -143,7 +142,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 				}else condition.await();
 				updateScoreboard();
 			} catch (InterruptedException e) {
-				OlympaCore.getInstance().sendMessage("Boucle du scoreboard de " + p.getName() + " interrompue.");
+				//OlympaCore.getInstance().sendMessage("Boucle du scoreboard de " + p.getName() + " interrompue.");
 				return;
 			} finally {
 				lock.unlock();
