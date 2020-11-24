@@ -14,6 +14,7 @@ public class AsyncPlayerMoveRegionsEvent extends Event {
 	private Set<TrackedRegion> regions;
 	
 	public AsyncPlayerMoveRegionsEvent(Player who, Set<TrackedRegion> regions) {
+		super(true);
 		this.who = who;
 		this.regions = regions;
 	}

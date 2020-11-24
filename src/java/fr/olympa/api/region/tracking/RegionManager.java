@@ -210,6 +210,7 @@ public class RegionManager implements Listener {
 		Player player = e.getPlayer();
 
 		Set<TrackedRegion> lastRegions = inRegions.get(player);
+		boolean madeChange = false;
 		
 		List<Location> locations = e.getFrom().getWorld() == e.getTo().getWorld() ? SpigotUtils.getLocationsBetween(e.getFrom(), e.getTo(), true) : Arrays.asList(e.getTo());
 		
@@ -244,13 +245,15 @@ public class RegionManager implements Listener {
 			if (result == ActionResult.DENY) break;
 			if (result == ActionResult.TELEPORT_ELSEWHERE) return;
 			
+			if (!entered.isEmpty() || !exited.isEmpty()) madeChange = true;
 			lastRegions = applicable;
 			old = location;
 		}
-		if (old != e.getFrom()) {
+		if (old != e.getFrom() && madeChange) {
 			inRegions.put(player, lastRegions);
-			AsyncPlayerMoveRegionsEvent event = new AsyncPlayerMoveRegionsEvent(player, lastRegions);
-			Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
+			final Set<TrackedRegion> regions = lastRegions;
+			System.out.println("Change region");
+			Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new AsyncPlayerMoveRegionsEvent(player, regions)));
 		}
 	}
 
