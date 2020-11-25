@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 
+import fr.olympa.api.utils.ColorUtils;
+
 // https://wiki.vg/Protocol_version_numbers
 public enum ProtocolAPI {
 
@@ -101,7 +103,7 @@ public enum ProtocolAPI {
 
 	public static String getVersionSupportedToString() {
 		List<String> vers = getVersionSupported();
-		return vers.isEmpty() ? null : String.join(", ", vers);
+		return vers.isEmpty() ? null : ColorUtils.join(vers);
 	}
 
 	public static String[] getVersionSupportedArray() {
