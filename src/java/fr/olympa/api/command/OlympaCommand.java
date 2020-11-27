@@ -23,6 +23,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Reflection;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -125,23 +126,26 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	public OlympaPermission getOlympaPermission() {
 		return permission;
 	}
-	
+
 	@Override
 	public boolean hasPermission() {
-		if (isConsole()) return true;
+		if (isConsole())
+			return true;
 		return IOlympaCommand.super.hasPermission();
 	}
-	
+
 	@Override
 	public boolean hasPermission(OlympaPermission perm) {
-		if (isConsole()) return true;
+		if (isConsole())
+			return true;
 		return IOlympaCommand.super.hasPermission(perm);
 	}
-	
+
 	public boolean hasPermission(CommandSender sender) {
-		if (sender instanceof Player) {
+		if (sender instanceof Player)
 			return hasPermission(AccountProvider.<OlympaPlayer>get(((Player) sender).getUniqueId()));
-		}else return isConsoleAllowed();
+		else
+			return isConsoleAllowed();
 	}
 
 	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
@@ -217,7 +221,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	}
 
 	public void sendHelp(CommandSender sender) {
-		Prefix.DEFAULT.sendMessage(sender, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + String.join(", ", aliases) + ")"));
+		Prefix.DEFAULT.sendMessage(sender, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + ColorUtils.joinGoldEt(aliases) + ")"));
 		if (description != null)
 			Prefix.DEFAULT.sendMessage(sender, "§e%s", description);
 	}
