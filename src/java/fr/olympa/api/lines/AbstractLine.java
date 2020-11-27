@@ -3,6 +3,7 @@ package fr.olympa.api.lines;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class AbstractLine<T extends LinesHolder<T>> {
 
@@ -16,6 +17,10 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 
 	public void removeHolder(T holder) {
 		holders.remove(holder);
+	}
+	
+	public Set<T> getHolders() {
+		return holders.keySet();
 	}
 
 	public void updateGlobal() {

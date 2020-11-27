@@ -4,13 +4,34 @@ import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 
+	private final Plugin plugin;
+	private final int ticks;
+	
+	private BukkitTask task = null;
+	
 	public TimerLine(Function<T, String> value, Plugin plugin, int ticks) {
 		super(value);
-		
-		Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateGlobal, 1, ticks);
+		this.plugin = plugin;
+		this.ticks = ticks;
+	}
+	
+	@Override
+	public void addHolder(T holder) {
+		super.addHolder(holder);
+		if (task == null) task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateGlobal, 1, ticks);
 	}
 
+	@Override
+	public void removeHolder(T holder) {
+		super.removeHolder(holder);
+		if (getHolders().isEmpty() && task != null) {
+			task.cancel();
+			task = null;
+		}
+	}
+	
 }
