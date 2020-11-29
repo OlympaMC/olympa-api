@@ -1,6 +1,8 @@
 package fr.olympa.api.auctions.gui;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -29,10 +31,14 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 	private Random random = new Random();
 	private BukkitTask colorTask;
 	
-	public AuctionsGUI(AuctionsManager manager) {
+	public AuctionsGUI(AuctionsManager manager, T player) {
 		super("Hôtel des Ventes", DyeColor.CYAN, manager.getOngoingAuctions(), 5);
 		this.manager = manager;
-		setBarItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets"));
+		List<Auction> myAuctions = manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList());
+		long ongoing = myAuctions.stream().filter(Auction::isOngoing).count();
+		setBarItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets", 
+				"§8> §7" + ongoing + " enchères en cours", "§8> §7" + (myAuctions.size() - ongoing) + " enchères terminées"
+				));
 		
 		colorTask = Bukkit.getScheduler().runTaskTimer(OlympaCore.getInstance(), () -> setSeparatorItems(PRETTY_COLORS[random.nextInt(PRETTY_COLORS.length)]), 20, 20);
 	}

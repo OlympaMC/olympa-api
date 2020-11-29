@@ -133,7 +133,7 @@ public class AuctionsManager {
 	}
 
 	public <T extends MoneyPlayerInterface> void openAuctionsGUI(Player p) {
-		new AuctionsGUI<T>(this).create(p);
+		new AuctionsGUI<T>(this, AccountProvider.get(p.getUniqueId())).create(p);
 	}
 
 	public void openAuctionCreationGUI(Player p) {

@@ -28,7 +28,8 @@ import fr.olympa.core.spigot.OlympaCore;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_15_R1.IRegistry;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
 
 public class HologramsManager implements Listener {
 
@@ -40,8 +41,9 @@ public class HologramsManager implements Listener {
 	private final File hologramsFile;
 	private final CustomConfig hologramsYaml;
 	
-	private final Field entityType = PacketPlayOutSpawnEntity.class.getDeclaredField("k");
-	private final Field entityID = PacketPlayOutSpawnEntity.class.getDeclaredField("a");
+	private final Field entityType = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("c");
+	private final Field entityID = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
+	private final int armorStandEntityType = IRegistry.ENTITY_TYPE.a(EntityTypes.ARMOR_STAND);
 
 	public File getFile() {
 		return hologramsFile;
@@ -159,19 +161,21 @@ public class HologramsManager implements Listener {
 			
 			@Override
 			public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-				if (msg instanceof PacketPlayOutSpawnEntity) {
-					PacketPlayOutSpawnEntity packet = (PacketPlayOutSpawnEntity) msg;
-					if (entityType.get(packet) == EntityTypes.ARMOR_STAND) {
-						int id = entityID.getInt(packet);
-						for (Hologram holo : holograms.values()) {
-							if (holo.containsArmorStand(id)) {
-								if (!holo.isVisibleTo(e.getPlayer())) {
-									System.out.println("HologramsManager.onJoin(...).new ChannelDuplexHandler() {...}.write() cancelled hologram");
-									return; // return = cancel le packet
+				try {
+					if (msg instanceof PacketPlayOutSpawnEntityLiving) {
+						PacketPlayOutSpawnEntityLiving packet = (PacketPlayOutSpawnEntityLiving) msg;
+						if (entityType.getInt(packet) == armorStandEntityType) {
+							int id = entityID.getInt(packet);
+							for (Hologram holo : holograms.values()) {
+								if (holo.containsArmorStand(id)) {
+									if (!holo.isVisibleTo(e.getPlayer())) return; // return = cancel le packet
 								}
 							}
 						}
 					}
+				}catch (Exception ex) {
+					OlympaCore.getInstance().sendMessage("§cUne erreur est survenue lors de la gestion des entités hologrammes.");
+					ex.printStackTrace();
 				}
 				super.write(ctx, msg, promise);
 			}

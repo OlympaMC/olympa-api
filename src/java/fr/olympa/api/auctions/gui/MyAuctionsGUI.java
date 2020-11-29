@@ -25,7 +25,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 
 	public MyAuctionsGUI(AuctionsManager manager, MoneyPlayerInterface player) {
 		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 4);
-		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes"));
+		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes", "§8> §7" + manager.getOngoingAuctions().size() + " enchères en cours"));
 		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§b✦ Vendre un objet"));
 		this.manager = manager;
 		this.player = player;

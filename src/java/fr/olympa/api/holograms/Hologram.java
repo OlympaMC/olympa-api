@@ -104,7 +104,7 @@ public class Hologram extends AbstractObservable {
 	
 	public boolean containsArmorStand(int entityID) {
 		for (HologramLine line : lines) {
-			if (line.entity.getEntityId() == entityID) return true;
+			if (line.entity != null && (line.entity.getEntityId() == entityID)) return true;
 		}
 		return false;
 	}

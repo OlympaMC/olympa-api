@@ -252,7 +252,6 @@ public class RegionManager implements Listener {
 		if (old != e.getFrom() && madeChange) {
 			inRegions.put(player, lastRegions);
 			final Set<TrackedRegion> regions = lastRegions;
-			System.out.println("Change region");
 			Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> Bukkit.getPluginManager().callEvent(new AsyncPlayerMoveRegionsEvent(player, regions)));
 		}
 	}

@@ -68,6 +68,10 @@ public class Auction {
 	public boolean hasExpired() {
 		return expiration < System.currentTimeMillis();
 	}
+	
+	public boolean isOngoing() {
+		return !(hasExpired() || bought);
+	}
 
 	public String getTimeBeforeExpiration() {
 		long time = expiration - System.currentTimeMillis();
