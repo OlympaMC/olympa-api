@@ -1,8 +1,8 @@
 package fr.olympa.api.groups;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,7 +68,7 @@ public enum OlympaGroup {
 	final String chatSuffix;
 	private boolean highStaff;
 
-	public List<String> runtimePermissions = new ArrayList<>();
+	public Map<String, Boolean> runtimePermissions = new HashMap<>();
 
 	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff) {
 		this.id = id;
@@ -147,4 +147,17 @@ public enum OlympaGroup {
 	public OlympaServer getServer() {
 		return server;
 	}
+	
+	public void setRuntimePermission(String permission) {
+		runtimePermissions.put(permission, true);
+	}
+	
+	public void setRuntimePermission(String permission, boolean value) {
+		runtimePermissions.put(permission, value);
+	}
+	
+	public void unsetRuntimePermission(String permission) {
+		runtimePermissions.remove(permission);
+	}
+	
 }

@@ -47,7 +47,7 @@ public class DataManagmentListener implements Listener {
 		event.setJoinMessage(ColorUtils.color("&7[&a+&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
 		
 		PermissionAttachment attachment = player.addAttachment(OlympaCore.getInstance());
-		olympaPlayer.getGroups().keySet().forEach(group -> group.runtimePermissions.forEach(perm -> attachment.setPermission(perm, true)));
+		olympaPlayer.getGroups().keySet().forEach(group -> group.runtimePermissions.forEach((perm, value) -> attachment.setPermission(perm, value)));
 		player.recalculatePermissions();
 		
 		OlympaPlayerLoadEvent loginevent = new OlympaPlayerLoadEvent(player, olympaPlayer, false);
