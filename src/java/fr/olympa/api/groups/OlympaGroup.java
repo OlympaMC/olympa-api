@@ -32,9 +32,10 @@ public enum OlympaGroup {
 	FRIEND(16, 42, OlympaServer.ALL, "Ami", "Amie", "&e%s ", ":&r", false),
 	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
 	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
+	VIP(19, 30, OlympaServer.ALL, "VIP", "VIP", "&6%s", ":&r", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false),
-	MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
 
+	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
 	CREA_CONSTRUCTOR(22, 1, OlympaServer.CREATIF, "Constructeur", "Constructrice", "&9%s ", ":&r", false),
 	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%s ", ":&r", false),
 	CREA_CREATOR(24, 3, OlympaServer.CREATIF, "Créateur", "Créatrice", "&6%s ", ":&r", false);
