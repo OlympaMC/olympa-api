@@ -13,6 +13,7 @@ import java.net.URL;
 import java.text.Collator;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -47,6 +48,28 @@ public class Utils {
 		Collections.shuffle(list);
 		return list;
 	});
+	
+	public static String durationToString(NumberFormat numberFormat, long time) {
+		StringBuilder sb = new StringBuilder();
+		
+		long days = time / 86_400_000;
+		if (days != 0) sb.append(numberFormat.format(days)).append('J');
+		time -= days * 86_400_000;
+		
+		long hours = time / 3_600_000;
+		if (sb.length() != 0) sb.append(' ');
+		sb.append(numberFormat.format(hours)).append("H ");
+		time -= hours * 3_600_000;
+		
+		long minutes = time / 60_000;
+		sb.append(numberFormat.format(minutes)).append("M ");
+		time -= minutes * 60_000;
+		
+		long seconds = time / 1_000;
+		sb.append(numberFormat.format(seconds)).append("S");
+		
+		return sb.toString();
+	}
 
 	public static long addTimeToCurrentTime(int field, int amount) {
 		Calendar calendar = Calendar.getInstance();
