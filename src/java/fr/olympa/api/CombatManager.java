@@ -17,10 +17,13 @@ import fr.olympa.api.utils.Prefix;
 
 public class CombatManager implements Listener {
 	
-	private Map<Player, CombatPlayer> inCombat = new HashMap<>();
+	private final OlympaAPIPlugin plugin;
 	private final int combatTime, combatTimeMillis;
 	
+	private final Map<Player, CombatPlayer> inCombat = new HashMap<>();
+	
 	public CombatManager(OlympaAPIPlugin plugin, int combatTime) {
+		this.plugin = plugin;
 		this.combatTime = combatTime;
 		this.combatTimeMillis = combatTime * 1000;
 		plugin.sendMessage("Lancement du système de combat...");
@@ -53,23 +56,27 @@ public class CombatManager implements Listener {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
-			getOrSetCombat(damaged).damager = damager;
+			getOrSetCombat(damaged).damageEvent = e;
 			getOrSetCombat(damager);
 		}
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		CombatPlayer combatPlayer = inCombat.get(e.getPlayer());
+		Player p = e.getPlayer();
+		CombatPlayer combatPlayer = inCombat.get(p);
 		if (combatPlayer != null) {
-			Prefix.DEFAULT_BAD.sendMessage(e.getPlayer(), "Tu t'es déconnecté en combat... Ton stuff est tombé par terre.");
-			e.getPlayer().damage(1000000, combatPlayer.damager);
+			inCombat.remove(p);
+			plugin.sendMessage("Le joueur §6%s §es'est déconnecté en combat.", p.getName());
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tu t'es déconnecté en combat... Ton stuff est tombé par terre."); // le message ne sera sûrement pas reçu (je pense ?)
+			p.setLastDamageCause(combatPlayer.damageEvent);
+			p.setHealth(0);
 		}
 	}
 	
 	class CombatPlayer {
 		private long lastDamage;
-		private Player damager;
+		private EntityDamageByEntityEvent damageEvent;
 	}
 	
 }
