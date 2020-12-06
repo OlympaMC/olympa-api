@@ -1,13 +1,14 @@
 package fr.olympa.api.lines;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractLine<T extends LinesHolder<T>> {
 
-	private Map<T, String> holders = new ConcurrentHashMap<>();
+	private Map<T, String> holders = Collections.synchronizedMap(new HashMap<>());
 
 	public abstract String getValue(T holder);
 	
