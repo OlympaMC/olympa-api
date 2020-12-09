@@ -71,6 +71,7 @@ public class CombatManager implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu t'es déconnecté en combat... Ton stuff est tombé par terre."); // le message ne sera sûrement pas reçu (je pense ?)
 			p.setLastDamageCause(combatPlayer.damageEvent);
 			p.setHealth(0);
+			p.spigot().respawn();
 		}
 	}
 	
