@@ -12,28 +12,32 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 
 public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
 	private Map<T, Scoreboard<T>> scoreboards = new HashMap<>();
 
-	Plugin plugin;
+	OlympaAPIPlugin plugin;
 	String displayName;
 	List<AbstractLine<Scoreboard<T>>> lines = new ArrayList<>();
 	List<AbstractLine<Scoreboard<T>>> footer = new ArrayList<>();
 
-	public ScoreboardManager(Plugin plugin, String displayName) {
+	public ScoreboardManager(OlympaAPIPlugin plugin, String displayName) {
 		this.plugin = plugin;
 		this.displayName = displayName;
 
 		Bukkit.getPluginManager().registerEvents(this, plugin);
+	}
+	
+	public OlympaAPIPlugin getPlugin() {
+		return plugin;
 	}
 
 	public ScoreboardManager<T> addLines(AbstractLine<Scoreboard<T>>... lines) {
