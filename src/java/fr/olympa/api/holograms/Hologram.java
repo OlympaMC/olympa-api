@@ -258,6 +258,11 @@ public class Hologram extends AbstractObservable {
 			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(nmsEntity));
 			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(nmsEntity.getId(), nmsEntity.getDataWatcher(), true));
 		}
+		
+		@Override
+		public String getName() {
+			return "hologramme #" + id;
+		}
 	}
 
 }

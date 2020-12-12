@@ -59,10 +59,10 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onJoin(OlympaPlayerLoadEvent e) {
-		create(e.getOlympaPlayer());
+		if (!scoreboards.containsKey(e.getOlympaPlayer())) create(e.getOlympaPlayer());
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent e) {
 		removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
 	}

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -51,9 +52,9 @@ public class CombatManager implements Listener {
 		return combatPlayer;
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+		if (!e.isCancelled() && e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
 			getOrSetCombat(damaged).damageEvent = e;
