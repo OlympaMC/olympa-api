@@ -121,6 +121,7 @@ public class AfkPlayer {
 			return;
 		
 		ListenedPacket lp = ListenedPacket.get(packet.getClass());
+		
 		if (lp == null)
 			return;
 		
