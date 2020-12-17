@@ -125,6 +125,11 @@ public class OlympaStatement {
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 
+	public OlympaStatement(String statement, String tableName, boolean returnGeneratedKeys) {
+		this.statement = String.format(statement, tableName);
+		this.returnGeneratedKeys = returnGeneratedKeys;
+	}
+
 	private PreparedStatement prepared;
 
 	public PreparedStatement getStatement() throws SQLException {
