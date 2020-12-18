@@ -2,6 +2,7 @@ package fr.olympa.api.provider;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import fr.olympa.api.player.OlympaAccount;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.player.OlympaPlayerProvider;
+import fr.olympa.api.sql.SQLColumn;
 
 public class AccountProvider implements OlympaAccount {
 
@@ -58,7 +60,7 @@ public class AccountProvider implements OlympaAccount {
 		throw new UnsupportedOperationException();
 	}
 
-	public static void setPlayerProvider(Class<? extends OlympaPlayerObject> playerClass, OlympaPlayerProvider provider, String pluginName, Map<String, String> columns) {
+	public static <T extends OlympaPlayer> void setPlayerProvider(Class<T> playerClass, OlympaPlayerProvider provider, String pluginName, List<SQLColumn<T>> columns) {
 		AccountProvider.provider = provider;
 	}
 

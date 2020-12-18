@@ -4,14 +4,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.utils.Prefix;
@@ -22,6 +24,7 @@ public class CombatManager implements Listener {
 	private final int combatTime, combatTimeMillis;
 	
 	private final Map<Player, CombatPlayer> inCombat = new HashMap<>();
+	private final BukkitTask task;
 	
 	public CombatManager(OlympaAPIPlugin plugin, int combatTime) {
 		this.plugin = plugin;
@@ -29,7 +32,7 @@ public class CombatManager implements Listener {
 		this.combatTimeMillis = combatTime * 1000;
 		plugin.sendMessage("Lancement du système de combat...");
 		
-		plugin.getTask().scheduleSyncRepeatingTask(() -> {
+		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 			for (Iterator<Entry<Player, CombatPlayer>> iterator = inCombat.entrySet().iterator(); iterator.hasNext();) {
 				Entry<Player, CombatPlayer> entry = iterator.next();
 				long elapsed = System.currentTimeMillis() - entry.getValue().lastDamage;
@@ -38,7 +41,17 @@ public class CombatManager implements Listener {
 					iterator.remove();
 				}
 			}
-		}, 1, 1, TimeUnit.SECONDS);
+		}, 20, 20);
+	}
+	
+	public void unload() {
+		HandlerList.unregisterAll(this);
+		task.cancel();
+		plugin.sendMessage("§cArrêt du mode combat (%d joueurs).", inCombat.size());
+		for (Player player : inCombat.keySet()) {
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Le mode combat est terminé. Tu peux maintenant te déconnecter sans risque.");
+		}
+		inCombat.clear();
 	}
 	
 	public CombatPlayer getOrSetCombat(Player p) {

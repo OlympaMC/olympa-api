@@ -1,6 +1,5 @@
 package fr.olympa.api.clans;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -25,8 +24,8 @@ import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
-import fr.olympa.api.sql.Column;
-import fr.olympa.api.sql.statement.OlympaStatement;
+import fr.olympa.api.sql.SQLColumn;
+import fr.olympa.api.sql.SQLTable;
 import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.observable.ObservableList;
@@ -44,13 +43,8 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	private Map<Player, ObservableList<T>> invitations = new HashMap<>();
 	public int defaultMaxSize;
 	
-	protected final String clansTable;
-	protected final String playersTable;
-	
-	private final OlympaStatement createClanStatement;
-	private final OlympaStatement removeClanStatement;
-	private final OlympaStatement insertPlayerInClanStatement;
-	private final OlympaStatement removePlayerInClanStatement;
+	protected final SQLTable<T> clansTable;
+	protected final SQLTable<D> playersTable;
 	
 	public String stringAlreadyInClan = "Ce joueur est déjà dans un clan.";
 	public String stringAlreadyInvited = "Tu as déjà invité ce joueur.";
@@ -87,40 +81,24 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
 	public String stringItemDisband = "§cDémenteler le clan";
 	
-	protected Column<T> nameColumn;
-	protected Column<T> chiefColumn;
-	protected Column<T> sizeColumn;
-	protected Column<T> moneyColumn;
+	protected SQLColumn<T> nameColumn;
+	protected SQLColumn<T> chiefColumn;
+	protected SQLColumn<T> sizeColumn;
+	protected SQLColumn<T> moneyColumn;
 	
 	public ClansManager(OlympaAPIPlugin plugin, String clansName, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
 		this.defaultMaxSize = defaultMaxSize;
 		
-		this.clansTable = "`" + clansName + "`";
-		this.playersTable = "`" + clansName + "_players`";
+		this.clansTable = new SQLTable<T>(clansName, addDBClansCollums(new ArrayList<>())).createOrAlter();
+		this.playersTable = new SQLTable<D>(clansName + "_players", addDBPlayersCollums(new ArrayList<>())).createOrAlter();
 		
-		List<Column<T>> clansCollums = addDBClansCollums(new ArrayList<>());
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + clansTable + " (" + Column.toParameters(clansCollums) + ")");
-		Column.setUpdatable(clansCollums, clansTable, "`id`", Types.INTEGER, T::getID);
-		
-		List<Column<D>> playersCollums = addDBPlayersCollums(new ArrayList<>());
-		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + playersTable + " (" + Column.toParameters(playersCollums) + ")");
-		Column.setUpdatable(playersCollums, playersTable, "`player_id`", Types.BIGINT, x -> x.getPlayerInformations().getId());
-		
-		createClanStatement = new OlympaStatement("INSERT INTO " + clansTable + " (`name`, `chief`) VALUES (?, ?)", true);
-		removeClanStatement = new OlympaStatement("DELETE FROM " + clansTable + " WHERE (`id` = ?)");
-		
-		insertPlayerInClanStatement = new OlympaStatement("INSERT INTO " + playersTable + " (`player_id`, `clan`) VALUES (?, ?)");
-		removePlayerInClanStatement = new OlympaStatement("DELETE FROM  " + playersTable + " WHERE (`player_id` = ?)");
-		
-		PreparedStatement getPlayersInClanStatement = new OlympaStatement("SELECT * FROM " + playersTable + " WHERE (`clan` = ?)").getStatement();
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable);
 		while (resultSet.next()) {
 			try {
 				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), AccountProvider.getPlayerInformations(resultSet.getLong("chief")), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
 				
-				getPlayersInClanStatement.setInt(1, clan.getID());
-				ResultSet playersSet = getPlayersInClanStatement.executeQuery();
+				ResultSet playersSet = playersTable.get(clan.getID());
 				while (playersSet.next()) {
 					D playerData = provideClanData(AccountProvider.getPlayerInformations(playersSet.getLong("player_id")), playersSet);
 					clan.members.put(playerData.getPlayerInformations(), playerData);
@@ -134,7 +112,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			}
 		}
 		resultSet.close();
-		getPlayersInClanStatement.close();
 		
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		nameTagApi.addNametagHandler(EventPriority.NORMAL, (nametag, player, to) -> {
@@ -177,30 +154,26 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	protected abstract D provideClanData(OlympaPlayerInformations informations, ResultSet resultSet) throws SQLException;
 	
-	public List<Column<T>> addDBClansCollums(List<Column<T>> columns) {
-		columns.add(new Column<T>("id", "int(11) unsigned NOT NULL AUTO_INCREMENT").setPrimaryKey(true));
-		columns.add(nameColumn = new Column<T>("name", "varchar(45) NOT NULL").setUpdatable(true));
-		columns.add(chiefColumn = new Column<T>("chief", "bigint(20) NOT NULL").setUpdatable(true));
-		columns.add(sizeColumn = new Column<T>("max_size", "tinyint(1) NOT NULL DEFAULT " + defaultMaxSize).setUpdatable(true));
-		columns.add(moneyColumn = new Column<T>("money", "DOUBLE NOT NULL DEFAULT 0").setUpdatable(true));
-		columns.add(new Column<T>("created", "DATE NOT NULL DEFAULT curdate()"));
+	public List<SQLColumn<T>> addDBClansCollums(List<SQLColumn<T>> columns) {
+		columns.add(new SQLColumn<T>("id", "int(11) unsigned NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(T::getID));
+		columns.add(nameColumn = new SQLColumn<T>("name", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable());
+		columns.add(chiefColumn = new SQLColumn<T>("chief", "bigint(20) NOT NULL", Types.BIGINT).setUpdatable());
+		columns.add(sizeColumn = new SQLColumn<T>("max_size", "tinyint(1) NOT NULL DEFAULT " + defaultMaxSize, Types.TINYINT).setUpdatable());
+		columns.add(moneyColumn = new SQLColumn<T>("money", "DOUBLE NOT NULL DEFAULT 0", Types.DOUBLE).setUpdatable());
+		columns.add(new SQLColumn<T>("created", "DATE NOT NULL DEFAULT curdate()", Types.DATE));
 		return columns;
 	}
 	
-	public List<Column<D>> addDBPlayersCollums(List<Column<D>> columns) {
-		columns.add(new Column<D>("player_id", "BIGINT NOT NULL").setPrimaryKey(true));
-		columns.add(new Column<D>("clan", "INT NOT NULL"));
+	public List<SQLColumn<D>> addDBPlayersCollums(List<SQLColumn<D>> columns) {
+		columns.add(new SQLColumn<D>("player_id", "BIGINT NOT NULL", Types.BIGINT).setPrimaryKey(player -> player.getPlayerInformations().getId()));
+		columns.add(new SQLColumn<D>("clan", "INT NOT NULL", Types.INTEGER));
 		return columns;
 	}
 	
 	/* SQL statements */
 	
 	public T createClan(ClanPlayerInterface<T, D> p, String name) throws SQLException {
-		PreparedStatement statement = createClanStatement.getStatement();
-		statement.setString(1, name);
-		statement.setLong(2, p.getId());
-		statement.executeUpdate();
-		ResultSet resultSet = statement.getGeneratedKeys();
+		ResultSet resultSet = clansTable.insert(name, p.getId());
 		resultSet.next();
 		int id = resultSet.getInt(1);
 		resultSet.close();
@@ -214,9 +187,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public void removeClan(T clan) {
 		for (List<T> invits : invitations.values()) invits.remove(clan);
 		try {
-			PreparedStatement statement = removeClanStatement.getStatement();
-			statement.setInt(1, clan.getID());
-			statement.executeUpdate();
+			clansTable.delete(clan);
 			plugin.sendMessage("Clan " + clan.getName() + " supprimé.");
 			clans.remove(clan.getID());
 		}catch (SQLException ex) {
@@ -226,16 +197,11 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public void insertPlayerInClan(ClanPlayerInterface<T, D> p, Clan<T, D> clan) throws SQLException {
-		PreparedStatement statement = insertPlayerInClanStatement.getStatement();
-		statement.setLong(1, p.getId());
-		statement.setInt(2, clan.getID());
-		statement.executeUpdate();
+		playersTable.insert(p.getId(), clan.getID());
 	}
 	
-	public void removePlayerFromClan(OlympaPlayerInformations player) throws SQLException {
-		PreparedStatement statement = removePlayerInClanStatement.getStatement();
-		statement.setLong(1, player.getId());
-		statement.executeUpdate();
+	public void removePlayerFromClan(D player) throws SQLException {
+		playersTable.delete(player);
 	}
 	
 	public ClanManagementGUI<T, D> provideManagementGUI(ClanPlayerInterface<T, D> player) {
