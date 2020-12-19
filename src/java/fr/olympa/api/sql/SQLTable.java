@@ -4,8 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.sql.SQLColumn.SQLUpdater;
@@ -14,7 +14,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class SQLTable<T> {
 	
-	private final String name, quotedName;
+	private final String name;
 	private final List<SQLColumn<T>> columns;
 	private final SQLColumn<T> primaryColumn;
 	
@@ -22,7 +22,6 @@ public class SQLTable<T> {
 	
 	public SQLTable(String name, List<SQLColumn<T>> columns) {
 		this.name = name;
-		this.quotedName = "`" + name + "`";
 		this.columns = columns;
 		this.primaryColumn = columns.stream().filter(SQLColumn::isPrimaryKey).findAny().orElseThrow(() -> new IllegalArgumentException("Can't create a table without primary key."));
 	}
@@ -31,36 +30,35 @@ public class SQLTable<T> {
 		return name;
 	}
 	
-	public String getQuotedName() {
-		return quotedName;
-	}
-	
-	public List<SQLColumn<T>> getColumns() {
-		return columns;
-	}
-	
 	public SQLTable<T> createOrAlter() throws SQLException {
 		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
 		
-		ResultSet columnsSet = OlympaCore.getInstance().getDatabase().getMetaData().getColumns(null, null, name, "%");
+		String schemaPattern = null, tablePattern = name;
+		int pointIndex = name.indexOf('.');
+		if (pointIndex >= 0) {
+			schemaPattern = name.substring(0, pointIndex);
+			tablePattern = name.substring(pointIndex + 1);
+		}
+		ResultSet columnsSet = OlympaCore.getInstance().getDatabase().getMetaData().getColumns(null, schemaPattern, tablePattern, "%");
 		if (columnsSet.first()) { // la table existe : il faut vérifier si toutes les colonnes sont présentes
-			List<SQLColumn<?>> missingColumns = new ArrayList<>(columns);
+			OlympaCore.getInstance().sendMessage("§7Chargement de la table %s...", name);
+			List<SQLColumn<?>> missingColumns = columns.stream().filter(Predicate.not(SQLColumn::isPrimaryKey)).collect(Collectors.toList());
 			while (columnsSet.next()) {
-				String columnName = columnsSet.getString(4);
+				String columnName = "`" + columnsSet.getString(4) + "`";
 				if (!missingColumns.removeIf(column -> column.getName().equals(columnName)))
 					OlympaCore.getInstance().sendMessage("§cColonne %s présente dans la table SQL %s mais non déclarée.", columnName, name);
 			}
 			for (SQLColumn<?> column : missingColumns) {
-				statement.executeUpdate("ALTER TABLE " + quotedName + " ADD " + column.toDeclaration());
+				statement.executeUpdate("ALTER TABLE " + name + " ADD " + column.toDeclaration());
 				OlympaCore.getInstance().sendMessage("La colonne §6%s §ea été créée dans la table §6%s§e.", column.toDeclaration(), name);
 			}
 		}else { // la table n'existe pas : il faut la créer
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + quotedName + " (" + SQLColumn.toParameters(columns) + ")");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")");
 			OlympaCore.getInstance().sendMessage("Table SQL §6%s §ecréée !", name);
 		}
 		
 		columns.stream().filter(SQLColumn::isUpdatable).forEach(column -> column.setSQLUpdater(new SQLUpdater<>() {
-			private OlympaStatement updateStatement = new OlympaStatement("UPDATE " + quotedName + " SET " + column.getName() + " = ? WHERE (" + primaryColumn.getName() + " = ?)");
+			private OlympaStatement updateStatement = new OlympaStatement("UPDATE " + name + " SET " + column.getName() + " = ? WHERE (" + primaryColumn.getName() + " = ?)");
 			
 			@Override
 			public synchronized void update(T object, Object sqlObject, int sqlType) throws SQLException {
@@ -73,12 +71,12 @@ public class SQLTable<T> {
 		}));
 		
 		insertStatement = new OlympaStatement(
-				"INSERT INTO " + quotedName + " (" + columns.stream().filter(SQLColumn::isNotDefault).map(SQLColumn::getName).collect(Collectors.joining(", ")) + ")"
+				"INSERT INTO " + name + " (" + columns.stream().filter(SQLColumn::isNotDefault).map(SQLColumn::getName).collect(Collectors.joining(", ")) + ")"
 						+ " VALUES (" + "?, ".repeat((int) columns.stream().filter(SQLColumn::isNotDefault).count()) + ")", true);
 		
-		deleteStatement = new OlympaStatement("DELETE FROM " + quotedName + " WHERE (" + primaryColumn.getName() + " = ?)");
+		deleteStatement = new OlympaStatement("DELETE FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
 		
-		selectStatement = new OlympaStatement("SELECT * FROM " + quotedName + " WHERE (" + primaryColumn.getName() + " = ?)");
+		selectStatement = new OlympaStatement("SELECT * FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
 		
 		return this;
 	}

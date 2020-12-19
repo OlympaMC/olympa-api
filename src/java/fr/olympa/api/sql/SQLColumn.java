@@ -21,9 +21,9 @@ public class SQLColumn<T> {
 	
 	public SQLColumn(String name, String type, int sqlType) {
 		this.name = "`" + name + "`";
-		this.type = type;
+		this.type = type.toUpperCase();
 		this.sqlType = sqlType;
-		this.isDefault = type.toUpperCase().contains("DEFAULT") || type.toUpperCase().contains("AUTO_INCREMENT");
+		this.isDefault = type.contains("AUTO_INCREMENT") || type.contains("DEFAULT") || (type.contains("NULL") && !type.contains("NOT NULL"));
 	}
 	
 	public String getName() {
@@ -52,7 +52,7 @@ public class SQLColumn<T> {
 	}
 	
 	public String toDeclaration() {
-		return "`" + name + "` " + type;
+		return name + " " + type;
 	}
 	
 	public SQLColumn<T> setPrimaryKey(Function<T, Object> getSqlObject) {

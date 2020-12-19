@@ -11,6 +11,7 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.player.OlympaPlayerProvider;
 import fr.olympa.api.sql.SQLColumn;
+import fr.olympa.api.sql.SQLTable;
 
 public class AccountProvider implements OlympaAccount {
 
@@ -56,7 +57,7 @@ public class AccountProvider implements OlympaAccount {
 		throw new UnsupportedOperationException();
 	}
 
-	public static String getPlayerProviderTableName() {
+	public static SQLTable<? extends OlympaPlayer> getPluginPlayerTable() {
 		throw new UnsupportedOperationException();
 	}
 

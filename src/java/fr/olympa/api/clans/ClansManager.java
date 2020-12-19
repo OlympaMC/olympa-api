@@ -93,7 +93,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		this.clansTable = new SQLTable<T>(clansName, addDBClansCollums(new ArrayList<>())).createOrAlter();
 		this.playersTable = new SQLTable<D>(clansName + "_players", addDBPlayersCollums(new ArrayList<>())).createOrAlter();
 		
-		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable);
+		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable.getName());
 		while (resultSet.next()) {
 			try {
 				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), AccountProvider.getPlayerInformations(resultSet.getLong("chief")), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
