@@ -1,3 +1,10 @@
 package fr.olympa.api.utils.observable;
 
-public class SimpleObservable extends AbstractObservable {}
+public class SimpleObservable extends AbstractObservable {
+	
+	@Override
+	public boolean update() {
+		return super.update();
+	}
+	
+}

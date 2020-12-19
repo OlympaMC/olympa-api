@@ -80,11 +80,11 @@ public class AccountProvider implements OlympaAccount {
 		return AccountProvider.get(uuid);
 	}
 
-	@Override
+	/*@Override
 	public void saveToDb(OlympaPlayer olympaPlayer) {
 		// TODO Auto-generated method stub
-
-	}
+	
+	}*/
 
 	@Override
 	public void saveToRedis(OlympaPlayer olympaPlayer) {

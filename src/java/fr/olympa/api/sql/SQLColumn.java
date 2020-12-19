@@ -13,7 +13,7 @@ public class SQLColumn<T> {
 	private final String name;
 	private final String type;
 	private final int sqlType;
-	private final boolean isDefault;
+	private boolean isDefault;
 	private Function<T, Object> getSqlObject;
 	private boolean updatable = false;
 	
@@ -23,7 +23,7 @@ public class SQLColumn<T> {
 		this.name = "`" + name + "`";
 		this.type = type;
 		this.sqlType = sqlType;
-		this.isDefault = type.toUpperCase().contains("DEFAULT");
+		this.isDefault = type.toUpperCase().contains("DEFAULT") || type.toUpperCase().contains("AUTO_INCREMENT");
 	}
 	
 	public String getName() {
@@ -44,6 +44,11 @@ public class SQLColumn<T> {
 	
 	public boolean isNotDefault() {
 		return !isDefault;
+	}
+	
+	public SQLColumn<T> setNotDefault() {
+		this.isDefault = false;
+		return this;
 	}
 	
 	public String toDeclaration() {
