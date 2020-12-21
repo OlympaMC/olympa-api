@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -87,9 +88,12 @@ public class SQLTable<T> {
 			}
 		}));
 		
+		StringJoiner valuesJoiner = new StringJoiner(", ", "(", ")");
+		for (int i = 0; i < columns.stream().filter(SQLColumn::isNotDefault).count(); i++) valuesJoiner.add("?");
+		
 		insertStatement = new OlympaStatement(
 				"INSERT INTO " + name + " (" + columns.stream().filter(SQLColumn::isNotDefault).map(SQLColumn::getName).collect(Collectors.joining(", ")) + ")"
-						+ " VALUES (" + "?, ".repeat((int) columns.stream().filter(SQLColumn::isNotDefault).count()) + ")", true);
+						+ " VALUES " + valuesJoiner.toString(), true);
 		
 		deleteStatement = new OlympaStatement("DELETE FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
 		

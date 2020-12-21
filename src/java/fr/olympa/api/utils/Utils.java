@@ -471,6 +471,10 @@ public class Utils {
 	public static String withOrWithoutS(int i) {
 		return i < 2 ? "" : "s";
 	}
+	
+	public static String withOrWithoutS(long i, String string) {
+		return Long.toString(i) + " " + (i < 2 ? string : (string + "s"));
+	}
 
 	public static boolean isEmptyFile(File file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));

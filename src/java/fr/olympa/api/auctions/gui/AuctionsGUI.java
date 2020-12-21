@@ -20,6 +20,7 @@ import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auction> {
@@ -37,7 +38,8 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 		List<Auction> myAuctions = manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList());
 		long ongoing = myAuctions.stream().filter(Auction::isOngoing).count();
 		setBarItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets", 
-				"§8> §7" + ongoing + " enchères en cours", "§8> §7" + (myAuctions.size() - ongoing) + " enchères terminées"
+				"§8> §7" + Utils.withOrWithoutS(ongoing, "enchère") + " en cours",
+				"§8> §7" + Utils.withOrWithoutS(myAuctions.size() - ongoing, "enchère") + " terminées"
 				));
 		
 		colorTask = Bukkit.getScheduler().runTaskTimer(OlympaCore.getInstance(), () -> setSeparatorItems(PRETTY_COLORS[random.nextInt(PRETTY_COLORS.length)]), 20, 20);
