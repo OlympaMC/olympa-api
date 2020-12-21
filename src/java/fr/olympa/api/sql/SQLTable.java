@@ -5,8 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
 
 import fr.olympa.api.sql.SQLColumn.SQLUpdater;
 import fr.olympa.api.sql.statement.OlympaStatement;
@@ -67,6 +70,20 @@ public class SQLTable<T> {
 				statement.setObject(2, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
 				statement.executeUpdate();
 				statement.close();
+			}
+			
+			@Override
+			public void updateAsync(T object, Object sqlObject, int sqlType, Runnable successCallback, Consumer<SQLException> failCallback) {
+				Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
+					try {
+						update(object, sqlObject, sqlType);
+						if (successCallback != null) successCallback.run();
+					}catch (SQLException e) {
+						if (failCallback == null) {
+							e.printStackTrace();
+						}else failCallback.accept(e);
+					}
+				});
 			}
 		}));
 		

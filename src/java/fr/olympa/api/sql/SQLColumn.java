@@ -3,6 +3,7 @@ package fr.olympa.api.sql;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -82,8 +83,13 @@ public class SQLColumn<T> {
 		this.sqlUpdater = statementCreation;
 	}
 	
+	@Deprecated // use async for performances
 	public void updateValue(T object, Object sqlObject) throws SQLException {
 		if (sqlUpdater != null) sqlUpdater.update(object, sqlObject, sqlType);
+	}
+	
+	public void updateAsync(T object, Object sqlObject, Runnable successCallback, Consumer<SQLException> failCallback) {
+		if (sqlUpdater != null) sqlUpdater.updateAsync(object, sqlObject, sqlType, successCallback, failCallback);
 	}
 	
 	@Override
@@ -91,9 +97,10 @@ public class SQLColumn<T> {
 		return name + " " + type;
 	}
 	
-	@FunctionalInterface
 	public interface SQLUpdater<T> {
 		void update(T object, Object sqlObject, int sqlType) throws SQLException;
+		
+		void updateAsync(T object, Object sqlObject, int sqlType, Runnable successCallback, Consumer<SQLException> failCallback);
 	}
 	
 	public static <T> String toParameters(List<SQLColumn<T>> columns) {

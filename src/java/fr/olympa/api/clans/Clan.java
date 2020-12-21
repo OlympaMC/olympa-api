@@ -183,40 +183,27 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public void setChief(OlympaPlayerInformations p) {
-		try {
-			manager.chiefColumn.updateValue((T) this, chief.getId());
+		manager.chiefColumn.updateAsync((T) this, chief.getId(), () -> {
 			this.chief = p;
 			broadcast(String.format(manager.stringPlayerChief, p.getName()));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	public void setMaxSize(int maxSize) {
-		try {
-			manager.sizeColumn.updateValue((T) this, maxSize);
+		manager.sizeColumn.updateAsync((T) this, maxSize, () -> {
 			this.maxSize = maxSize;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	public void setName(String name) {
-		try {
-			manager.nameColumn.updateValue((T) this, name);
+		manager.nameColumn.updateAsync((T) this, name, () -> {
 			this.name = name;
 			broadcast(manager.stringNameChange);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	private void updateMoney() {
-		try {
-			manager.moneyColumn.updateValue((T) this, money.get());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		manager.moneyColumn.updateAsync((T) this, money.get(), null, SQLException::printStackTrace);
 	}
 
 }
