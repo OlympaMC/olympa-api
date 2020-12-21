@@ -59,7 +59,7 @@ public class Auction {
 			try {
 				manager.boughtAuction(this);
 				Player seller = Bukkit.getPlayer(player.getUUID());
-				if (seller != null && seller.isOnline()) Prefix.DEFAULT.sendMessage(seller, "§eUn joueur vient d'acheter ton item §7%s§e ! Retourne à l'Hôtel des Ventes pour récupérer tes gains.");
+				if (seller != null && seller.isOnline()) Prefix.DEFAULT.sendMessage(seller, "§eUn joueur vient d'acheter ton item §7%s§e ! Retourne à l'Hôtel des Ventes pour récupérer tes gains.", OlympaMoney.format(price));
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}

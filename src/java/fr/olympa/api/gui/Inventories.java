@@ -89,7 +89,7 @@ public class Inventories implements Listener {
 			event.setCancelled(false);
 
 			if (inv == p.getInventory()) {
-				if (event.isShiftClick() && current.getType() != Material.AIR)
+				if (event.isShiftClick() && current != null && current.getType() != Material.AIR)
 					event.setCancelled(gui.onMoveItem(p, current));
 				return;
 			}

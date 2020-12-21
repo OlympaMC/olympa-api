@@ -122,7 +122,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			if (clanTo.getClan() != null) {
 				color = clanTo.getClan() == clanPlayer.getClan() ? ChatColor.GREEN : ChatColor.RED;
 			}else color = ChatColor.RED;
-			nametag.appendSuffix(color + clanPlayer.getClan().getName());
+			nametag.appendPrefix(color + clanPlayer.getClan().getName());
 		});
 	}
 	

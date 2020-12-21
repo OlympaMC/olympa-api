@@ -59,8 +59,8 @@ public class CreateAuctionGUI extends OlympaGUI {
 		if (slot == 13) {
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Entre le prix auquel tu veux vendre ton objet.");
 			new TextEditor<>(p, price -> {
-				if (price < 1) {
-					Prefix.DEFAULT_BAD.sendMessage(p, "Le prix minimal d'un article est de 1%s.", OlympaMoney.OMEGA);
+				if (price < 10) {
+					Prefix.DEFAULT_BAD.sendMessage(p, "Le prix minimal d'un article est de 10%s.", OlympaMoney.OMEGA);
 				}else if (price > 1_000_000_000) {
 					Prefix.DEFAULT_BAD.sendMessage(p, "N'exagérons rien...");
 				}else {
