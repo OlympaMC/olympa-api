@@ -85,7 +85,11 @@ public class HologramsManager implements Listener {
 		if (persistent) {
 			Observer update = updateHologram(id, hologram);
 			hologram.observe("manager_save", update);
-			update.changed();
+			try {
+				update.changed();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return hologram;
 	}
@@ -109,8 +113,13 @@ public class HologramsManager implements Listener {
 		if (holograms.remove(hologram.getID()) == null)
 			return false;
 		hologram.destroy();
-		if (hologram.isPersistent())
-			updateHologram(hologram.getID(), null).changed();
+		if (hologram.isPersistent()) {
+			try {
+				updateHologram(hologram.getID(), null).changed();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return true;
 	}
 
@@ -119,8 +128,13 @@ public class HologramsManager implements Listener {
 		if (hologram == null)
 			return false;
 		hologram.destroy();
-		if (hologram.isPersistent())
-			updateHologram(hologram.getID(), null).changed();
+		if (hologram.isPersistent()) {
+			try {
+				updateHologram(hologram.getID(), null).changed();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return true;
 	}
 

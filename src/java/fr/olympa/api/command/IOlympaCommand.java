@@ -51,7 +51,12 @@ public interface IOlympaCommand {
 	}
 
 	default void sendError(Throwable throwable) {
-		sendError("Une erreur est survenu ¯\\_(ツ)_/¯ %s", throwable.getMessage());
+		Throwable cause;
+		if (throwable.getCause() != null)
+			cause = throwable.getCause();
+		else
+			cause = throwable;
+		sendError("Une erreur est survenu ¯\\_(ツ)_/¯ %s", cause.getMessage());
 	}
 
 	void broadcast(Prefix prefix, String text, Object... args);

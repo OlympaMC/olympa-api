@@ -34,6 +34,7 @@ public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 		if (getHolders().isEmpty() && task != null) {
 			task.cancel();
 			task = null;
+			System.out.println("TimerLine.removeHolder() cancel task");
 		}
 	}
 	

@@ -1,6 +1,5 @@
 package fr.olympa.api.player;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TreeMap;
@@ -83,8 +82,6 @@ public interface OlympaPlayer {
 	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish);
 
 	void removeGroup(OlympaGroup group);
-
-	void saveDatas(PreparedStatement statement) throws SQLException;
 
 	void setConnected(boolean connected);
 

@@ -1,7 +1,6 @@
 package fr.olympa.api.clans;
 
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -174,7 +173,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		nameTagApi.updateFakeNameTag(pinfo.getName(), nametag, Bukkit.getOnlinePlayers());*/
 
 		try {
-			manager.removePlayerFromClan(pinfo);
+			manager.removePlayerFromClan(member);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			broadcast("Une erreur est survenue.");
@@ -184,40 +183,27 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public void setChief(OlympaPlayerInformations p) {
-		try {
-			manager.chiefColumn.updateValue((T) this, chief.getId(), Types.INTEGER);
+		manager.chiefColumn.updateAsync((T) this, chief.getId(), () -> {
 			this.chief = p;
 			broadcast(String.format(manager.stringPlayerChief, p.getName()));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	public void setMaxSize(int maxSize) {
-		try {
-			manager.sizeColumn.updateValue((T) this, maxSize, Types.INTEGER);
+		manager.sizeColumn.updateAsync((T) this, maxSize, () -> {
 			this.maxSize = maxSize;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	public void setName(String name) {
-		try {
-			manager.nameColumn.updateValue((T) this, name, Types.VARCHAR);
+		manager.nameColumn.updateAsync((T) this, name, () -> {
 			this.name = name;
 			broadcast(manager.stringNameChange);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}, null);
 	}
 
 	private void updateMoney() {
-		try {
-			manager.moneyColumn.updateValue((T) this, money.get(), Types.DOUBLE);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		manager.moneyColumn.updateAsync((T) this, money.get(), null, SQLException::printStackTrace);
 	}
 
 }

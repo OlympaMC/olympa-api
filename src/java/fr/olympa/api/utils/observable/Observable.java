@@ -8,7 +8,7 @@ public interface Observable {
 
 	@FunctionalInterface
 	public interface Observer {
-		void changed();
+		void changed() throws Exception;
 	}
 
 }

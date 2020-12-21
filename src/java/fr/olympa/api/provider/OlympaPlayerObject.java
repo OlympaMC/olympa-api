@@ -1,6 +1,5 @@
 package fr.olympa.api.provider;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -225,10 +224,6 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public void removeGroup(OlympaGroup group) {
 		groups.remove(group);
-	}
-
-	@Override
-	public void saveDatas(PreparedStatement statement) throws SQLException {
 	}
 
 	@Override
