@@ -114,9 +114,15 @@ public class SQLTable<T> {
 		return statement.getGeneratedKeys();
 	}
 	
-	public synchronized void delete(T object) throws SQLException {
+	public synchronized void delete(T primaryObject) throws SQLException {
 		PreparedStatement statement = deleteStatement.getStatement();
-		statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
+		statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
+		statement.executeUpdate();
+	}
+	
+	public synchronized void deleteSQLObject(Object primaryObjectSQL) throws SQLException {
+		PreparedStatement statement = deleteStatement.getStatement();
+		statement.setObject(1, primaryObjectSQL, primaryColumn.getSQLType());
 		statement.executeUpdate();
 	}
 	
