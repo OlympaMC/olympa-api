@@ -1,6 +1,5 @@
 package fr.olympa.api.server;
 
-import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 
@@ -10,8 +9,8 @@ public enum OlympaServer {
 	BUNGEE("BungeeCord", true, ServerType.BUNGEE),
 	AUTH("Authentification", true),
 	LOBBY("Lobby", true),
-	DEV("Développement", false, OlympaAPIPermissions.CONNECT_SERVER_DEV),
-	BUILDEUR("Buildeur", false, OlympaAPIPermissions.CONNECT_SERVER_BUILDER),
+	DEV("Développement", false),
+	BUILDEUR("Buildeur", false),
 	ZTA("Olympa ZTA", false),
 	CREATIF("Créatif", false),
 	LG("Loup-Garou", true),
@@ -32,11 +31,6 @@ public enum OlympaServer {
 		this.type = type;
 	}
 
-	private OlympaServer(String name, boolean multi, OlympaPermission joinPermission) {
-		this(name, multi);
-		this.joinPermission = joinPermission;
-	}
-
 	public String getNameCaps() {
 		return name;
 	}
@@ -47,6 +41,10 @@ public enum OlympaServer {
 
 	public OlympaPermission getJoinPermission() {
 		return joinPermission;
+	}
+	
+	public void setJoinPermission(OlympaPermission joinPermission) {
+		this.joinPermission = joinPermission;
 	}
 
 	public boolean canConnect(OlympaPlayer player) {
