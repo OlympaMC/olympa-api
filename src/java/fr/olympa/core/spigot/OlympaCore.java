@@ -17,6 +17,7 @@ import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.tracking.RegionManager;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
 
 /**
@@ -37,6 +38,16 @@ public class OlympaCore extends OlympaSpigot {
 	private RegionManager regions;
 	private String lastVersion = "unknown";
 	private String firstVersion = "unknown";
+	private OlympaServer olympaServer = OlympaServer.ALL;
+	
+	public OlympaServer getOlympaServer() {
+		return olympaServer;
+	}
+	
+	@Override
+	public void setOlympaServer(OlympaServer olympaServer) {
+		this.olympaServer = olympaServer;
+	}
 
 	public String getLastVersion() {
 		return lastVersion;
