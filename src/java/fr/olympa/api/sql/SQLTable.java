@@ -22,7 +22,7 @@ public class SQLTable<T> {
 	private final List<SQLColumn<T>> columns;
 	private final SQLColumn<T> primaryColumn;
 	
-	private OlympaStatement insertStatement, deleteStatement, selectStatement;
+	private OlympaStatement insertStatement, deleteStatement;
 	
 	public SQLTable(String name, List<SQLColumn<T>> columns) {
 		this.name = name;
@@ -97,8 +97,6 @@ public class SQLTable<T> {
 		
 		deleteStatement = new OlympaStatement("DELETE FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
 		
-		selectStatement = new OlympaStatement("SELECT * FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
-		
 		return this;
 	}
 	
@@ -127,8 +125,12 @@ public class SQLTable<T> {
 	}
 	
 	public synchronized ResultSet get(Object primaryObject) throws SQLException {
-		PreparedStatement statement = selectStatement.getStatement();
-		statement.setObject(1, primaryObject, primaryColumn.getSQLType());
+		return getFromColumn(primaryColumn, primaryObject);
+	}
+	
+	public synchronized ResultSet getFromColumn(SQLColumn<T> column, Object object) throws SQLException {
+		PreparedStatement statement = column.getSelectStatement(this).getStatement();
+		statement.setObject(1, object, column.getSQLType());
 		return statement.executeQuery();
 	}
 	

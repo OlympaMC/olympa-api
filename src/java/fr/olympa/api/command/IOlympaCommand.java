@@ -21,7 +21,7 @@ public interface IOlympaCommand {
 	}
 
 	default void sendImpossibleWithOlympaPlayer() {
-		sendError("Une erreur est survenu avec tes données.");
+		sendError("Une erreur est survenue avec tes données.");
 	}
 
 	default void sendIncorrectSyntax() {
@@ -47,7 +47,7 @@ public interface IOlympaCommand {
 	void sendMessage(Prefix prefix, String message, Object... args);
 
 	default void sendError() {
-		sendError("Une erreur est survenu ¯\\_(ツ)_/¯");
+		sendError("Une erreur est survenue ¯\\_(ツ)_/¯");
 	}
 
 	default void sendError(Throwable throwable) {
@@ -56,7 +56,7 @@ public interface IOlympaCommand {
 			cause = throwable.getCause();
 		else
 			cause = throwable;
-		sendError("Une erreur est survenu ¯\\_(ツ)_/¯ %s", cause.getMessage());
+		sendError("Une erreur est survenue ¯\\_(ツ)_/¯ %s", cause.getMessage());
 	}
 
 	void broadcast(Prefix prefix, String text, Object... args);

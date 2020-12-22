@@ -43,9 +43,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	private Map<Player, ObservableList<T>> invitations = new HashMap<>();
 	public int defaultMaxSize;
 	
-	protected final SQLTable<T> clansTable;
-	protected final SQLTable<D> playersTable;
-	
 	public String stringAlreadyInClan = "Ce joueur est déjà dans un clan.";
 	public String stringAlreadyInvited = "Tu as déjà invité ce joueur.";
 	public String stringPlayerInvited = "Tu as invité le joueur à rejoindre ton clan !";
@@ -81,10 +78,15 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
 	public String stringItemDisband = "§cDémenteler le clan";
 	
+	protected final SQLTable<T> clansTable;
 	protected SQLColumn<T> nameColumn;
 	protected SQLColumn<T> chiefColumn;
 	protected SQLColumn<T> sizeColumn;
 	protected SQLColumn<T> moneyColumn;
+	
+	protected final SQLTable<D> playersTable;
+	protected SQLColumn<D> playerIDColumn;
+	protected SQLColumn<D> clanIDColumn;
 	
 	public ClansManager(OlympaAPIPlugin plugin, String clansName, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
@@ -98,7 +100,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			try {
 				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), AccountProvider.getPlayerInformations(resultSet.getLong("chief")), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
 				
-				ResultSet playersSet = playersTable.get(clan.getID());
+				ResultSet playersSet = playersTable.getFromColumn(clanIDColumn, clan.getID());
 				while (playersSet.next()) {
 					D playerData = provideClanData(AccountProvider.getPlayerInformations(playersSet.getLong("player_id")), playersSet);
 					clan.members.put(playerData.getPlayerInformations(), playerData);
@@ -122,7 +124,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			if (clanTo.getClan() != null) {
 				color = clanTo.getClan() == clanPlayer.getClan() ? ChatColor.GREEN : ChatColor.RED;
 			}else color = ChatColor.RED;
-			nametag.appendPrefix(color + "[" + clanPlayer.getClan().getName() + "] ");
+			nametag.appendPrefix(color + "[" + clanPlayer.getClan().getName() + "]");
 		});
 	}
 	
@@ -165,8 +167,8 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public List<SQLColumn<D>> addDBPlayersCollums(List<SQLColumn<D>> columns) {
-		columns.add(new SQLColumn<D>("player_id", "BIGINT NOT NULL", Types.BIGINT).setPrimaryKey(player -> player.getPlayerInformations().getId()));
-		columns.add(new SQLColumn<D>("clan", "INT NOT NULL", Types.INTEGER));
+		columns.add(playerIDColumn = new SQLColumn<D>("player_id", "BIGINT NOT NULL", Types.BIGINT).setPrimaryKey(player -> player.getPlayerInformations().getId()));
+		columns.add(clanIDColumn = new SQLColumn<D>("clan", "INT NOT NULL", Types.INTEGER));
 		return columns;
 	}
 	

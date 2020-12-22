@@ -69,8 +69,8 @@ public enum ProtocolAPI {
 	V1_4_7(51, false),
 	;
 
-	private static String version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
-	private static ProtocolAPI defaultProtocol = get(version);
+	private static String version = null;
+	private static ProtocolAPI defaultProtocol = null;
 	
 	public static ProtocolAPI get(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).findFirst().get();
@@ -85,6 +85,7 @@ public enum ProtocolAPI {
 	}
 
 	public static ProtocolAPI getDefaultProtocol() {
+		if (defaultProtocol == null) defaultProtocol = get(getVersion());
 		return defaultProtocol;
 	}
 
@@ -101,6 +102,7 @@ public enum ProtocolAPI {
 	}
 
 	public static String getVersion() {
+		if (version == null) version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
 		return version;
 	}
 
