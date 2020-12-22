@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.economy.MoneyPlayerInterface;
@@ -43,6 +44,7 @@ public class TaxManager {
 	}
 
 	public void setTax(double tax, boolean update) throws SQLException {
+		Validate.isTrue(tax >= 0 && tax < 1, "La taxe doit être comprise entre 0 (inclus) et 1 (exclu)");
 		this.tax = tax;
 		this.taxFormatted = tax * 100 + "%";
 		if (update) update();
