@@ -56,7 +56,6 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	}
 
 	public void itemChanged() {
-		System.out.println("PagedGUI.itemChanged()");
 		calculateMaxPage();
 		setItems();
 	}
@@ -137,6 +136,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	
 	@Override
 	public boolean onClose(Player p) {
+		System.out.println("close " + getClass().getSimpleName() + " observable: " + (objects instanceof Observable));
 		if (objects instanceof Observable) ((Observable) objects).unobserve(observableCode);
 		inv = null;
 		return true;

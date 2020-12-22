@@ -2,7 +2,6 @@ package fr.olympa.api.clans;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;

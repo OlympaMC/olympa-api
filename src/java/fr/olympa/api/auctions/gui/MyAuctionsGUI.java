@@ -16,6 +16,7 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.gui.templates.PagedGUI;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 
 public class MyAuctionsGUI extends PagedGUI<Auction> {
@@ -25,8 +26,8 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 
 	public MyAuctionsGUI(AuctionsManager manager, MoneyPlayerInterface player) {
 		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 4);
-		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes", "§8> §7" + manager.getOngoingAuctions().size() + " enchères en cours"));
-		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§b✦ Vendre un objet", "§8> §7" + (manager.getMaxAuctions(player) - objects.size()) + " enchères disponibles"));
+		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes", "§8> §7" + Utils.withOrWithoutS(manager.getOngoingAuctions().size(), "enchère") + " en cours"));
+		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§b✦ Vendre un objet", "§8> §7" + Utils.withOrWithoutS(manager.getMaxAuctions(player) - objects.size(), "enchère") + " restantes"));
 		this.manager = manager;
 		this.player = player;
 	}

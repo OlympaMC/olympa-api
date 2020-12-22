@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public class SQLTable<T> {
 	private final List<SQLColumn<T>> columns;
 	private final SQLColumn<T> primaryColumn;
 	
-	private OlympaStatement insertStatement, deleteStatement, selectStatement;
+	private OlympaStatement insertStatement, deleteStatement;
 	
 	public SQLTable(String name, List<SQLColumn<T>> columns) {
 		this.name = name;
@@ -87,13 +88,14 @@ public class SQLTable<T> {
 			}
 		}));
 		
+		StringJoiner valuesJoiner = new StringJoiner(", ", "(", ")");
+		for (int i = 0; i < columns.stream().filter(SQLColumn::isNotDefault).count(); i++) valuesJoiner.add("?");
+		
 		insertStatement = new OlympaStatement(
 				"INSERT INTO " + name + " (" + columns.stream().filter(SQLColumn::isNotDefault).map(SQLColumn::getName).collect(Collectors.joining(", ")) + ")"
-						+ " VALUES (" + "?, ".repeat((int) columns.stream().filter(SQLColumn::isNotDefault).count()) + ")", true);
+						+ " VALUES " + valuesJoiner.toString(), true);
 		
 		deleteStatement = new OlympaStatement("DELETE FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
-		
-		selectStatement = new OlympaStatement("SELECT * FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
 		
 		return this;
 	}
@@ -110,15 +112,25 @@ public class SQLTable<T> {
 		return statement.getGeneratedKeys();
 	}
 	
-	public synchronized void delete(T object) throws SQLException {
+	public synchronized void delete(T primaryObject) throws SQLException {
 		PreparedStatement statement = deleteStatement.getStatement();
-		statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
+		statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
+		statement.executeUpdate();
+	}
+	
+	public synchronized void deleteSQLObject(Object primaryObjectSQL) throws SQLException {
+		PreparedStatement statement = deleteStatement.getStatement();
+		statement.setObject(1, primaryObjectSQL, primaryColumn.getSQLType());
 		statement.executeUpdate();
 	}
 	
 	public synchronized ResultSet get(Object primaryObject) throws SQLException {
-		PreparedStatement statement = selectStatement.getStatement();
-		statement.setObject(1, primaryObject, primaryColumn.getSQLType());
+		return getFromColumn(primaryColumn, primaryObject);
+	}
+	
+	public synchronized ResultSet getFromColumn(SQLColumn<T> column, Object object) throws SQLException {
+		PreparedStatement statement = column.getSelectStatement(this).getStatement();
+		statement.setObject(1, object, column.getSQLType());
 		return statement.executeQuery();
 	}
 	

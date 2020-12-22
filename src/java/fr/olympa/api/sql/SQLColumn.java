@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 
+import fr.olympa.api.sql.statement.OlympaStatement;
+
 public class SQLColumn<T> {
 	
 	private final String name;
@@ -19,6 +21,7 @@ public class SQLColumn<T> {
 	private boolean updatable = false;
 	
 	private SQLUpdater<T> sqlUpdater;
+	private OlympaStatement selectStatement;
 	
 	public SQLColumn(String name, String type, int sqlType) {
 		this.name = "`" + name + "`";
@@ -81,6 +84,11 @@ public class SQLColumn<T> {
 	public void setSQLUpdater(SQLUpdater<T> statementCreation) {
 		Validate.isTrue(updatable, "Cannot assign SQL Updater to non-updatable column.");
 		this.sqlUpdater = statementCreation;
+	}
+	
+	OlympaStatement getSelectStatement(SQLTable<T> table) {
+		if (selectStatement == null) selectStatement = new OlympaStatement("SELECT * FROM " + table.getName() + " WHERE (" + name + " = ?)");
+		return selectStatement;
 	}
 	
 	@Deprecated // use async for performances

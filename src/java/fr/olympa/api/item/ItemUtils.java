@@ -351,6 +351,7 @@ public class ItemUtils {
 	}
 
 	public static ItemStack[] deserializeItemsArray(byte[] bytes) throws IOException, ClassNotFoundException {
+		if (bytes == null || bytes.length == 0) return new ItemStack[0];
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
 		ItemStack[] items = new ItemStack[dataInput.readInt()];
