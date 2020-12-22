@@ -7,8 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.Validate;
-
 import fr.olympa.api.sql.statement.OlympaStatement;
 
 public class SQLColumn<T> {
@@ -82,7 +80,7 @@ public class SQLColumn<T> {
 	}
 	
 	public void setSQLUpdater(SQLUpdater<T> statementCreation) {
-		Validate.isTrue(updatable, "Cannot assign SQL Updater to non-updatable column.");
+		if (!updatable) throw new IllegalStateException("Cannot assign SQL Updater to non-updatable column.");
 		this.sqlUpdater = statementCreation;
 	}
 	

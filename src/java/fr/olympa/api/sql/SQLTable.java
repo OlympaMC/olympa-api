@@ -10,11 +10,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.sql.SQLColumn.SQLUpdater;
 import fr.olympa.api.sql.statement.OlympaStatement;
-import fr.olympa.core.spigot.OlympaCore;
 
 public class SQLTable<T> {
 	
@@ -35,7 +33,8 @@ public class SQLTable<T> {
 	}
 	
 	public SQLTable<T> createOrAlter() throws SQLException {
-		Statement statement = OlympaCore.getInstance().getDatabase().createStatement();
+		LinkSpigotBungee link = LinkSpigotBungee.Provider.link;
+		Statement statement = link.getDatabase().createStatement();
 		
 		String schemaPattern = null, tablePattern = name;
 		int pointIndex = name.indexOf('.');
@@ -43,22 +42,22 @@ public class SQLTable<T> {
 			schemaPattern = name.substring(0, pointIndex);
 			tablePattern = name.substring(pointIndex + 1);
 		}
-		ResultSet columnsSet = OlympaCore.getInstance().getDatabase().getMetaData().getColumns(null, schemaPattern, tablePattern, "%");
+		ResultSet columnsSet = link.getDatabase().getMetaData().getColumns(null, schemaPattern, tablePattern, "%");
 		if (columnsSet.first()) { // la table existe : il faut vérifier si toutes les colonnes sont présentes
-			OlympaCore.getInstance().sendMessage("§7Chargement de la table %s...", name);
+			link.sendMessage("§7Chargement de la table %s...", name);
 			List<SQLColumn<?>> missingColumns = columns.stream().filter(Predicate.not(SQLColumn::isPrimaryKey)).collect(Collectors.toList());
 			while (columnsSet.next()) {
 				String columnName = "`" + columnsSet.getString(4) + "`";
 				if (!missingColumns.removeIf(column -> column.getName().equals(columnName)))
-					OlympaCore.getInstance().sendMessage("§cColonne %s présente dans la table SQL %s mais non déclarée.", columnName, name);
+					link.sendMessage("§cColonne %s présente dans la table SQL %s mais non déclarée.", columnName, name);
 			}
 			for (SQLColumn<?> column : missingColumns) {
 				statement.executeUpdate("ALTER TABLE " + name + " ADD " + column.toDeclaration());
-				OlympaCore.getInstance().sendMessage("La colonne §6%s §ea été créée dans la table §6%s§e.", column.toDeclaration(), name);
+				link.sendMessage("La colonne §6%s §ea été créée dans la table §6%s§e.", column.toDeclaration(), name);
 			}
 		}else { // la table n'existe pas : il faut la créer
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")");
-			OlympaCore.getInstance().sendMessage("Table SQL §6%s §ecréée !", name);
+			link.sendMessage("Table SQL §6%s §ecréée !", name);
 		}
 		
 		columns.stream().filter(SQLColumn::isUpdatable).forEach(column -> column.setSQLUpdater(new SQLUpdater<>() {
@@ -75,7 +74,7 @@ public class SQLTable<T> {
 			
 			@Override
 			public void updateAsync(T object, Object sqlObject, int sqlType, Runnable successCallback, Consumer<SQLException> failCallback) {
-				Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
+				link.launchAsync(() -> {
 					try {
 						update(object, sqlObject, sqlType);
 						if (successCallback != null) successCallback.run();
@@ -105,7 +104,8 @@ public class SQLTable<T> {
 		int i = 1;
 		for (SQLColumn<T> column : columns) {
 			if (column.isNotDefault()) {
-				statement.setObject(i++, notDefaultObjects[i - 2], column.getSQLType());
+				statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
+				i++;
 			}
 		}
 		statement.executeUpdate();
