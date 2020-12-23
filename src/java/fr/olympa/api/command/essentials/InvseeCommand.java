@@ -29,6 +29,7 @@ public class InvseeCommand extends OlympaCommand {
 	public InvseeCommand(Plugin plugin) {
 		super(plugin, "invsee", OlympaAPIPermissions.INVSEE_COMMAND);
 		addArgs(true, "JOUEUR");
+		setAllowConsole(false);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class InvseeCommand extends OlympaCommand {
 		} else
 			inventory = target.getInventory();
 		player.openInventory(inventory);
-		Prefix.DEFAULT_GOOD.sendMessage(target, "&aOuverture de l'inventaire de &2%s&a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(player, "&aOuverture de l'inventaire de &2%s&a.", target.getName());
 		return false;
 	}
 
