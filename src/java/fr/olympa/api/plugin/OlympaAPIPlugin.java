@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.scoreboard.tab.INametagApi;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.task.TaskManager;
 import fr.olympa.api.utils.ColorUtils;
@@ -15,6 +16,15 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	protected final OlympaTask task;
 	protected CustomConfig config;
 	protected INametagApi nameTagApi;
+	private OlympaServer olympaServer = OlympaServer.ALL;
+
+	public OlympaServer getOlympaServer() {
+		return olympaServer;
+	}
+
+	public void setOlympaServer(OlympaServer olympaServer) {
+		this.olympaServer = olympaServer;
+	}
 
 	public OlympaAPIPlugin() {
 		task = new TaskManager(this);
