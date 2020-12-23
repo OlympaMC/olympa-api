@@ -73,6 +73,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 	
 	@Override
 	public boolean onClose(Player p) {
+		super.onClose(p);
 		colorTask.cancel();
 		return true;
 	}
