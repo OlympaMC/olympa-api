@@ -146,7 +146,7 @@ public class HologramsManager implements Listener {
 	public void onChunkUnload(ChunkUnloadEvent e) {
 		List<Integer> holoIDs = null;
 		for (Entity entity : e.getChunk().getEntities())
-			if (entity.hasMetadata("hologram")) {
+			if (!entity.isDead() && entity.hasMetadata("hologram")) {
 				Hologram hologram = holograms.get(entity.getMetadata("hologram").get(0).asInt());
 				hologram.destroyEntities();
 				if (holoIDs == null)
