@@ -43,6 +43,8 @@ public class Hologram extends AbstractObservable {
 	private final boolean defaultVisibility;
 	private final Set<Player> players = new HashSet<>();
 	
+	private boolean willSpawn = false;
+	
 	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
 		
@@ -55,6 +57,7 @@ public class Hologram extends AbstractObservable {
 			addLine(line);
 		}
 		
+		willSpawn = true;
 		if (Bukkit.isPrimaryThread()) {
 			spawnEntities();
 		}else Bukkit.getScheduler().runTask(OlympaCore.getInstance(), this::spawnEntities);
@@ -207,7 +210,7 @@ public class Hologram extends AbstractObservable {
 		
 		private void spawnEntity() {
 			if (entity != null) return;
-			if (!bottom.getChunk().isLoaded()) return;
+			if (!willSpawn || !bottom.getChunk().isLoaded()) return;
 			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);

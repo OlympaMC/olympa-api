@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.sql.SQLColumn.SQLUpdater;
 import fr.olympa.api.sql.statement.OlympaStatement;
-import fr.olympa.core.spigot.OlympaCore;
 
 public class SQLTable<T> {
 	
@@ -110,7 +108,7 @@ public class SQLTable<T> {
 				i++;
 			}
 		}
-		OlympaCore.getInstance().sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));
+		//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));
 		statement.executeUpdate();
 		return statement.getGeneratedKeys();
 	}

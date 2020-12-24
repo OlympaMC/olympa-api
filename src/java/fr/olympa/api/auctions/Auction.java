@@ -77,7 +77,7 @@ public class Auction {
 	public String getTimeBeforeExpiration() {
 		long time = expiration - System.currentTimeMillis();
 		if (time <= 0) return "Expiré !";
-		return Utils.durationToString(numberFormat, expiration);
+		return Utils.durationToString(numberFormat, time);
 	}
 
 	public ItemStack getShownItem() {
