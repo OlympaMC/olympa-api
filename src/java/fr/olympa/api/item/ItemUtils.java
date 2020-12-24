@@ -23,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -363,6 +364,12 @@ public class ItemUtils {
 
 		dataInput.close();
 		return items;
+	}
+	
+	public static int getInventoryContentsLength(Inventory inv) {
+		int length = 0;
+		for (ItemStack item : inv.getContents()) if (item != null) length++;
+		return length;
 	}
 
 }

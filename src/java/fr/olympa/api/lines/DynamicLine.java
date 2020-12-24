@@ -6,7 +6,7 @@ import fr.olympa.api.utils.observable.Observable;
 
 public class DynamicLine<T extends LinesHolder<T>> extends AbstractLine<T> {
 
-	private Function<T, String> value;
+	protected Function<T, String> value;
 
 	public DynamicLine(Function<T, String> value) {
 		this(value, null);
