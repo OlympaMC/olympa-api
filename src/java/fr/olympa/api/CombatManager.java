@@ -74,7 +74,7 @@ public class CombatManager implements Listener {
 		if (!e.isCancelled() && e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
-			if (canEnterCombat(damaged, damaged)) {
+			if (canEnterCombat(damager, damaged)) {
 				getOrSetCombat(damaged).damageEvent = e;
 				getOrSetCombat(damager);
 			}
