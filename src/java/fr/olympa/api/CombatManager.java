@@ -65,13 +65,19 @@ public class CombatManager implements Listener {
 		return combatPlayer;
 	}
 	
+	public boolean canEnterCombat(Player damager, Player damaged) {
+		return true;
+	}
+	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (!e.isCancelled() && e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
-			getOrSetCombat(damaged).damageEvent = e;
-			getOrSetCombat(damager);
+			if (canEnterCombat(damaged, damaged)) {
+				getOrSetCombat(damaged).damageEvent = e;
+				getOrSetCombat(damager);
+			}
 		}
 	}
 	

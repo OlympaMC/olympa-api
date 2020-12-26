@@ -3,8 +3,7 @@ package fr.olympa.api.groups;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.server.OlympaServer;
@@ -82,8 +81,8 @@ public enum OlympaGroup {
 		this.highStaff = highStaff;
 	}
 
-	public Set<OlympaGroup> getAllGroups() {
-		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= getPower()).collect(Collectors.toSet());
+	public Stream<OlympaGroup> getAllGroups() {
+		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() <= getPower());
 	}
 
 	public String getChatColor() {
