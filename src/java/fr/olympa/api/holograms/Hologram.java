@@ -254,7 +254,7 @@ public class Hologram extends AbstractObservable implements Listener {
 		public Location getPosition() {
 			return bottom.clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0);
 		}
-		
+		 
 		public void updatePosition() {
 			if (entity == null) return;
 			entity.teleport(getPosition());
