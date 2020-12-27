@@ -9,11 +9,11 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
-import net.minecraft.server.v1_15_R1.PacketPlayInArmAnimation;
-import net.minecraft.server.v1_15_R1.PacketPlayInBlockDig;
-import net.minecraft.server.v1_15_R1.PacketPlayInBlockPlace;
-import net.minecraft.server.v1_15_R1.PacketPlayInChat;
-import net.minecraft.server.v1_15_R1.PacketPlayInFlying.PacketPlayInPosition;
+import net.minecraft.server.v1_16_R3.PacketPlayInArmAnimation;
+import net.minecraft.server.v1_16_R3.PacketPlayInBlockDig;
+import net.minecraft.server.v1_16_R3.PacketPlayInBlockPlace;
+import net.minecraft.server.v1_16_R3.PacketPlayInChat;
+import net.minecraft.server.v1_16_R3.PacketPlayInFlying.PacketPlayInPosition;
 
 public class AfkPlayer {
 
