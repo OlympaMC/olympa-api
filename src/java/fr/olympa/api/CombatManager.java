@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -37,7 +38,7 @@ public class CombatManager implements Listener {
 				Entry<Player, CombatPlayer> entry = iterator.next();
 				long elapsed = System.currentTimeMillis() - entry.getValue().lastDamage;
 				if (elapsed > combatTimeMillis) {
-					Prefix.DEFAULT_GOOD.sendMessage(entry.getKey(), "Le mode combat est terminé. Tu peux maintenant te déconnecter sans risque.");
+					sendExitCombatMessage(entry.getKey());
 					iterator.remove();
 				}
 			}
@@ -48,9 +49,7 @@ public class CombatManager implements Listener {
 		HandlerList.unregisterAll(this);
 		task.cancel();
 		plugin.sendMessage("§cArrêt du mode combat (%d joueurs).", inCombat.size());
-		for (Player player : inCombat.keySet()) {
-			Prefix.DEFAULT_GOOD.sendMessage(player, "Le mode combat est terminé. Tu peux maintenant te déconnecter sans risque.");
-		}
+		inCombat.keySet().forEach(this::sendExitCombatMessage);
 		inCombat.clear();
 	}
 	
@@ -65,14 +64,31 @@ public class CombatManager implements Listener {
 		return combatPlayer;
 	}
 	
+	protected void sendExitCombatMessage(Player player) {
+		Prefix.DEFAULT_GOOD.sendMessage(player, "Le mode combat est terminé. Tu peux maintenant te déconnecter sans risque.");
+	}
+	
+	public boolean canEnterCombat(Player damager, Player damaged) {
+		return true;
+	}
+	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent e) {
 		if (!e.isCancelled() && e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damaged = (Player) e.getEntity();
 			Player damager = (Player) e.getDamager();
-			getOrSetCombat(damaged).damageEvent = e;
-			getOrSetCombat(damager);
+			if (canEnterCombat(damager, damaged)) {
+				getOrSetCombat(damaged).damageEvent = e;
+				getOrSetCombat(damager);
+			}
 		}
+	}
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent e) {
+		Player player = e.getEntity();
+		CombatPlayer removed = inCombat.remove(player);
+		if (removed != null) sendExitCombatMessage(player);
 	}
 	
 	@EventHandler

@@ -17,17 +17,19 @@ import fr.olympa.api.utils.Prefix;
 
 public class GamemodeCommand extends OlympaCommand {
 
-	private enum Gm {
+	public enum Gm {
 		SURVIVAL("survie"),
 		CREATIVE("creatif"),
 		ADVENTURE("aventure"),
 		SPECTATOR("spectateur");
 
+		private String name;
+		private GameMode gamemode;
+		
 		private Gm(String name) {
 			this.name = name;
+			this.gamemode = GameMode.valueOf(name());
 		}
-
-		String name;
 
 		public String getName() {
 			return name;
@@ -42,13 +44,8 @@ public class GamemodeCommand extends OlympaCommand {
 			return this.name.equals(name) || getRealName().equals(name);
 		}
 
-		public int getId() {
-			return ordinal();
-		}
-
-		@SuppressWarnings("deprecation")
 		public GameMode getGameMode() {
-			return GameMode.getByValue(getId());
+			return gamemode;
 		}
 
 		public static Gm getByStartWith(String startWith) {
@@ -58,18 +55,19 @@ public class GamemodeCommand extends OlympaCommand {
 		public static Gm get(String nameOrId) {
 			Gm gamemode;
 			if (RegexMatcher.INT.is(nameOrId))
-				gamemode = Arrays.stream(Gm.values()).filter(gm -> gm.getId() == Integer.parseInt(nameOrId)).findFirst().orElse(null);
+				gamemode = Arrays.stream(Gm.values()).filter(gm -> gm.ordinal() == Integer.parseInt(nameOrId)).findFirst().orElse(null);
 			else
 				gamemode = Arrays.stream(Gm.values()).filter(gm -> gm.isName(nameOrId)).findFirst().orElse(null);
 			return gamemode;
 		}
 
 		public boolean isGameMode(GameMode gameMode) {
-			return gameMode.toString().equals(toString());
+			return gameMode.name().equals(name());
 		}
 
+		@SuppressWarnings ("deprecation")
 		public static Gm get(GameMode gameMode) {
-			return Arrays.stream(Gm.values()).filter(gm -> gm.isGameMode(gameMode)).findFirst().orElse(null);
+			return Gm.values()[gameMode.getValue()];
 		}
 	}
 
@@ -82,60 +80,75 @@ public class GamemodeCommand extends OlympaCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Player target = player;
+		Player target = null;
 		Gm gm = null;
-		if (!label.equals("gm") && label.startsWith("gm"))
+		boolean shortCommand = !label.equals("gm") && label.startsWith("gm");
+		if (shortCommand) {
 			gm = Gm.getByStartWith(label.substring(2));
-		String targetName = null;
-		if (gm == null) {
-
-			if (args.length < 2 || (gm = Gm.get(args[0])) == null) {
-				if (args.length >= 1) {
-					target = Bukkit.getPlayer(args[0]);
-					if (target == null) {
-						sendUnknownPlayer(args[0]);
-						return false;
-					}
-					sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est en gamemode &2%s&a.", target.getName(), Gm.get(target.getGameMode()).getName());
-					return true;
-				}
+		}else {
+			gm = Gm.get(args[0]);
+		}
+		
+		if (args.length == 0) {
+			if (gm == null) {
+				sendIncorrectSyntax();
 				return false;
 			}
-			targetName = args[1];
-		} else if (args.length >= 1)
-			targetName = args[0];
-
-		if (targetName != null) {
-			target = Bukkit.getPlayer(targetName);
+			if (player == null) {
+				sendImpossibleWithConsole();
+				return false;
+			}
+			target = player;
+		}else if (args.length == 1) {
+			if (shortCommand || gm == null) {
+				target = Bukkit.getPlayer(args[0]);
+				if (target == null) {
+					sendUnknownPlayer(args[0]);
+					return false;
+				}
+			}else {
+				if (player == null) {
+					sendImpossibleWithConsole();
+					return false;
+				}
+				target = player;
+			}
+		}else {
+			if (gm == null) {
+				sendError("Gamemode %s inconnu.", args[0]);
+				return false;
+			}
+			target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
-				sendUnknownPlayer(targetName);
+				sendUnknownPlayer(args[1]);
 				return false;
 			}
 		}
+		
 		if (gm == Gm.CREATIVE && !hasPermission(OlympaAPIPermissions.GAMEMODE_COMMAND_CREATIVE)) {
 			sendDoNotHavePermission();
 			return false;
 		}
-		Gm oldgm = Gm.get(target.getGameMode());
-		if (oldgm == null) {
-			sendError("Gamemode %s inconnu.", target.getGameMode().name().toLowerCase());
-			return false;
+		
+		if (gm == null) {
+			sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est en gamemode &2%s&a.", target.getName(), Gm.get(target.getGameMode()).getName());
+		}else {
+			Gm oldMode = Gm.get(target.getGameMode());
+			if (gm == oldMode) {
+				if (target != player)
+					sendError("&4%s&c est déjà en gamemode &4%s&c.", target.getName(), gm.getName());
+				else
+					sendError("&cTu es déjà en gamemode &4%s&c.", gm.getName());
+			}else {
+				target.setGameMode(gm.getGameMode());
+				if (target != player)
+					sendSuccess("&2%s&a est désormais en gamemode &2%s&a (avant &2%s&a).", target.getName(), gm.getName(), oldMode.getName());
+				Prefix.DEFAULT_GOOD.sendMessage(target, "&aTu es désormais en gamemode &2%s&a.", gm.getName());
+			}
 		}
-		String oldGamemode = oldgm.getName();
-		if (gm.isGameMode(target.getGameMode())) {
-			if (target != player)
-				sendMessage(Prefix.DEFAULT_BAD, "&4%s&c est déjà en gamemode &4%s&c.", target.getName(), oldGamemode);
-			else
-				Prefix.DEFAULT_BAD.sendMessage(target, "&cTu es déjà en gamemode &4%s&c.", oldGamemode);
-			return false;
-		}
-		target.setGameMode(gm.getGameMode());
-		if (target != player)
-			sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est désormais en gamemode &2%s&a (avant &2%s&a).", target.getName(), gm.getName(), oldGamemode);
-		Prefix.DEFAULT_GOOD.sendMessage(target, "&aTu es désormais en gamemode &2%s&a.", gm.getName());
 		return false;
 	}
-
+	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		return null;

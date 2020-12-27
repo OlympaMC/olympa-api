@@ -59,9 +59,9 @@ public interface IOlympaCommand {
 		sendError("Une erreur est survenue ¯\\_(ツ)_/¯ %s", cause.getMessage());
 	}
 
-	void broadcast(Prefix prefix, String text, Object... args);
+	int broadcast(Prefix prefix, String text, Object... args);
 
-	void broadcastToAll(Prefix prefix, String text, Object... args);
+	int broadcastToAll(Prefix prefix, String text, Object... args);
 
 	default void sendInfo(String message, Object... args) {
 		sendMessage(Prefix.INFO, message, args);

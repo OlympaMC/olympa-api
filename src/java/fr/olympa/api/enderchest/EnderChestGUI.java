@@ -27,6 +27,11 @@ public class EnderChestGUI extends OlympaGUI {
 	}
 	
 	@Override
+	public boolean onMoveItem(Player p, ItemStack moved) {
+		return false;
+	}
+	
+	@Override
 	public boolean onClose(Player p) {
 		player.setEnderChestContents(inv.getContents());
 		return super.onClose(p);

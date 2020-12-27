@@ -1,6 +1,7 @@
 package fr.olympa.api.clans;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,7 +83,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	public void disband() {
 		broadcast(manager.stringClanDisband);
-		for (OlympaPlayerInformations member : members.keySet())
+		for (OlympaPlayerInformations member : new ArrayList<>(members.keySet()))
 			removePlayer(member, false);
 		manager.removeClan((T) this);
 	}

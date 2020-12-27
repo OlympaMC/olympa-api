@@ -19,12 +19,16 @@ public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 		this.ticks = ticks;
 	}
 	
+	protected void execute() {
+		super.updateGlobal();
+	}
+	
 	@Override
 	public synchronized void addHolder(T holder) {
 		super.addHolder(holder);
 		if (task == null) {
 			System.out.println("TimerLine.addHolder() add task");
-			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateGlobal, 1, ticks);
+			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::execute, 1, ticks);
 		}
 	}
 

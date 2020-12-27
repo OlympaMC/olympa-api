@@ -10,21 +10,21 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.utils.spigot.ProtocolAPI;
 import fr.olympa.core.spigot.OlympaCore;
-import net.minecraft.server.v1_15_R1.IChatBaseComponent;
-import net.minecraft.server.v1_15_R1.IScoreboardCriteria;
-import net.minecraft.server.v1_15_R1.Packet;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardDisplayObjective;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardObjective;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardScore;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.v1_15_R1.ScoreboardServer;
-import net.minecraft.server.v1_15_R1.ScoreboardServer.Action;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
+import net.minecraft.server.v1_16_R3.IScoreboardCriteria;
+import net.minecraft.server.v1_16_R3.Packet;
+import net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_16_R3.ScoreboardServer;
+import net.minecraft.server.v1_16_R3.ScoreboardServer.Action;
 
 /**
  * Simple Bukkit ScoreBoard API with 1.7 to 1.16 support.

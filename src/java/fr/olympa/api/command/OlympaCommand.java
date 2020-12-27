@@ -3,6 +3,7 @@ package fr.olympa.api.command;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -195,14 +196,16 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	}
 
 	@Override
-	public void broadcast(Prefix prefix, String text, Object... args) {
-		sendMessage(Bukkit.getOnlinePlayers(), prefix, text, args);
+	public int broadcast(Prefix prefix, String text, Object... args) {
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		sendMessage(players, prefix, text, args);
+		return players.size();
 	}
 
 	@Override
-	public void broadcastToAll(Prefix prefix, String text, Object... args) {
-		broadcast(prefix, text, args);
+	public int broadcastToAll(Prefix prefix, String text, Object... args) {
 		prefix.sendMessage(Bukkit.getConsoleSender(), text, args);
+		return broadcast(prefix, text, args) + 1;
 	}
 
 	@Override

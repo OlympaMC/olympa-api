@@ -108,6 +108,7 @@ public class SQLTable<T> {
 				i++;
 			}
 		}
+		//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));
 		statement.executeUpdate();
 		return statement.getGeneratedKeys();
 	}

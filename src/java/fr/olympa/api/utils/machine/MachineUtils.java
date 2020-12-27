@@ -34,6 +34,10 @@ public class MachineUtils {
 		out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Serveur §b" + main.getServerName())));
 		out.addExtra(" ");
 		out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Status: " + main.getStatus().getNameColored() + "§3.")));
+		if (main.isSpigot()) {
+			out.addExtra(" ");
+			out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Versions: §v" + OlympaCore.getInstance().getRangeVersion() + "§3.")));
+		}
 		out.addExtra("\n");
 		out2 = new TextComponent(TextComponent.fromLegacyText("§3En ligne depuis §b" + main.getUptime() + "§3."));
 		out2.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, TextComponent.fromLegacyText("§e" + Utils.timestampToDateAndHour(main.getUptimeLong()) + ".")));

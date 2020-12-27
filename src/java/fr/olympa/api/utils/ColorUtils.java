@@ -92,4 +92,8 @@ public class ColorUtils {
 		return l.stream().map(s -> color(s)).collect(Collectors.toList());
 	}
 
+	public static String join(CharSequence string, CharSequence... args) {
+		return color(String.join(string, args));
+	}
+
 }

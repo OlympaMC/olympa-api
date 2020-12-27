@@ -57,6 +57,10 @@ public class MachineInfo {
 	public String getMemUsage() {
 		return TPSUtils.getRamUsageColor((int) Math.round(memUsage)) + "%";
 	}
+	
+	public long getRawMemUsage() {
+		return Math.round(memUsage);
+	}
 
 	public String getMemUse() {
 		return memUsed + "/" + memeTotal + "Mo";

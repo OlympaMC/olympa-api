@@ -1,6 +1,7 @@
 package fr.olympa.api.permission;
 
 import fr.olympa.api.groups.OlympaGroup;
+import fr.olympa.api.server.OlympaServer;
 
 public class OlympaAPIPermissions {
 
@@ -28,5 +29,11 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission INVSEE_COMMAND_INTERACT = new OlympaPermission(OlympaGroup.MODP);
 	public static final OlympaPermission ECSEE_COMMAND = new OlympaPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaPermission ECSEE_COMMAND_INTERACT = new OlympaPermission(OlympaGroup.MODP);
+	public static final OlympaPermission ERRORS_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
 
+	{
+		OlympaServer.DEV.setJoinPermission(CONNECT_SERVER_DEV);
+		OlympaServer.BUILDEUR.setJoinPermission(CONNECT_SERVER_BUILDER);
+	}
+	
 }

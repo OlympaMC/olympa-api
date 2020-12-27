@@ -10,8 +10,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryCustom;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,15 +20,16 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.utils.Prefix;
-import net.minecraft.server.v1_15_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.NBTTagList;
+import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagList;
 
 public class InvseeCommand extends OlympaCommand {
 
 	public InvseeCommand(Plugin plugin) {
 		super(plugin, "invsee", OlympaAPIPermissions.INVSEE_COMMAND);
 		addArgs(true, "JOUEUR");
+		setAllowConsole(false);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class InvseeCommand extends OlympaCommand {
 		} else
 			inventory = target.getInventory();
 		player.openInventory(inventory);
-		Prefix.DEFAULT_GOOD.sendMessage(target, "&aOuverture de l'inventaire de &2%s&a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(player, "&aOuverture de l'inventaire de &2%s&a.", target.getName());
 		return false;
 	}
 
@@ -65,7 +66,7 @@ public class InvseeCommand extends OlympaCommand {
 			for (int i = 0; i < inventory.size() - 1; i++) {
 				NBTTagCompound compound = (NBTTagCompound) inventory.get(i);
 				if (!compound.isEmpty()) {
-					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_15_R1.ItemStack.a(compound));
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_16_R3.ItemStack.a(compound));
 					inv.setItem(i, stack);
 				}
 			}

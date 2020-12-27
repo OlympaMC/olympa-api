@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftArmorStand;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -23,10 +23,10 @@ import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
-import net.minecraft.server.v1_15_R1.EntityArmorStand;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 
 public class Hologram extends AbstractObservable {
 
@@ -43,6 +43,8 @@ public class Hologram extends AbstractObservable {
 	private final boolean defaultVisibility;
 	private final Set<Player> players = new HashSet<>();
 	
+	private boolean willSpawn = false;
+	
 	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
 		
@@ -55,6 +57,7 @@ public class Hologram extends AbstractObservable {
 			addLine(line);
 		}
 		
+		willSpawn = true;
 		if (Bukkit.isPrimaryThread()) {
 			spawnEntities();
 		}else Bukkit.getScheduler().runTask(OlympaCore.getInstance(), this::spawnEntities);
@@ -207,7 +210,7 @@ public class Hologram extends AbstractObservable {
 		
 		private void spawnEntity() {
 			if (entity != null) return;
-			if (!bottom.getChunk().isLoaded()) return;
+			if (!willSpawn || !bottom.getChunk().isLoaded()) return;
 			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);
 			entity.setGravity(false);
 			entity.setMarker(true);

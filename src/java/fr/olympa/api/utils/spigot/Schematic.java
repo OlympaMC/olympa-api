@@ -11,16 +11,17 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_15_R1.block.CraftBlock;
-import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers.NBT;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
 
-import net.minecraft.server.v1_15_R1.BlockPosition;
-import net.minecraft.server.v1_15_R1.NBTBase;
-import net.minecraft.server.v1_15_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_15_R1.NBTTagCompound;
-import net.minecraft.server.v1_15_R1.NBTTagList;
-import net.minecraft.server.v1_15_R1.TileEntity;
+import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.NBTBase;
+import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.server.v1_16_R3.NBTTagList;
+import net.minecraft.server.v1_16_R3.TileEntity;
 
 public class Schematic {
 
@@ -141,7 +142,8 @@ public class Schematic {
 			if (tileEntity != null) {
 				BlockPosition position = ((CraftBlock) block).getPosition();
 				TileEntity tileEntity2 = ((CraftWorld) block.getWorld()).getHandle().getTileEntity(position);
-				tileEntity2.load(tileEntity);
+				IBlockData blockData = ((CraftWorld) block.getWorld()).getHandle().getType(position);
+				tileEntity2.load(blockData, tileEntity);
 				tileEntity2.setPosition(position);
 				tileEntity2.update();
 			}
