@@ -139,9 +139,9 @@ public class TpCommand extends OlympaCommand {
 				return null;
 			}
 			if (d.is(args[++i]))
-				location.setYaw((Float) f.parse(args[i]));
+				location.setPitch((Float) f.parse(args[i]));
 			else if (r.is(args[i]))
-				location.setYaw(location.getPitch() + (Float) f.parse(args[i]));
+				location.setPitch(location.getPitch() + (Float) f.parse(args[i]));
 			else {
 				sendError("La position pitch = &4%s&c n'est pas valide.", args[i]);
 				return null;
