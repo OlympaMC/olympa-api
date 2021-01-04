@@ -2,7 +2,9 @@ package fr.olympa.api.groups;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fr.olympa.api.player.Gender;
@@ -57,6 +59,10 @@ public enum OlympaGroup {
 	 */
 	public static OlympaGroup getByName(String name) {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> Utils.equalsIgnoreCase(group.getName(), name)).findFirst().orElse(null);
+	}
+
+	public static List<OlympaGroup> getStaffGroups() {
+		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() >= GRAPHISTE.getPower()).collect(Collectors.toList());
 	}
 
 	final int id;
@@ -147,17 +153,17 @@ public enum OlympaGroup {
 	public OlympaServer getServer() {
 		return server;
 	}
-	
+
 	public void setRuntimePermission(String permission) {
 		runtimePermissions.put(permission, true);
 	}
-	
+
 	public void setRuntimePermission(String permission, boolean value) {
 		runtimePermissions.put(permission, value);
 	}
-	
+
 	public void unsetRuntimePermission(String permission) {
 		runtimePermissions.remove(permission);
 	}
-	
+
 }

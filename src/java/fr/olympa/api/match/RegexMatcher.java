@@ -35,6 +35,13 @@ public class RegexMatcher {
 		}
 		return null;
 	});
+	public static final MatcherPattern RELATIVE = new MatcherPattern("~-?\\d+(.\\d+)?", x -> {
+		try {
+			return Double.parseDouble(x.replace(",", "."));
+		} catch (NumberFormatException e) {
+		}
+		return null;
+	});
 	public static final MatcherPattern FLOAT = new MatcherPattern("-?\\d+(.\\d+)?", x -> {
 		try {
 			return Float.parseFloat(x.replace(",", "."));

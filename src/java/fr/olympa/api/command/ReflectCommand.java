@@ -112,6 +112,9 @@ public class ReflectCommand extends Command {
 			case "NUMBER":
 				potentialArgs.add("0");
 				break;
+			case "RELATIVE":
+				potentialArgs.add("~");
+				break;
 			default:
 				potentialArgs.add(ca.getArgName());
 				break;
