@@ -34,6 +34,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> implements Listener {
 	
@@ -245,7 +246,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getName()));
 		for (BaseComponent comp : texts) {
 			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + getClansCommand() + " accept " + clan.getName()));
-			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin))));
+			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin)))));
 		}
 		targetPlayer.spigot().sendMessage(texts);
 	}

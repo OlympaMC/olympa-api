@@ -1,7 +1,10 @@
 package fr.olympa.api.utils.machine;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -11,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.hook.IProtocolSupport;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.api.utils.spigot.TPSUtils;
@@ -18,6 +22,7 @@ import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class MachineUtils {
 
@@ -66,6 +71,21 @@ public class MachineUtils {
 		out.addExtra("\n");
 
 		if (main.isSpigot()) {
+			try {
+				out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Modules: §b")));
+				for (TextComponent txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))
+						.map(ff -> ColorUtils.textComponentBuilder("§6" + ff.getName().substring(6) + " ", null, null, Action.SHOW_TEXT, new Text("§eDernière MAJ " + Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain()
+								.getCodeSource()
+								.getLocation()
+								.getPath())
+										.lastModified()
+								/ 1000L))))
+						.collect(Collectors.toList()))
+					out.addExtra(txt);
+				out.addExtra("\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			out2 = new TextComponent(TextComponent.fromLegacyText("§3Versions supportées: §b" + ((OlympaCore) main).getRangeVersion() + "§3."));
 			IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 			if (protocolSupport != null) {

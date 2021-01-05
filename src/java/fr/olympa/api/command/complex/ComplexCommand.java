@@ -50,9 +50,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		boolean canRun() {
 			return hasPermission(perm) && (!cmd.player() || !isConsole());
 		}
-		
+
 		boolean canRun(CommandSender sender) {
-			return (sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player());
+			return sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player();
 		}
 
 		String getSyntax() {
@@ -108,9 +108,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
 	protected static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
-	private static final String uuid = UUID.randomUUID().toString();
-	protected static final List<String> UUIDS = Arrays.asList(uuid, uuid.replace("-", ""));
+	private static final String TEMP_UUID = UUID.randomUUID().toString();
+	protected static final List<String> UUIDS = Arrays.asList(TEMP_UUID, TEMP_UUID.replace("-", ""));
 	protected static final List<String> BOOLEAN = Arrays.asList("true", "false");
+	protected static final List<String> HEX_COLOR = Arrays.asList("#123456", "#FFFFFF");
 	public final Map<List<String>, SpigotInternalCommand> commands = new HashMap<>();
 	private final Map<String, SpigotArgumentParser> parsers = new HashMap<>();
 
@@ -132,11 +133,16 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			String random = UUID.randomUUID().toString();
 			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
 		});
-		addArgumentParser("DOUBLE", sender -> Collections.EMPTY_LIST, x -> {
+		addArgumentParser("DOUBLE", sender -> Collections.emptyList(), x -> {
 			if (RegexMatcher.DOUBLE.is(x))
 				return RegexMatcher.DOUBLE.parse(x);
 			return null;
 		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
+		addArgumentParser("HEX_COLOR", sender -> HEX_COLOR, x -> {
+			if (RegexMatcher.HEX_COLOR.is(x))
+				return RegexMatcher.HEX_COLOR.parse(x);
+			return null;
+		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456&c ou &4#FFFFFF&c.", x));
 		addArgumentParser("BOOLEAN", sender -> BOOLEAN, Boolean::parseBoolean, null);
 		addArgumentParser("SUBCOMMAND", sender -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg() && !e.getValue().cmd.hide()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			SpigotInternalCommand result = getCommand(x);

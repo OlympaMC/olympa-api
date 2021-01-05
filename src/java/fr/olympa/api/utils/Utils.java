@@ -48,26 +48,28 @@ public class Utils {
 		Collections.shuffle(list);
 		return list;
 	});
-	
+
 	public static String durationToString(NumberFormat numberFormat, long time) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		long days = time / 86_400_000;
-		if (days != 0) sb.append(numberFormat.format(days)).append('J');
+		if (days != 0)
+			sb.append(numberFormat.format(days)).append('J');
 		time -= days * 86_400_000;
-		
+
 		long hours = time / 3_600_000;
-		if (sb.length() != 0) sb.append(' ');
+		if (sb.length() != 0)
+			sb.append(' ');
 		sb.append(numberFormat.format(hours)).append("H ");
 		time -= hours * 3_600_000;
-		
+
 		long minutes = time / 60_000;
 		sb.append(numberFormat.format(minutes)).append("M ");
 		time -= minutes * 60_000;
-		
+
 		long seconds = time / 1_000;
 		sb.append(numberFormat.format(seconds)).append("S");
-		
+
 		return sb.toString();
 	}
 
@@ -245,7 +247,7 @@ public class Utils {
 	}
 
 	public static String getUUIDString(UUID uuid) {
-		return uuid.toString().replaceAll("-", "");
+		return uuid == null ? null : uuid.toString().replaceAll("-", "");
 	}
 
 	public static String insertChar(String string, String insert) {
@@ -362,6 +364,51 @@ public class Utils {
 		return timestampToDuration(timestamp, 2);
 	}
 
+	public static String tsToShortDur(long timestamp) {
+
+		long now = Utils.getCurrentTimeInSeconds();
+		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
+		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
+		LocalDateTime start;
+		LocalDateTime end;
+		if (timestamp > now) {
+			start = now2;
+			end = timestamp2;
+		} else {
+			start = timestamp2;
+			end = now2;
+		}
+		Duration dur = Duration.between(start.toLocalTime(), end.toLocalTime());
+		LocalDate e = end.toLocalDate();
+		if (dur.isNegative()) {
+			dur = dur.plusDays(1);
+			e = e.minusDays(1);
+		}
+		Period per = Period.between(start.toLocalDate(), e);
+		long year = per.getYears();
+		long month = per.getMonths();
+		long day = per.getDays();
+		long hour = dur.toHours();
+		long minute = dur.toMinutes() - 60 * dur.toHours();
+		long second = dur.getSeconds() - 60 * dur.toMinutes();
+		List<String> msg = new ArrayList<>();
+		if (year > 1)
+			msg.add(year + " ans");
+		else if (year == 1)
+			msg.add(year + " an");
+		if (month != 0 && (msg.isEmpty() || month > 5))
+			msg.add(month + " mois");
+		if (day != 0 && (msg.isEmpty() || msg.size() < 2 && day > 16))
+			msg.add(day + "j");
+		if (hour != 0 && (msg.isEmpty() || msg.size() < 2 && day < 2 && day != 0 && hour > 12))
+			msg.add(hour + "h");
+		if (minute != 0 && (msg.isEmpty() || msg.size() < 2 && hour == 1))
+			msg.add(minute + "min");
+		if (msg.isEmpty() && second != 0)
+			msg.add(second + "s");
+		return String.join(" ", msg);
+	}
+
 	public static String timestampToDuration(long timestamp, int precision) {
 		long now = Utils.getCurrentTimeInSeconds();
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
@@ -471,9 +518,9 @@ public class Utils {
 	public static String withOrWithoutS(int i) {
 		return i < 2 ? "" : "s";
 	}
-	
+
 	public static String withOrWithoutS(long i, String string) {
-		return Long.toString(i) + " " + (i < 2 ? string : (string + "s"));
+		return Long.toString(i) + " " + (i < 2 ? string : string + "s");
 	}
 
 	public static boolean isEmptyFile(File file) throws IOException {

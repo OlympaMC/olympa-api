@@ -37,7 +37,7 @@ public interface LinkSpigotBungee {
 	}
 
 	OlympaTask getTask();
-	
+
 	OlympaServer getOlympaServer();
-	
+
 }

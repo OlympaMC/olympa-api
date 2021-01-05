@@ -84,19 +84,19 @@ public class OlympaStatement {
 		if (type.isSame(StatementType.UPDATE)) {
 			sj.add("SET");
 			StringJoiner sj2 = new StringJoiner(", ");
-			Arrays.stream(keys).forEach(key -> sj2.add("`" + key + "` = ?"));
+			Arrays.stream(keys).forEach(key -> sj2.add(acuteIfNeeded(key) + " = ?"));
 			sj.add(sj2.toString());
 		}
 		if (what != null && what.length != 0) {
 			sj.add("WHERE");
 			StringJoiner sj2 = new StringJoiner(" AND ");
-			Arrays.stream(what).forEach(w -> sj2.add("`" + w + "` = ?"));
+			Arrays.stream(what).forEach(w -> sj2.add(acuteIfNeeded(w) + " = ?"));
 			sj.add(sj2.toString());
 		}
 		if (or != null && or.length != 0) {
 			sj.add("OR");
 			StringJoiner sj2 = new StringJoiner(" OR ");
-			Arrays.stream(or).forEach(w -> sj2.add("`" + w + "` = ?"));
+			Arrays.stream(or).forEach(w -> sj2.add(acuteIfNeeded(w) + " = ?"));
 			sj.add(sj2.toString());
 		}
 		if (orderCollumn != null && !orderCollumn.isBlank() && asc != null)
@@ -136,6 +136,12 @@ public class OlympaStatement {
 		if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0))
 			prepared = returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statement, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statement);
 		return prepared;
+	}
+
+	private String acuteIfNeeded(String s) {
+		if (s.charAt(0) != '`' && s.charAt(s.length() - 1) != '`')
+			return "`" + s + "`";
+		return s;
 	}
 
 	public String getStatementCommand() {

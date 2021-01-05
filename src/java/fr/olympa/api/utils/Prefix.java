@@ -30,7 +30,7 @@ public enum Prefix {
 	ChatColor color;
 	ChatColor color2;
 
-	private Prefix(final String prefix) {
+	private Prefix(String prefix) {
 		this.prefix = prefix;
 	}
 
@@ -70,7 +70,7 @@ public enum Prefix {
 		return TextComponent.fromLegacyText(ColorUtils.color(String.format(prefix + msg, args)));
 	}
 
-	private void setPrefix(final String prefix) {
+	private void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 

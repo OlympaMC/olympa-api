@@ -7,8 +7,15 @@ import java.util.stream.Collectors;
 
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public interface IOlympaCommand {
 
@@ -59,6 +66,34 @@ public interface IOlympaCommand {
 		sendError("Une erreur est survenue ¯\\_(ツ)_/¯ %s", cause.getMessage());
 	}
 
+	default void sendHoverAndCopy(Prefix prefix, String message, String hoverText, String copyToClipboard) {
+		sendJSON(prefix, message, ClickEvent.Action.COPY_TO_CLIPBOARD, copyToClipboard, HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(hoverText.replace("&", "§"))));
+	}
+
+	default void sendHoverAndURL(Prefix prefix, String message, String hoverText, String urlToOpen) {
+		sendJSON(prefix, message, ClickEvent.Action.OPEN_URL, urlToOpen, HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(hoverText.replace("&", "§"))));
+	}
+
+	default void sendHoverAndCommand(Prefix prefix, String message, String hoverText, String command) {
+		sendJSON(prefix, message, ClickEvent.Action.RUN_COMMAND, checkCommand(command), HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(hoverText.replace("&", "§"))));
+	}
+
+	default void sendHoverAndSuggest(Prefix prefix, String message, String hoverText, String command) {
+		sendJSON(prefix, message, ClickEvent.Action.SUGGEST_COMMAND, checkCommand(command), HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(hoverText.replace("&", "§"))));
+	}
+
+	default void sendJSON(Prefix prefix, String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
+		sendComponents(prefix, ColorUtils.textComponentBuilder(message, clickAction, clickActionValue, hoverAction, contents));
+	}
+
+	void sendComponents(BaseComponent... components);
+
+	default void sendComponents(Prefix prefix, BaseComponent... components) {
+		TextComponent text = new TextComponent(TextComponent.fromLegacyText(prefix.toString()));
+		text.addExtra(new TextComponent(components));
+		sendComponents(text);
+	}
+
 	int broadcast(Prefix prefix, String text, Object... args);
 
 	int broadcastToAll(Prefix prefix, String text, Object... args);
@@ -80,8 +115,6 @@ public interface IOlympaCommand {
 	}
 
 	void sendUsage(String label);
-
-	void sendComponents(BaseComponent... components);
 
 	OlympaPermission getOlympaPermission();
 
@@ -142,6 +175,14 @@ public interface IOlympaCommand {
 
 	default void addArgs(boolean isMandatory, String... args) {
 		addCommandArguments(isMandatory, Arrays.stream(args).map(CommandArgument::new).collect(Collectors.toList()));
+	}
+
+	private String checkCommand(String command) {
+		if (command.charAt(0) != '/') {
+			OlympaCore.getInstance().sendMessage("&cBAD USAGE OF JSON ClickEvent, you fogot the '/'. I'll add it this time, but correct it pls.");
+			return "/" + command;
+		}
+		return command;
 	}
 
 	IOlympaCommand register();

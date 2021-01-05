@@ -3,11 +3,25 @@ package fr.olympa.api.utils;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Content;
 
 public class ColorUtils {
+
+	public static ChatColor ORANGE = ChatColor.of("#FF4500");
+
+	private static Random RANDOM = new Random();
+
+	public static ChatColor randomColor() {
+		int rand_num = RANDOM.nextInt(0xffffff + 1);
+		return ChatColor.of(String.format("#%06x", rand_num));
+	}
 
 	public static String format(String format, Object... args) {
 		return color(String.format(format, args));
@@ -86,6 +100,15 @@ public class ColorUtils {
 			}
 		sb.append(color1);
 		return sb.toString();
+	}
+
+	public static TextComponent textComponentBuilder(String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
+		TextComponent text = new TextComponent(TextComponent.fromLegacyText(message.replace("&", "§")));
+		if (clickAction != null && clickActionValue != null)
+			text.setClickEvent(new ClickEvent(clickAction, clickActionValue.replace("&", "§")));
+		if (hoverAction != null && contents != null)
+			text.setHoverEvent(new HoverEvent(hoverAction, contents));
+		return text;
 	}
 
 	public static List<String> color(List<String> l) {
