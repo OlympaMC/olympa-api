@@ -12,12 +12,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.holograms.Hologram.HologramLine;
@@ -167,6 +170,20 @@ public class HologramsManager implements Listener {
 				if (hologram != null)
 					hologram.spawnEntities();
 			}
+	}
+	
+	@EventHandler //respawn entity if killed by any other process than normal holo removing 
+	public void onRemoveEntity(EntityRemoveFromWorldEvent e) {
+		if (e.getEntityType() != EntityType.ARMOR_STAND)
+			return;
+		
+		if (e.getEntity().hasMetadata("hologram")) {
+			Hologram hologram = holograms.get(e.getEntity().getMetadata("hologram").get(0).asInt());
+			if (hologram != null) {
+				HologramLine line = hologram.getFromArmorStand(e.getEntity().getEntityId());
+				if (line != null) Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> line.spawnEntity());
+			}
+		}
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)

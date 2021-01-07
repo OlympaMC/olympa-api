@@ -14,13 +14,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.FixedLine;
@@ -33,7 +28,7 @@ import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 
-public class Hologram extends AbstractObservable implements Listener {
+public class Hologram extends AbstractObservable {
 
 	private static final double LINE_SPACING = 0.3;
 	private static final int VISIBILITY_DISTANCE_SQUARED = 64 * 64;
@@ -66,8 +61,6 @@ public class Hologram extends AbstractObservable implements Listener {
 		if (Bukkit.isPrimaryThread()) {
 			spawnEntities();
 		}else Bukkit.getScheduler().runTask(OlympaCore.getInstance(), this::spawnEntities);
-		
-		OlympaCore.getInstance().getServer().getPluginManager().registerEvents(this, OlympaCore.getInstance());
 	}
 
 	public Location getBottom() {
@@ -117,6 +110,13 @@ public class Hologram extends AbstractObservable implements Listener {
 			if (line.entity != null && (line.entity.getEntityId() == entityID)) return true;
 		}
 		return false;
+	}
+	
+	public HologramLine getFromArmorStand(int entityID) {
+		for (HologramLine line : lines) {
+			if (line.entity != null && (line.entity.getEntityId() == entityID)) return line;
+		}
+		return null;
 	}
 	
 	public void addLine(AbstractLine<HologramLine> line) {
@@ -206,18 +206,6 @@ public class Hologram extends AbstractObservable implements Listener {
 	static Hologram deserialize(Map<String, Object> map, int id, boolean persistent) {
 		return new Hologram(id, SpigotUtils.convertStringToLocation((String) map.get("bottom")), persistent, true, ((List<AbstractLine<HologramLine>>) map.get("lines")).toArray(AbstractLine[]::new));
 	}
-
-	@EventHandler //respawn entity if killed by any other process than normal holo removing 
-	public void onRemoveEntity(EntityRemoveFromWorldEvent e) {
-		if (e.getEntityType() != EntityType.ARMOR_STAND)
-			return;
-		
-		for (HologramLine line : lines)
-			if (line.entity.getEntityId() == e.getEntity().getEntityId()) {
-				line.destroyEntity();
-				line.spawnEntity();
-			}
-	}
 	
 	public class HologramLine implements LinesHolder<HologramLine> {
 		private final AbstractLine<HologramLine> line;
@@ -227,7 +215,7 @@ public class Hologram extends AbstractObservable implements Listener {
 			this.line = line;
 		}
 		
-		private void spawnEntity() {
+		void spawnEntity() {
 			if (entity != null) return;
 			if (!willSpawn || !bottom.getChunk().isLoaded()) return;
 			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);

@@ -96,7 +96,7 @@ public class SQLTable<T> {
 		} else if (statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")") >= 1)
 			link.sendMessage("Table SQL §6%s §ecréée !", name);
 		else
-			new IllegalAccessError("La table " + name + " n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.").printStackTrace();
+			new IllegalAccessError("La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.").printStackTrace();
 
 		columns.stream().forEach(column -> column.setSQLSelector(new SQLSelector<>() {
 
