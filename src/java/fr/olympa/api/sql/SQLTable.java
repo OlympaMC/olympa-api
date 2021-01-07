@@ -77,10 +77,10 @@ public class SQLTable<T> {
 		String schemaPattern = null, tablePattern = name;
 		int pointIndex = name.indexOf('.');
 		if (pointIndex >= 0) {
-			schemaPattern = name.substring(0, pointIndex - 1);
+			schemaPattern = name.substring(0, pointIndex);
 			tablePattern = name.substring(pointIndex + 1);
 		}
-		ResultSet columnsSet = link.getDatabase().getMetaData().getColumns(null, schemaPattern, tablePattern, "%");
+		ResultSet columnsSet = link.getDatabase().getMetaData().getColumns(schemaPattern, null, tablePattern, "%");
 		if (columnsSet.first()) { // la table existe : il faut vérifier si toutes les colonnes sont présentes
 			link.sendMessage("§7Chargement de la table %s...", name);
 			List<SQLColumn<?>> missingColumns = columns.stream().filter(Predicate.not(SQLColumn::isPrimaryKey)).collect(Collectors.toList());
