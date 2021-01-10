@@ -47,7 +47,7 @@ public class ColorCommand extends ComplexCommand {
 		return result;
 	}
 
-	@Cmd(min = 1, args = "HEX", syntax = "<#hexCode>")
+	@Cmd(min = 1, args = "HEX_COLOR", syntax = "<#hexCode>", otherArg = true)
 	public void hex(CommandContext cmd) {
 		String arg = cmd.getArgument(0);
 		ChatColor color = ChatColor.of(arg);
