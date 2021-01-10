@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Prefix;
@@ -27,7 +28,7 @@ public class ExempleCommand extends OlympaCommand {
 		// this.setMinArg(1); not needed now it detect auto with this.addArgs(true, ...)
 
 		// Allows Console and Command Block to use the command
-		this.setAllowConsole(true);
+		setAllowConsole(true);
 
 	}
 
@@ -41,24 +42,28 @@ public class ExempleCommand extends OlympaCommand {
 		// null if sender = Console or Command Block
 		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
 
-		// send messages
-		this.sendMessage(Prefix.DEFAULT, "To you only");
-		this.broadcastToAll(Prefix.DEFAULT, "[ALL] Hello everyone & Console"); // include Console
-		this.broadcast(Prefix.DEFAULT, "[ALL] Hello players"); // Broadcast to players only
-		this.sendSuccess("Succès, argument %s", "coucou");
-		this.sendComponents(Prefix.DEFAULT_GOOD, new ComponentBuilder("Hello ").color(ChatColor.RED).bold(true).append("world").color(ChatColor.DARK_RED).append("!").color(ChatColor.RED).create());
-
 		// send pre-made messages
 		this.sendMessage(Prefix.DEFAULT, "This is the default prefix.");
-		this.sendDoNotHavePermission();
-		this.sendError("You can't blabla");
+		sendDoNotHavePermission();
 		// useful to avoid making an error if the message is sent to Gui, or
 		// BaseComponent (JSON) messages
-		this.sendImpossibleWithConsole();
-		this.sendImpossibleWithOlympaPlayer();
+		sendImpossibleWithConsole();
+		sendImpossibleWithOlympaPlayer();
 		this.sendUnknownPlayer("playerName");
+
+		// send messages
+		broadcastToAll(Prefix.DEFAULT, "[ALL] Hello everyone & Console"); // include Console
+		broadcast(Prefix.DEFAULT, "[ALL] Hello players"); // Broadcast to players only
+		sendSuccess("Succès, argument %s", "coucou");
+		// MSG JSON with spigot api
+		this.sendComponents(Prefix.DEFAULT_GOOD, new ComponentBuilder("Hello ").color(ChatColor.RED).bold(true).append("world").color(ChatColor.DARK_RED).append("!").color(ChatColor.RED).create());
+		// MSG JSON with olympa api
+		sendComponents(new TxtComponentBuilder("&4It's the message. Move your mouse over it.").onHoverText("&eClic to excute the commande !").onClickCommand("/suicide").build());// everywhere
+		sendHoverAndCommand(Prefix.DEFAULT_GOOD, "It's the message 2.0. Move your mouse over it.", "&eClic to excute the commande !", "/suicide"); // in class implements IOlympaCommand only
+		this.sendError("The error %s is bad.", "404");
+
 		// send the Usage message. label = command name
-		this.sendUsage(label);
+		sendUsage(label);
 
 		return false;
 	}

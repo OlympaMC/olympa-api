@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.chat.ColorUtils;
 
 public class OlympaItemBuild implements Cloneable {
 

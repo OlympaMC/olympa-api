@@ -11,11 +11,11 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.utils.ColorUtils;
 
 public class SmallDataManagmentListener implements Listener {
 

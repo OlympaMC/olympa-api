@@ -13,8 +13,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.hook.IProtocolSupport;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.api.utils.spigot.TPSUtils;
@@ -74,7 +74,7 @@ public class MachineUtils {
 			try {
 				out.addExtra(new TextComponent(TextComponent.fromLegacyText("§3Modules: §b")));
 				for (TextComponent txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))
-						.map(ff -> ColorUtils.textComponentBuilder("§6" + ff.getName().substring(6) + " ", null, null, Action.SHOW_TEXT, new Text("§eDernière MAJ " + Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain()
+						.map(ff -> TxtComponentBuilder.of("§6" + ff.getName().substring(6) + " ", Action.SHOW_TEXT, new Text("§eDernière MAJ " + Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain()
 								.getCodeSource()
 								.getLocation()
 								.getPath())

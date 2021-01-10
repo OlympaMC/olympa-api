@@ -3,13 +3,13 @@ package fr.olympa.api.command.essentials;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.chat.ColorUtils;
+import fr.olympa.api.chat.TableGenerator;
+import fr.olympa.api.chat.TableGenerator.Alignment;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.api.utils.TableGenerator;
-import fr.olympa.api.utils.TableGenerator.Alignment;
 import net.md_5.bungee.api.ChatColor;
 
 public class ColorCommand extends ComplexCommand {

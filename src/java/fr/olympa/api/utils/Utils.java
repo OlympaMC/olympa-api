@@ -40,8 +40,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import net.md_5.bungee.api.chat.TextComponent;
-
 public class Utils {
 
 	private static Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
@@ -85,30 +83,6 @@ public class Utils {
 
 	public static String capitalize(String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-	}
-
-	/**
-	 * Permet de colorier chaque lettre une à une dans un mot pour faire une
-	 * animation Pour BungeeCord
-	 */
-	public static List<String> colorString(String string, net.md_5.bungee.api.ChatColor color1, net.md_5.bungee.api.ChatColor color2) {
-		List<String> dyn = new ArrayList<>();
-		for (int i = 0; i < string.length(); i++)
-			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
-		dyn.add(color1 + string);
-		return dyn;
-	}
-
-	/**
-	 * Permet de colorier chaque lettre une à une dans un mot pour faire une
-	 * animation Pour Spigot
-	 */
-	public static List<String> colorString(String string, org.bukkit.ChatColor color1, org.bukkit.ChatColor color2) {
-		List<String> dyn = new ArrayList<>();
-		for (int i = 0; i < string.length(); i++)
-			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
-		dyn.add(color1 + string);
-		return dyn;
 	}
 
 	/**
@@ -313,6 +287,7 @@ public class Utils {
 		return list2;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T[] arrayAdd(T[] array, T... add) {
 		T[] array2 = (T[]) new Object[array.length + add.length];
 		System.arraycopy(array, 0, array2, 0, array.length);
@@ -493,20 +468,6 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	public static <T> Collector<T, ?, List<T>> toShuffledList() {
 		return (Collector<T, ?, List<T>>) SHUFFLER;
-	}
-
-	public static void toTextComponent(TextComponent msg, List<TextComponent> list, String separator, String end) {
-		if (list.size() == 0)
-			return;
-		int i = 1;
-		for (TextComponent targetAccountsText : list) {
-			msg.addExtra(targetAccountsText);
-			if (i == list.size())
-				targetAccountsText.addExtra(end);
-			else
-				targetAccountsText.addExtra(separator);
-			i++;
-		}
 	}
 
 	/**

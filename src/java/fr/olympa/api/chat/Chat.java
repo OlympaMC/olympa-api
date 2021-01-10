@@ -1,4 +1,4 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.chat;
 
 import org.bukkit.entity.Player;
 
