@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.ByteStreams;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.customevents.SpigotConfigReloadEvent;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
@@ -30,7 +31,6 @@ import fr.olympa.api.region.shapes.Cylinder;
 import fr.olympa.api.region.shapes.ExpandedCuboid;
 import fr.olympa.api.region.shapes.Polygon;
 import fr.olympa.api.region.shapes.WorldRegion;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 

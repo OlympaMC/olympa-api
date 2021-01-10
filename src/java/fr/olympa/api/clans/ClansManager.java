@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.clans.gui.ClanManagementGUI;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.player.OlympaPlayerInformations;
@@ -26,7 +27,6 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.sql.SQLColumn;
 import fr.olympa.api.sql.SQLTable;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.observable.ObservableList;
 import fr.olympa.core.spigot.OlympaCore;

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 
-import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.chat.ColorUtils;
 
 // https://wiki.vg/Protocol_version_numbers
 public enum ProtocolAPI {

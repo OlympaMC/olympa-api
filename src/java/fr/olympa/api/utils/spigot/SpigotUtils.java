@@ -33,11 +33,11 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.Cuboid;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 
 public class SpigotUtils {
@@ -506,6 +506,16 @@ public class SpigotUtils {
 			}
 		}
 		return locations;
+	}
+	
+	public static String getBarsWithLoreLength(String itemName, List<String> lore, String inside) {
+		int size = -1;
+		if (!lore.isEmpty()) size = lore.stream().filter(x -> x != null).mapToInt(String::length).max().getAsInt();
+		size = Math.max(size, ChatColor.stripColor(itemName).length() - 3);
+		size -= ChatColor.stripColor(inside).length();
+		size = Math.max(size, 4);
+		String bar = "§m" + " ".repeat((int) Math.ceil(size / 2D));
+		return "§e" + bar + "§e[ §6§l" + inside + "§e ]" + bar + "§r";
 	}
 	
 }

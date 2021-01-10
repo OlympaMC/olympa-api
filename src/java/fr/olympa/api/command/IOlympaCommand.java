@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -83,7 +83,7 @@ public interface IOlympaCommand {
 	}
 
 	default void sendJSON(Prefix prefix, String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
-		sendComponents(prefix, ColorUtils.textComponentBuilder(message, clickAction, clickActionValue, hoverAction, contents));
+		sendComponents(prefix, TxtComponentBuilder.of(prefix, message, clickAction, clickActionValue, hoverAction, contents));
 	}
 
 	void sendComponents(BaseComponent... components);

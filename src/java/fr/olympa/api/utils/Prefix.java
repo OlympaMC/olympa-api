@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.command.CommandSender;
 
+import fr.olympa.api.chat.ColorUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
