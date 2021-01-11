@@ -125,8 +125,25 @@ public class ColorUtils {
 		return l.stream().map(s -> color(s)).collect(Collectors.toList());
 	}
 
-	public static String join(CharSequence string, CharSequence... args) {
-		return color(String.join(string, args));
+	public static String join(CharSequence delimiter, CharSequence... elements) {
+		return color(String.join(delimiter, elements));
+	}
+
+	public static String join(CharSequence delimiter, Iterable<? extends CharSequence> elements) {
+		return color(String.join(delimiter, elements));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static String joinTry(Object delimiter, Object elements) {
+		if (elements instanceof Iterable<?>)
+			return join((CharSequence) delimiter, (Iterable<? extends CharSequence>) elements);
+		else if (elements instanceof CharSequence[])
+			return join((CharSequence) delimiter, (CharSequence[]) elements);
+		else if (elements instanceof Object[])
+			return join((CharSequence) delimiter, Arrays.stream((Object[]) elements).map(Object::toString).collect(Collectors.toList()));
+		else if (elements instanceof Object)
+			return join((CharSequence) delimiter, (CharSequence) elements.toString());
+		throw new IllegalAccessError("Unknown Type for String.join() in ColorUtils.joinTry().");
 	}
 
 }

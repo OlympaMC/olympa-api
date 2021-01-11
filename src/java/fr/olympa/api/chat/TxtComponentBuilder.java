@@ -29,6 +29,14 @@ public class TxtComponentBuilder {
 		return new TxtComponentBuilder(message).onHover(hoverAction, contents).build();
 	}
 
+	private static String getStringColored(String s) {
+		return ColorUtils.color(s);
+	}
+
+	private static String join(CharSequence delimiter, CharSequence... elements) {
+		return getStringColored(ColorUtils.join(delimiter, elements));
+	}
+
 	Prefix prefix;
 	String msg;
 	ClickEvent.Action clickAction;
@@ -37,14 +45,15 @@ public class TxtComponentBuilder {
 	Content[] contents;
 	List<TxtComponentBuilder> extras;
 	TextComponent cache;
+	boolean isConsole = false;
 	long timeInit = System.nanoTime();
 
-	public TxtComponentBuilder(String msg) {
-		this(null, msg);
+	public TxtComponentBuilder(String msg, String... args) {
+		this((Prefix) null, join(msg, args));
 	}
 
-	public TxtComponentBuilder(Prefix prefix, ChatColor color, String msg) {
-		this(prefix, color + msg);
+	public TxtComponentBuilder(Prefix prefix, ChatColor color, String msg, String... args) {
+		this(prefix, color + join(msg, args));
 	}
 
 	public TxtComponentBuilder(Prefix prefix, Map<String, ChatColor> msg) {
@@ -52,9 +61,9 @@ public class TxtComponentBuilder {
 		this.msg = msg.entrySet().stream().map(e -> e.getValue() + getStringColored(e.getKey())).collect(Collectors.joining(" "));
 	}
 
-	public TxtComponentBuilder(Prefix prefix, String msg) {
+	public TxtComponentBuilder(Prefix prefix, String msg, String... args) {
 		this.prefix = prefix;
-		this.msg = getStringColored(msg);
+		this.msg = getStringColored(join(msg, args));
 	}
 
 	public TxtComponentBuilder onHover(HoverEvent.Action hoverAction, Content... contents) {
@@ -64,8 +73,20 @@ public class TxtComponentBuilder {
 		return this;
 	}
 
-	public TxtComponentBuilder onHoverText(String contents) {
-		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(getStringColored(contents)));
+	public TxtComponentBuilder console() {
+		clearCache();
+		isConsole = true;
+		return this;
+	}
+
+	public TxtComponentBuilder console(boolean isConsole) {
+		clearCache();
+		this.isConsole = isConsole;
+		return this;
+	}
+
+	public TxtComponentBuilder onHoverText(String contents, String... args) {
+		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(join(contents, args)));
 	}
 
 	public TxtComponentBuilder onClick(ClickEvent.Action clickAction, String clickActionValue) {
@@ -75,30 +96,26 @@ public class TxtComponentBuilder {
 		return this;
 	}
 
-	public TxtComponentBuilder onClickCommand(String clickActionValue) {
-		return onClick(ClickEvent.Action.RUN_COMMAND, clickActionValue);
+	public TxtComponentBuilder onClickCommand(String clickActionValue, String... args) {
+		return onClick(ClickEvent.Action.RUN_COMMAND, join(clickActionValue, args));
 	}
 
-	public TxtComponentBuilder onClickSuggest(String clickActionValue) {
-		return onClick(ClickEvent.Action.SUGGEST_COMMAND, clickActionValue);
+	public TxtComponentBuilder onClickSuggest(String clickActionValue, String... args) {
+		return onClick(ClickEvent.Action.SUGGEST_COMMAND, join(clickActionValue, args));
 	}
 
-	public TxtComponentBuilder onClickCopy(String clickActionValue) {
-		return onClick(ClickEvent.Action.COPY_TO_CLIPBOARD, clickActionValue);
+	public TxtComponentBuilder onClickCopy(String clickActionValue, String... args) {
+		return onClick(ClickEvent.Action.COPY_TO_CLIPBOARD, join(clickActionValue, args));
 	}
 
-	public TxtComponentBuilder onClickUrl(String clickActionValue) {
-		return onClick(ClickEvent.Action.OPEN_URL, clickActionValue);
+	public TxtComponentBuilder onClickUrl(String clickActionValue, String... args) {
+		return onClick(ClickEvent.Action.OPEN_URL, join(clickActionValue, args));
 	}
 
 	public TxtComponentBuilder extra(TxtComponentBuilder extra) {
 		clearCache();
 		extras.add(extra);
 		return this;
-	}
-
-	private String getStringColored(String s) {
-		return ColorUtils.color(s);
 	}
 
 	private TextComponent clearCache() {
@@ -117,10 +134,16 @@ public class TxtComponentBuilder {
 		if (msg != null)
 			txtBuilder.append(msg);
 		TextComponent text = new TextComponent(TextComponent.fromLegacyText(txtBuilder.toString()));
-		if (clickAction != null && clickActionValue != null)
-			text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
-		if (hoverAction != null && contents != null)
-			text.setHoverEvent(new HoverEvent(hoverAction, contents));
+		new Text("").getValue();
+		if (isConsole) {
+			if (contents != null && contents.length != 0 && contents instanceof Text[])
+				text.addExtra(new TextComponent(TextComponent.fromLegacyText(String.format("&r(%s)", ((Text) contents[0]).getValue()))));
+		} else {
+			if (clickAction != null && clickActionValue != null)
+				text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
+			if (hoverAction != null && contents != null)
+				text.setHoverEvent(new HoverEvent(hoverAction, contents));
+		}
 		for (TxtComponentBuilder extra : extras)
 			text.addExtra(extra.build());
 		if (DEBUG)
