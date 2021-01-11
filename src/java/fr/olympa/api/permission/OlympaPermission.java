@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
@@ -33,13 +34,12 @@ public class OlympaPermission {
 	public static void registerPermissions(Class<?> clazz) {
 		try {
 			int initialSize = permissions.size();
-			for (Field f : clazz.getDeclaredFields()) {
+			for (Field f : clazz.getDeclaredFields())
 				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) {
 					OlympaPermission permission = (OlympaPermission) f.get(null);
 					permission.setName(f.getName());
 					permissions.put(f.getName(), permission);
 				}
-			}
 			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
 		} catch (ReflectiveOperationException ex) {
 			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
@@ -58,11 +58,11 @@ public class OlympaPermission {
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	private void setName(String name) {
 		this.name = name;
 	}
@@ -254,8 +254,8 @@ public class OlympaPermission {
 		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponent)), null);
 	}
 
-	public void sendMessage(String message) {
-		this.getPlayers(players -> players.forEach(player -> player.sendMessage(message)), null);
+	public void sendMessage(String message, Object... args) {
+		this.getPlayers(players -> players.forEach(player -> player.sendMessage(ColorUtils.color(String.format(message, args)))), null);
 	}
 
 	public boolean isLocked() {
