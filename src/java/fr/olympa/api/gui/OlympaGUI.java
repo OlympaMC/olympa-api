@@ -8,7 +8,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.utils.ColorUtils;
+import fr.olympa.api.chat.ColorUtils;
 
 public abstract class OlympaGUI implements InventoryHolder {
 	

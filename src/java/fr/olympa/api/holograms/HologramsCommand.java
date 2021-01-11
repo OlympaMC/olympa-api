@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -14,7 +15,6 @@ import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.permission.OlympaAPIPermissions;
-import fr.olympa.api.utils.ColorUtils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 

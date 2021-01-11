@@ -95,7 +95,7 @@ public class RegexMatcher {
 	public static final MatcherPattern HEX_COLOR = new MatcherPattern("[xX#]?[0-9a-fA-F]{6}", x -> {
 		char c = x.charAt(0);
 		if (c == 'x' || c == 'X' || c == '#')
-			x = x.substring(0);
+			x = x.substring(1);
 		return "#" + x;
 	}, String.class);
 	public static final MatcherPattern HOUR = new MatcherPattern("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}");

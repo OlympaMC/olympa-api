@@ -98,7 +98,7 @@ public class SQLTable<T> {
 		else
 			new IllegalAccessError("La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.").printStackTrace();
 
-		columns.stream().forEach(column -> column.setSQLSelector(new SQLSelector<>() {
+		columns.forEach(column -> column.setSQLSelector(new SQLSelector<>() {
 
 			@Override
 			public List<T> select(Object sqlObject, String... specifiedColumnsReturned) throws SQLException, IllegalAccessException {
@@ -127,7 +127,7 @@ public class SQLTable<T> {
 			private OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), new String[] { column.getName() });
 
 			@Override
-			public synchronized void update(T object, Object sqlObject, int sqlType) throws SQLException {
+			public void update(T object, Object sqlObject, int sqlType) throws SQLException {
 				PreparedStatement statement = updateStatement.getStatement();
 				statement.setObject(1, sqlObject, sqlType);
 				statement.setObject(2, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
@@ -173,7 +173,7 @@ public class SQLTable<T> {
 				statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
 				i++;
 			}
-		//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));
+		//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
 		insertStatement.executeUpdate();
 		return statement.getGeneratedKeys();
 	}

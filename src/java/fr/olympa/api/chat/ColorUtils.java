@@ -1,5 +1,6 @@
-package fr.olympa.api.utils;
+package fr.olympa.api.chat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -7,10 +8,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
 
 public class ColorUtils {
 
@@ -21,6 +18,18 @@ public class ColorUtils {
 	public static ChatColor randomColor() {
 		int rand_num = RANDOM.nextInt(0xffffff + 1);
 		return ChatColor.of(String.format("#%06x", rand_num));
+	}
+
+	/**
+	 * Permet de colorier chaque lettre une à une dans un mot pour faire une
+	 * animation Pour BungeeCord
+	 */
+	public static List<String> colorString(String string, ChatColor color1, ChatColor color2) {
+		List<String> dyn = new ArrayList<>();
+		for (int i = 0; i < string.length(); i++)
+			dyn.add(color1 + string.substring(0, i) + color2 + string.substring(i, i + 1) + color1 + string.substring(i + 1, string.length()));
+		dyn.add(color1 + string);
+		return dyn;
 	}
 
 	public static String format(String format, Object... args) {
@@ -102,21 +111,39 @@ public class ColorUtils {
 		return sb.toString();
 	}
 
-	public static TextComponent textComponentBuilder(String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
-		TextComponent text = new TextComponent(TextComponent.fromLegacyText(message.replace("&", "§")));
-		if (clickAction != null && clickActionValue != null)
-			text.setClickEvent(new ClickEvent(clickAction, clickActionValue.replace("&", "§")));
-		if (hoverAction != null && contents != null)
-			text.setHoverEvent(new HoverEvent(hoverAction, contents));
-		return text;
-	}
+	//	@Deprecated
+	//	public static TextComponent textComponentBuilder(String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
+	//		TextComponent text = new TextComponent(TextComponent.fromLegacyText(message.replace("&", "§")));
+	//		if (clickAction != null && clickActionValue != null)
+	//			text.setClickEvent(new ClickEvent(clickAction, clickActionValue.replace("&", "§")));
+	//		if (hoverAction != null && contents != null)
+	//			text.setHoverEvent(new HoverEvent(hoverAction, contents));
+	//		return text;
+	//	}
 
 	public static List<String> color(List<String> l) {
 		return l.stream().map(s -> color(s)).collect(Collectors.toList());
 	}
 
-	public static String join(CharSequence string, CharSequence... args) {
-		return color(String.join(string, args));
+	public static String join(CharSequence delimiter, CharSequence... elements) {
+		return color(String.join(delimiter, elements));
+	}
+
+	public static String join(CharSequence delimiter, Iterable<? extends CharSequence> elements) {
+		return color(String.join(delimiter, elements));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static String joinTry(Object delimiter, Object elements) {
+		if (elements instanceof Iterable<?>)
+			return join((CharSequence) delimiter, (Iterable<? extends CharSequence>) elements);
+		else if (elements instanceof CharSequence[])
+			return join((CharSequence) delimiter, (CharSequence[]) elements);
+		else if (elements instanceof Object[])
+			return join((CharSequence) delimiter, Arrays.stream((Object[]) elements).map(Object::toString).collect(Collectors.toList()));
+		else if (elements instanceof Object)
+			return join((CharSequence) delimiter, (CharSequence) elements.toString());
+		throw new IllegalAccessError("Unknown Type for String.join() in ColorUtils.joinTry().");
 	}
 
 }

@@ -4,12 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.task.TaskManager;
-import fr.olympa.api.utils.ColorUtils;
 
 public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPluginInterface {
 

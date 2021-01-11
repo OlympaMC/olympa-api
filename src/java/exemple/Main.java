@@ -38,7 +38,7 @@ public class Main extends OlympaAPIPlugin {
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
 
-		this.scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
+		this.scoreboards = new ScoreboardManager<OlympaPlayer>(this, "Exemple scoreboard").addLines(
 				new FixedLine<>("Yo"),
 				FixedLine.EMPTY_LINE,
 				new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {

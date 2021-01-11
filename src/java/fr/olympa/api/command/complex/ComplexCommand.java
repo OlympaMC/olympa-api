@@ -29,6 +29,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
@@ -106,7 +107,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
-	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§bSuggérer la commande."));
+	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("§bSuggérer la commande.")));
 	protected static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
 	private static final String TEMP_UUID = UUID.randomUUID().toString();
 	protected static final List<String> UUIDS = Arrays.asList(TEMP_UUID, TEMP_UUID.replace("-", ""));
