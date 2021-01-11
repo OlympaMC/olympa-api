@@ -59,18 +59,6 @@ public class OlympaPermission {
 		this.minGroup = minGroup;
 	}
 	
-	public String getName() {
-		return name;
-	}
-	
-	private void setName(String name) {
-		this.name = name;
-	}
-
-	public ServerType getServerType() {
-		return serverType;
-	}
-
 	public OlympaPermission(OlympaGroup minGroup, ServerType serverType) {
 		this.minGroup = minGroup;
 		this.serverType = serverType;
@@ -118,6 +106,18 @@ public class OlympaPermission {
 		this.allowedGroups = allowedGroups;
 		this.lockPermission = lockPermission;
 		this.serverType = serverType;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	private void setName(String name) {
+		this.name = name;
+	}
+	
+	public ServerType getServerType() {
+		return serverType;
 	}
 
 	public OlympaGroup getMinGroup() {

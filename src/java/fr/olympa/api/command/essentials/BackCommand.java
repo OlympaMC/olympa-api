@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -30,10 +31,14 @@ public class BackCommand extends OlympaCommand implements Listener {
 		if (metadata.isEmpty()) {
 			sendError("Tu n'es pas mort dernièrement.");
 		}else {
-			getPlayer().teleport((Location) metadata.get(0).value());
-			sendSuccess("Tu as été téléporté sur le lieu de ta mort.");
+			teleport(getPlayer(), (Location) metadata.get(0).value());
 		}
 		return false;
+	}
+	
+	protected void teleport(Player p, Location location) {
+		p.teleport(location);
+		sendSuccess("Tu as été téléporté sur le lieu de ta mort.");
 	}
 
 	@Override

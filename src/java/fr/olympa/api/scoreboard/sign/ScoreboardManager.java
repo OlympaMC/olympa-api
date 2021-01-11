@@ -53,8 +53,8 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener {
 	public void create(T p) {
 		removePlayerScoreboard(p);
 		Scoreboard<T> scoreboard = new Scoreboard<>(p, this);
-		scoreboards.put(p, scoreboard);
 		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread()));
+		scoreboards.put(p, scoreboard);
 	}
 
 	public Scoreboard<T> getPlayerScoreboard(T p) {

@@ -86,8 +86,8 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		
 		public void give(T olympaPlayer, Player p) {
 			SpigotUtils.giveItems(p, items.apply(olympaPlayer, p));
-			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu le kit %s !", name);
 			setLastTask.accept(olympaPlayer, System.currentTimeMillis());
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu le kit %s !", name);
 		}
 		
 	}
