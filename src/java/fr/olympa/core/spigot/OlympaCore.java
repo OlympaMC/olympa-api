@@ -39,11 +39,12 @@ public class OlympaCore extends OlympaSpigot {
 	private String lastVersion = "unknown";
 	private String firstVersion = "unknown";
 	private OlympaServer olympaServer = OlympaServer.ALL;
-	
+
+	@Override
 	public OlympaServer getOlympaServer() {
 		return olympaServer;
 	}
-	
+
 	@Override
 	public void setOlympaServer(OlympaServer olympaServer) {
 		this.olympaServer = olympaServer;
@@ -109,7 +110,7 @@ public class OlympaCore extends OlympaSpigot {
 
 		try {
 			pluginManager.registerEvents(holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml")), this);
-		}catch (IOException | ReflectiveOperationException e) {
+		} catch (IOException | ReflectiveOperationException e) {
 			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
 			e.printStackTrace();
 		}
@@ -130,7 +131,7 @@ public class OlympaCore extends OlympaSpigot {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public AfkHandler getAfkHandler() {
 		return null;

@@ -82,6 +82,16 @@ public class MatcherPattern {
 	}
 
 	/**
+	 * replace
+	 */
+	public String replace(String text, String replaced) {
+		Matcher matcher = getPattern().matcher(text);
+		while (matcher.find())
+			text = text.replace(matcher.group(), replaced);
+		return text;
+	}
+
+	/**
 	 * Extract first occurances
 	 */
 	public String extract(String text) {
