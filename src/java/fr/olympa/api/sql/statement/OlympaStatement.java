@@ -59,7 +59,7 @@ public class OlympaStatement {
 	}
 
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, int offset, int limit, String... keys) {
-		this(type, tableName, what, null, null, limit, offset, keys);
+		this(type, tableName, what, null, null, offset, limit, keys);
 	}
 
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String orderCollumn, Boolean asc, String... keys) {

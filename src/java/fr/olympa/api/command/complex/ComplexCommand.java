@@ -20,16 +20,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.core.spigot.OlympaCore;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
@@ -107,7 +103,6 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
-	protected static final HoverEvent COMMAND_HOVER = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText("§bSuggérer la commande.")));
 	protected static final List<String> INTEGERS = Arrays.asList("1", "2", "3");
 	private static final String TEMP_UUID = UUID.randomUUID().toString();
 	protected static final List<String> UUIDS = Arrays.asList(TEMP_UUID, TEMP_UUID.replace("-", ""));
@@ -339,11 +334,13 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	@Override
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
+		TxtComponentBuilder txt = new TxtComponentBuilder();
 		for (SpigotInternalCommand command : commands.values()) {
 			if (command.cmd.hide() || !command.canRun(sender))
 				continue;
-			sender.spigot().sendMessage(getHelpCommandComponent(command));
+			txt.extra(getHelpCommandComponent(command));
 		}
+		sender.spigot().sendMessage(txt.build());
 	}
 
 	@Override
@@ -361,7 +358,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 				sendIncorrectSyntax();
 				return;
 			}
-			sender.spigot().sendMessage(getHelpCommandComponent(command));
+			sender.spigot().sendMessage(getHelpCommandComponent(command).build());
 		}
 	}
 
@@ -369,20 +366,18 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		sendIncorrectSyntax(internal.cmd.syntax());
 	}
 
-	private TextComponent getHelpCommandComponent(SpigotInternalCommand command) {
+	private TxtComponentBuilder getHelpCommandComponent(SpigotInternalCommand command) {
 		String fullCommand;
 		if (!command.cmd.otherArg())
 			fullCommand = "/" + this.command + " " + command.name;
 		else
 			fullCommand = "/" + this.command;
-		TextComponent component = new TextComponent();
-		component.setHoverEvent(COMMAND_HOVER);
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, fullCommand + " "));
-
-		for (BaseComponent commandCompo : TextComponent.fromLegacyText("§7➤ §6" + fullCommand + " §e" + command.cmd.syntax()))
-			component.addExtra(commandCompo);
-
-		return component;
+		String description;
+		if (command.cmd.description().isBlank())
+			description = "§aClique pour suggérer la commande.";
+		else
+			description = "&a" + command.cmd.description();
+		return new TxtComponentBuilder("&7➤ &6%s &e%s", fullCommand, command.cmd.syntax()).onHoverText(description).onClickSuggest(fullCommand + " ");
 	}
 
 }

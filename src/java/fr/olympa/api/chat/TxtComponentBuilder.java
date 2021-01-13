@@ -52,6 +52,10 @@ public class TxtComponentBuilder {
 	boolean isConsole = false;
 	long timeInit = System.nanoTime();
 
+	public TxtComponentBuilder() {
+		this(null);
+	}
+
 	public TxtComponentBuilder(Prefix prefix, ChatColor color, String msg, Object... args) {
 		this(prefix, color + msg, args);
 	}
@@ -148,7 +152,11 @@ public class TxtComponentBuilder {
 			txtBuilder.append(prefix);
 		if (msg != null)
 			txtBuilder.append(msg);
-		TextComponent text = getText(txtBuilder.toString());
+		TextComponent text;
+		if (!txtBuilder.toString().isBlank())
+			text = getText(txtBuilder.toString());
+		else
+			text = new TextComponent();
 		if (isConsole) {
 			if (contents != null && contents.length != 0 && contents instanceof Text[])
 				text.addExtra(getText(String.format("&r(%s) ", ((Text) contents[0]).getValue())));

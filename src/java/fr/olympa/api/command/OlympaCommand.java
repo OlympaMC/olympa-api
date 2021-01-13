@@ -224,9 +224,9 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	}
 
 	public void sendHelp(CommandSender sender) {
-		Prefix.DEFAULT.sendMessage(sender, "§eCommande §6%s", command + (aliases == null || aliases.isEmpty() ? "" : " §e(" + ColorUtils.joinGoldEt(aliases) + ")"));
+		Prefix.DEFAULT.sendMessage(sender, "&eCommande &6%s", command + (aliases == null || aliases.isEmpty() ? "" : " &e(" + ColorUtils.joinGoldEt(aliases) + ")"));
 		if (description != null)
-			Prefix.DEFAULT.sendMessage(sender, "§e%s", description);
+			Prefix.DEFAULT.sendMessage(sender, "&e%s", description);
 	}
 
 	public static void unRegisterCommand(PluginCommand... cmds) {

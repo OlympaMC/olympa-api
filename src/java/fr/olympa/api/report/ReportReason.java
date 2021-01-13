@@ -23,6 +23,10 @@ public class ReportReason {
 
 	private static boolean INIT = false;
 
+	{
+		registerReason(ReportReason.class);
+	}
+
 	public static void initSpigot() {
 		if (INIT)
 			return;
@@ -58,7 +62,7 @@ public class ReportReason {
 
 	public static final Map<String, ReportReason> reportReasons = new HashMap<>();
 
-	public static void registerPermissions(Class<?> clazz) {
+	public static void registerReason(Class<?> clazz) {
 		try {
 			int initialSize = reportReasons.size();
 			for (Field f : clazz.getDeclaredFields())

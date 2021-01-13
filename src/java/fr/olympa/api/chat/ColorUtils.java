@@ -89,8 +89,8 @@ public class ColorUtils {
 	}
 
 	public static String join(Character c1, Character c2, Iterator<? extends CharSequence> it, String ouOrEt) {
-		String color1 = c1 != null ? String.valueOf(ChatColor.COLOR_CHAR + c1) : "";
-		String color2 = c2 != null ? String.valueOf(ChatColor.COLOR_CHAR + c2) : "";
+		String color1 = c1 != null ? String.valueOf(ChatColor.COLOR_CHAR) + c1 : "";
+		String color2 = c2 != null ? String.valueOf(ChatColor.COLOR_CHAR) + c2 : "";
 		StringBuilder sb = new StringBuilder();
 		Boolean hasNext = null;
 		while (hasNext == null || hasNext)

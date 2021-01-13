@@ -57,6 +57,8 @@ public @interface Cmd {
 	 */
 	public String permissionName() default "";
 
+	public String description() default "";
+
 	public boolean hide() default false;
 
 	public boolean otherArg() default false;
