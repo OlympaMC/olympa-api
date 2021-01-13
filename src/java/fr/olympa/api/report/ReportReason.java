@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -15,6 +17,30 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class ReportReason {
 
+	public static final Map<String, ReportReason> reportReasons = new HashMap<>();
+
+	public static void registerReason(Class<?> clazz) {
+		initSpigot();
+		try {
+			int initialSize = reportReasons.size();
+			for (Field f : clazz.getDeclaredFields())
+				if (f.getType() == ReportReason.class && Modifier.isStatic(f.getModifiers())) {
+					ReportReason reportReason = (ReportReason) f.get(null);
+					Optional<Entry<String, ReportReason>> already = reportReasons.entrySet().stream().filter(rr -> rr.getValue().getId() == reportReason.getId()).findFirst();
+					if (already.isPresent()) {
+						OlympaCore.getInstance().sendMessage("&cCan't register ReportReason &4%s&c with id &4%d&c. Already used by &4%s&c.", reportReason.getName(), reportReason.getId(), already.get().getKey());
+						continue;
+					}
+					reportReason.setName(f.getName());
+					reportReasons.put(f.getName(), reportReason);
+				}
+			OlympaCore.getInstance().sendMessage("Registered " + (reportReasons.size() - initialSize) + " report reason from " + clazz.getName());
+		} catch (ReflectiveOperationException e) {
+			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
+			e.printStackTrace();
+		}
+	}
+
 	public static ReportReason CHAT = new ReportReason(1, "Chat Abusif");
 	public static ReportReason CHEAT_AURA = new ReportReason(2, "Cheat Combat");
 	public static ReportReason CHEAT_XRAY = new ReportReason(3, "Cheat XRay");
@@ -22,10 +48,6 @@ public class ReportReason {
 	public static ReportReason OTHER = new ReportReason(5, "Autre");
 
 	private static boolean INIT = false;
-
-	{
-		registerReason(ReportReason.class);
-	}
 
 	public static void initSpigot() {
 		if (INIT)
@@ -60,28 +82,18 @@ public class ReportReason {
 		return ReportReason.values().stream().filter(itemGui -> itemGui.getReason().equalsIgnoreCase(reason)).findFirst().orElse(null);
 	}
 
-	public static final Map<String, ReportReason> reportReasons = new HashMap<>();
-
-	public static void registerReason(Class<?> clazz) {
-		try {
-			int initialSize = reportReasons.size();
-			for (Field f : clazz.getDeclaredFields())
-				if (f.getType() == ReportReason.class && Modifier.isStatic(f.getModifiers())) {
-					ReportReason reportReason = (ReportReason) f.get(null);
-					reportReason.setName(f.getName());
-					reportReasons.put(f.getName(), reportReason);
-				}
-			OlympaCore.getInstance().sendMessage("Registered " + (reportReasons.size() - initialSize) + " report reason from " + clazz.getName());
-		} catch (ReflectiveOperationException ex) {
-			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
-			ex.printStackTrace();
-		}
-	}
-
 	int id;
 	String reason;
 	OlympaItemBuild item;
 	String name;
+
+	String note;
+	boolean active = true;
+
+	public ReportReason(int id, String reason) {
+		this.id = id;
+		this.reason = reason;
+	}
 
 	public String getName() {
 		return name;
@@ -91,20 +103,11 @@ public class ReportReason {
 		this.name = name;
 	}
 
-	String note;
-	boolean active = true;
-
-	private ReportReason(int id, String reason) {
-		this.id = id;
-		this.reason = reason;
-	}
-
 	public int getId() {
 		return id;
 	}
 
 	public OlympaItemBuild getItem() {
-		initSpigot();
 		return item;
 	}
 

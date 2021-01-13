@@ -153,7 +153,7 @@ public class TxtComponentBuilder {
 		if (msg != null)
 			txtBuilder.append(msg);
 		TextComponent text;
-		if (!txtBuilder.toString().isBlank())
+		if (!txtBuilder.toString().isEmpty())
 			text = getText(txtBuilder.toString());
 		else
 			text = new TextComponent();

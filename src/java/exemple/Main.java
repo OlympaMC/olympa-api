@@ -10,6 +10,7 @@ import fr.olympa.api.lines.TimerLine;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
+import fr.olympa.api.report.ReportReason;
 import fr.olympa.api.scoreboard.sign.Scoreboard;
 import fr.olympa.api.scoreboard.sign.ScoreboardManager;
 import fr.olympa.core.spigot.OlympaCore;
@@ -26,19 +27,20 @@ public class Main extends OlympaAPIPlugin {
 
 	@Override
 	public void onDisable() {
-		this.scoreboards.unload();
+		scoreboards.unload();
 	}
 
 	@Override
 	public void onEnable() {
 		OlympaPermission.registerPermissions(ExemplePermissions.class);
+		ReportReason.registerReason(ExempleReportReasonCustom.class);
 
 		instance = this;
 
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
 
-		this.scoreboards = new ScoreboardManager<OlympaPlayer>(this, "Exemple scoreboard").addLines(
+		scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
 				new FixedLine<>("Yo"),
 				FixedLine.EMPTY_LINE,
 				new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {
@@ -46,11 +48,11 @@ public class Main extends OlympaAPIPlugin {
 					return lc.toString();
 				}, this, 5));
 
-		final PluginManager pluginManager = this.getServer().getPluginManager();
+		final PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new ExempleListener(), this);
 		pluginManager.registerEvents(new SmallDataManagmentListener(), this);
 		pluginManager.registerEvents(new Inventories(), this);
-		
+
 		OlympaCore.getInstance().getNameTagApi().addNametagHandler(EventPriority.HIGH, (nametag, player, to) -> {
 			nametag.appendPrefix("GROS BG");
 			nametag.appendSuffix("(salut " + to.getName() + ")");
