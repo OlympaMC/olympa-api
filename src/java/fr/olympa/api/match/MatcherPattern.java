@@ -10,15 +10,30 @@ import java.util.regex.Pattern;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import fr.olympa.api.utils.CacheStats;
+
 public class MatcherPattern {
 
-	public final static Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
+	public static final Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
 
+	static {
+		CacheStats.addCache("REGEX_PATTERN", cache);
+	}
 	String regex;
 	Function<String, Object> supplyArgumentFunction;
 	String typeName = "Unknown Type";
 
-	private Pattern getPattern() {
+	private static Pattern getPattern(String regex) {
+
+		Pattern pattern = cache.getIfPresent(regex);
+		if (pattern == null) {
+			pattern = Pattern.compile(regex);
+			cache.put(regex, pattern);
+		}
+		return pattern;
+	}
+
+	public Pattern getPattern() {
 		return getPattern(regex);
 	}
 
@@ -35,15 +50,6 @@ public class MatcherPattern {
 
 	public MatcherPattern(String regex) {
 		this.regex = regex;
-	}
-
-	private Pattern getPattern(String regex) {
-		Pattern pattern = cache.getIfPresent(regex);
-		if (pattern == null) {
-			pattern = Pattern.compile(regex);
-			cache.put(regex, pattern);
-		}
-		return pattern;
 	}
 
 	private String wholeWord(boolean wholeWord) {

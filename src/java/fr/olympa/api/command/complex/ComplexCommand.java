@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,15 +14,16 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.provider.AccountProvider;
@@ -40,8 +42,15 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			this.cmd = cmd;
 			this.method = method;
 			commands = commandsClass;
-			perm = OlympaPermission.permissions.get(cmd.permissionName());
 			name = method.getName();
+			String permName = cmd.permissionName();
+			if (!permName.isBlank()) {
+				perm = OlympaPermission.permissions.get(cmd.permissionName());
+				if (perm == null) {
+					LinkSpigotBungee.Provider.link.sendMessage("&4ComplexCommand %s > &cpermission &4%s&c introuvable, la permission est mise à &4OlympaGroup.FONDA&c.", name, cmd.permissionName());
+					perm = new OlympaPermission(OlympaGroup.FONDA);
+				}
+			}
 		}
 
 		boolean canRun() {
@@ -59,7 +68,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 	public class SpigotArgumentParser extends ArgumentParser {
 
-		public Function<CommandSender, List<String>> tabArgumentsFunction;
+		public Function<CommandSender, Collection<String>> tabArgumentsFunction;
 
 		/**
 		 * @Deprecated
@@ -70,7 +79,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		 * Utilise plutôt {@link #ComplexUtils(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction) ComplexUtils}.
 		 */
 		@Deprecated(forRemoval = true)
-		public SpigotArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
+		public SpigotArgumentParser(Function<CommandSender, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction) {
 			super(supplyArgumentFunction);
 			this.tabArgumentsFunction = tabArgumentsFunction;
 		}
@@ -81,7 +90,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		 * @param supplyArgumentFunction
 		 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
 		 */
-		public SpigotArgumentParser(Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction) {
+		public SpigotArgumentParser(Function<CommandSender, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction) {
 			super(supplyArgumentFunction, wrongArgTypeMessageFunction);
 			this.tabArgumentsFunction = tabArgumentsFunction;
 		}
@@ -99,7 +108,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		}, x -> String.format("La valeur %s n'existe pas.", x));
 	}
 
-	public void addArgumentParser(String name, Function<CommandSender, List<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
+	public void addArgumentParser(String name, Function<CommandSender, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
 		parsers.put(name, new SpigotArgumentParser(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
@@ -113,8 +122,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
-		addArgumentParser("PLAYERS", sender -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
-			return Bukkit.getPlayerExact(x);
+		addArgumentParser("PLAYERS", sender -> plugin.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
+			return plugin.getServer().getPlayerExact(x);
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("INTEGER", sender -> INTEGERS, x -> {
 			if (RegexMatcher.INT.is(x))
@@ -146,8 +155,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 				return null;
 			return result;
 		}, x -> String.format("La commande &4%s&c n'existe pas", x));
-		addArgumentParser("WORLD", sender -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
-			return Bukkit.getWorld(x);
+		addArgumentParser("WORLD", sender -> plugin.getServer().getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
+			return plugin.getServer().getWorld(x);
 		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
 		registerCommandsClass(this);
 	}
@@ -270,6 +279,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			sel = args[args.length - 1];
 		} else
 			return tmp;
+		if (sel.isBlank())
+			return find;
 		for (String arg : find)
 			if (arg.toLowerCase().startsWith(sel.toLowerCase()))
 				tmp.add(arg);

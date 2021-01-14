@@ -30,10 +30,11 @@ public class OlympaAPIPermissions {
 	public static final OlympaPermission ECSEE_COMMAND = new OlympaPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaPermission ECSEE_COMMAND_INTERACT = new OlympaPermission(OlympaGroup.MODP);
 	public static final OlympaPermission ERRORS_COMMAND = new OlympaPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaPermission PING_COMMAND = new OlympaPermission(OlympaGroup.PLAYER);
 
 	{
 		OlympaServer.DEV.setJoinPermission(CONNECT_SERVER_DEV);
 		OlympaServer.BUILDEUR.setJoinPermission(CONNECT_SERVER_BUILDER);
 	}
-	
+
 }

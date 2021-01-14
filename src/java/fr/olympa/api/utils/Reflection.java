@@ -31,7 +31,7 @@ public class Reflection {
 
 		@Override
 		public String toString() {
-			return this.classType;
+			return classType;
 		}
 	}
 
@@ -55,11 +55,14 @@ public class Reflection {
 
 	private static Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
+	static {
+		CacheStats.addCache("CLASS", classCache);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> T callMethod(Method method, Object instance, Object... paramaters) {
-		if (method == null) {
+		if (method == null)
 			throw new RuntimeException("No such method");
-		}
 		method.setAccessible(true);
 		try {
 			return (T) method.invoke(instance, paramaters);
@@ -86,14 +89,12 @@ public class Reflection {
 		String fieldName = values[values.length - 1];
 		Field[] fields = instance.getClass().getDeclaredFields();
 		ArrayList<Field> fieldArrayList = new ArrayList<>();
-		for (Field field : fields) {
-			if (field.getType().isArray()) {
+		for (Field field : fields)
+			if (field.getType().isArray())
 				if (field.getType().toString().contains(fieldName)) {
 					field.setAccessible(true);
 					fieldArrayList.add(field);
 				}
-			}
-		}
 		return fieldArrayList;
 	}
 
@@ -102,9 +103,8 @@ public class Reflection {
 	}
 
 	public static Class<?> getClass(String classname) {
-		if (classCache.asMap().containsKey(classname)) {
+		if (classCache.asMap().containsKey(classname))
 			return classCache.asMap().get(classname);
-		}
 
 		Class<?> clazz = getClassWithoutCache(classname);
 		classCache.put(classname, clazz);
@@ -140,12 +140,11 @@ public class Reflection {
 	public static ArrayList<Field> getFields(Object instance, Class<?> fieldType) throws ReflectiveOperationException {
 		Field[] fields = instance.getClass().getDeclaredFields();
 		ArrayList<Field> fieldArrayList = new ArrayList<>();
-		for (Field field : fields) {
+		for (Field field : fields)
 			if (field.getType() == fieldType) {
 				field.setAccessible(true);
 				fieldArrayList.add(field);
 			}
-		}
 
 		return fieldArrayList;
 	}
@@ -176,9 +175,8 @@ public class Reflection {
 	public static Field getFirstFieldByType(Class<?> clazz, Class<?> type) {
 		for (Field field : clazz.getDeclaredFields()) {
 			field.setAccessible(true);
-			if (field.getType() == type) {
+			if (field.getType() == type)
 				return field;
-			}
 		}
 		return null;
 	}
@@ -225,9 +223,8 @@ public class Reflection {
 				};
 			}
 		}
-		if (clazz.getSuperclass() != null) {
+		if (clazz.getSuperclass() != null)
 			return getMethod(clazz.getSuperclass(), methodName, params);
-		}
 		throw new IllegalStateException(String.format("Unable to find method %s (%s).", methodName, Arrays.asList(params)));
 	}
 
@@ -264,17 +261,15 @@ public class Reflection {
 	/*public static void sendMessage(Player p, Object message) throws Exception { // quel intérêt ??
 		Object nmsPlayer = getNmsPlayer(p);
 		nmsPlayer.getClass().getMethod("sendMessage", Reflection.getClass(ClassEnum.NMS, "IChatBaseComponent")).invoke(nmsPlayer, message);
-	
+
 	}*/
 
 	public static void sendPacket(Collection<? extends Player> players, Object packet) {
-		if (packet == null) {
+		if (packet == null)
 			return;
-		}
 		try {
-			for (Player p : players) {
+			for (Player p : players)
 				sendPacket(getPlayerConnection(p), packet);
-			}
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

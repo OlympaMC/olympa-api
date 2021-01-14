@@ -24,6 +24,7 @@ import com.google.common.cache.RemovalNotification;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.CacheStats;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -49,6 +50,7 @@ public class TpaHandler implements Listener {
 		new TpaHereCommand(this).register();
 		//		new TpHereConfirmCommand(this).register();
 		new TpConfirmCommand(this).register();
+		CacheStats.addCache("TPA_REQUESTS", requests);
 	}
 
 	private void invalidate(RemovalNotification<Request, Player> notif) {
@@ -74,6 +76,10 @@ public class TpaHandler implements Listener {
 		return requests.asMap().entrySet().stream()
 				.filter(entry -> entry.getValue().getUniqueId().equals(creatorUUID) && (entry.getKey().to.getUniqueId().equals(targetUUID) || entry.getKey().from.getUniqueId().equals(target.getUniqueId())))
 				.map(Entry::getKey).findFirst().orElse(null);
+	}
+
+	public Cache<Request, Player> getRequests() {
+		return requests;
 	}
 
 	public List<Request> getRequestsByPlayerTeleported(Player target) {
@@ -114,10 +120,11 @@ public class TpaHandler implements Listener {
 		if (!testRequest(creator, target))
 			return;
 		addRequest(creator, new Request(target, creator));
-		target.spigot().sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
+		target.spigot()
+				.sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
 		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
-	
+
 	private BaseComponent getCompo(Player creator, String message, String yesDesc, String noDesc) {
 		TextComponent base = new TextComponent(TextComponent.fromLegacyText("§e§m§l--------------§6§l TPA §e§m§l--------------"));
 		base.addExtra("\n\n");

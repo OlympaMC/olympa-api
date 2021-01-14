@@ -27,18 +27,26 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+
+import fr.olympa.api.match.MatcherPattern;
 
 public class Utils {
 
@@ -46,6 +54,30 @@ public class Utils {
 		Collections.shuffle(list);
 		return list;
 	});
+
+	public static Map<String, String> jsonToHumainReadable(String json) {
+		Matcher matcher = new MatcherPattern("\"?([^\":]+)\"?:\"?([^\",]+)\"?,?").getPattern().matcher(json);
+		Map<String, String> map = new HashMap<>();
+		while (matcher.find()) {
+			String gr1 = matcher.group(1);
+			if (gr1.charAt(0) == '{')
+				gr1 = gr1.substring(1);
+			if (gr1.charAt(gr1.length() - 1) == '}')
+				gr1 = gr1.substring(0, gr1.length() - 1);
+			String gr2 = matcher.group(2);
+			if (gr2.charAt(0) == '{')
+				gr2 = gr2.substring(1);
+			if (gr2.charAt(gr2.length() - 1) == '}')
+				gr2 = gr2.substring(0, gr2.length() - 1);
+			map.put(gr1, gr2);
+		}
+		return map;
+	}
+
+	public static void getArray(JsonObject jsonObject) throws ParseException {
+		jsonObject.isJsonObject();
+		new JSONParser().parse("your string");
+	}
 
 	public static String durationToString(NumberFormat numberFormat, long time) {
 		StringBuilder sb = new StringBuilder();

@@ -19,12 +19,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
-import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
@@ -32,19 +32,28 @@ public class OlympaPermission {
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
 
 	public static void registerPermissions(Class<?> clazz) {
-		try {
-			int initialSize = permissions.size();
-			for (Field f : clazz.getDeclaredFields())
+		//		try {
+		int initialSize = permissions.size();
+		for (Field f : clazz.getDeclaredFields())
+			try {
 				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) {
 					OlympaPermission permission = (OlympaPermission) f.get(null);
 					permission.setName(f.getName());
 					permissions.put(f.getName(), permission);
 				}
-			OlympaCore.getInstance().sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
-		} catch (ReflectiveOperationException ex) {
-			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
-			ex.printStackTrace();
+			} catch (Exception e) {
+				LinkSpigotBungee.Provider.link.sendMessage("&cError when registering permissions &4%s&c. %s", f.getName(), e.getMessage());
+				e.printStackTrace();
+			}
+		try {
+			LinkSpigotBungee.Provider.link.sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		//		} catch (ReflectiveOperationException ex) {
+		//			LinkSpigotBungee.Provider.link.sendMessage("Error when registering permissions from class " + clazz.getName());
+		//			ex.printStackTrace();
+		//		}
 	}
 
 	OlympaGroup minGroup = null;
@@ -58,7 +67,7 @@ public class OlympaPermission {
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
 	}
-	
+
 	public OlympaPermission(OlympaGroup minGroup, ServerType serverType) {
 		this.minGroup = minGroup;
 		this.serverType = serverType;
@@ -107,15 +116,15 @@ public class OlympaPermission {
 		this.lockPermission = lockPermission;
 		this.serverType = serverType;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	private void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public ServerType getServerType() {
 		return serverType;
 	}
@@ -216,8 +225,9 @@ public class OlympaPermission {
 		return b;
 	}
 
-	public void lockPermission() {
+	public OlympaPermission lockPermission() {
 		lockPermission = true;
+		return this;
 	}
 
 	public void setMinGroup(OlympaGroup group) {

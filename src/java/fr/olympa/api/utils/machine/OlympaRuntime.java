@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.function.Consumer;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.utils.Prefix;
 
 public class OlympaRuntime {
@@ -16,54 +17,73 @@ public class OlympaRuntime {
 		return action("mc " + action + " " + serverName, function);
 	}
 
+	public static Thread actionForAllLines(String action, String serverName, Consumer<String> function) {
+		return actionForAllLines("mc " + action + " " + serverName, function);
+	}
+
 	public static Thread action(String command) {
 		return action(command, (Consumer<String>) null);
 	}
 
 	public static Thread action(String command, Consumer<String> function) {
 		return new Thread(() -> {
+			String out;
 			try {
-				String out = Prefix.DEFAULT.toString();
+				StringBuilder sb = new StringBuilder(Prefix.DEFAULT.toString());
+				LinkSpigotBungee.Provider.link.sendMessage("&5EXEC COMMAND BASH < " + command);
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
 				while ((line = br.readLine()) != null) {
 					if (line.isEmpty())
 						continue;
-					out += line.replace("0;", "").replace("", "")
-							.replace("[0m", "§f")
-							.replace("[1m", "§l")
-							.replace("[4m", "§n")
-							.replace("[32m", "§3")
-							.replace("[36m", "§b")
-							.replace("[49m", "§f")
-							.replace("[30m", "§0")
-							.replace("[31m", "§4")
-							.replace("[32m", "§2")
-							.replace("[33m", "§6")
-							.replace("[34m", "§1")
-							.replace("[35m", "§5")
-							.replace("[36m", "§3")
-							.replace("[37m", "§7")
-							.replace("[90m", "§8")
-							.replace("[91m", "§c")
-							.replace("[92m", "§a")
-							.replace("[91m", "§e")
-							.replace("[91m", "§9")
-							.replace("[91m", "§d")
-							.replace("[91m", "§b")
-							.replace("[97m", "§f");
+					line = line.replace("0;", "").replace("", "")
+							.replace("[0m", "§f").replace("[1m", "§l").replace("[4m", "§n").replace("[32m", "§3").replace("[36m", "§b").replace("[49m", "§f").replace("[30m", "§0").replace("[31m", "§4")
+							.replace("[32m", "§2").replace("[33m", "§6").replace("[34m", "§1").replace("[35m", "§5").replace("[36m", "§3").replace("[37m", "§7").replace("[90m", "§8").replace("[91m", "§c")
+							.replace("[92m", "§a").replace("[91m", "§e").replace("[91m", "§9").replace("[91m", "§d").replace("[91m", "§b").replace("[97m", "§f");
+					LinkSpigotBungee.Provider.link.sendMessage("&dREAD BASH > " + line);
+					sb.append(line);
 				}
+				out = sb.toString();
 				if (function != null)
 					function.accept(out);
 				br.close();
 				p.waitFor();
-				System.out.println(out);
 			} catch (Exception e) {
-				String out = Prefix.DEFAULT + "&4ERROR&c " + e.getMessage();
-				if (function != null)
-					function.accept(out);
-				System.out.println(out);
+				out = Prefix.DEFAULT + "&4ERROR&c " + e.getMessage();
+				e.printStackTrace();
+			}
+			if (function != null)
+				function.accept(out);
+		}, "Start command " + command);
+	}
+
+	public static Thread actionForAllLines(String command, Consumer<String> functionForAllLines) {
+		return new Thread(() -> {
+			//			String out;
+			try {
+				//				StringBuilder sb = new StringBuilder();
+				LinkSpigotBungee.Provider.link.sendMessage("&5EXEC COMMAND BASH < " + command);
+				Process p = Runtime.getRuntime().exec(command);
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String line;
+				while ((line = br.readLine()) != null) {
+					if (line.isEmpty())
+						continue;
+					line = line.replace("0;", "").replace("", "")
+							.replace("[0m", "§f").replace("[1m", "§l").replace("[4m", "§n").replace("[32m", "§3").replace("[36m", "§b").replace("[49m", "§f").replace("[30m", "§0").replace("[31m", "§4")
+							.replace("[32m", "§2").replace("[33m", "§6").replace("[34m", "§1").replace("[35m", "§5").replace("[36m", "§3").replace("[37m", "§7").replace("[90m", "§8").replace("[91m", "§c")
+							.replace("[92m", "§a").replace("[91m", "§e").replace("[91m", "§9").replace("[91m", "§d").replace("[91m", "§b").replace("[97m", "§f");
+					LinkSpigotBungee.Provider.link.sendMessage("&dREAD BASH > " + line);
+					//					sb.append(line);
+					if (functionForAllLines != null)
+						functionForAllLines.accept(line);
+				}
+				//				out = sb.toString();
+				br.close();
+				p.waitFor();
+			} catch (Exception e) {
+				//				out = "&4ERROR&c " + e.getMessage();
 				e.printStackTrace();
 			}
 		}, "Start command " + command);

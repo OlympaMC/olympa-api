@@ -47,6 +47,7 @@ public class TxtComponentBuilder {
 	String clickActionValue;
 	HoverEvent.Action hoverAction;
 	Content[] contents;
+	TxtComponentBuilder extrasSeparator;
 	List<TxtComponentBuilder> extras;
 	//	TextComponent cache;
 	boolean isConsole = false;
@@ -79,6 +80,10 @@ public class TxtComponentBuilder {
 		this.hoverAction = hoverAction;
 		this.contents = contents;
 		return this;
+	}
+
+	public boolean isEmpty() {
+		return prefix == null && (msg == null || msg.isEmpty()) && clickAction == null && hoverAction == null && (extras == null || extras.isEmpty());
 	}
 
 	public TxtComponentBuilder console() {
@@ -136,6 +141,12 @@ public class TxtComponentBuilder {
 		return this;
 	}
 
+	public TxtComponentBuilder extraSpliter(String text, Object... args) {
+		clearCache();
+		extrasSeparator = new TxtComponentBuilder(text, args);
+		return this;
+	}
+
 	private TextComponent clearCache() {
 		//		return cache = null;
 		return null;
@@ -147,28 +158,41 @@ public class TxtComponentBuilder {
 		//				LinkSpigotBungee.Provider.link.sendMessage("§dTxtComponentBuilder builder CACHE took %s ms.", (System.nanoTime() - timeInit) / 1000000L);
 		//			return cache;
 		//		}
-		StringBuilder txtBuilder = new StringBuilder();
-		if (prefix != null)
-			txtBuilder.append(prefix);
-		if (msg != null)
-			txtBuilder.append(msg);
 		TextComponent text;
-		if (!txtBuilder.toString().isEmpty())
-			text = getText(txtBuilder.toString());
-		else
+		boolean isNotEmpty = !isEmpty();
+		if (isNotEmpty) {
+			StringBuilder txtBuilder = new StringBuilder();
+			if (prefix != null)
+				txtBuilder.append(prefix);
+			if (msg != null)
+				txtBuilder.append(msg);
+			if (!txtBuilder.toString().isEmpty())
+				text = getText(txtBuilder.toString());
+			else
+				text = new TextComponent();
+			if (isConsole) {
+				if (contents != null && contents.length != 0 && contents instanceof Text[])
+					text.addExtra(getText(String.format("&r(%s) ", ((Text) contents[0]).getValue())));
+			} else {
+				if (clickAction != null && clickActionValue != null)
+					text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
+				if (hoverAction != null && contents != null)
+					text.setHoverEvent(new HoverEvent(hoverAction, contents));
+			}
+		} else
 			text = new TextComponent();
-		if (isConsole) {
-			if (contents != null && contents.length != 0 && contents instanceof Text[])
-				text.addExtra(getText(String.format("&r(%s) ", ((Text) contents[0]).getValue())));
-		} else {
-			if (clickAction != null && clickActionValue != null)
-				text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
-			if (hoverAction != null && contents != null)
-				text.setHoverEvent(new HoverEvent(hoverAction, contents));
+		TextComponent extrasSeparatorBuild = null;
+		if (extras != null) {
+			if (extrasSeparator != null && !extrasSeparator.isEmpty())
+				extrasSeparatorBuild = extrasSeparator.build();
+			if (isNotEmpty && extrasSeparatorBuild != null)
+				text.addExtra(extrasSeparatorBuild);
+			for (int i = 0; i < extras.size(); i++) {
+				text.addExtra(extras.get(i).build());
+				if (extrasSeparatorBuild != null && i < extras.size() - 1)
+					text.addExtra(extrasSeparatorBuild);
+			}
 		}
-		if (extras != null)
-			for (TxtComponentBuilder extra : extras)
-				text.addExtra(extra.build());
 		//		if (DEBUG)
 		//			LinkSpigotBungee.Provider.link.sendMessage("§dTxtComponentBuilder builder took %s ms.", (System.nanoTime() - timeInit) / 1000000L);
 		//		return cache = text;

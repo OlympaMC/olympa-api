@@ -40,8 +40,16 @@ public class TableGenerator {
 		return String.join("\n", generate(sender));
 	}
 
+	public String toString(Receiver receiver) {
+		return String.join("\n", generate(receiver));
+	}
+
 	public List<String> generate(CommandSender sender) {
 		return generate(sender instanceof ConsoleCommandSender ? Receiver.CONSOLE : Receiver.CLIENT, true, true);
+	}
+
+	public List<String> generate(Receiver receiver) {
+		return generate(receiver, true, true);
 	}
 
 	public List<String> generate(Receiver receiver, boolean ignoreColors, boolean coloredDistances) {
