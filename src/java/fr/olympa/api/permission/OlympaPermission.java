@@ -37,21 +37,21 @@ public class OlympaPermission {
 	}
 
 	public static void registerPermissions(Class<?> clazz) {
-		//		try {
-		int initialSize = permissions.size();
+		int i = 0;
 		for (Field f : clazz.getDeclaredFields())
 			try {
-				if (f.getType() == OlympaPermission.class && Modifier.isStatic(f.getModifiers())) {
+				if (f.getType().isAssignableFrom(OlympaPermission.class) && Modifier.isStatic(f.getModifiers())) {
 					OlympaPermission permission = (OlympaPermission) f.get(null);
 					permission.setName(f.getName());
 					permissions.put(f.getName(), permission);
+					i++;
 				}
 			} catch (Exception e) {
-				LinkSpigotBungee.Provider.link.sendMessage("&cError when registering permissions &4%s&c. %s", f.getName(), e.getMessage());
+				LinkSpigotBungee.Provider.link.sendMessage("&cError when registering permission &4%s&c. %s", f.getName(), e.getMessage());
 				e.printStackTrace();
 			}
 		try {
-			LinkSpigotBungee.Provider.link.sendMessage("Registered " + (permissions.size() - initialSize) + " permissions from " + clazz.getName());
+			LinkSpigotBungee.Provider.link.sendMessage("Registered %d permissions from %s", i, clazz.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
