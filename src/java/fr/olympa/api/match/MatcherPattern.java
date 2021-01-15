@@ -15,16 +15,17 @@ import fr.olympa.api.utils.CacheStats;
 public class MatcherPattern {
 
 	public static final Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
+	public static final Cache<String, Boolean> cacheIs = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
 
 	static {
 		CacheStats.addCache("REGEX_PATTERN", cache);
+		CacheStats.addCache("REGEX_PATTERN", cacheIs);
 	}
 	String regex;
 	Function<String, Object> supplyArgumentFunction;
 	String typeName = "Unknown Type";
 
 	private static Pattern getPattern(String regex) {
-
 		Pattern pattern = cache.getIfPresent(regex);
 		if (pattern == null) {
 			pattern = Pattern.compile(regex);
@@ -118,10 +119,12 @@ public class MatcherPattern {
 	* Parse object
 	*/
 	public Object parse(String string) throws IllegalArgumentException {
-		if (supplyArgumentFunction == null)
-			throw new NullPointerException("supplyArgumentFunction cannot be null while using MatcherPattern#parse(string).");
+		//		throw new NullPointerException("supplyArgumentFunction cannot be null while using MatcherPattern#parse(string).");
 		if (is(string))
-			return supplyArgumentFunction.apply(string);
+			if (supplyArgumentFunction != null)
+				return supplyArgumentFunction.apply(string);
+			else
+				return string;
 		// TODO ajouter le type demandé sans variable
 		throw new IllegalArgumentException(String.format("%s is not matching the regex of %s, cannot parse to type.", string, typeName));
 	}
@@ -137,7 +140,12 @@ public class MatcherPattern {
 	 * Match all text
 	 */
 	public boolean is(String text) {
-		return getPattern(wholeWord(true)).matcher(text).find();
+		Boolean is = cacheIs.getIfPresent(text);
+		if (is == null) {
+			is = getPattern(wholeWord(true)).matcher(text).find();
+			cacheIs.put(text, is);
+		}
+		return is;
 	}
 
 }

@@ -66,14 +66,14 @@ public class CacheStats {
 
 	public static void executeOnCache(IOlympaCommand commandClass, CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			commandClass.sendComponents(getInfos().build());
+			commandClass.sendComponents(getAllDebugCaches().build());
 			return;
 		}
 		Entry<String, Cache<?, ?>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
 		Cache<?, ?> cache = entry.getValue();
 		if (cmd.getArgumentsLength() == 1) {
-			commandClass.sendComponents(getInfo(cacheName, cache).build());
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a contient &2%s&a entrées.\n%s", cacheName, cache.size(), getCacheStats(cache));
 			return;
 		}
 		String action = cmd.getArgument(1);
@@ -84,21 +84,21 @@ public class CacheStats {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a a été clear (de %d éléments).", cacheName, size);
 			break;
 		case "print":
-			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getInfo(cacheName, cache)).build());
+			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getContent(cache.asMap().entrySet())).build());
 			break;
 		}
 	}
 
 	public static void executeOnList(IOlympaCommand commandClass, CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			commandClass.sendComponents(getInfosDebugList().build());
+			commandClass.sendComponents(getAllDebugList().build());
 			return;
 		}
 		Entry<String, Collection<?>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
 		Collection<?> list = entry.getValue();
 		if (cmd.getArgumentsLength() == 1) {
-			commandClass.sendComponents(getContent(cacheName, list).build());
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La list &2%s&a contient &2%s&a objets.", cacheName, list.size());
 			return;
 		}
 		String action = cmd.getArgument(1);
@@ -109,21 +109,21 @@ public class CacheStats {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La list &2%s&a a été clear (de %d éléments).", cacheName, size);
 			break;
 		case "print":
-			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(CacheStats.getInfosDebugList()).build());
+			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getContent(list)).build());
 			break;
 		}
 	}
 
 	public static void executeOnMap(IOlympaCommand commandClass, CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
-			commandClass.sendComponents(getInfosDebugMap().build());
+			commandClass.sendComponents(getAllDebugMap().build());
 			return;
 		}
 		Entry<String, Map<Object, Object>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
 		Map<Object, Object> map = entry.getValue();
 		if (cmd.getArgumentsLength() == 1) {
-			commandClass.sendComponents(getContent(cacheName, map).build());
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La map &2%s&a contient &2%s&a entrées.", cacheName, map.size());
 			return;
 		}
 		String action = cmd.getArgument(1);
@@ -134,38 +134,49 @@ public class CacheStats {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La map &2%s&a a été clear (de %d éléments).", cacheName, size);
 			break;
 		case "print":
-			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getContent(cacheName, map)).build());
+			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getContent(map)).build());
+			break;
+		case "remove":
+			if (cmd.getArgumentsLength() < 2) {
+				commandClass.sendError("Une clef doit être renseigné après &4remove&c.");
+				return;
+			}
+			String clef = cmd.getArgument(2);
+			Object objRemoved = map.remove(clef);
+			if (objRemoved != null)
+				commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "L'entrée avec la clef &2%s&a a été supprimé (passe ta souris pour voir les données).", cacheName).onHoverText(objectToString(objRemoved)).build());
+			else
+				commandClass.sendError("La clef &4%s&c n'existe pas. Petit de soucis de timing dit donc !", clef);
 			break;
 		}
 	}
 
-	public static TxtComponentBuilder getInfos() {
+	private static TxtComponentBuilder getAllDebugCaches() {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID       &bSize"));
+		builder.extra(new TxtComponentBuilder("&3ID       &bSize")).extraSpliter("\n");
 		for (Entry<String, Cache<?, ?>> entry : caches.entrySet())
-			builder.extra(getInfo(entry.getKey(), entry.getValue()));
+			builder.extra("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getValue()));
 		return builder;
 	}
 
-	public static TxtComponentBuilder getInfosDebugList() {
+	public static TxtComponentBuilder getAllDebugList() {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "List en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID        &bSize"));
+		builder.extra(new TxtComponentBuilder("&3ID          &bSize")).extraSpliter("\n");
 		for (Entry<String, Collection<?>> entry : debugList.entrySet())
-			builder.extra(getContent(entry.getKey(), entry.getValue()));
+			builder.extra(getContent(entry.getValue()));
 		return builder;
 	}
 
-	public static TxtComponentBuilder getInfosDebugMap() {
+	public static TxtComponentBuilder getAllDebugMap() {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Map en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID        &bSize"));
+		builder.extra(new TxtComponentBuilder("&3ID          &bSize"));
 		for (Entry<String, Map<Object, Object>> entry : debugMap.entrySet())
-			builder.extra(getContent(entry.getKey(), entry.getValue()));
+			builder.extra(new TxtComponentBuilder(entry.getKey() + " " + entry.getValue().size()).onHoverText(getContent(entry.getValue())));
 		return builder;
 	}
 
-	private static TxtComponentBuilder getInfo(String id, Cache<?, ?> info) {
-		TxtComponentBuilder builder;
-		Map<String, String> stats = Utils.jsonToHumainReadable(new Gson().toJson(info.stats()));
+	private static String getCacheStats(Cache<?, ?> cache) {
+		Map<String, String> stats = Utils.jsonToHumainReadable(new Gson().toJson(cache.stats()));
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
 		Iterator<Entry<String, String>> it = stats.entrySet().iterator();
 		while (it.hasNext()) {
@@ -181,12 +192,10 @@ public class CacheStats {
 			}
 			table.addRow(info1, info2, "|", info3, info4);
 		}
-		builder = new TxtComponentBuilder("&e%s &6%d", id, info.size()).onHoverText(table.toString(Receiver.CLIENT));
-		return builder;
+		return "&cStats de performances\n" + table.toString(Receiver.CLIENT);
 	}
 
-	private static TxtComponentBuilder getContent(String id, Collection<?> info) {
-		TxtComponentBuilder builder;
+	private static String getContent(Collection<?> info) {
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.LEFT, Alignment.LEFT);
 		Iterator<?> it = info.iterator();
 		while (it.hasNext()) {
@@ -204,13 +213,12 @@ public class CacheStats {
 			}
 			table.addRow(info1, info2, info3, info4);
 		}
-		builder = new TxtComponentBuilder("&e%s &6%d", id, info.size()).onHoverText(table.toString(Receiver.CLIENT));
-		return builder;
+		return "&cContenu de la list\n" + table.toString(Receiver.CLIENT);
 	}
 
-	private static TxtComponentBuilder getContent(String id, Map<Object, Object> info) {
-		TxtComponentBuilder builder;
+	private static String getContent(Map<Object, Object> info) {
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
+		table.addRow("Clef", "Valeur", "|", "Clef", "Valeur");
 		Iterator<Entry<Object, Object>> it = info.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<Object, Object> entry = it.next();
@@ -225,8 +233,7 @@ public class CacheStats {
 			}
 			table.addRow(info1, info2, "|", info3, info4);
 		}
-		builder = new TxtComponentBuilder("&e%s &6%d", id, info.size()).onHoverText(table.toString(Receiver.CLIENT));
-		return builder;
+		return table.toString(Receiver.CLIENT);
 	}
 
 	private static String objectToString(Object o) {

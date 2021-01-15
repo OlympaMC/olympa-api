@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 // Copyright by FisheyLP, Version 1.3 (12.08.16)
+// Edited by Olympa Dev Team
 public class TableGenerator {
 
 	private static String delimiter = "   ";
@@ -34,6 +35,10 @@ public class TableGenerator {
 
 		columns = alignments.length;
 		this.alignments = alignments;
+	}
+
+	public boolean isEmpty() {
+		return table.isEmpty();
 	}
 
 	public String toString(CommandSender sender) {

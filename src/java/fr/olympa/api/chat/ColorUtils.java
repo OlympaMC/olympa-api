@@ -1,5 +1,6 @@
 package fr.olympa.api.chat;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -13,11 +14,19 @@ public class ColorUtils {
 
 	public static ChatColor ORANGE = ChatColor.of("#FF4500");
 
-	private static Random RANDOM = new Random();
+	private static final Random RANDOM = new Random();
+	private static final float MIN_BRIGHTNESS = 0.8f;
 
 	public static ChatColor randomColor() {
 		int rand_num = RANDOM.nextInt(0xffffff + 1);
 		return ChatColor.of(String.format("#%06x", rand_num));
+	}
+
+	public static ChatColor randomBrightColor() {
+		float h = RANDOM.nextFloat();
+		float s = 1f;
+		float b = MIN_BRIGHTNESS + (1f - MIN_BRIGHTNESS) * RANDOM.nextFloat();
+		return ChatColor.of(Color.getHSBColor(h, s, b));
 	}
 
 	/**

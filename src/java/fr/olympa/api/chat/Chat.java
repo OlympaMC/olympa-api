@@ -8,6 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 *
 * Created by SirSpoodles
 * Modified by ZombieHDGaming for MotD Usage
+* Edit by Olympa Dev Team
 *
 * https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
 *
@@ -110,6 +111,8 @@ public enum Chat {
 	PERIOD('.', 1),
 	COMMA(',', 1),
 	SPACE(' ', 3),
+	HEXA('⬣', 7),
+	CROSS('✖', 6),
 	DEFAULT('a', 4);
 
 	private char character;

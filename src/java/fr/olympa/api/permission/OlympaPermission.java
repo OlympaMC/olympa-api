@@ -25,11 +25,16 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
+import fr.olympa.api.utils.CacheStats;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
 
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
+
+	{
+		CacheStats.addDebugMap("PERMISSION", OlympaPermission.permissions);
+	}
 
 	public static void registerPermissions(Class<?> clazz) {
 		//		try {

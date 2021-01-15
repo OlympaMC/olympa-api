@@ -19,6 +19,7 @@ import fr.olympa.api.sql.SQLColumn.SQLSelector;
 import fr.olympa.api.sql.SQLColumn.SQLUpdater;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.api.sql.statement.StatementType;
+import fr.olympa.api.utils.CacheStats;
 
 public class SQLTable<T> {
 
@@ -33,6 +34,7 @@ public class SQLTable<T> {
 		this.name = name;
 		this.columns = columns;
 		this.primaryColumn = columns.stream().filter(SQLColumn::isPrimaryKey).findAny().orElseThrow(() -> new IllegalArgumentException("Can't create a table without primary key."));
+		CacheStats.addDebugList("SQL_COLUMNS_OF_TABLE_" + name, columns);
 	}
 
 	public SQLTable(String name, List<SQLColumn<T>> columns, Function<ResultSet, T> initializeFromRow) {
@@ -96,7 +98,9 @@ public class SQLTable<T> {
 		} else if (statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")") >= 1)
 			link.sendMessage("Table SQL §6%s §ecréée !", name);
 		else
-			new IllegalAccessError("La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.").printStackTrace();
+			new IllegalAccessError(
+					"La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.")
+							.printStackTrace();
 
 		columns.forEach(column -> column.setSQLSelector(new SQLSelector<>() {
 
