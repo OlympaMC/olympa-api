@@ -40,7 +40,7 @@ public class OlympaPermission {
 		int i = 0;
 		for (Field f : clazz.getDeclaredFields())
 			try {
-				if (f.getType().isAssignableFrom(OlympaPermission.class) && Modifier.isStatic(f.getModifiers())) {
+				if (OlympaPermission.class.isAssignableFrom(f.getType()) && Modifier.isStatic(f.getModifiers())) {
 					OlympaPermission permission = (OlympaPermission) f.get(null);
 					permission.setName(f.getName());
 					permissions.put(f.getName(), permission);
