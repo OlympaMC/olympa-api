@@ -38,7 +38,7 @@ public class TxtComponentBuilder {
 	}
 
 	private static String format(String format, Object... args) {
-		return ColorUtils.format(format, args);
+		return format != null ? ColorUtils.format(format, args) : null;
 	}
 
 	Prefix prefix;

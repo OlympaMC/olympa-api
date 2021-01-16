@@ -26,7 +26,7 @@ public class SQLTable<T> {
 	private final String name;
 	private final List<SQLColumn<T>> columns;
 	private final SQLColumn<T> primaryColumn;
-	private Function<ResultSet, T> initializeFromRow;
+	public Function<ResultSet, T> initializeFromRow;
 
 	private OlympaStatement insertStatement, deleteStatement;
 
@@ -47,7 +47,7 @@ public class SQLTable<T> {
 	}
 
 	public synchronized void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
-		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.entrySet().stream().map(e -> ((SQLColumn<?>) e.getValue()).getName()).toArray(String[]::new));
+		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.entrySet().stream().map(e -> e.getKey().getName()).toArray(String[]::new));
 		PreparedStatement statement = updateStatement.getStatement();
 		int i = 1;
 		for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet())
@@ -119,10 +119,7 @@ public class SQLTable<T> {
 			@Override
 			public ResultSet selectBasic(Object sqlObject, String... specifiedColumnsReturned) throws SQLException {
 				PreparedStatement statement = new OlympaStatement(StatementType.SELECT, name, column.getName(), specifiedColumnsReturned).getStatement();
-				int i = 1;
-				if (specifiedColumnsReturned != null && specifiedColumnsReturned.length != 0)
-					statement.setString(i++, String.join(",", specifiedColumnsReturned));
-				statement.setObject(i, sqlObject, column.getSQLType());
+				statement.setObject(1, sqlObject, column.getSQLType());
 				return statement.executeQuery();
 			}
 		}));
@@ -200,8 +197,18 @@ public class SQLTable<T> {
 
 	public synchronized ResultSet getFromColumn(SQLColumn<T> column, Object object) throws SQLException {
 		PreparedStatement statement = column.getSelectStatement(this).getStatement();
-		statement.setObject(1, object, column.getSQLType());
 		return statement.executeQuery();
+	}
+
+	public synchronized List<T> selectAll() throws SQLException, IllegalAccessException {
+		List<T> objects = new ArrayList<>();
+		if (initializeFromRow == null)
+			throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
+		ResultSet rs = new OlympaStatement(StatementType.SELECT, name, null).executeQuery();
+		while (rs.next())
+			objects.add(initializeFromRow.apply(rs));
+		rs.close();
+		return objects;
 	}
 
 }
