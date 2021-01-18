@@ -50,8 +50,12 @@ public class SQLTable<T> {
 		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.entrySet().stream().map(e -> e.getKey().getName()).toArray(String[]::new));
 		PreparedStatement statement = updateStatement.getStatement();
 		int i = 1;
-		for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet())
+		for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet()) {
+			Object value = entry.getValue();
+			if (value instanceof SQLNullObject)
+				value = null;
 			statement.setObject(i++, entry.getValue(), entry.getKey().getSQLType());
+		}
 		statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
 		statement.executeUpdate();
 		statement.close();
