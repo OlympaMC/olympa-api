@@ -23,9 +23,9 @@ public class AfkCommand extends OlympaCommand {
 		AfkHandler afkHandler = OlympaCore.getInstance().getAfkHandler();
 		AfkPlayer afkPlayer = afkHandler.get(player);
 		if (afkPlayer.isAfk())
-			afkPlayer.setAfk(player);
-		else
 			afkPlayer.setNotAfk(player);
+		else
+			afkPlayer.setAfk(player);
 		return false;
 	}
 

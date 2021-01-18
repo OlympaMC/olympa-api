@@ -31,7 +31,7 @@ public class SQLTable<T> {
 	private OlympaStatement insertStatement, deleteStatement;
 
 	public SQLTable(String name, List<SQLColumn<T>> columns) {
-		this.name = name;
+		this.name = name; // TODO add ` like `db`.`table`
 		this.columns = columns;
 		this.primaryColumn = columns.stream().filter(SQLColumn::isPrimaryKey).findAny().orElseThrow(() -> new IllegalArgumentException("Can't create a table without primary key."));
 		CacheStats.addDebugList("SQL_COLUMNS_OF_TABLE_" + name, columns);
@@ -44,6 +44,10 @@ public class SQLTable<T> {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getCleanName() {
+		return name.replace("`", "");
 	}
 
 	public synchronized void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {

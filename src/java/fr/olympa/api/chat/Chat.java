@@ -111,7 +111,7 @@ public enum Chat {
 	PERIOD('.', 1),
 	COMMA(',', 1),
 	SPACE(' ', 3),
-	HEXA('⬣', 7),
+	HEXA('⬣', 8),
 	CROSS('✖', 6),
 	DEFAULT('a', 4);
 

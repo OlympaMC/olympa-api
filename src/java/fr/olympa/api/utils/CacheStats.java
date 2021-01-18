@@ -73,7 +73,7 @@ public class CacheStats {
 		String cacheName = entry.getKey();
 		Cache<?, ?> cache = entry.getValue();
 		if (cmd.getArgumentsLength() == 1) {
-			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a contient &2%s&a entrées.\n%s", cacheName, cache.size(), getCacheStats(cache));
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a contient &2%s&a entrées.\n%s", cacheName, cache.size(), getCacheStats(cacheName, cache));
 			return;
 		}
 		String action = cmd.getArgument(1);
@@ -155,7 +155,7 @@ public class CacheStats {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
 		builder.extra(new TxtComponentBuilder("&3ID       &bSize")).extraSpliter("\n");
 		for (Entry<String, Cache<?, ?>> entry : caches.entrySet())
-			builder.extra("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getValue()));
+			builder.extra("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getKey(), entry.getValue()));
 		return builder;
 	}
 
@@ -175,7 +175,7 @@ public class CacheStats {
 		return builder;
 	}
 
-	private static String getCacheStats(Cache<?, ?> cache) {
+	private static String getCacheStats(String name, Cache<?, ?> cache) {
 		Map<String, String> stats = Utils.jsonToHumainReadable(new Gson().toJson(cache.stats()));
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
 		Iterator<Entry<String, String>> it = stats.entrySet().iterator();
@@ -192,7 +192,7 @@ public class CacheStats {
 			}
 			table.addRow(info1, info2, "|", info3, info4);
 		}
-		return "&cStats de performances\n" + table.toString(Receiver.CLIENT);
+		return "&cStats de performances de &4" + name + "&r\n" + table.toString(Receiver.CLIENT);
 	}
 
 	private static String getContent(Collection<?> info) {
