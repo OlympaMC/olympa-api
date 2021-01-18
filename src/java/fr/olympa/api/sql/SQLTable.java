@@ -197,6 +197,7 @@ public class SQLTable<T> {
 
 	public synchronized ResultSet getFromColumn(SQLColumn<T> column, Object object) throws SQLException {
 		PreparedStatement statement = column.getSelectStatement(this).getStatement();
+		statement.setObject(1, object, column.getSQLType());
 		return statement.executeQuery();
 	}
 
