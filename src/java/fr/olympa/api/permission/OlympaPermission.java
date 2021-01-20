@@ -26,6 +26,7 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
 import fr.olympa.api.utils.CacheStats;
+import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
@@ -247,6 +248,20 @@ public class OlympaPermission {
 
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()));
+	}
+	
+	/**
+	 * Check if the player has the permission, and sends an alert message if not
+	 * @param olympaPlayer
+	 * @return
+	 */
+	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) {
+		boolean b = hasPermission(olympaPlayer);
+		
+		if (!b)
+			Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
+		
+		return b;
 	}
 
 	public boolean hasPermission(TreeMap<OlympaGroup, Long> groups) {
