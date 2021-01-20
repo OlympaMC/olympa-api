@@ -4,12 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -32,7 +31,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 @SuppressWarnings("unchecked")
 public abstract class OlympaCommand implements IOlympaCommand {
 
-	public static Set<OlympaCommand> commands = new HashSet<>();
+	public static List<OlympaCommand> commands = new ArrayList<>();
 	protected static Map<List<String>, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
 
@@ -177,7 +176,10 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		reflectCommand.setExecutor(this);
 		this.reflectCommand = reflectCommand;
 		getCommandMap().register("Olympa", reflectCommand);
-		commands.add(this);
+		if (!commands.contains(this)) {
+			commands.add(this);
+			Collections.sort(commands, (o1, o2) -> o1.command.compareTo(o2.command));
+		}
 		return this;
 	}
 
@@ -185,7 +187,10 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	public OlympaCommand registerPreProcess() {
 		build();
 		commandPreProcess.put(allCommands, this);
-		commands.add(this);
+		if (!commands.contains(this)) {
+			commands.add(this);
+			Collections.sort(commands, (o1, o2) -> o1.command.compareTo(o2.command));
+		}
 		return this;
 	}
 

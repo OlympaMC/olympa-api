@@ -346,6 +346,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
 		TxtComponentBuilder txt = new TxtComponentBuilder();
+		txt.extraSpliter("\n");
 		for (SpigotInternalCommand command : commands.values()) {
 			if (command.cmd.hide() || !command.canRun(sender))
 				continue;
