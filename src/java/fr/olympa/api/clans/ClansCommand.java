@@ -49,7 +49,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		return false;
 	}
 
-	@Cmd (player = true, min = 1, syntax = "<nom>")
+	@Cmd (player = true, min = 1, syntax = "<nom>", description = "Permet de créer un clan")
 	public void create(CommandContext cmd) {
 		ClanPlayerInterface<T, D> player = getOlympaPlayer();
 		if (player.getClan() != null) {
@@ -74,7 +74,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		}
 	}
 
-	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>")
+	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>", description = "Permet d'inviter un joueur dans son clan")
 	public void invite(CommandContext cmd) {
 		T clan = getPlayerClan(true);
 		if (clan == null) return;
@@ -88,7 +88,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		manager.invite(clan, getPlayer(), targetPlayer);
 	}
 	
-	@Cmd (player = true, min = 1, syntax = "<nom du clan>")
+	@Cmd (player = true, min = 1, syntax = "<nom du clan>", description = "Permet d'accepter une invitation de clan")
 	public void accept(CommandContext cmd) {
 		String name = cmd.getFrom(0);
 		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(name)).findFirst().orElse(null);
@@ -106,7 +106,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		}
 	}
 
-	@Cmd (player = true)
+	@Cmd (player = true, description = "Permet de quitter son clan")
 	public void quit(CommandContext cmd) {
 		T clan = getPlayerClan(false);
 		if (clan == null) return;
@@ -122,7 +122,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		clan.removePlayer(p.getInformation(), true);
 	}
 
-	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>")
+	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>", description = "Permet de transmettre la direction de son clan")
 	public void chief(CommandContext cmd) {
 		T clan = getPlayerClan(false);
 		if (clan == null) return;

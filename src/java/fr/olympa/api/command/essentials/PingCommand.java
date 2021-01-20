@@ -17,7 +17,7 @@ import fr.olympa.api.utils.spigot.TPSUtils;
 public class PingCommand extends OlympaCommand {
 
 	public PingCommand(Plugin plugin) {
-		super(plugin, "ping", OlympaAPIPermissions.PING_COMMAND);
+		super(plugin, "ping", "Permet d'obtenir son ping.", OlympaAPIPermissions.PING_COMMAND);
 		addArgs(false, "joueur");
 		minArg = 0;
 	}
