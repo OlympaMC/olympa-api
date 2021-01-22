@@ -355,7 +355,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	}
 
 	@Override
-	@Cmd(args = "SUBCOMMAND", syntax = "[commande]")
+	@Cmd (args = "SUBCOMMAND", syntax = "[commande]", description = "Affiche l'aide de la commande")
 	public void help(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0)
 			sendHelp(sender);

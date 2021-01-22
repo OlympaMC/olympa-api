@@ -188,4 +188,5 @@ public interface IOlympaCommand {
 	IOlympaCommand register();
 
 	IOlympaCommand registerPreProcess();
+	
 }

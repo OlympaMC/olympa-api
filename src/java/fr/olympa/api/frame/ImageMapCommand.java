@@ -19,7 +19,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class ImageMapCommand extends OlympaCommand {
 	public ImageMapCommand(Plugin plugin) {
-		super(plugin, "imagemap", OlympaAPIPermissions.COMMAND_IMAGEMAP, "imap");
+		super(plugin, "imagemap", "Pour convertir une image en item frames.", OlympaAPIPermissions.COMMAND_IMAGEMAP, "imap");
 		minArg = 1;
 		addCommandArguments(true, List.of(new CommandArgument("lienDl")));
 		addCommandArguments(true, List.of(new CommandArgument("info"), new CommandArgument("download"), new CommandArgument("true"), new CommandArgument("false"), new CommandArgument("scale")));

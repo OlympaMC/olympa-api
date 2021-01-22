@@ -15,7 +15,7 @@ import fr.olympa.api.utils.Prefix;
 public class EcseeCommand extends OlympaCommand {
 
 	public EcseeCommand(Plugin plugin) {
-		super(plugin, "ecvsee", OlympaAPIPermissions.ECSEE_COMMAND);
+		super(plugin, "ecvsee", "Pour voir l'enderchest d'un joueur.", OlympaAPIPermissions.ECSEE_COMMAND);
 		addArgs(true, "JOUEUR");
 	}
 

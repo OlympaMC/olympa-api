@@ -27,7 +27,7 @@ import net.minecraft.server.v1_16_R3.NBTTagList;
 public class InvseeCommand extends OlympaCommand {
 
 	public InvseeCommand(Plugin plugin) {
-		super(plugin, "invsee", OlympaAPIPermissions.INVSEE_COMMAND);
+		super(plugin, "invsee", "Pour voir l'inventaire d'un joueur.", OlympaAPIPermissions.INVSEE_COMMAND);
 		addArgs(true, "JOUEUR");
 		setAllowConsole(false);
 	}

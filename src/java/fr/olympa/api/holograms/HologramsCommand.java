@@ -1,12 +1,13 @@
 package fr.olympa.api.holograms;
 
 import java.util.Arrays;
-import java.util.StringJoiner;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.chat.ColorUtils;
+import fr.olympa.api.command.Paginator;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
@@ -17,10 +18,13 @@ import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class HologramsCommand extends ComplexCommand {
 
 	private HologramsManager holograms;
+	private Paginator<Hologram> paginator;
 
 	public HologramsCommand(HologramsManager holograms) {
 		super(OlympaCore.getInstance(), "holograms", "Permet de gérer les hologrammes", OlympaAPIPermissions.COMMAND_HOLOGRAMS_MANAGE, "holo");
@@ -32,6 +36,24 @@ public class HologramsCommand extends ComplexCommand {
 			}catch (NumberFormatException ex) {}
 			return null;
 		}, x -> String.format("L'hologramme avec l'ID %s n'existe pas.", x));
+		
+		paginator = new Paginator<Hologram>(5, "Liste des hologrammes") {
+			
+			@Override
+			protected List<Hologram> getObjects() {
+				return holograms.holograms.values().stream().filter(Hologram::isPersistent).collect(Collectors.toList());
+			}
+			
+			@Override
+			protected BaseComponent getObjectDescription(Hologram object) {
+				return new TextComponent("§b§l" + object.getID() + "§3 - §b" + object.toString() + "§3 - §b" + SpigotUtils.convertLocationToHumanString(object.getBottom()));
+			}
+			
+			@Override
+			protected String getCommand(int page) {
+				return "/holograms list " + page;
+			}
+		};
 	}
 
 	@Cmd (player = true, min = 1, syntax = "<lignes séparées par des |>")
@@ -41,13 +63,9 @@ public class HologramsCommand extends ComplexCommand {
 		sendSuccess("Hologramme %d créé.", id);
 	}
 
-	@Cmd
+	@Cmd (args = "INTEGER", syntax = "[page]", description = "Affiche la liste des hologrammes persistants")
 	public void list(CommandContext cmd) {
-		StringJoiner joiner = new StringJoiner("\n", "Liste des hologrammes persistants sur ce serveur :\n", "");
-		holograms.holograms.values().stream().filter(Hologram::isPersistent).forEach(holo -> {
-			joiner.add("§b§l" + holo.getID() + "§3 - §b" + holo.toString() + "§3 - §b" + SpigotUtils.convertLocationToHumanString(holo.getBottom()));
-		});
-		sendInfo(joiner.toString());
+		sendComponents(paginator.getPage(cmd.getArgument(0, 1)));
 	}
 
 	@Cmd (player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme>")

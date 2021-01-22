@@ -30,7 +30,7 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 		}else return false;
 	}
 
-	@Cmd (args = "PLAYERS", syntax = "[joueur]")
+	@Cmd (args = "PLAYERS", syntax = "[joueur]", description = "Affiche la monnaie qu'a le joueur spécifié")
 	public void get(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0) {
 			if (player != null) {
@@ -41,21 +41,21 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 		}else sendDoNotHavePermission();
 	}
 
-	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
+	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>", description = "Modifie la monnaie d'un joueur")
 	public void set(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.set(cmd.getArgument(1));
 		sendSuccess("Le joueur dispose maintenant de " + money.getFormatted());
 	}
 
-	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
+	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>", description = "Donne une quantité d'argent au joueur")
 	public void give(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.give(cmd.getArgument(1));
 		sendSuccess("Le joueur dispose maintenant de " + money.getFormatted());
 	}
 
-	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>")
+	@Cmd (min = 2, args = { "PLAYERS", "DOUBLE" }, syntax = "<joueur> <quantité>", description = "Retire une quantité d'argent au joueur")
 	public void withdraw(CommandContext cmd) {
 		OlympaMoney money = getGameMoney(cmd.getArgument(0));
 		money.withdraw(cmd.getArgument(1));
