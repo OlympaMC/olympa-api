@@ -147,6 +147,12 @@ public class TxtComponentBuilder {
 		return this;
 	}
 
+	public TxtComponentBuilder extraSpliterBN() {
+		clearCache();
+		extrasSeparator = new TxtComponentBuilder("\n");
+		return this;
+	}
+
 	private TextComponent clearCache() {
 		//		return cache = null;
 		return null;

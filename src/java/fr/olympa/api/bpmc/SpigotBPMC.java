@@ -13,9 +13,6 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.core.spigot.OlympaCore;
 
-/*
- * pas fini @Tristiisch
- */
 public class SpigotBPMC {
 
 	/*
@@ -44,7 +41,7 @@ public class SpigotBPMC {
 	public static void sendPlayer(Player player, OlympaServer server) {
 		if (server == OlympaServer.ALL) {
 			try {
-				new Exception("Can't send " + player.getName() + " to server ALL");
+				throw new Exception("Can't send " + player.getName() + " to server ALL");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
