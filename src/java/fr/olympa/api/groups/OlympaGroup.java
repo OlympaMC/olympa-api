@@ -73,7 +73,8 @@ public enum OlympaGroup {
 	final String nameFem;
 	final String prefix;
 	final String chatSuffix;
-	private boolean highStaff;
+	final private boolean highStaff;
+	private boolean visible = true;
 
 	public Map<String, Boolean> runtimePermissions = new HashMap<>();
 
@@ -86,6 +87,11 @@ public enum OlympaGroup {
 		this.prefix = ColorUtils.color(prefix);
 		this.chatSuffix = ColorUtils.color(chatSuffix);
 		this.highStaff = highStaff;
+	}
+
+	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff, boolean visible) {
+		this(id, power, server, name, nameFem, prefix, chatSuffix, highStaff);
+		this.visible = visible;
 	}
 
 	public Stream<OlympaGroup> getAllGroups() {
@@ -107,6 +113,10 @@ public enum OlympaGroup {
 
 	public int getId() {
 		return id;
+	}
+
+	public boolean isVisible() {
+		return visible;
 	}
 
 	public int getIndex() {
