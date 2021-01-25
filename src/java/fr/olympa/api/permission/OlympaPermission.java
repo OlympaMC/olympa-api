@@ -16,16 +16,11 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
-import fr.olympa.api.utils.CacheStats;
 import fr.olympa.api.utils.Prefix;
 
 public abstract class OlympaPermission {
 
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
-
-	{
-		CacheStats.addDebugMap("PERMISSION", OlympaPermission.permissions);
-	}
 
 	public static void registerPermissions(Class<?> clazz) {
 		int i = 0;
@@ -167,7 +162,7 @@ public abstract class OlympaPermission {
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()));
 	}
-	
+
 	/**
 	 * Check if the player has the permission, and sends an alert message if not
 	 * @param olympaPlayer
@@ -175,10 +170,15 @@ public abstract class OlympaPermission {
 	 */
 	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) {
 		boolean b = hasPermission(olympaPlayer);
-		
 		if (!b)
-			Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
-		
+			if (getMinGroup() != null)
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
+			else if (getAllowedGroups() != null && getAllowedGroups().length != 0)
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.",
+						Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())).collect(Collectors.joining(", ")));
+			else
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Tu n'a pas la permission.");
+
 		return b;
 	}
 
@@ -191,7 +191,7 @@ public abstract class OlympaPermission {
 				&& (minGroup != null && group.getPower() >= minGroup.getPower() || allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower()));
 
 	}
-
+	
 	public boolean isLocked() {
 		return lockPermission;
 	}
