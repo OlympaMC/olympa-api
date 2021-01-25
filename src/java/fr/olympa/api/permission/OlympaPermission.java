@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.LinkSpigotBungee;
@@ -25,17 +25,12 @@ import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
-import fr.olympa.api.utils.CacheStats;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class OlympaPermission {
 
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
-
-	{
-		CacheStats.addDebugMap("PERMISSION", OlympaPermission.permissions);
-	}
 
 	public static void registerPermissions(Class<?> clazz) {
 		int i = 0;
@@ -249,7 +244,7 @@ public class OlympaPermission {
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()));
 	}
-	
+
 	/**
 	 * Check if the player has the permission, and sends an alert message if not
 	 * @param olympaPlayer
@@ -257,10 +252,15 @@ public class OlympaPermission {
 	 */
 	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) {
 		boolean b = hasPermission(olympaPlayer);
-		
 		if (!b)
-			Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
-		
+			if (getMinGroup() != null)
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
+			else if (getAllowedGroups() != null && getAllowedGroups().length != 0)
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.",
+						Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())).collect(Collectors.joining(", ")));
+			else
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Tu n'a pas la permission.");
+
 		return b;
 	}
 
@@ -274,10 +274,12 @@ public class OlympaPermission {
 
 	}
 
-	public boolean hasSenderPermission(CommandSender sender) {
+	public boolean hasSenderPermission(Object sender) {
 		if (sender instanceof Player)
 			return this.hasPermission(((Player) sender).getUniqueId());
-		return true;
+		else if (sender instanceof ConsoleCommandSender)
+			return true;
+		return false;
 	}
 
 	public void sendMessage(BaseComponent baseComponent) {
