@@ -22,6 +22,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
@@ -41,7 +42,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected List<String> allCommands;
 	protected String command;
 	protected String description;
-	protected OlympaPermission permission;
+	protected OlympaSpigotPermission permission;
 	protected Player player;
 	protected CommandSender sender;
 	protected String usageString;
@@ -50,7 +51,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected boolean isAsynchronous = false;
 	public ReflectCommand reflectCommand;
 
-	public OlympaCommand(Plugin plugin, String command, OlympaPermission permission, String... aliases) {
+	public OlympaCommand(Plugin plugin, String command, OlympaSpigotPermission permission, String... aliases) {
 		this.plugin = plugin;
 		this.command = command;
 		this.permission = permission;
@@ -63,7 +64,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		this.aliases = Arrays.asList(aliases);
 	}
 
-	public OlympaCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... aliases) {
+	public OlympaCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		this.plugin = plugin;
 		this.permission = permission;
 		this.command = command;

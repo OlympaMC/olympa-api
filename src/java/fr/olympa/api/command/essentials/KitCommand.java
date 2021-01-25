@@ -19,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
@@ -31,7 +32,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 	private List<Kit<T>> kits;
 
 	public KitCommand(Plugin plugin, Kit<T>... kitsArray) {
-		super(plugin, "kit", "Permet d'obtenir un kit.", (OlympaPermission) null, "kits");
+		super(plugin, "kit", "Permet d'obtenir un kit.", (OlympaSpigotPermission) null, "kits");
 		super.minArg = 1;
 		super.allowConsole = false;
 		kits = new ArrayList<>(Arrays.asList(kitsArray));

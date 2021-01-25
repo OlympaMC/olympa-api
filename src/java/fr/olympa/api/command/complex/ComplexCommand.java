@@ -26,6 +26,7 @@ import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -33,7 +34,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 
 	public class SpigotInternalCommand {
 		public Cmd cmd;
-		public OlympaPermission perm;
+		public OlympaSpigotPermission perm;
 		public Method method;
 		public Object commands;
 		public String name;
@@ -45,10 +46,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			name = method.getName();
 			String permName = cmd.permissionName();
 			if (!permName.isBlank()) {
-				perm = OlympaPermission.permissions.get(cmd.permissionName());
+				perm = (OlympaSpigotPermission) OlympaPermission.permissions.get(cmd.permissionName());
 				if (perm == null) {
 					LinkSpigotBungee.Provider.link.sendMessage("&4ComplexCommand %s > &cpermission &4%s&c introuvable, la permission est mise à &4OlympaGroup.FONDA&c.", name, cmd.permissionName());
-					perm = new OlympaPermission(OlympaGroup.FONDA);
+					perm = new OlympaSpigotPermission(OlympaGroup.FONDA);
 				}
 			}
 		}
@@ -120,7 +121,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	public final Map<List<String>, SpigotInternalCommand> commands = new HashMap<>();
 	private final Map<String, SpigotArgumentParser> parsers = new HashMap<>();
 
-	public ComplexCommand(Plugin plugin, String command, String description, OlympaPermission permission, String... aliases) {
+	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addArgumentParser("PLAYERS", sender -> plugin.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
 			return plugin.getServer().getPlayerExact(x);

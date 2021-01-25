@@ -7,14 +7,14 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.provider.AccountProvider;
 
 public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand {
 
-	private OlympaPermission getOtherMoneyPermission;
+	private OlympaSpigotPermission getOtherMoneyPermission;
 
-	public MoneyCommand(Plugin plugin, String cmd, String description, OlympaPermission globalPermission, OlympaPermission getOtherMoneyPermission, OlympaPermission manageMoneyPermission, String... alias) {
+	public MoneyCommand(Plugin plugin, String cmd, String description, OlympaSpigotPermission globalPermission, OlympaSpigotPermission getOtherMoneyPermission, OlympaSpigotPermission manageMoneyPermission, String... alias) {
 		super(plugin, cmd, description, globalPermission, alias);
 		this.getOtherMoneyPermission = getOtherMoneyPermission;
 		for (String internal : new String[] {"set", "give", "withdraw"}) {

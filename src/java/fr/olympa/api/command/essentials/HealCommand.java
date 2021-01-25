@@ -8,11 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class HealCommand extends OlympaCommand {
 
-	public HealCommand(Plugin plugin, OlympaPermission permission) {
+	public HealCommand(Plugin plugin, OlympaSpigotPermission permission) {
 		super(plugin, "heal", "Restaure entièrement la vie de l'utilisateur.", permission);
 		setAllowConsole(false);
 	}

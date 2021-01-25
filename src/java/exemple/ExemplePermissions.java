@@ -5,13 +5,13 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.server.ServerType;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class ExemplePermissions {
 
-	public static final OlympaPermission EXEMPLE_NYAN = new OlympaPermission(OlympaGroup.FRIEND);
-	public static final OlympaPermission EXEMPLE_COMMAND = new OlympaPermission(OlympaGroup.DEV);
-	public static OlympaPermission EXEMPLE;
+	public static final OlympaSpigotPermission EXEMPLE_NYAN = new OlympaSpigotPermission(OlympaGroup.FRIEND);
+	public static final OlympaSpigotPermission EXEMPLE_COMMAND = new OlympaSpigotPermission(OlympaGroup.DEV);
+	public static OlympaSpigotPermission EXEMPLE;
 
 	public ExemplePermissions() {
 
@@ -19,14 +19,13 @@ public class ExemplePermissions {
 		OlympaGroup minGroup = OlympaGroup.ADMIN;
 		OlympaGroup[] allowedGroups = new OlympaGroup[] { OlympaGroup.DEV, OlympaGroup.RESP_TECH };
 		boolean lockPermission = true;
-		ServerType serverType = ServerType.SPIGOT;
-		EXEMPLE = new OlympaPermission(minGroup, allowedGroups, lockPermission, serverType);
+		EXEMPLE = new OlympaSpigotPermission(minGroup, allowedGroups, lockPermission);
 
 		// La permission est accessible
-		OlympaPermission permission = OlympaAPIPermissions.CONNECT_SERVER_DEV;
+		OlympaSpigotPermission permission = OlympaAPIPermissions.CONNECT_SERVER_DEV;
 
 		// ou La permission est dans le core ou autre plugin
-		permission = OlympaPermission.permissions.get("CONNECT_SERVER_DEV");
+		permission = (OlympaSpigotPermission) OlympaPermission.permissions.get("CONNECT_SERVER_DEV");
 
 		// enlever les groupes qui avait la perms indépendamment + change la permission minimale
 		permission.clearAllowedGroups();

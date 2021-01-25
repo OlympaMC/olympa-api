@@ -21,7 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
 
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.CacheStats;
@@ -40,9 +40,9 @@ public class TpaHandler implements Listener {
 	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
 
 	Plugin plugin;
-	OlympaPermission permission;
+	OlympaSpigotPermission permission;
 
-	public TpaHandler(Plugin plugin, OlympaPermission permission) {
+	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission) {
 		this.plugin = plugin;
 		this.permission = permission;
 

@@ -7,11 +7,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class FeedCommand extends OlympaCommand {
 
-	public FeedCommand(Plugin plugin, OlympaPermission permission) {
+	public FeedCommand(Plugin plugin, OlympaSpigotPermission permission) {
 		super(plugin, "feed", "Restaure entièrement la barre de faim de l'utilisateur.", permission);
 		setAllowConsole(false);
 	}

@@ -7,13 +7,13 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class TaxCommand extends ComplexCommand {
 
 	private TaxManager tax;
 
-	public TaxCommand(Plugin plugin, OlympaPermission permission, TaxManager tax) {
+	public TaxCommand(Plugin plugin, OlympaSpigotPermission permission, TaxManager tax) {
 		super(plugin, "tax", "Permet de gérer la taxe du serveur.", permission, "taxe");
 		this.tax = tax;
 	}

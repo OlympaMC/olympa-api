@@ -11,7 +11,7 @@ import fr.olympa.api.clans.gui.NoClanGUI;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 
@@ -19,7 +19,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 
 	private ClansManager<T, D> manager;
 
-	public ClansCommand(ClansManager<T, D> manager, String description, OlympaPermission permission, String... aliases) {
+	public ClansCommand(ClansManager<T, D> manager, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(manager.plugin, manager.getClansCommand(), description, permission, aliases);
 		this.manager = manager;
 		super.addArgumentParser("CLANPLAYER", (player) -> {

@@ -8,7 +8,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.economy.MoneyPlayerInterface;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.sql.statement.OlympaStatement;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -21,7 +21,7 @@ public class TaxManager {
 
 	private OlympaStatement insertStatement;
 
-	public TaxManager(Plugin plugin, OlympaPermission commandPermission, String tableName, double defaultTax) throws SQLException {
+	public TaxManager(Plugin plugin, OlympaSpigotPermission commandPermission, String tableName, double defaultTax) throws SQLException {
 		tableName = "`" + tableName + "`";
 		
 		OlympaCore.getInstance().getDatabase().createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" +

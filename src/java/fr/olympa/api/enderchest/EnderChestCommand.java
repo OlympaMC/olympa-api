@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 
@@ -21,7 +22,7 @@ public class EnderChestCommand extends OlympaCommand {
 	private OlympaPermission permissionOther;
 	private Map<EnderChestPlayerInterface, EnderChestGUI> guis = new HashMap<>();
 	
-	public EnderChestCommand(OlympaAPIPlugin plugin, OlympaPermission permission, OlympaPermission permissionOther) {
+	public EnderChestCommand(OlympaAPIPlugin plugin, OlympaSpigotPermission permission, OlympaSpigotPermission permissionOther) {
 		super(plugin, "enderchest", "Ouvre l'enderchest", permission, "ec", "enderc", "echest");
 		this.permissionOther = permissionOther;
 		setAllowConsole(false);

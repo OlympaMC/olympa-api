@@ -15,11 +15,11 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
 public class BackCommand extends OlympaCommand implements Listener {
 
-	public BackCommand(Plugin plugin, OlympaPermission permission) {
+	public BackCommand(Plugin plugin, OlympaSpigotPermission permission) {
 		super(plugin, "back", "Renvoie l'utilisateur au lieu de sa dernière mort.", permission);
 		setAllowConsole(false);
 		Bukkit.getPluginManager().registerEvents(this, plugin);
