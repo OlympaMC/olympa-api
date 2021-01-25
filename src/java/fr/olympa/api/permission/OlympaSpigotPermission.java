@@ -52,6 +52,11 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		return ServerType.SPIGOT;
 	}
 	
+	@Override
+	public OlympaSpigotPermission lockPermission() {
+		return (OlympaSpigotPermission) super.lockPermission();
+	}
+	
 	public boolean allowPlayer(Player player) {
 		if (lockPermission)
 			return false;
@@ -103,10 +108,12 @@ public class OlympaSpigotPermission extends OlympaPermission {
 			noPerm.accept(playersWithPerm);
 	}
 	
-	public void sendMessage(BaseComponent baseComponent) {
-		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponent)), null);
+	@Override
+	public void sendMessage(BaseComponent... baseComponents) {
+		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponents)), null);
 	}
 	
+	@Override
 	public void sendMessage(String message, Object... args) {
 		this.getPlayers(players -> players.forEach(player -> player.sendMessage(ColorUtils.color(String.format(message, args)))), null);
 	}

@@ -17,6 +17,7 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
 import fr.olympa.api.utils.Prefix;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaPermission {
 
@@ -203,4 +204,8 @@ public abstract class OlympaPermission {
 	public void enable() {
 		disabled = false;
 	}
+	
+	public abstract void sendMessage(BaseComponent... baseComponents);
+	
+	public abstract void sendMessage(String message, Object... args);
 }
