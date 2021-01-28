@@ -1,8 +1,10 @@
 package fr.olympa.api.command.essentials;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
+import fr.olympa.api.captcha.MapCaptcha;
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.chat.TableGenerator;
 import fr.olympa.api.chat.TableGenerator.Alignment;
@@ -56,6 +58,9 @@ public class ColorCommand extends ComplexCommand {
 
 	@Cmd()
 	public void random(CommandContext cmd) {
+		getPlayer().getInventory().addItem(new MapCaptcha().getMap());
+		Bukkit.broadcastMessage("Penser à supprimer le give de la map avec la commande /color random !");
+		
 		for (int i = 0; i < 10; i++) {
 			ChatColor color = ColorUtils.randomColor();
 			sendHoverAndSuggest(Prefix.NONE, color + "[" + color.getName() + "] Lorem ipsum dolor sit amet.", color + "Clique pour récupérer le code Hexa", "/color " + color.getName());
