@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
@@ -24,8 +25,8 @@ public class CommandListener implements Listener {
 		OlympaPlayer player = AccountProvider.get(e.getPlayer().getUniqueId());
 		OlympaCommand.commands.stream().filter(cmd -> !cmd.hasPermission(player)).forEach(cmd -> e.getCommands().removeAll(cmd.getAllCommands()));
 	}
-	
-	@EventHandler
+
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		processCommand(event, event.getMessage().substring(1), event.getPlayer());
 	}

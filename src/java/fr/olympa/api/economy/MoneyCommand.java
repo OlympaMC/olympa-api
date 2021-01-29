@@ -25,7 +25,7 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		if (sender instanceof Player) {
-			get(new CommandContext(this, new String[0], "money"));
+			get(new CommandContext(sender, this, new String[0], "money"));
 			return true;
 		}else return false;
 	}

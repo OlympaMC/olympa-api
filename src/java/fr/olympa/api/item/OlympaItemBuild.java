@@ -13,7 +13,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import fr.olympa.api.chat.ColorUtils;
 
@@ -123,7 +122,8 @@ public class OlympaItemBuild implements Cloneable {
 		if (itemFlags != null)
 			itemMeta.addItemFlags(itemFlags);
 		if (player != null)
-			((SkullMeta) itemMeta).setOwningPlayer(player);
+			ItemUtils.skull(null, itemStack, player.getName());
+		//			((SkullMeta) itemMeta).setOwningPlayer(player);
 		if (unbreakable != null)
 			itemMeta.setUnbreakable(true);
 		itemStack.setItemMeta(itemMeta);

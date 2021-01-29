@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -100,6 +101,10 @@ public class TxtComponentBuilder {
 
 	public TxtComponentBuilder onHoverText(String contents, Object... args) {
 		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(format(contents, args)));
+	}
+
+	public TxtComponentBuilder onHoverText(BaseComponent... contents) {
+		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(contents));
 	}
 
 	public TxtComponentBuilder onClick(ClickEvent.Action clickAction, String clickActionValue) {

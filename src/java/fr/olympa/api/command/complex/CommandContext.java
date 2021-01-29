@@ -2,17 +2,25 @@ package fr.olympa.api.command.complex;
 
 import java.util.StringJoiner;
 
+import fr.olympa.api.chat.TableGenerator.Receiver;
+
 @SuppressWarnings("unchecked")
 public class CommandContext {
 
+	public final Object sender;
 	public final IComplexCommand command;
 	public final String label;
 	private final Object[] args;
 
-	public CommandContext(IComplexCommand command, Object[] args, String label) {
+	public CommandContext(Object sender, IComplexCommand command, Object[] args, String label) {
+		this.sender = sender;
 		this.command = command;
 		this.args = args;
 		this.label = label;
+	}
+
+	public Receiver getSenderType() {
+		return Receiver.of(sender);
 	}
 
 	public int getArgumentsLength() {

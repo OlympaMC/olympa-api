@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+
+import fr.olympa.api.LinkSpigotBungee;
+import net.md_5.bungee.api.connection.Connection;
 
 // Copyright by FisheyLP, Version 1.3 (12.08.16)
 // Edited by Olympa Dev Team
@@ -252,7 +256,19 @@ public class TableGenerator {
 
 	public enum Receiver {
 		CONSOLE,
-		CLIENT
+		CLIENT;
+
+		public static Receiver of(Object sender) {
+			if (LinkSpigotBungee.Provider.link.isSpigot()) {
+				if (sender instanceof OfflinePlayer)
+					return CLIENT;
+				return CONSOLE;
+			} else {
+				if (sender instanceof Connection)
+					return CLIENT;
+				return CONSOLE;
+			}
+		}
 	}
 
 	public enum Alignment {

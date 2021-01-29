@@ -51,18 +51,37 @@ public class SQLTable<T> {
 	}
 
 	public synchronized void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
-		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.entrySet().stream().map(e -> e.getKey().getName()).toArray(String[]::new));
+		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
 		PreparedStatement statement = updateStatement.getStatement();
 		int i = 1;
 		for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet()) {
 			Object value = entry.getValue();
 			if (value instanceof SQLNullObject)
 				value = null;
-			statement.setObject(i++, entry.getValue(), entry.getKey().getSQLType());
+			statement.setObject(i++, value, entry.getKey().getSQLType());
 		}
 		statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
 		statement.executeUpdate();
 		statement.close();
+	}
+
+	public synchronized List<T> select(Map<SQLColumn<?>, Object> whereSqlObjects) throws SQLException, IllegalAccessException {
+		if (initializeFromRow == null)
+			throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
+		PreparedStatement statement = new OlympaStatement(StatementType.SELECT, name, whereSqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new)).getStatement();
+		int i = 1;
+		for (Entry<SQLColumn<?>, Object> entry : whereSqlObjects.entrySet()) {
+			Object value = entry.getValue();
+			if (value instanceof SQLNullObject)
+				value = null;
+			statement.setObject(i++, value, entry.getKey().getSQLType());
+		}
+		ResultSet rs = statement.executeQuery();
+		List<T> objects = new ArrayList<>();
+		while (rs.next())
+			objects.add(initializeFromRow.apply(rs));
+		rs.close();
+		return objects;
 	}
 
 	public void updateAsync(T object, Map<SQLColumn<?>, Object> sqlObjects, Runnable successCallback, Consumer<SQLException> failCallback) {

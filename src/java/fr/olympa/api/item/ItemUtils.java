@@ -39,7 +39,7 @@ import com.mojang.authlib.properties.Property;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ItemUtils {
-	
+
 	public static ImmutableItemStack none = new ImmutableItemStack(item(Material.RED_STAINED_GLASS_PANE, "§cx"));
 	public static ImmutableItemStack done = new ImmutableItemStack(item(Material.DIAMOND, "§aValider"));
 	public static ImmutableItemStack error = new ImmutableItemStack(item(Material.BARRIER, "§c§lerreur"));
@@ -53,16 +53,17 @@ public class ItemUtils {
 	 * @param lore lore of the item, formatted as a String array
 	 * @return the ItemStack instance
 	 */
-	public static ItemStack item(Material type, String name, String... lore){
+	public static ItemStack item(Material type, String name, String... lore) {
 		ItemStack is = new ItemStack(type);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
 		im.addItemFlags(ItemFlag.values());
 		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
+		if (lore != null && lore.length != 0)
+			lore(is, lore);
 		return is;
 	}
-	
+
 	/**
 	 * Create an ItemStack instance of a skull item
 	 * @param callback consumer called when the head is ready
@@ -81,12 +82,27 @@ public class ItemUtils {
 		});
 	}
 
+	public static void skull(Consumer<ItemStack> callback, ItemStack item, String skull) {
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
+			String value = textures.get(skull);
+			if (value == null) {
+				value = getHeadValue(skull);
+				textures.put(skull, value);
+			}
+			SkullMeta skullCustom = skullCustom((SkullMeta) item.getItemMeta(), value);
+			item.setItemMeta(skullCustom);
+			if (callback != null)
+				callback.accept(item);
+		});
+	}
+
 	public static String getHeadValue(String name) {
 		try {
 			String result = getURLContent("https://api.mojang.com/users/profiles/minecraft/" + name);
 			Gson g = new Gson();
 			JsonObject obj = g.fromJson(result, JsonObject.class);
-			if (obj == null || !obj.has("id")) return null;
+			if (obj == null || !obj.has("id"))
+				return null;
 			String uid = obj.get("id").toString().replace("\"", "");
 			String signature = getURLContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uid);
 			obj = g.fromJson(signature, JsonObject.class);
@@ -96,7 +112,7 @@ public class ItemUtils {
 			String skinURL = obj.getAsJsonObject("textures").getAsJsonObject("SKIN").get("url").getAsString();
 			byte[] skinByte = ("{\"textures\":{\"SKIN\":{\"url\":\"" + skinURL + "\"}}}").getBytes();
 			return new String(Base64.getEncoder().encode(skinByte));
-		}catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return null;
@@ -110,15 +126,15 @@ public class ItemUtils {
 			url = new URL(urlStr);
 			in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
 			String str;
-			while ((str = in.readLine()) != null) {
+			while ((str = in.readLine()) != null)
 				sb.append(str);
-			}
-		}catch (Exception ignored) {}finally {
+		} catch (Exception ignored) {
+		} finally {
 			try {
-				if (in != null) {
+				if (in != null)
 					in.close();
-				}
-			}catch (IOException ignored) {}
+			} catch (IOException ignored) {
+			}
 		}
 		return sb.toString();
 	}
@@ -134,7 +150,14 @@ public class ItemUtils {
 		ItemStack is = new ItemStack(Material.PLAYER_HEAD);
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
+		if (lore != null && lore.length != 0)
+			lore(is, lore);
+		skullCustom(im, value);
+		is.setItemMeta(im);
+		return is;
+	}
 
+	public static SkullMeta skullCustom(SkullMeta im, String value) {
 		if (value != null) {
 			GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 			profile.getProperties().put("textures", new Property("textures", value, null));
@@ -142,14 +165,11 @@ public class ItemUtils {
 				Method setProfile = im.getClass().getDeclaredMethod("setProfile", GameProfile.class);
 				setProfile.setAccessible(true);
 				setProfile.invoke(im, profile);
-			}catch (ReflectiveOperationException e) {
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 		}
-
-		is.setItemMeta(im);
-		if (lore != null && lore.length != 0) lore(is, lore);
-		return is;
+		return im;
 	}
 
 	/**
@@ -161,43 +181,41 @@ public class ItemUtils {
 	public static ItemStack lore(ItemStack is, String... lore) {
 		ItemMeta im = is.getItemMeta();
 		List<String> ls = new ArrayList<>();
-		if (lore != null && lore.length != 0){
-			for (String s : lore){
-				if (s == null) {
+		if (lore != null && lore.length != 0)
+			for (String s : lore) {
+				if (s == null)
 					continue;
-				}
 				List<String> lss = new ArrayList<>();
 				String[] splitted = StringUtils.splitByWholeSeparator(s, "\\n");
 				if (splitted.length == 0) {
 					ls.add("");
 					continue;
 				}
-				for (String as : splitted) {
+				for (String as : splitted)
 					lss.add(as);
-				}
 				String last = "";
-				for (String ss : lss){
+				for (String ss : lss) {
 					ss = last + ss;
 					int i = ss.lastIndexOf("§");
-					if (i != -1) last = ss.charAt(i) + "" + ss.charAt(i + 1);
+					if (i != -1)
+						last = ss.charAt(i) + "" + ss.charAt(i + 1);
 					ls.add(ss);
 				}
 			}
-		}
 		im.setLore(ls);
 		is.setItemMeta(im);
-		
+
 		return is;
 	}
-	
+
 	/**
 	 * Add some lore of an ItemStack instance, and keep the old lore
 	 * @param is ItemStack instance to edit
 	 * @param add lore to add, formatted as a String array
 	 * @return the same ItemStack instance, with the new lore added at the end
 	 */
-	public static ItemStack loreAdd(ItemStack is, String... add){
-		if (!is.getItemMeta().hasLore()){
+	public static ItemStack loreAdd(ItemStack is, String... add) {
+		if (!is.getItemMeta().hasLore()) {
 			lore(is, add);
 			return is;
 		}
@@ -213,11 +231,13 @@ public class ItemUtils {
 		item.setItemMeta(meta);
 		return item;
 	}
-	
+
 	public static String[] getLore(ItemStack is) {
-		if (!is.hasItemMeta()) return null;
+		if (!is.hasItemMeta())
+			return null;
 		ItemMeta meta = is.getItemMeta();
-		if (!meta.hasLore()) return null;
+		if (!meta.hasLore())
+			return null;
 		return meta.getLore().toArray(new String[0]);
 	}
 
@@ -236,7 +256,8 @@ public class ItemUtils {
 	}
 
 	public static String getOwner(ItemStack is) {
-		if (is.getType() != Material.PLAYER_HEAD) return null;
+		if (is.getType() != Material.PLAYER_HEAD)
+			return null;
 		return ((SkullMeta) is.getItemMeta()).getOwner();
 	}
 
@@ -252,7 +273,7 @@ public class ItemUtils {
 		is.setItemMeta(im);
 		return is;
 	}
-	
+
 	/**
 	 * Add a string at the end of the name of an ItemStack instance
 	 * @param is ItemStack instance to edit
@@ -262,39 +283,40 @@ public class ItemUtils {
 	public static ItemStack nameAdd(ItemStack is, String add) {
 		return name(is, getName(is) + add);
 	}
-	
+
 	/**
 	 * Get the name of an ItemStack (if no custom name, then it will return the material name)
 	 * @param is ItemStack instance
 	 * @return the name of the ItemStack
 	 */
-	public static String getName(ItemStack is){
-		if (is == null) return null;
+	public static String getName(ItemStack is) {
+		if (is == null)
+			return null;
 		if (is.hasItemMeta()) {
 			ItemMeta meta = is.getItemMeta();
-			if (meta.hasDisplayName()) return meta.getDisplayName();
+			if (meta.hasDisplayName())
+				return meta.getDisplayName();
 		}
 		return is.getType().name();
 	}
-	
-	public static boolean hasEnchant(ItemStack is, Enchantment en){
+
+	public static boolean hasEnchant(ItemStack is, Enchantment en) {
 		return is.getItemMeta().hasEnchant(en);
 	}
-	
-	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level){
+
+	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level) {
 		ItemMeta im = is.getItemMeta();
 		im.addEnchant(en, level, true);
 		is.setItemMeta(im);
 		return is;
 	}
-	
-	public static ItemStack removeEnchant(ItemStack is, Enchantment en){
+
+	public static ItemStack removeEnchant(ItemStack is, Enchantment en) {
 		ItemMeta im = is.getItemMeta();
 		im.removeEnchant(en);
 		is.setItemMeta(im);
 		return is;
 	}
-	
 
 	public static ItemStack itemSeparator(DyeColor color) {
 		return item(Material.valueOf(color.name() + "_STAINED_GLASS_PANE"), "§a");
@@ -307,21 +329,21 @@ public class ItemUtils {
 	 * @param lore lore of the item
 	 * @return ItemStack instance of the created switch
 	 */
-	public static ItemStack itemSwitch(String name, boolean enabled, String... lore){
+	public static ItemStack itemSwitch(String name, boolean enabled, String... lore) {
 		return item(enabled ? Material.LIME_DYE : Material.GRAY_DYE, (enabled ? "§a" : "§7") + name, lore);
 	}
-	
+
 	/**
 	 * Toggle a switch item, created with {@link #itemSwitch(String, boolean, String...)}
 	 * @param itemSwitch switch item
 	 * @return new state of the switch
 	 */
-	public static boolean toggle(ItemStack itemSwitch){
+	public static boolean toggle(ItemStack itemSwitch) {
 		String name = getName(itemSwitch);
 		boolean toggled = name.charAt(1) != 'a'; // toggling
 		return set(itemSwitch, toggled);
 	}
-	
+
 	/**
 	 * Set the state of a switch item, created with {@link #itemSwitch(String, boolean, String...)}
 	 * @see #toggle(ItemStack)
@@ -329,46 +351,48 @@ public class ItemUtils {
 	 * @param enable new state of the switch
 	 * @return same state
 	 */
-	public static boolean set(ItemStack itemSwitch, boolean enable){
-		if (itemSwitch == null) return enable;
+	public static boolean set(ItemStack itemSwitch, boolean enable) {
+		if (itemSwitch == null)
+			return enable;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));
 		itemSwitch.setType(enable ? Material.LIME_DYE : Material.GRAY_DYE);
 		return enable;
 	}
-	
+
 	public static byte[] serializeItemsArray(ItemStack[] items) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
 		dataOutput.writeInt(items.length);
 
-		for (int i = 0; i < items.length; i++) {
-			dataOutput.writeObject(items[i]);
-		}
+		for (ItemStack item : items)
+			dataOutput.writeObject(item);
 
 		dataOutput.close();
 		return outputStream.toByteArray();
 	}
 
 	public static ItemStack[] deserializeItemsArray(byte[] bytes) throws IOException, ClassNotFoundException {
-		if (bytes == null || bytes.length == 0) return new ItemStack[0];
+		if (bytes == null || bytes.length == 0)
+			return new ItemStack[0];
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
 		ItemStack[] items = new ItemStack[dataInput.readInt()];
 
 		// Read the serialized inventory
-		for (int i = 0; i < items.length; i++) {
+		for (int i = 0; i < items.length; i++)
 			items[i] = (ItemStack) dataInput.readObject();
-		}
 
 		dataInput.close();
 		return items;
 	}
-	
+
 	public static int getInventoryContentsLength(Inventory inv) {
 		int length = 0;
-		for (ItemStack item : inv.getContents()) if (item != null) length++;
+		for (ItemStack item : inv.getContents())
+			if (item != null)
+				length++;
 		return length;
 	}
 

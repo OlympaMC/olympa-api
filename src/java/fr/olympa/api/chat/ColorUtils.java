@@ -57,6 +57,10 @@ public class ColorUtils {
 		return join('e', '6', elements.iterator(), " et ");
 	}
 
+	public static String joinGreenEt(Iterable<? extends CharSequence> elements) {
+		return join('a', '2', elements.iterator(), " et ");
+	}
+
 	public static String joinGold(Iterable<? extends CharSequence> elements) {
 		return join('e', '6', elements);
 	}
@@ -97,6 +101,10 @@ public class ColorUtils {
 		return join(color1, color2, it, " ou ");
 	}
 
+	public static String join(Iterator<? extends CharSequence> it, String ouOrEt) {
+		return join(null, null, it, ouOrEt);
+	}
+
 	public static String join(Character c1, Character c2, Iterator<? extends CharSequence> it, String ouOrEt) {
 		String color1 = c1 != null ? String.valueOf(ChatColor.COLOR_CHAR) + c1 : "";
 		String color2 = c2 != null ? String.valueOf(ChatColor.COLOR_CHAR) + c2 : "";
@@ -104,17 +112,19 @@ public class ColorUtils {
 		Boolean hasNext = null;
 		while (hasNext == null || hasNext)
 			if (hasNext == null) {
-				if (hasNext = it.hasNext()) {
+				if (it.hasNext()) {
 					sb.append(color2 + it.next());
 					hasNext = it.hasNext();
 				} else
 					return "";
 			} else {
 				CharSequence next = it.next();
-				if (!(hasNext = it.hasNext()))
-					sb.append(color1 + ouOrEt + color2 + next);
+				sb.append(color1);
+				if (!it.hasNext())
+					sb.append(ouOrEt);
 				else
-					sb.append(color1 + ", " + color2 + next);
+					sb.append(", ");
+				sb.append(color2 + next);
 			}
 		sb.append(color1);
 		return sb.toString();

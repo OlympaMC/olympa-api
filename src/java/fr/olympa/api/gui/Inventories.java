@@ -103,18 +103,19 @@ public class Inventories implements Listener {
 				event.setCancelled(gui.onClick(p, current, event.getSlot(), event.getClick()));
 			} else
 				event.setCancelled(gui.onClickCursor(p, current, event.getCursor(), event.getSlot()));
-		} catch (Exception e) {
+		} catch (Exception | NoClassDefFoundError e) {
 			event.setCancelled(true);
 			closeAndExit(p);
 			p.sendMessage(Prefix.ERROR.formatMessage("Une erreur est survenue : &4%s&c.", e.getMessage() == null ? e.getClass().getName() : e.getMessage()));
 			e.printStackTrace();
 		}
 	}
-	
+
 	@EventHandler
 	public void onDrag(InventoryDragEvent e) {
 		OlympaGUI gui = getGUI(e.getView().getTopInventory());
-		if (gui == null) return;
+		if (gui == null)
+			return;
 		e.setCancelled(true);
 	}
 
@@ -126,8 +127,10 @@ public class Inventories implements Listener {
 			return;
 		}
 		OlympaGUI gui = getGUI(e.getView().getTopInventory());
-		if (gui == null) return;
-		if (gui.onClose(p)) g.remove(p);
+		if (gui == null)
+			return;
+		if (gui.onClose(p))
+			g.remove(p);
 	}
 
 }

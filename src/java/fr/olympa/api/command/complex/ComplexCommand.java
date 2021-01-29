@@ -28,6 +28,7 @@ import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ComplexCommand extends OlympaCommand implements IComplexCommand {
@@ -218,6 +219,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		for (int i2 = 0; i2 < argsCmd.length; i2++) {
 			String arg = args[i1++];
 			String[] types = (i2 >= cmd.args().length ? "" : cmd.args()[i2]).split("\\|");
+			if (types.length == 1 && cmd.args()[i2].contains(" ") && cmd.args()[i2].equals(arg)) {
+				sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
+				return true;
+			}
 			Object result = null;
 			List<SpigotArgumentParser> potentialParsers = parsers.entrySet().stream().filter(entry -> Arrays.stream(types).anyMatch(type -> entry.getKey().equals(type)))
 					.map(Entry::getValue).collect(Collectors.toList());
@@ -225,16 +230,25 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 			if (potentialParsers.isEmpty())
 				result = arg;
 			else {
-				SpigotArgumentParser parser = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).findFirst().orElse(null);
-				if (parser != null)
-					result = parser.supplyArgumentFunction.apply(arg);
-				else
+				List<SpigotArgumentParser> parsers = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).collect(Collectors.toList());
+				if (!parsers.isEmpty())
+					result = parsers.get(0).supplyArgumentFunction.apply(arg);
+				else {
 					// TODO : Choose between 2 parses here
-					for (SpigotArgumentParser p : potentialParsers) {
-						result = p.supplyArgumentFunction.apply(arg);
-						if (result != null)
-							break;
-					}
+					//					ISender isender = ISender.of(sender, null);
+					//					AwaitResponse<?> response = new AwaitResponse<String>(isender, "&m----------------", "&m----------------", "&4Impossible de déterminer le type d'argument.", "&eTu dois choisir entre deux type d'argument");
+					//					for (SpigotArgumentParser p : parsers) {
+					//						Object r = p.supplyArgumentFunction.apply(arg);
+					//						response.choices(new ClickChoice(p, null, p.));
+					//					}
+					//					ReponseEvent.add(ISender.of(sender, null), response);
+				}
+				//				else
+				//					for (SpigotArgumentParser p : potentialParsers) {
+				//						result = p.supplyArgumentFunction.apply(arg);
+				//						if (result != null)
+				//							break;
+				//					}
 				if (result == null && !hasStringType) {
 					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
 						this.sendIncorrectSyntax(internal);
@@ -255,7 +269,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 		}
 
 		try {
-			internal.method.invoke(internal.commands, new CommandContext(this, argsCmd, label));
+			internal.method.invoke(internal.commands, new CommandContext(sender, this, argsCmd, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
 			e.printStackTrace();
@@ -356,7 +370,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand {
 	}
 
 	@Override
-	@Cmd (args = "SUBCOMMAND", syntax = "[commande]", description = "Affiche l'aide de la commande")
+	@Cmd(args = "SUBCOMMAND", syntax = "[commande]", description = "Affiche l'aide de la commande")
 	public void help(CommandContext cmd) {
 		if (cmd.getArgumentsLength() == 0)
 			sendHelp(sender);

@@ -15,13 +15,12 @@ import fr.olympa.api.utils.CacheStats;
 public class MatcherPattern {
 
 	public static final Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
-	public static final Cache<String, Boolean> cacheIs = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
 
 	static {
 		CacheStats.addCache("REGEX_PATTERN", cache);
-		CacheStats.addCache("REGEX_PATTERN", cacheIs);
 	}
-	String regex;
+	final Cache<String, Boolean> cacheIs;
+	final String regex;
 	Function<String, Object> supplyArgumentFunction;
 	String typeName = "Unknown Type";
 
@@ -39,22 +38,24 @@ public class MatcherPattern {
 	}
 
 	public MatcherPattern(String regex, Function<String, Object> supplyArgumentFunction, Class<?> typeClass) {
-		this.regex = regex;
+		this(regex);
 		this.supplyArgumentFunction = supplyArgumentFunction;
 		typeName = typeClass.getName();
 	}
 
 	public MatcherPattern(String regex, Function<String, Object> supplyArgumentFunction) {
-		this.regex = regex;
+		this(regex);
 		this.supplyArgumentFunction = supplyArgumentFunction;
 	}
 
 	public MatcherPattern(String regex) {
 		this.regex = regex;
+		cacheIs = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
+		CacheStats.addCache("REGEX_PATTERN_" + regex, cacheIs);
 	}
 
 	private String wholeWord(boolean wholeWord) {
-		String tmp = new String(regex);
+		String tmp = regex;
 		if (wholeWord) {
 			if (tmp.indexOf(0) != '^')
 				tmp = "^" + tmp;

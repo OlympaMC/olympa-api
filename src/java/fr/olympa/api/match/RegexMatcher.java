@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class RegexMatcher {
-	public static final MatcherPattern USERNAME = new MatcherPattern("(?iu)^[\\w_]{3,16}$");
+	public static final MatcherPattern USERNAME = new MatcherPattern("[\\w_]{3,16}");
 	public static final MatcherPattern IP = new MatcherPattern("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}");
 
 	public static final MatcherPattern FAKE_IP = new MatcherPattern("\\d{1,3}(\\.\\d{1,3}){3}");

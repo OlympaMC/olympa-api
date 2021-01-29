@@ -27,7 +27,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
 
 public class AfkHandler implements Listener {
 
@@ -82,10 +81,10 @@ public class AfkHandler implements Listener {
 					afkPlayers.get(p.getUniqueId()).addToLog(handledPacket);
 			}
 
-			@Override
-			public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise) throws Exception {
-				super.write(channelHandlerContext, packet, channelPromise);
-			}
+			//			@Override
+			//			public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise) throws Exception {
+			//				super.write(channelHandlerContext, packet, channelPromise);
+			//			}
 		};
 
 		ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();

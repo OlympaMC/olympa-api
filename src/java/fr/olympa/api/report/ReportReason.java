@@ -8,11 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
-
-import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.item.OlympaItemBuild;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ReportReason {
@@ -20,7 +15,6 @@ public class ReportReason {
 	public static final Map<String, ReportReason> reportReasons = new HashMap<>();
 
 	public static void registerReason(Class<?> clazz) {
-		initSpigot();
 		try {
 			int initialSize = reportReasons.size();
 			for (Field f : clazz.getDeclaredFields())
@@ -47,21 +41,6 @@ public class ReportReason {
 	public static ReportReason CHEAT_FLY = new ReportReason(4, "Cheat Fly");
 	public static ReportReason OTHER = new ReportReason(5, "Autre");
 
-	private static boolean INIT = false;
-
-	public static void initSpigot() {
-		if (INIT)
-			return;
-		INIT = true;
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
-			return;
-		ReportReason.CHAT.setItem(new OlympaItemBuild(Material.BOOK, "&7Chat abusif").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
-		ReportReason.CHEAT_AURA.setItem(new OlympaItemBuild(Material.GOLDEN_SWORD, "&7Cheat Combat").lore("", "&eKillAura, Aimbot, TriggerBot, AutoClick ...").flag(ItemFlag.HIDE_ATTRIBUTES));
-		ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod &cinterdit&e qui permet de voir à travers les blocks."));
-		ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod &cinterdit&e qui permet de voler."));
-		ReportReason.OTHER.setItem(new OlympaItemBuild(Material.CAULDRON, "&7Autre"));
-	}
-
 	public static ReportReason get(int id) {
 		return ReportReason.values().stream().filter(itemGui -> itemGui.getId() == id).findFirst().orElse(null);
 	}
@@ -84,7 +63,6 @@ public class ReportReason {
 
 	int id;
 	String reason;
-	OlympaItemBuild item;
 	String name;
 
 	String note;
@@ -107,10 +85,6 @@ public class ReportReason {
 		return id;
 	}
 
-	public OlympaItemBuild getItem() {
-		return item;
-	}
-
 	public String getReason() {
 		return reason;
 	}
@@ -127,7 +101,7 @@ public class ReportReason {
 		active = false;
 	}
 
-	public void setItem(OlympaItemBuild item) {
-		this.item = item;
+	public boolean hasItem() {
+		return false;
 	}
 }
