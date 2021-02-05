@@ -2,6 +2,8 @@ package fr.olympa.core.spigot;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
@@ -140,6 +142,11 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public boolean isServerName(String serverName) {
 		return this.serverName.equals(serverName);
+	}
+
+	@Override
+	public Connection getDatabase() throws SQLException {
+		return null;
 	}
 
 }

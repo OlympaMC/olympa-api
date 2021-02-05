@@ -31,6 +31,8 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission ECSEE_COMMAND_INTERACT = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission ERRORS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission PING_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
+	public static final OlympaSpigotPermission VANISH_SEE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaSpigotPermission VANISH_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_STAFF, OlympaGroup.MODP);
 
 	{
 		OlympaServer.DEV.setJoinPermission(CONNECT_SERVER_DEV);
