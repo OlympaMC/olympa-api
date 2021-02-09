@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import fr.olympa.api.LinkSpigotBungee;
-
 public class FakeTeam {
 
 	private static long MAX_ID = 99_999_999_999L;
@@ -47,10 +45,9 @@ public class FakeTeam {
 		//					ID = i;
 		//		} else
 		ID++;
-		name = name.length() > 16 ? name.substring(0, 16) : name;
+		this.name = name.length() > 16 ? name.substring(0, 16) : name;
 		this.prefix = prefix;
 		this.suffix = suffix;
-		LinkSpigotBungee.Provider.link.sendMessage("&6DEBUG Team %s '%s' '%s' %d", name, prefix, suffix, id);
 	}
 
 	public void addMember(String player) {
