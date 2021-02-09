@@ -195,6 +195,14 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		return this;
 	}
 
+	@Override
+	public void unregister() {
+		if (commands.contains(this))
+			commands.remove(this);
+		if (commandPreProcess.containsValue(this))
+			commandPreProcess.remove(allCommands, this);
+	}
+
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {
 		text = prefix.formatMessage(text, args);
 		for (CommandSender sender : senders)
@@ -276,4 +284,5 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			}
 		return cmap;
 	}
+
 }

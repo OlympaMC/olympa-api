@@ -54,6 +54,11 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 		return plugin != null;
 	}
 
+	@Override
+	public boolean setToPlugin(OlympaAPIPlugin plugin) {
+		return true;
+	}
+
 	OlympaAPIPlugin plugin;
 	String displayName;
 	List<AbstractLine<Scoreboard<T>>> lines = new ArrayList<>();
@@ -62,7 +67,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 	public ScoreboardManager(OlympaAPIPlugin pl, String displayName) {
 		this.displayName = displayName;
 		OlympaModule<ScoreboardManager<T>, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "scoreboard_" + pl.getName(),
-				plugin -> this, null, Arrays.asList(this.getClass()), null);
+				plugin -> this, Arrays.asList(this.getClass()), null);
 		PluginModule.enableModule(scoreBoardModule);
 		PluginModule.addModule(scoreBoardModule);
 	}

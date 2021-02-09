@@ -5,9 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -21,8 +25,55 @@ public class PluginModule {
 
 	protected static final List<OlympaModule<? extends Object, Listener, ? extends OlympaPluginInterface, ? extends IOlympaCommand>> modules = new ArrayList<>();
 
-	public class OlympaClassLoader extends ClassLoader {
+	@SuppressWarnings("unchecked")
+	public static class DupClass<R> {
+		@Nullable
+		public R of(Class<?> clazz, Object... params) {
+			try {
+				Constructor<R>[] constructors = (Constructor<R>[]) clazz.getDeclaredConstructors();
+				Class<?>[] paramsList = Arrays.stream(params).map(p -> p.getClass()).toArray(Class[]::new);
+				int maxI = -1;
+				int i = 0;
+				Constructor<R> constructor = null;
+				while (i < constructors.length) {
+					Constructor<R> tmp = constructors[i++];
+					int j = 0;
+					for (Class<?> pa : tmp.getParameterTypes())
+						if (pa.isAssignableFrom(paramsList[j++]) && maxI < j) {
+							constructor = tmp;
+							maxI = j;
+						} else
+							break;
+				}
+				if (constructor != null)
+					return constructor.newInstance(Arrays.copyOfRange(params, 0, maxI));
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 
+		@Nullable
+		public R of(Class<?> clazz) {
+			try {
+				Constructor<R>[] constructors = (Constructor<R>[]) clazz.getConstructors();
+				Constructor<R> simpleConstructor = null;
+				int i = 0;
+				while (i < constructors.length && simpleConstructor == null) {
+					Constructor<R> tmp = constructors[i++];
+					if (tmp.getParameterCount() == 0)
+						simpleConstructor = tmp;
+				}
+				if (simpleConstructor != null)
+					return simpleConstructor.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public class OlympaClassLoader extends ClassLoader {
 		public Class<?> load(Class<?> clazz) throws IOException {
 			File file = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath());
 			InputStream is = OlympaClassLoader.class.getResourceAsStream(file.getAbsolutePath());
@@ -34,42 +85,40 @@ public class PluginModule {
 		}
 	}
 
-	public static void unregisterListener(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
+	public static void registerListeners(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
 		try {
 			Plugin plugin = module.getPlugin();
-			if (module.getEventToRegister() == null || !plugin.isEnabled())
-				return;
-			for (Class<? extends Listener> event : module.getEventToRegister()) {
-				Constructor<?>[] constructors = event.getConstructors();
-				if (constructors.length == 0)
-					throw new ClassNotFoundException("Unable to get the first public constructor, can't create the class.");
-				Listener cl = (Listener) constructors[0].newInstance();
-				HandlerList.unregisterAll(cl);
-			}
-		} catch (Exception e) {
-			module.sendErrorModule(e, "unregister Listener");
-		}
-	}
-
-	public static void registerListener(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
-		try {
-			Plugin plugin = module.getPlugin();
-			if (module.getEventToRegister() == null)
+			if (module.getEventsToRegister() == null)
 				return;
 			if (!plugin.isEnabled())
 				throw new IllegalPluginAccessException("Unable to register Listener while plugin is disable.");
-			for (Class<? extends Listener> event : module.getEventToRegister())
-				if (module.getApi().getClass().isAssignableFrom(event))
+			for (Class<? extends Listener> event : module.getEventsToRegister())
+				if (module.getApi().getClass().isAssignableFrom(event)) {
 					plugin.getServer().getPluginManager().registerEvents((Listener) module.getApi(), plugin);
-				else {
-					Constructor<?>[] constructors = event.getConstructors();
-					if (constructors.length == 0)
-						throw new ClassNotFoundException("Unable to get the first public constructor, can't create the class.");
-					Listener cl = (Listener) constructors[0].newInstance();
-					plugin.getServer().getPluginManager().registerEvents(cl, plugin);
+					if (OlympaModule.DEBUG)
+						((OlympaPluginInterface) plugin).sendMessage("&eModule &6%s&e : listener &6%s&e register et liée à l'Api.", module.getName(), event.getSimpleName());
+				} else {
+					Listener listener = new DupClass<Listener>().of(event);
+					module.getEventsRegistered().add(listener);
+					plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+					if (OlympaModule.DEBUG)
+						((OlympaPluginInterface) plugin).sendMessage("&eModule &6%s&e : listener &6%s&e register.", module.getName(), event.getSimpleName());
 				}
 		} catch (Exception e) {
 			module.sendErrorModule(e, "register Listener");
+		}
+	}
+
+	public static void unregisterListeners(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
+		try {
+			Plugin plugin = module.getPlugin();
+			if (module.getEventsToRegister() == null || !plugin.isEnabled())
+				return;
+			for (Listener listener : module.getEventsRegistered())
+				HandlerList.unregisterAll(listener);
+			module.getEventsRegistered().clear();
+		} catch (Exception e) {
+			module.sendErrorModule(e, "unregister Listener");
 		}
 	}
 
@@ -82,15 +131,25 @@ public class PluginModule {
 	}
 
 	public static void enableModule(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
-		module.initialize();
-		module.enable();
-		registerListener(module);
-		module.setToPlugin();
+		try {
+			module.initialize();
+			module.enable();
+			registerListeners(module);
+			module.setToPlugin();
+			module.registerCommands();
+		} catch (Exception e) {
+			module.sendErrorModule(e, "enable Module");
+		}
 	}
 
 	public static void disableModule(OlympaModule<? extends Object, Listener, ? extends Plugin, ? extends IOlympaCommand> module) {
-		unregisterListener(module);
-		module.disable();
+		try {
+			unregisterListeners(module);
+			module.unregisterCommands();
+			module.disable();
+		} catch (Exception e) {
+			module.sendErrorModule(e, "disable Module");
+		}
 	}
 
 	public static List<String> getModulesNames() {

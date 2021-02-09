@@ -123,7 +123,7 @@ public enum OlympaGroup {
 	}
 
 	public int getIndex() {
-		return ordinal() + 1;
+		return ordinal();
 	}
 
 	/*

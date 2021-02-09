@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +76,12 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		return hologramsYaml != null;
 	}
 
+	@Override
+	public boolean setToPlugin(OlympaAPIPlugin plugin) {
+		plugin.setHologramsManager(this);
+		return true;
+	}
+
 	private final Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
 
 	Map<Integer, Hologram> holograms = new HashMap<>();
@@ -95,8 +100,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 
 	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws IOException, ReflectiveOperationException {
 		this.hologramsFile = hologramsFile;
-		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "holograms_" + pl.getName(),
-				plugin -> this, (plugin, api) -> plugin.setHologramsManager(api), Arrays.asList(this.getClass()), Arrays.asList(HologramsCommand.class));
+		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "holograms_" + pl.getName(), plugin -> this, this.getClass(), HologramsCommand.class);
 		PluginModule.enableModule(scoreBoardModule);
 		PluginModule.addModule(scoreBoardModule);
 		//		hologramsFile.getParentFile().mkdirs();

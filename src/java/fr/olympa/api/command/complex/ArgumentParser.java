@@ -18,7 +18,7 @@ public class ArgumentParser<T> {
 	public BiFunction<T, String, Collection<String>> tabArgumentsFunction;
 	public Function<String, Object> supplyArgumentFunction;
 	public Function<String, String> wrongArgTypeMessageFunction;
-	Cache<Entry<T, String>, Collection<String>> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
+	Cache<Entry<T, String>, Collection<String>> cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
 
 	/**
 	 * @Deprecated
@@ -74,12 +74,16 @@ public class ArgumentParser<T> {
 			r = cache.asMap().entrySet().stream().filter(e -> e.getKey().getKey().equals(t) && e.getKey().getValue().startsWith(arg)).findFirst()
 					.map(e -> e.getValue().stream().filter(s -> arg.startsWith(s)).collect(Collectors.toList())).orElse(null);
 			if (r == null) {
-				r = tabArgumentsFunction.apply(t, arg);
+				r = applyTabWithoutCache(t, arg);
 				if (r != null && !r.isEmpty())
 					cache.put(entry, r);
 			} else if (r != null && !r.isEmpty())
 				cache.put(entry, r);
 		}
 		return r;
+	}
+
+	public Collection<String> applyTabWithoutCache(T t, String arg) {
+		return tabArgumentsFunction.apply(t, arg);
 	}
 }

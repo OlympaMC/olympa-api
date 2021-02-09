@@ -185,8 +185,10 @@ public interface IOlympaCommand {
 		return command;
 	}
 
+	void unregister();
+
 	IOlympaCommand register();
 
 	IOlympaCommand registerPreProcess();
-	
+
 }

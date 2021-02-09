@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.player.OlympaPlayer;
 import net.md_5.bungee.api.ChatColor;
 
@@ -103,6 +105,10 @@ public class ColorUtils {
 		return join('c', '4', elements.stream().map(OlympaPlayer::getName).iterator(), " et ");
 	}
 
+	public static String joinPlayer(Character color1, Character color2, Collection<? extends Player> elements) {
+		return join(color1, color2, elements.stream().map(Player::getName).iterator(), " et ");
+	}
+
 	public static String joinRedOu(Collection<? extends OlympaPlayer> elements) {
 		return join('c', '4', elements.stream().map(OlympaPlayer::getName).iterator(), " ou ");
 	}
@@ -131,10 +137,10 @@ public class ColorUtils {
 					hasNext = it.hasNext();
 				} else
 					return "";
-			} else {
+			} else if (hasNext != null && hasNext) {
 				CharSequence next = it.next();
 				sb.append(color1);
-				if (!it.hasNext())
+				if (!(hasNext = it.hasNext()))
 					sb.append(ouOrEt);
 				else
 					sb.append(", ");
