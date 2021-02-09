@@ -82,17 +82,14 @@ public class ItemUtils {
 		});
 	}
 
-	public static void skull(Consumer<ItemStack> callback, ItemStack item, String skull) {
+	public static void skull(Consumer<SkullMeta> callback, ItemStack item, String skull) {
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
 			String value = textures.get(skull);
 			if (value == null) {
 				value = getHeadValue(skull);
 				textures.put(skull, value);
 			}
-			SkullMeta skullCustom = skullCustom((SkullMeta) item.getItemMeta(), value);
-			item.setItemMeta(skullCustom);
-			if (callback != null)
-				callback.accept(item);
+			callback.accept(skullCustom((SkullMeta) item.getItemMeta(), value));
 		});
 	}
 

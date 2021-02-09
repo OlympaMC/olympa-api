@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -28,7 +27,7 @@ public class OlympaItemBuild implements Cloneable {
 	private Map<Enchantment, Integer> enchantments;
 	private ItemFlag[] itemFlags;
 	private Boolean unbreakable;
-	private OfflinePlayer player;
+	private String player;
 
 	//	private ItemStack cache;
 
@@ -121,11 +120,13 @@ public class OlympaItemBuild implements Cloneable {
 			itemMeta.setLore(ColorUtils.color(lore));
 		if (itemFlags != null)
 			itemMeta.addItemFlags(itemFlags);
-		if (player != null)
-			ItemUtils.skull(null, itemStack, player.getName());
-		//			((SkullMeta) itemMeta).setOwningPlayer(player);
 		if (unbreakable != null)
 			itemMeta.setUnbreakable(true);
+		if (player != null)
+			ItemUtils.skull(newItemMeta -> {
+				itemStack.setItemMeta(newItemMeta);
+			}, itemStack, player);
+		//			((SkullMeta) itemMeta).setOwningPlayer(player);
 		itemStack.setItemMeta(itemMeta);
 		//		cache = itemStack;
 		return itemStack;
@@ -212,17 +213,21 @@ public class OlympaItemBuild implements Cloneable {
 		return this;
 	}
 
-	public OlympaItemBuild skullowner(OfflinePlayer player) {
+	public OlympaItemBuild skullowner(String player) {
 		this.player = player;
 		material = Material.PLAYER_HEAD;
 		//		cache = null;
 		return this;
 	}
 
-	@SuppressWarnings("deprecation")
-	public OlympaItemBuild skullowner(String playerName) {
-		return skullowner(Bukkit.getOfflinePlayer(playerName));
+	public OlympaItemBuild skullowner(OfflinePlayer player) {
+		return skullowner(player.getName());
 	}
+
+	//	@SuppressWarnings("deprecation")
+	//	public OlympaItemBuild skullowner(String playerName) {
+	//		return skullowner(Bukkit.getOfflinePlayer(playerName));
+	//	}
 
 	public OlympaItemBuild unbreakable() {
 		unbreakable = true;

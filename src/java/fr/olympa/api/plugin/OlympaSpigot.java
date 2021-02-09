@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 
 import fr.olympa.api.afk.AfkHandler;
 import fr.olympa.api.frame.ImageFrameManager;
-import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.hook.IProtocolSupport;
 import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.api.scoreboard.tab.INametagApi;
@@ -18,20 +17,39 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected ServerStatus status;
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();
 	private String serverName;
-	protected INametagApi nameTagApi;
-	protected IVanishApi vanishApi;
-	protected AfkHandler afkHandler;
 
 	protected RegionManager regionManager;
-	protected HologramsManager hologramsManager;
 	protected ImageFrameManager imageFrameManager;
 
-	protected OlympaServer olympaServer = OlympaServer.ALL;
+	protected AfkHandler afkHandler;
+	protected INametagApi nameTagApi;
+	protected IVanishApi vanishApi;
 
-	@Override
+	public void setAfkApi(AfkHandler afkHandler) {
+		this.afkHandler = afkHandler;
+	}
+
 	public AfkHandler getAfkHandler() {
 		return afkHandler;
 	}
+
+	public void setNameTagApi(INametagApi nameTagApi) {
+		this.nameTagApi = nameTagApi;
+	}
+
+	public INametagApi getNameTagApi() {
+		return nameTagApi;
+	}
+
+	public void setVanishApi(IVanishApi vanishApi) {
+		this.vanishApi = vanishApi;
+	}
+
+	public IVanishApi getVanishApi() {
+		return vanishApi;
+	}
+
+	protected OlympaServer olympaServer = OlympaServer.ALL;
 
 	@Override
 	public OlympaServer getOlympaServer() {
@@ -48,16 +66,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public String getServerName() {
 		return serverName != null ? serverName : serverNameIp;
-	}
-
-	@Override
-	public IVanishApi getVanishApi() {
-		return vanishApi;
-	}
-
-	@Override
-	public INametagApi getNameTagApi() {
-		return nameTagApi;
 	}
 
 	@Override
@@ -78,18 +86,12 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	}
 
 	@Override
-	public HologramsManager getHologramsManager() {
-		return hologramsManager;
-	}
-
-	@Override
 	public ImageFrameManager getImageFrameManager() {
 		return imageFrameManager;
 	}
 
 	@Override
 	public void onDisable() {
-		hologramsManager.unload();
 		while (Bukkit.getOnlinePlayers().size() > 0) {
 			for (Player p : Bukkit.getOnlinePlayers())
 				p.kickPlayer("Server closed");

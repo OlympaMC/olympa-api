@@ -5,10 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import fr.olympa.api.LinkSpigotBungee;
+
 public class FakeTeam {
 
 	private static long MAX_ID = 99_999_999_999L;
-	private static long ID = 0L;
+	private static long ID = 1L;
 	private static List<Long> ALL_IDS = new ArrayList<>();
 	private static boolean overflow = false;
 
@@ -30,25 +32,25 @@ public class FakeTeam {
 		this("T_" + getNameFromInput(sortPriority) + ID, prefix, suffix);
 	}
 
-	public FakeTeam(String prefix, String suffix, int sortPriority, int secondPriority) {
-		this("T_" + getNameFromInput(sortPriority) + getNameFromInput(secondPriority) + ID, prefix, suffix);
-	}
+	//	public FakeTeam(String prefix, String suffix, int sortPriority, int secondPriority) {
+	//		this("T_" + getNameFromInput(sortPriority) + getNameFromInput(secondPriority) + ID, prefix, suffix);
+	//	}
 
 	private FakeTeam(String name, String prefix, String suffix) {
 		id = ID;
-		ALL_IDS.add(ID);
-		if (ID >= MAX_ID)
-			overflow = true;
-		if (overflow) {
-			for (long i = 0L; i < MAX_ID; i++)
-				if (!ALL_IDS.contains(i))
-					ID = i;
-		} else
-			ID++;
-
+		//		ALL_IDS.add(ID);
+		//		if (ID >= MAX_ID)
+		//			overflow = true;
+		//		if (overflow) {
+		//			for (long i = 1L; i < MAX_ID; i++)
+		//				if (!ALL_IDS.contains(i))
+		//					ID = i;
+		//		} else
+		ID++;
 		name = name.length() > 16 ? name.substring(0, 16) : name;
 		this.prefix = prefix;
 		this.suffix = suffix;
+		LinkSpigotBungee.Provider.link.sendMessage("&6DEBUG Team %s '%s' '%s' %d", name, prefix, suffix, id);
 	}
 
 	public void addMember(String player) {

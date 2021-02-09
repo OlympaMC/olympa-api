@@ -217,9 +217,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void loadDatas(ResultSet resultSet) throws SQLException {
 	}
 
-	@Override
-	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish) {
-	}
+	//	@Override
+	//	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish) {
+	//	}
 
 	@Override
 	public void removeGroup(OlympaGroup group) {
@@ -305,15 +305,21 @@ public class OlympaPlayerObject implements OlympaPlayer {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	//
+	//	@Override
+	//	public int getDiscordOlympaId() {
+	//		// TODO Auto-generated method stub
+	//		return 0;
+	//	}
+	//
+	//	@Override
+	//	public void setDiscordOlympaId(int discordOlympaId) {
+	//		// TODO Auto-generated method stub
+	//
+	//	}
 
 	@Override
-	public int getDiscordOlympaId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setDiscordOlympaId(int discordOlympaId) {
+	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int teamspeakId, boolean vanish) {
 		// TODO Auto-generated method stub
 
 	}

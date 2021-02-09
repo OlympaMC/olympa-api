@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
-import fr.olympa.api.afk.AfkHandler;
 import fr.olympa.api.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.command.CommandListener;
 import fr.olympa.api.frame.ImageFrameManager;
@@ -111,7 +110,7 @@ public class OlympaCore extends OlympaSpigot {
 		pluginManager.registerEvents(regions = new RegionManager(), this);
 
 		try {
-			pluginManager.registerEvents(holograms = new HologramsManager(new File(getDataFolder(), "holograms.yml")), this);
+			pluginManager.registerEvents(holograms = new HologramsManager(this, new File(getDataFolder(), "holograms.yml")), this);
 		} catch (IOException | ReflectiveOperationException e) {
 			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
 			e.printStackTrace();
@@ -131,11 +130,6 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AfkHandler getAfkHandler() {
 		return null;
 	}
 

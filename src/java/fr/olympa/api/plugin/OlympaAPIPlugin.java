@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.config.CustomConfig;
+import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.task.TaskManager;
 
@@ -11,6 +12,15 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 
 	protected final OlympaTask task;
 	protected CustomConfig config;
+	protected HologramsManager hologramsManager;
+
+	public HologramsManager getHologramsManager() {
+		return hologramsManager;
+	}
+
+	public void setHologramsManager(HologramsManager hologramsManager) {
+		this.hologramsManager = hologramsManager;
+	}
 
 	public OlympaAPIPlugin() {
 		task = new TaskManager(this);
@@ -44,6 +54,8 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 
 	@Override
 	public void onDisable() {
+		if (hologramsManager != null)
+			hologramsManager.unload();
 		super.onDisable();
 	}
 

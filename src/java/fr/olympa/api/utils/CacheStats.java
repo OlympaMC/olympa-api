@@ -216,7 +216,7 @@ public class CacheStats {
 		return "&cContenu de la list\n" + table.toString(receiver);
 	}
 
-	private static String getContent(Map<Object, Object> info, Receiver receiver) {
+	public static String getContent(Map<Object, Object> info, Receiver receiver) {
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
 		table.addRow("Clef", "Valeur", "|", "Clef", "Valeur");
 		Iterator<Entry<Object, Object>> it = info.entrySet().iterator();

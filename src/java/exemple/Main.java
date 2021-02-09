@@ -30,6 +30,7 @@ public class Main extends OlympaAPIPlugin {
 		scoreboards.unload();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
 		OlympaPermission.registerPermissions(ExemplePermissions.class);
@@ -39,7 +40,6 @@ public class Main extends OlympaAPIPlugin {
 
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
-
 		scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
 				new FixedLine<>("Yo"),
 				FixedLine.EMPTY_LINE,

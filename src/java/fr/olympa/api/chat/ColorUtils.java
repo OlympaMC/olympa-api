@@ -3,11 +3,13 @@ package fr.olympa.api.chat;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import fr.olympa.api.player.OlympaPlayer;
 import net.md_5.bungee.api.ChatColor;
 
 public class ColorUtils {
@@ -85,12 +87,24 @@ public class ColorUtils {
 		return join('c', '4', elements.iterator(), " et ");
 	}
 
+	public static String joinRedOu(Iterable<? extends CharSequence> elements) {
+		return join('c', '4', elements.iterator(), " ou ");
+	}
+
 	public static String join(Character color1, Character color2, Iterable<? extends CharSequence> elements) {
 		return join(color1, color2, elements.iterator());
 	}
 
 	public static String join(Iterable<? extends CharSequence> elements) {
 		return join(null, null, elements.iterator());
+	}
+
+	public static String joinRedEt(Collection<? extends OlympaPlayer> elements) {
+		return join('c', '4', elements.stream().map(OlympaPlayer::getName).iterator(), " et ");
+	}
+
+	public static String joinRedOu(Collection<? extends OlympaPlayer> elements) {
+		return join('c', '4', elements.stream().map(OlympaPlayer::getName).iterator(), " ou ");
 	}
 
 	public static String join(Character color1, Character color2, CharSequence... elements) {

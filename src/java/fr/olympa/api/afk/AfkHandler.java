@@ -18,25 +18,51 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent.ChangeType;
+import fr.olympa.api.module.OlympaModule.ModuleApi;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
+import fr.olympa.api.scoreboard.tab.INametagApi.NametagHandler;
 import fr.olympa.core.spigot.OlympaCore;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 
-public class AfkHandler implements Listener {
+public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 
+	private boolean isEnabled = false;
 	private final Map<UUID, AfkPlayer> afkPlayers = new HashMap<>();
+	private NametagHandler handler;
 
-	public AfkHandler() {
-		OlympaCore.getInstance().getNameTagApi().addNametagHandler(EventPriority.HIGH, (nametag, player, to) -> {
-			if (isAfk(player.getPlayer()))
-				nametag.appendSuffix(AfkPlayer.AFK_SUFFIX);
-		});
+	@Override
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+
+	@Override
+	public boolean enable(OlympaCore plugin) {
+		INametagApi nameTagApi = plugin.getNameTagApi();
+		if (nameTagApi != null) {
+			handler = (nametag, player, to) -> {
+				if (isAfk(player.getPlayer()))
+					nametag.appendSuffix(AfkPlayer.AFK_SUFFIX);
+			};
+			nameTagApi.addNametagHandler(EventPriority.HIGH, handler);
+		} else
+			plugin.sendMessage("&4AfkHandler &7> &cCan't add nameTagHandler because nameTagApi is disable.");
+		isEnabled = true;
+		return isEnabled;
+	}
+
+	@Override
+	public boolean disable(OlympaCore plugin) {
+		INametagApi nameTagApi = plugin.getNameTagApi();
+		if (nameTagApi != null)
+			nameTagApi.removeNametagHandler(handler);
+		isEnabled = false;
+		return !isEnabled;
 	}
 
 	public AfkPlayer get(Player player) {
@@ -70,13 +96,10 @@ public class AfkHandler implements Listener {
 	}
 
 	private void handlePlayerPackets(Player p) {
-
 		ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
-
 			@Override
 			public void channelRead(ChannelHandlerContext channelHandlerContext, Object handledPacket) throws Exception {
 				super.channelRead(channelHandlerContext, handledPacket);
-
 				if (afkPlayers.containsKey(p.getUniqueId()))
 					afkPlayers.get(p.getUniqueId()).addToLog(handledPacket);
 			}

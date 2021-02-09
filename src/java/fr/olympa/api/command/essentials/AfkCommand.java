@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.afk.AfkHandler;
 import fr.olympa.api.afk.AfkPlayer;
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class AfkCommand extends OlympaCommand {
@@ -21,6 +22,10 @@ public class AfkCommand extends OlympaCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		AfkHandler afkHandler = OlympaCore.getInstance().getAfkHandler();
+		if (afkHandler == null) {
+			sendMessage(Prefix.DEFAULT_BAD, "Le module de Vanish est désactiver, commande impossible.");
+			return false;
+		}
 		AfkPlayer afkPlayer = afkHandler.get(player);
 		if (afkPlayer.isAfk())
 			afkPlayer.setNotAfk(player);

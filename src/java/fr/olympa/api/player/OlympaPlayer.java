@@ -79,7 +79,7 @@ public interface OlympaPlayer {
 
 	void loadDatas(ResultSet resultSet) throws SQLException;
 
-	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish);
+	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson/*, int discordOlympaId*/, int teamspeakId, boolean vanish);
 
 	void removeGroup(OlympaGroup group);
 
@@ -109,8 +109,8 @@ public interface OlympaPlayer {
 
 	void setVanish(boolean vanish);
 
-	int getDiscordOlympaId();
-
-	void setDiscordOlympaId(int discordOlympaId);
+	//	int getDiscordOlympaId();
+	//
+	//	void setDiscordOlympaId(int discordOlympaId);
 
 }

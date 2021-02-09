@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +23,14 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 
+import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
+import fr.olympa.api.module.OlympaModule;
+import fr.olympa.api.module.OlympaModule.ModuleApi;
+import fr.olympa.api.module.PluginModule;
+import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.api.utils.observable.Observable.Observer;
 import fr.olympa.core.spigot.OlympaCore;
@@ -34,7 +40,42 @@ import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 
-public class HologramsManager implements Listener {
+public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
+	@Override
+	public boolean disable(OlympaAPIPlugin plugin) {
+		unload();
+		hologramsYaml = null;
+		return true;
+	}
+
+	@Override
+	public boolean enable(OlympaAPIPlugin plugin) {
+		Map<Integer, Map<String, Object>> toDeserialize = new HashMap<>();
+		hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
+		hologramsYaml.load();
+		for (String key : hologramsYaml.getKeys(false)) {
+			int id = Integer.parseInt(key);
+			lastID = Math.max(id + 1, lastID);
+			toDeserialize.put(id, hologramsYaml.getConfigurationSection(key).getValues(false));
+		}
+		plugin.getTask().runTask(() -> {
+			toDeserialize.forEach((id, map) -> {
+				Hologram hologram = Hologram.deserialize(map, id, true);
+				holograms.put(id, hologram);
+				Observer update = updateHologram(id, hologram);
+				hologram.observe("manager_save", update);
+			});
+		});
+
+		entityType.setAccessible(true);
+		entityID.setAccessible(true);
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return hologramsYaml != null;
+	}
 
 	private final Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
 
@@ -42,8 +83,8 @@ public class HologramsManager implements Listener {
 	private int lastID = 0;
 
 	private final File hologramsFile;
-	private final CustomConfig hologramsYaml;
-	
+	private CustomConfig hologramsYaml;
+
 	private final Field entityType = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("c");
 	private final Field entityID = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
 	private final int armorStandEntityType = IRegistry.ENTITY_TYPE.a(EntityTypes.ARMOR_STAND);
@@ -52,35 +93,16 @@ public class HologramsManager implements Listener {
 		return hologramsFile;
 	}
 
-	public HologramsManager(File hologramsFile) throws IOException, ReflectiveOperationException {
+	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws IOException, ReflectiveOperationException {
 		this.hologramsFile = hologramsFile;
-
+		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "holograms_" + pl.getName(),
+				plugin -> this, (plugin, api) -> plugin.setHologramsManager(api), Arrays.asList(this.getClass()), Arrays.asList(HologramsCommand.class));
+		PluginModule.enableModule(scoreBoardModule);
+		PluginModule.addModule(scoreBoardModule);
 		//		hologramsFile.getParentFile().mkdirs();
 		//		hologramsFile.createNewFile();
-
-		Map<Integer, Map<String, Object>> toDeserialize = new HashMap<>();
-		
-		hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
-		hologramsYaml.load();
-		for (String key : hologramsYaml.getKeys(false)) {
-			int id = Integer.parseInt(key);
-			lastID = Math.max(id + 1, lastID);
-			toDeserialize.put(id, hologramsYaml.getConfigurationSection(key).getValues(false));
-		}
-		
-		Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> {
-			toDeserialize.forEach((id, map) -> {
-				Hologram hologram = Hologram.deserialize(map, id, true);
-				holograms.put(id, hologram);
-				Observer update = updateHologram(id, hologram);
-				hologram.observe("manager_save", update);
-			});
-		});
-		
-		entityType.setAccessible(true);
-		entityID.setAccessible(true);
 	}
-	
+
 	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		int id = lastID++;
 		Hologram hologram = new Hologram(id, location, persistent, defaultVisibility, lines);
@@ -90,7 +112,7 @@ public class HologramsManager implements Listener {
 			hologram.observe("manager_save", update);
 			try {
 				update.changed();
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -116,13 +138,12 @@ public class HologramsManager implements Listener {
 		if (holograms.remove(hologram.getID()) == null)
 			return false;
 		hologram.destroy();
-		if (hologram.isPersistent()) {
+		if (hologram.isPersistent())
 			try {
 				updateHologram(hologram.getID(), null).changed();
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 		return true;
 	}
 
@@ -131,13 +152,12 @@ public class HologramsManager implements Listener {
 		if (hologram == null)
 			return false;
 		hologram.destroy();
-		if (hologram.isPersistent()) {
+		if (hologram.isPersistent())
 			try {
 				updateHologram(hologram.getID(), null).changed();
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 		return true;
 	}
 
@@ -171,25 +191,26 @@ public class HologramsManager implements Listener {
 					hologram.spawnEntities();
 			}
 	}
-	
-	@EventHandler //respawn entity if killed by any other process than normal holo removing 
+
+	@EventHandler //respawn entity if killed by any other process than normal holo removing
 	public void onRemoveEntity(EntityRemoveFromWorldEvent e) {
 		if (e.getEntityType() != EntityType.ARMOR_STAND)
 			return;
-		
+
 		if (e.getEntity().hasMetadata("hologram")) {
 			Hologram hologram = holograms.get(e.getEntity().getMetadata("hologram").get(0).asInt());
 			if (hologram != null) {
 				HologramLine line = hologram.getFromArmorStand(e.getEntity().getEntityId());
-				if (line != null) Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> line.spawnEntity());
+				if (line != null)
+					Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> line.spawnEntity());
 			}
 		}
 	}
-	
-	@EventHandler (priority = EventPriority.LOWEST)
+
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
 		((CraftPlayer) e.getPlayer()).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", "holograms_visibilty", new ChannelDuplexHandler() {
-			
+
 			@Override
 			public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
 				try {
@@ -197,18 +218,17 @@ public class HologramsManager implements Listener {
 						PacketPlayOutSpawnEntityLiving packet = (PacketPlayOutSpawnEntityLiving) msg;
 						if (entityType.getInt(packet) == armorStandEntityType) {
 							int id = entityID.getInt(packet);
-							for (Hologram holo : holograms.values()) {
-								if (holo.containsArmorStand(id)) {
-									if (!holo.isVisibleTo(e.getPlayer())) return; // return = cancel le packet
-								}
-							}
+							for (Hologram holo : holograms.values())
+								if (holo.containsArmorStand(id))
+									if (!holo.isVisibleTo(e.getPlayer()))
+										return; // return = cancel le packet
 						}
 					}
-				}catch (Exception ex) {
+					super.write(ctx, msg, promise);
+				} catch (Exception ex) {
 					OlympaCore.getInstance().sendMessage("§cUne erreur est survenue lors de la gestion des entités hologrammes.");
 					ex.printStackTrace();
 				}
-				super.write(ctx, msg, promise);
 			}
 		});
 	}
