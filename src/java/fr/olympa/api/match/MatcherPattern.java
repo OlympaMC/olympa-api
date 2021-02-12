@@ -12,23 +12,31 @@ import com.google.common.cache.CacheBuilder;
 
 import fr.olympa.api.utils.CacheStats;
 
-public class MatcherPattern {
+public class MatcherPattern<T> {
 
-	public static final Cache<String, Pattern> cache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
-
+	public static final Cache<String, MatcherPattern<?>> cache = CacheBuilder.newBuilder().maximumWeight(100).maximumSize(200).build();
 	static {
 		CacheStats.addCache("REGEX_PATTERN", cache);
 	}
-	final Cache<String, Boolean> cacheIs;
-	final String regex;
-	Function<String, Object> supplyArgumentFunction;
-	String typeName = "Unknown Type";
+	private final Cache<String, Pattern> cachePattern = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
+	private final String regex;
+	private Function<String, T> supplyArgumentFunction;
+	private String typeName = "Unknown Type";
 
-	private static Pattern getPattern(String regex) {
-		Pattern pattern = cache.getIfPresent(regex);
+	public static MatcherPattern<?> create(String regex) {
+		MatcherPattern<?> matcherPattern = cache.getIfPresent(regex);
+		if (matcherPattern == null) {
+			matcherPattern = new MatcherPattern<>(regex);
+			cache.put(regex, matcherPattern);
+		}
+		return matcherPattern;
+	}
+
+	private Pattern getPattern(String regex) {
+		Pattern pattern = cachePattern.getIfPresent(regex);
 		if (pattern == null) {
 			pattern = Pattern.compile(regex);
-			cache.put(regex, pattern);
+			cachePattern.put(regex, pattern);
 		}
 		return pattern;
 	}
@@ -37,21 +45,18 @@ public class MatcherPattern {
 		return getPattern(regex);
 	}
 
-	public MatcherPattern(String regex, Function<String, Object> supplyArgumentFunction, Class<?> typeClass) {
-		this(regex);
-		this.supplyArgumentFunction = supplyArgumentFunction;
+	public MatcherPattern(String regex, Function<String, T> supplyArgumentFunction, Class<?> typeClass) {
+		this(regex, supplyArgumentFunction);
 		typeName = typeClass.getName();
 	}
 
-	public MatcherPattern(String regex, Function<String, Object> supplyArgumentFunction) {
+	public MatcherPattern(String regex, Function<String, T> supplyArgumentFunction) {
 		this(regex);
 		this.supplyArgumentFunction = supplyArgumentFunction;
 	}
 
 	public MatcherPattern(String regex) {
 		this.regex = regex;
-		cacheIs = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
-		CacheStats.addCache("REGEX_PATTERN_" + regex, cacheIs);
 	}
 
 	private String wholeWord(boolean wholeWord) {
@@ -70,9 +75,9 @@ public class MatcherPattern {
 		return tmp;
 	}
 
-	public List<Object> extractsAndParse(String text) throws IllegalArgumentException {
+	public List<T> extractsAndParse(String text) throws IllegalArgumentException {
 		Matcher matcher = getPattern().matcher(text);
-		List<Object> list = new ArrayList<>();
+		List<T> list = new ArrayList<>();
 		while (matcher.find())
 			list.add(parse(matcher.group()));
 		return list;
@@ -112,20 +117,21 @@ public class MatcherPattern {
 	/**
 	 * Extract first occurances
 	 */
-	public Object extractAndParse(String text) {
+	public T extractAndParse(String text) {
 		return parse(extract(text));
 	}
 
 	/**
 	* Parse object
 	*/
-	public Object parse(String string) throws IllegalArgumentException {
+	@SuppressWarnings("unchecked")
+	public T parse(String string) throws IllegalArgumentException {
 		//		throw new NullPointerException("supplyArgumentFunction cannot be null while using MatcherPattern#parse(string).");
 		if (is(string))
 			if (supplyArgumentFunction != null)
 				return supplyArgumentFunction.apply(string);
 			else
-				return string;
+				return (T) string;
 		// TODO ajouter le type demandé sans variable
 		throw new IllegalArgumentException(String.format("%s is not matching the regex of %s, cannot parse to type.", string, typeName));
 	}
@@ -141,12 +147,7 @@ public class MatcherPattern {
 	 * Match all text
 	 */
 	public boolean is(String text) {
-		Boolean is = cacheIs.getIfPresent(text);
-		if (is == null) {
-			is = getPattern(wholeWord(true)).matcher(text).find();
-			cacheIs.put(text, is);
-		}
-		return is;
+		return getPattern(wholeWord(true)).matcher(text).find();
 	}
 
 }

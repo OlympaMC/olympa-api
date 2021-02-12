@@ -8,11 +8,11 @@ import fr.olympa.api.chat.TableGenerator.Receiver;
 public class CommandContext {
 
 	public final Object sender;
-	public final IComplexCommand command;
+	public final IComplexCommand<?> command;
 	public final String label;
 	private final Object[] args;
 
-	public CommandContext(Object sender, IComplexCommand command, Object[] args, String label) {
+	public CommandContext(Object sender, IComplexCommand<?> command, Object[] args, String label) {
 		this.sender = sender;
 		this.command = command;
 		this.args = args;

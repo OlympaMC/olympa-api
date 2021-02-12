@@ -21,99 +21,99 @@ import org.bukkit.map.MapView;
 
 public class MapCaptcha {
 
-    private ItemStack map;
-    private String answer;
-    
-    /**
-     * Create a new captcha. Should be called async since some used methods are low-performance
-     */
-	public MapCaptcha() {
-        BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
-        this.answer = RandomStringUtils.randomAlphabetic(5).toLowerCase();
+	private ItemStack map;
+	private String answer;
 
-        Canvas canvas = new Canvas();
-        canvas.setSize(128, 128);
+	/**
+	 * Create a new captcha. Should be called async since some used methods are low-performance
+	 */
+	public MapCaptcha(int size) {
+		BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+		answer = RandomStringUtils.randomAlphabetic(5).toLowerCase();
 
-        Graphics2D graphics = (Graphics2D) image.getGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        canvas.paint(graphics);
+		Canvas canvas = new Canvas();
+		canvas.setSize(size, size);
 
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, 128, 128);
+		Graphics2D graphics = (Graphics2D) image.getGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		canvas.paint(graphics);
 
-        /*
-        try {
-            BufferedImage background = ImageIO.read(plugin.getResource("background.png"));
-            AffineTransform affineTransform = new AffineTransform();
-            graphics.drawImage(background, affineTransform, null);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }*/
+		graphics.setColor(Color.WHITE);
+		graphics.fillRect(0, 0, size, size);
 
-        //boolean color = plugin.getConfig().getBoolean("captcha-settings.color");
+		/*
+		try {
+		    BufferedImage background = ImageIO.read(plugin.getResource("background.png"));
+		    AffineTransform affineTransform = new AffineTransform();
+		    graphics.drawImage(background, affineTransform, null);
+		} catch (Exception exception) {
+		    exception.printStackTrace();
+		}*/
 
-        int lines = ThreadLocalRandom.current().nextInt(10, 25);
-        while (lines != 0) {
-            lines--;
-            graphics.setColor(getRandomColor());
-            graphics.drawLine(getRandomCoordinate(), getRandomCoordinate(), getRandomCoordinate(), getRandomCoordinate());
-        }
+		//boolean color = plugin.getConfig().getBoolean("captcha-settings.color");
 
-        graphics.setFont(new Font("Arial", Font.PLAIN, 34));
+		int lines = ThreadLocalRandom.current().nextInt(10, 25);
+		while (lines != 0) {
+			lines--;
+			graphics.setColor(getRandomColor());
+			graphics.drawLine(getRandomCoordinate(), getRandomCoordinate(), getRandomCoordinate(), getRandomCoordinate());
+		}
 
-        String[] split = answer.split("");
-        for (int i = 0; i != split.length; i++) {
-            AffineTransform original = graphics.getTransform();
-            int rotation = ThreadLocalRandom.current().nextInt(0, 45);
-            graphics.rotate(Math.toRadians(rotation) * (ThreadLocalRandom.current().nextBoolean() ? 1 : -1), 10 + (20 * (i + 1)), 64);
-            graphics.setColor(getRandomColor());
-            graphics.drawString(split[i], (20 * (i + 1)) - 10, 70);
-            graphics.setTransform(original);
-        }
+		graphics.setFont(new Font("Arial", Font.PLAIN, 34));
 
-        graphics.dispose();
-        
-        map = generateItem(image);
+		String[] split = answer.split("");
+		for (int i = 0; i != split.length; i++) {
+			AffineTransform original = graphics.getTransform();
+			int rotation = ThreadLocalRandom.current().nextInt(0, 45);
+			graphics.rotate(Math.toRadians(rotation) * (ThreadLocalRandom.current().nextBoolean() ? 1 : -1), 10 + 20 * (i + 1), 64);
+			graphics.setColor(getRandomColor());
+			graphics.drawString(split[i], 20 * (i + 1) - 10, 70);
+			graphics.setTransform(original);
+		}
+
+		graphics.dispose();
+
+		map = generateItem(image);
 	}
-	
+
 	private ItemStack generateItem(BufferedImage image) {
 		ItemStack it = new ItemStack(Material.FILLED_MAP);
 		MapMeta meta = (MapMeta) it.getItemMeta();
 		MapView view = Bukkit.createMap(Bukkit.getWorlds().get(0));
-		
+
 		view.getRenderers().clear();
 		view.addRenderer(new MapRenderer() {
-            boolean rendered = false;
-            @Override
-            public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
-                if (rendered) return;
-                mapCanvas.drawImage(0, 0, image);
-                rendered = true;
-            }
-        });
-		
+			boolean rendered = false;
+
+			@Override
+			public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
+				if (rendered)
+					return;
+				mapCanvas.drawImage(0, 0, image);
+				rendered = true;
+			}
+		});
+
 		meta.setMapView(view);
 		it.setItemMeta(meta);
-		
+
 		return it;
 	}
-	
+
 	public String getAnswer() {
 		return answer;
 	}
-	
+
 	public ItemStack getMap() {
 		return map;
 	}
 
-	
-	
-    private int getRandomCoordinate() {
-        return ThreadLocalRandom.current().nextInt(0, 128);
-    }
+	private int getRandomCoordinate() {
+		return ThreadLocalRandom.current().nextInt(0, 128);
+	}
 
-    private Color getRandomColor() {
-        return new Color(ThreadLocalRandom.current().nextInt(256), ThreadLocalRandom.current().nextInt(256), ThreadLocalRandom.current().nextInt(256));
-    }
+	private Color getRandomColor() {
+		return new Color(ThreadLocalRandom.current().nextInt(256), ThreadLocalRandom.current().nextInt(256), ThreadLocalRandom.current().nextInt(256));
+	}
 }

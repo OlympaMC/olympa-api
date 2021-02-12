@@ -50,13 +50,13 @@ import fr.olympa.api.match.MatcherPattern;
 
 public class Utils {
 
-	private static Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
+	private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
 		Collections.shuffle(list);
 		return list;
 	});
 
 	public static Map<String, String> jsonToHumainReadable(String json) {
-		Matcher matcher = new MatcherPattern("\"?([^\":]+)\"?:\"?([^\",]+)\"?,?").getPattern().matcher(json);
+		Matcher matcher = new MatcherPattern<>("\"?([^\":]+)\"?:\"?([^\",]+)\"?,?").getPattern().matcher(json);
 		Map<String, String> map = new HashMap<>();
 		while (matcher.find()) {
 			String gr1 = matcher.group(1);
@@ -527,6 +527,10 @@ public class Utils {
 		if (min == max)
 			return min;
 		return random.nextInt(max - min + 1) + min;
+	}
+
+	private Utils() {
+
 	}
 
 }

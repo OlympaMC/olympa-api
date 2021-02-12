@@ -27,10 +27,12 @@ public interface IComplexCommand<C> {
 
 	default void addDefaultParsers() {
 		addArgumentParser("INTEGER", (sender, arg) -> INTEGERS, x -> {
+			System.out.printf("Match INT '%s'", x);
 			if (RegexMatcher.INT.is(x))
 				return RegexMatcher.INT.parse(x);
+			System.out.printf("Match not work '%s'", x);
 			return null;
-		}, x -> String.format("&4%s&c doit être un nombre entier", x));
+		}, x -> String.format("&4%s&c doit être un nombre entier", x), false);
 		addArgumentParser("UUID", (sender, arg) -> UUIDS, x -> {
 			if (RegexMatcher.UUID.is(x))
 				return RegexMatcher.UUID.parse(x);
@@ -38,23 +40,23 @@ public interface IComplexCommand<C> {
 		}, x -> {
 			String random = UUID.randomUUID().toString();
 			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
-		});
+		}, false);
 		addArgumentParser("DOUBLE", (sender, arg) -> Collections.emptyList(), x -> {
 			if (RegexMatcher.DOUBLE.is(x))
 				return RegexMatcher.DOUBLE.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c doit être un nombre décimal", x));
+		}, x -> String.format("&4%s&c doit être un nombre décimal", x), false);
 		addArgumentParser("HEX_COLOR", (sender, arg) -> HEX_COLOR, x -> {
 			if (RegexMatcher.HEX_COLOR.is(x))
 				return RegexMatcher.HEX_COLOR.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456&c ou &4#FFFFFF&c.", x));
+		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456&c ou &4#FFFFFF&c.", x), false);
 		addArgumentParser("BOOLEAN", (sender, arg) -> BOOLEAN, Boolean::parseBoolean, null);
-		addArgumentParser("IP", sender -> IP, x -> {
+		addArgumentParser("IP", (sender, arg) -> IP, x -> {
 			if (RegexMatcher.IP.is(x))
 				return RegexMatcher.IP.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c n'est pas une IPv4 sous la forme &4%s&c.", x, ColorUtils.joinRedOu(IP)));
+		}, x -> String.format("&4%s&c n'est pas une IPv4 sous la forme &4%s&c.", x, ColorUtils.joinRedOu(IP)), false);
 	}
 
 	default <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass) {
@@ -85,12 +87,16 @@ public interface IComplexCommand<C> {
 	boolean noArguments(C sender);
 
 	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
-		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
+		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
+	}
+
+	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction, boolean hasCache) {
+		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, hasCache));
 	}
 
 	@Deprecated(forRemoval = true)
 	default void addArgumentParser(String name, Function<C, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
-		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
+		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
 	}
 
 	default InternalCommand getCommand(String argName) {

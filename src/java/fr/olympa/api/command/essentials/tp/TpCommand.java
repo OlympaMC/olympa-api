@@ -102,46 +102,46 @@ public class TpCommand extends OlympaCommand {
 
 	private Location getLocation(String[] args, int i) {
 		Location location = player.getLocation();
-		MatcherPattern d = RegexMatcher.DOUBLE;
-		MatcherPattern f = RegexMatcher.FLOAT;
-		MatcherPattern r = RegexMatcher.RELATIVE;
-		if (d.is(args[i]))
-			location.setX((Double) d.parse(args[i]));
-		else if (r.is(args[i]))
-			location.add((Double) d.extractAndParse(args[i]), 0d, 0d);
+		MatcherPattern<Double> doub = RegexMatcher.DOUBLE;
+		MatcherPattern<Float> flo = RegexMatcher.FLOAT;
+		MatcherPattern<Double> relative = RegexMatcher.RELATIVE;
+		if (doub.is(args[i]))
+			location.setX(doub.parse(args[i]));
+		else if (relative.is(args[i]))
+			location.add(doub.extractAndParse(args[i]), 0d, 0d);
 		else {
 			sendError("La position x = &4%s&c n'est pas valide.", args[i]);
 			return null;
 		}
-		if (d.is(args[++i]))
-			location.setY((Double) d.parse(args[i]));
-		else if (r.is(args[i]))
-			location.add(0d, (Double) d.extractAndParse(args[i]), 0d);
+		if (doub.is(args[++i]))
+			location.setY(doub.parse(args[i]));
+		else if (relative.is(args[i]))
+			location.add(0d, doub.extractAndParse(args[i]), 0d);
 		else {
 			sendError("La position y = &4%s&c n'est pas valide.", args[i]);
 			return null;
 		}
-		if (d.is(args[++i]))
-			location.setZ((Double) d.parse(args[i]));
-		else if (r.is(args[i]))
-			location.add(0d, 0d, (Double) d.extractAndParse(args[i]));
+		if (doub.is(args[++i]))
+			location.setZ(doub.parse(args[i]));
+		else if (relative.is(args[i]))
+			location.add(0d, 0d, doub.extractAndParse(args[i]));
 		else {
 			sendError("La position z = &4%s&c n'est pas valide.", args[i]);
 			return null;
 		}
 		if (args.length >= ++i + 2) {
-			if (d.is(args[i]))
-				location.setYaw((Float) f.parse(args[i]));
-			else if (r.is(args[i]))
-				location.setYaw(location.getYaw() + (Float) f.parse(args[i]));
+			if (doub.is(args[i]))
+				location.setYaw(flo.parse(args[i]));
+			else if (relative.is(args[i]))
+				location.setYaw(location.getYaw() + flo.parse(args[i]));
 			else {
 				sendError("La position yaw = &4%s&c n'est pas valide.", args[i]);
 				return null;
 			}
-			if (d.is(args[++i]))
-				location.setPitch((Float) f.parse(args[i]));
-			else if (r.is(args[i]))
-				location.setPitch(location.getPitch() + (Float) f.parse(args[i]));
+			if (doub.is(args[++i]))
+				location.setPitch(flo.parse(args[i]));
+			else if (relative.is(args[i]))
+				location.setPitch(location.getPitch() + flo.parse(args[i]));
 			else {
 				sendError("La position pitch = &4%s&c n'est pas valide.", args[i]);
 				return null;

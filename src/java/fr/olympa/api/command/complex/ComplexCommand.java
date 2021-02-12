@@ -183,9 +183,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		List<String> tmp = new ArrayList<>();
-		List<String> find = new ArrayList<>();
+		List<String> find;
 		String sel = args[0];
 		if (args.length == 1) {
+			find = new ArrayList<>();
 			for (Entry<List<String>, InternalCommand> en : commands.entrySet())
 				if (en.getValue().cmd.otherArg())
 					find.addAll(findPotentialArgs(sender, args));
