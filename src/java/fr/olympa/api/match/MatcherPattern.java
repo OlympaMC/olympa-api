@@ -14,7 +14,7 @@ import fr.olympa.api.utils.CacheStats;
 
 public class MatcherPattern<T> {
 
-	public static final Cache<String, MatcherPattern<?>> cache = CacheBuilder.newBuilder().maximumWeight(100).maximumSize(200).build();
+	public static final Cache<String, MatcherPattern<?>> cache = CacheBuilder.newBuilder()/*.maximumWeight(100)*/.maximumSize(200).build();
 	static {
 		CacheStats.addCache("REGEX_PATTERN", cache);
 	}
