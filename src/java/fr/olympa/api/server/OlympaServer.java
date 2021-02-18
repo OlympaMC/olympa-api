@@ -14,7 +14,9 @@ public enum OlympaServer {
 	ZTA("Olympa ZTA", false),
 	CREATIF("Créatif", false),
 	LG("Loup-Garou", true),
-	PVPFAC("PvP-Factions", false);
+	PVPFAC("PvP-Factions", false),
+	PVPKIT("PvP-Kits", false),
+	;
 
 	private final String name;
 	private final boolean multi;
