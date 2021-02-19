@@ -228,10 +228,10 @@ public class SQLTable<T> {
 		return statement.executeQuery();
 	}
 
-	public synchronized List<T> selectAll() throws SQLException, IllegalAccessException {
-		List<T> objects = new ArrayList<>();
+	public synchronized List<T> selectAll() throws SQLException {
 		if (initializeFromRow == null)
-			throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
+			throw new IllegalStateException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
+		List<T> objects = new ArrayList<>();
 		ResultSet rs = new OlympaStatement(StatementType.SELECT, name, null).executeQuery();
 		while (rs.next())
 			objects.add(initializeFromRow.apply(rs));
