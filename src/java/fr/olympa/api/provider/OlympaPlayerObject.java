@@ -216,6 +216,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	@Override
 	public void loadDatas(ResultSet resultSet) throws SQLException {
 	}
+	
+	@Override
+	public void loaded() {}
 
 	//	@Override
 	//	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish) {
