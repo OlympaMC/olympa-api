@@ -31,11 +31,11 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 
 	@Override
 	public boolean disable(OlympaAPIPlugin plugin) {
-		this.plugin = null;
 		if (!scoreboards.isEmpty()) {
 			scoreboards.forEach((op, scoreboard) -> scoreboard.unload());
 			scoreboards.clear();
 		}
+		this.plugin = null;
 		return !isEnabled();
 	}
 

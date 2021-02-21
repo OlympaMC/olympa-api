@@ -22,6 +22,7 @@ import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
+import net.md_5.bungee.api.ChatColor;
 
 public class ComplexCommand extends OlympaCommand implements IComplexCommand<CommandSender> {
 
@@ -116,7 +117,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		int rawArgIndex = cmd.otherArg() ? 0 : 1;
 		Object[] newArgs = new Object[rawArgs.length - rawArgIndex];
 		for (int newArgIndex = 0; newArgIndex < newArgs.length; newArgIndex++) {
-			String arg = rawArgs[rawArgIndex++];
+			String arg = ChatColor.translateAlternateColorCodes('&', rawArgs[rawArgIndex++]);
 			String[] types = newArgIndex >= cmd.args().length ? new String[0] : cmd.args()[newArgIndex].split("\\|");
 			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ") && cmd.args()[newArgIndex].equals(arg)) {
 				sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
