@@ -10,6 +10,7 @@ public class ArgumentParser<T> {
 	public Function<String, Object> supplyArgumentFunction;
 	public Function<String, String> wrongArgTypeMessageFunction;
 	//	private Cache<Entry<T, String>, Collection<String>> cache;
+	public boolean hasCache;
 
 	/**
 	 *
@@ -47,6 +48,7 @@ public class ArgumentParser<T> {
 		this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
 		//		if (hasCache)
 		//			cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+		this.hasCache = hasCache;
 	}
 
 	public Collection<String> applyTab(T t, String arg) {

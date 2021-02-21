@@ -22,6 +22,7 @@ import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.SpigotUtils;
@@ -34,6 +35,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 	public KitCommand(Plugin plugin, Supplier<Stream<IKit<T>>> kitsStreamSupplier) {
 		super(plugin, "kit", "Permet d'obtenir un kit.", (OlympaSpigotPermission) null, "kits");
 		super.minArg = 1;
+		super.usageString = "<nom du kit>";
 		super.allowConsole = false;
 		this.kitsStreamSupplier = kitsStreamSupplier;
 	}
@@ -59,7 +61,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 					kit.setLastTake(olympaPlayer, System.currentTimeMillis());
 				}
 			}else {
-				sendError("Tu n'as pas la permission de prendre le kit %s...", kit.getId());
+				kit.sendImpossibleToTake(olympaPlayer);
 			}
 		}
 		return false;
@@ -67,14 +69,17 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		return kitsStreamSupplier.get().map(IKit::getId).collect(Collectors.toList());
+		T player = sender instanceof Player ? AccountProvider.get((((Player) sender).getUniqueId())) : null;
+		return kitsStreamSupplier.get().filter(kit -> player == null || kit.canTake(player)).map(IKit::getId).collect(Collectors.toList());
 	}
 	
 	public interface IKit<T extends OlympaPlayer> {
 		
 		String getId();
 		
-		boolean canTake(OlympaPlayer player);
+		boolean canTake(T player);
+		
+		void sendImpossibleToTake(T player);
 		
 		long getTimeBetween();
 		
@@ -109,7 +114,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		}
 		
 		@Override
-		public boolean canTake(OlympaPlayer player) {
+		public boolean canTake(T player) {
 			return permission == null || permission.hasPermission(player);
 		}
 		
@@ -126,6 +131,11 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		@Override
 		public void setLastTake(T player, long time) {
 			setLastTask.accept(player, time);
+		}
+		
+		@Override
+		public void sendImpossibleToTake(T player) {
+			Prefix.DEFAULT_BAD.sendMessage(player.getPlayer(), "Tu n'as pas la permission de prendre le kit %s...", id);
 		}
 
 		@Override
