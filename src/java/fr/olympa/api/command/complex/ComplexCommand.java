@@ -78,14 +78,14 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length == 0) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] rawArgs) {
+		if (rawArgs.length == 0) {
 			if (!noArguments(sender))
 				sendError("Syntaxe incorrecte. Essaye &4/%s help&c.", label);
 			return true;
 		}
 
-		InternalCommand internal = getCommand(args[0]);
+		InternalCommand internal = getCommand(rawArgs[0]);
 		if (internal == null) {
 			sendError("La commande n'existe pas.");
 			return true;
@@ -105,7 +105,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		int minArg = cmd.min();
 		if (cmd.otherArg())
 			minArg--;
-		if (args.length - 1 < minArg) {
+		if (rawArgs.length - 1 < minArg) {
 			if ("".equals(cmd.syntax()))
 				this.sendIncorrectSyntax();
 			else
@@ -113,14 +113,12 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			return true;
 		}
 
-		int i1 = 1;
-		if (cmd.otherArg())
-			i1 = 0;
-		Object[] argsCmd = new Object[args.length - i1];
-		for (int i2 = 0; i2 < argsCmd.length; i2++) {
-			String arg = args[i1++];
-			String[] types = (i2 >= cmd.args().length ? "" : cmd.args()[i2]).split("\\|");
-			if (types.length == 1 && cmd.args()[i2].contains(" ") && cmd.args()[i2].equals(arg)) {
+		int rawArgIndex = cmd.otherArg() ? 0 : 1;
+		Object[] newArgs = new Object[rawArgs.length - rawArgIndex];
+		for (int newArgIndex = 0; newArgIndex < newArgs.length; newArgIndex++) {
+			String arg = rawArgs[rawArgIndex++];
+			String[] types = newArgIndex >= cmd.args().length ? new String[0] : cmd.args()[newArgIndex].split("\\|");
+			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ") && cmd.args()[newArgIndex].equals(arg)) {
 				sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
 				return true;
 			}
@@ -167,11 +165,11 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				}
 			}
 
-			argsCmd[i2] = result;
+			newArgs[newArgIndex] = result;
 		}
 
 		try {
-			internal.method.invoke(internal.commands, new CommandContext(sender, this, argsCmd, label));
+			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
 			e.printStackTrace();
