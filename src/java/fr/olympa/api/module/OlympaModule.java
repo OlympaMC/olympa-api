@@ -1,13 +1,15 @@
 package fr.olympa.api.module;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import fr.olympa.api.command.IOlympaCommand;
 import fr.olympa.api.module.OlympaModule.ModuleApi;
-import fr.olympa.api.module.PluginModule.DupClass;
 import fr.olympa.api.plugin.OlympaPluginInterface;
+import fr.olympa.api.utils.CreateInstance;
 
 public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInterface, C extends IOlympaCommand> {
 
@@ -38,6 +40,8 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	List<Class<? extends C>> commandsToRegister;
 	List<C> commandsRegistered = new ArrayList<>();
 	Function<P, T> functionInitialize;
+	List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> dependances;
+	List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> softDependances;
 
 	/**
 	 * @param plugin
@@ -55,13 +59,19 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	}
 
 	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister) {
-		this.plugin = plugin;
-		this.name = name;
-		this.functionInitialize = functionInitialize;
-		if (eventToRegister != null)
-			this.eventsToRegister = List.of(eventToRegister);
-		if (commandToRegister != null)
-			this.commandsToRegister = List.of(commandToRegister);
+		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
+	}
+
+	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister, OlympaModule<?, ?, ?, ?>... softDependances) {
+		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
+		this.softDependances = Arrays.stream(softDependances).collect(Collectors.toList());
+	}
+
+	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister,
+			List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> softDependances, List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> dependances) {
+		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
+		this.softDependances = softDependances;
+		this.dependances = dependances;
 	}
 
 	public String getName() {
@@ -87,17 +97,17 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 			C olympaCommand;
 			if (api.getClass().isAssignableFrom(clazz)) {
 				((IOlympaCommand) api).register();
-				if (OlympaModule.DEBUG)
+				if (DEBUG || debug)
 					((OlympaPluginInterface) plugin).sendMessage("&eModule &6%s&e : command &6%s&e register et liée à l'Api.", name, clazz.getSimpleName());
 			} else {
-				olympaCommand = new DupClass<C>().of(clazz, plugin, api);
+				olympaCommand = new CreateInstance<C>().of(clazz, plugin, api);
 				if (olympaCommand == null) {
 					plugin.sendMessage("&cModule &4%s&c : can't register &4%s&c command, constructor was not found.", name, clazz.getSimpleName());
 					return;
 				}
 				olympaCommand.register();
 				commandsRegistered.add(olympaCommand);
-				if (OlympaModule.DEBUG)
+				if (DEBUG || debug)
 					plugin.sendMessage("&eModule &6%s&e : command &6%s&e register.", name, clazz.getSimpleName());
 			}
 		});
@@ -143,7 +153,7 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 			return api;
 		try {
 			api = functionInitialize.apply(plugin);
-			if (DEBUG)
+			if (DEBUG || debug)
 				plugin.sendMessage("&eModule &6%s&e initialisé.", name);
 			return api;
 		} catch (Exception e) {
@@ -172,7 +182,7 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 			boolean succes = api.setToPlugin(plugin);
 			if (!succes)
 				plugin.sendMessage("&4Impossible&c d'associer un Module &4%s&c au plugin &4%s&c.", name, plugin.getClass().getSimpleName());
-			else if (DEBUG)
+			else if (DEBUG || debug)
 				plugin.sendMessage("&aModule &2%s&a associé au plugin &2%s&a avec &2succès&a.", name, plugin.getClass().getSimpleName());
 			return true;
 		} catch (Exception e) {
