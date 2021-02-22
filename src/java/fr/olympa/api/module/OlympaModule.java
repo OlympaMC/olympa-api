@@ -32,6 +32,7 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	String name;
 	T api;
 	P plugin;
+	boolean debug = false;
 	List<Class<? extends L>> eventsToRegister;
 	List<L> eventsRegistered = new ArrayList<>();
 	List<Class<? extends C>> commandsToRegister;
@@ -68,7 +69,11 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	}
 
 	public String isEnabledString() {
-		return isEnabled() ? "&2Enabled" : "&4Disabled";
+		return isEnabled() ? "&2Activé" : "&4Désactivé";
+	}
+
+	public String isDebugEnabledString() {
+		return isDebugEnabled() ? "&2Activé" : "&4Désactivé";
 	}
 
 	public boolean isEnabled() {
@@ -199,6 +204,14 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 
 	public P getPlugin() {
 		return plugin;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	public boolean isDebugEnabled() {
+		return debug;
 	}
 
 	public static void sendErrorModule(OlympaModule<?, ?, ?, ?> module, Exception e, String whileDoing) {
