@@ -34,18 +34,32 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 
 	public KitCommand(Plugin plugin, Supplier<Stream<IKit<T>>> kitsStreamSupplier) {
 		super(plugin, "kit", "Permet d'obtenir un kit.", (OlympaSpigotPermission) null, "kits");
-		super.minArg = 1;
-		super.usageString = "<nom du kit>";
 		super.allowConsole = false;
 		this.kitsStreamSupplier = kitsStreamSupplier;
+	}
+	
+	@Override
+	public OlympaCommand register() {
+		super.register();
+		super.usageString = "<nom du kit>";
+		super.minArg = 0;
+		return this;
 	}
 	
 	public KitCommand(Plugin plugin, IKit<T>... kits) {
 		this(plugin, () -> Arrays.stream(kits));
 	}
 	
+	protected void noArgument() {
+		sendUsage("kit");
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (args.length == 0) {
+			noArgument();
+			return false;
+		}
 		Optional<IKit<T>> okit = kitsStreamSupplier.get().filter(kit -> kit.getId().equalsIgnoreCase(args[0])).findFirst();
 		if (okit.isEmpty()) {
 			sendError("Le kit %s n'existe pas !", args[0]);

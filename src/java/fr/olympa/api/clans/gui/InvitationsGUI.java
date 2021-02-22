@@ -3,6 +3,7 @@ package fr.olympa.api.clans.gui;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.clans.Clan;
@@ -27,7 +28,7 @@ public class InvitationsGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>
 		return ItemUtils.item(Material.PAPER, "§a" + clan.getName());
 	}
 
-	public void click(T existing, Player p) {
+	public void click(T existing, Player p, ClickType click) {
 		if (existing.addPlayer(AccountProvider.get(p.getUniqueId()))) {
 			Inventories.closeAndExit(p);
 			manager.clearPlayerInvitations(p);

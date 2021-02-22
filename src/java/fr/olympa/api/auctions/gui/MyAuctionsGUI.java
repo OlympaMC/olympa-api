@@ -47,7 +47,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 	}
 
 	@Override
-	public void click(Auction existing, Player p) {
+	public void click(Auction existing, Player p, ClickType click) {
 		if (existing.bought) {
 			try {
 				manager.terminateAuction(existing);

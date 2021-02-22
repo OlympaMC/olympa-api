@@ -51,7 +51,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 	}
 
 	@Override
-	public void click(Auction existing, Player p) {
+	public void click(Auction existing, Player p, ClickType click) {
 		if (existing.player.equals(AccountProvider.get(p.getUniqueId()).getInformation())) {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
 		}else {
