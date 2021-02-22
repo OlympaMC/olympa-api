@@ -11,7 +11,7 @@ import fr.olympa.api.plugin.OlympaPluginInterface;
 
 public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInterface, C extends IOlympaCommand> {
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 
 	public interface ModuleApi<P> {
 		boolean disable(P plugin);
