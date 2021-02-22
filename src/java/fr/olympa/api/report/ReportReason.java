@@ -8,6 +8,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
+
+import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.item.OlympaItemBuild;
+import fr.olympa.api.item.OlympaItemStack;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ReportReason {
@@ -41,6 +47,16 @@ public class ReportReason {
 	public static ReportReason CHEAT_FLY = new ReportReason(4, "Cheat Fly");
 	public static ReportReason OTHER = new ReportReason(5, "Autre");
 
+	static {
+		if (LinkSpigotBungee.Provider.link.isSpigot()) {
+			ReportReason.CHAT.setItem(new OlympaItemBuild(Material.BOOK, "&7Chat abusif").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
+			ReportReason.CHEAT_AURA.setItem(new OlympaItemBuild(Material.GOLDEN_SWORD, "&7Cheat Combat").lore("", "&eKillAura, Aimbot, TriggerBot, AutoClick ...").flag(ItemFlag.HIDE_ATTRIBUTES));
+			ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod &cinterdit&e qui permet de voir à travers les blocks."));
+			ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod &cinterdit&e qui permet de voler."));
+			ReportReason.OTHER.setItem(new OlympaItemBuild(Material.CAULDRON, "&7Autre"));
+		}
+	}
+
 	public static ReportReason get(int id) {
 		return ReportReason.values().stream().filter(itemGui -> itemGui.getId() == id).findFirst().orElse(null);
 	}
@@ -67,6 +83,15 @@ public class ReportReason {
 
 	String note;
 	boolean active = true;
+	OlympaItemStack item;
+
+	public OlympaItemStack getItem() {
+		return item;
+	}
+
+	public void setItem(OlympaItemStack item) {
+		this.item = item;
+	}
 
 	public ReportReason(int id, String reason) {
 		this.id = id;
@@ -102,6 +127,6 @@ public class ReportReason {
 	}
 
 	public boolean hasItem() {
-		return false;
+		return item != null;
 	}
 }

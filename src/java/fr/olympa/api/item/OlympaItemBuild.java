@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.olympa.api.chat.ColorUtils;
 
-public class OlympaItemBuild implements Cloneable {
+public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 
 	private Material material;
 	private Integer size;
@@ -36,13 +36,12 @@ public class OlympaItemBuild implements Cloneable {
 		material = itemStack.getType();
 		size = itemStack.getAmount();
 		durability = itemStack.getDurability();
-
-		customModelData = itemStack.getItemMeta().getCustomModelData();
 		enchantments = itemStack.getEnchantments();
 		if (enchantments != null && enchantments.isEmpty())
 			enchantments = null;
-
 		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (itemMeta.hasCustomModelData())
+			customModelData = itemMeta.getCustomModelData();
 		if (itemMeta.hasDisplayName())
 			name = itemMeta.getDisplayName();
 
@@ -66,6 +65,7 @@ public class OlympaItemBuild implements Cloneable {
 		this.name = name;
 	}
 
+	@Override
 	public OlympaItemBuild addLore(String... lore) {
 		if (this.lore == null)
 			this.lore = new ArrayList<>();
@@ -75,6 +75,7 @@ public class OlympaItemBuild implements Cloneable {
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild addLoreBefore(String... lore) {
 		if (this.lore == null)
 			this.lore = new ArrayList<>();
@@ -84,12 +85,14 @@ public class OlympaItemBuild implements Cloneable {
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild addName(String name) {
 		this.name += name;
 		//		cache = null;
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild breakable() {
 		unbreakable = true;
 		//		cache = null;
@@ -142,12 +145,14 @@ public class OlympaItemBuild implements Cloneable {
 		}
 	}
 
+	@Override
 	public OlympaItemBuild customModelData(int customModelData) {
 		this.customModelData = customModelData;
 		//		cache = null;
 		return this;
 	}
 
+	@Override
 	@Deprecated
 	public OlympaItemBuild durability(short durability) {
 		this.durability = durability;
@@ -179,6 +184,7 @@ public class OlympaItemBuild implements Cloneable {
 		return enchantments != null && enchantments.entrySet().stream().anyMatch(entry -> entry.getValue() > 5);
 	}
 
+	@Override
 	public OlympaItemBuild lore(String... lore) {
 		if (this.lore == null)
 			this.lore = new ArrayList<>();
@@ -188,6 +194,7 @@ public class OlympaItemBuild implements Cloneable {
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild name(String name) {
 		this.name = name;
 		//		cache = null;
@@ -199,6 +206,7 @@ public class OlympaItemBuild implements Cloneable {
 		//		cache = null;
 	}
 
+	@Override
 	public OlympaItemBuild setLore(int i, String lore) {
 		if (this.lore == null)
 			this.lore = new ArrayList<>();
@@ -207,12 +215,14 @@ public class OlympaItemBuild implements Cloneable {
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild size(int size) {
 		this.size = size;
 		//		cache = null;
 		return this;
 	}
 
+	@Override
 	public OlympaItemBuild skullowner(String player) {
 		this.player = player;
 		material = Material.PLAYER_HEAD;
@@ -229,6 +239,7 @@ public class OlympaItemBuild implements Cloneable {
 	//		return skullowner(Bukkit.getOfflinePlayer(playerName));
 	//	}
 
+	@Override
 	public OlympaItemBuild unbreakable() {
 		unbreakable = true;
 		//		cache = null;

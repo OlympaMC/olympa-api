@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.chat.ColorUtils;
@@ -69,6 +70,16 @@ public interface IComplexCommand<C> {
 		}, x -> String.format("La valeur %s n'existe pas.", x));
 	}
 
+	default <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass, Function<? super T, ? extends String> getNameMethod) {
+		List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(getNameMethod).collect(Collectors.toList());
+		addArgumentParser(name, (sender, arg) -> values, playerInput -> {
+			for (T each : enumClass.getEnumConstants())
+				if (each.name().equalsIgnoreCase(playerInput))
+					return each;
+			return null;
+		}, x -> String.format("La valeur %s n'existe pas.", x));
+	}
+
 	/**
 	 * Register all available commands from an instance of a Class
 	 * @param commandsClassInstance Instance of the Class
@@ -86,16 +97,16 @@ public interface IComplexCommand<C> {
 
 	boolean noArguments(C sender);
 
-	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
+	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction) {
 		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
 	}
 
-	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction, boolean hasCache) {
+	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction, boolean hasCache) {
 		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, hasCache));
 	}
 
 	@Deprecated(forRemoval = true)
-	default void addArgumentParser(String name, Function<C, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> errorMessageArgumentFunction) {
+	default void addArgumentParser(String name, Function<C, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction) {
 		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
 	}
 

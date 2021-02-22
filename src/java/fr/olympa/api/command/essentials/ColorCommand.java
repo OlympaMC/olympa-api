@@ -26,7 +26,7 @@ public class ColorCommand extends ComplexCommand {
 		tg.addRow("&9 §9Bleu§r", "&1 §1Bleu foncé§r");
 		tg.addRow("&b §bCyan§r", "&3 §3Cyan foncé§r");
 		tg.addRow("&a §aVert§r", "&2 §2Vert foncé§r");
-		tg.addRow("&d §cViolet§r", "&5 §5Violet foncé§r");
+		tg.addRow("&d §dViolet§r", "&5 §5Violet foncé§r");
 		tg.addRow("&7 §7Gris§r", "&8 §8Gris foncé§r");
 		tg.addRow("&e §eJaune§r", "&6 §6Or§r");
 		tg.addRow("&k §kMagic§r", "&l  §lGras§r");

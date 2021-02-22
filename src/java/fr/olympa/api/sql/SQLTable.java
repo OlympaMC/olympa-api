@@ -171,9 +171,8 @@ public class SQLTable<T> {
 						if (successCallback != null)
 							successCallback.run();
 					} catch (SQLException e) {
-						if (failCallback == null)
-							e.printStackTrace();
-						else
+						e.printStackTrace();
+						if (failCallback != null)
 							failCallback.accept(e);
 					}
 				});

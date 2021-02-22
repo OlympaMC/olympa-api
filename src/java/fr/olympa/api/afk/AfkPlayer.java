@@ -18,7 +18,7 @@ import net.minecraft.server.v1_16_R3.PacketPlayInFlying.PacketPlayInPosition;
 
 public class AfkPlayer {
 
-	public static final String AFK_SUFFIX = "§4[§cAFK§4]";
+	public static final String AFK_SUFFIX = "§4[§cAFK§4]§r";
 
 	private static final int scoreToActiveAfk = 10;
 	private static final int scoreToDeactiveAfk = 6;

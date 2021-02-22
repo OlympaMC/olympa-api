@@ -3,6 +3,7 @@ package fr.olympa.api.command.complex;
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class ArgumentParser<T> {
 
@@ -21,7 +22,7 @@ public class ArgumentParser<T> {
 	 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
 	 */
 	@Deprecated(forRemoval = true)
-	public ArgumentParser(Function<T, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction, boolean hasCache) {
+	public ArgumentParser(Function<T, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> wrongArgTypeMessageFunction, boolean hasCache) {
 		this(supplyArgumentFunction, wrongArgTypeMessageFunction, hasCache);
 		this.tabArgumentsFunction = (t, u) -> tabArgumentsFunction.apply(t);
 	}
@@ -32,7 +33,7 @@ public class ArgumentParser<T> {
 	 * @param supplyArgumentFunction
 	 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
 	 */
-	public ArgumentParser(BiFunction<T, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction, boolean hasCache) {
+	public ArgumentParser(BiFunction<T, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> wrongArgTypeMessageFunction, boolean hasCache) {
 		this(supplyArgumentFunction, wrongArgTypeMessageFunction, hasCache);
 		this.tabArgumentsFunction = tabArgumentsFunction;
 	}
@@ -43,7 +44,7 @@ public class ArgumentParser<T> {
 	 * @param supplyArgumentFunction
 	 * @param wrongArgTypeMessageFunction Le message ne doit pas finir par un point, et doit avoir un sens en utiliser le message suivie d'un ou (ex: Ton message d'erreur OU un autre message d'erreur)
 	 */
-	private ArgumentParser(Function<String, Object> supplyArgumentFunction, Function<String, String> wrongArgTypeMessageFunction, boolean hasCache) {
+	private ArgumentParser(Function<String, Object> supplyArgumentFunction, UnaryOperator<String> wrongArgTypeMessageFunction, boolean hasCache) {
 		this.supplyArgumentFunction = supplyArgumentFunction;
 		this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
 		//		if (hasCache)
