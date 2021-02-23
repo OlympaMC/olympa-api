@@ -1,7 +1,6 @@
 package fr.olympa.core.spigot;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -111,7 +110,7 @@ public class OlympaCore extends OlympaSpigot {
 
 		try {
 			pluginManager.registerEvents(holograms = new HologramsManager(this, new File(getDataFolder(), "holograms.yml")), this);
-		} catch (IOException | ReflectiveOperationException e) {
+		} catch (Exception e) {
 			getLogger().severe("Une erreur est survenue lors du chargement des hologrammes.");
 			e.printStackTrace();
 		}

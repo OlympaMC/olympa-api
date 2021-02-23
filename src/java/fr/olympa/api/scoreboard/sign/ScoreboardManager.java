@@ -1,7 +1,6 @@
 package fr.olympa.api.scoreboard.sign;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +19,7 @@ import fr.olympa.api.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.module.OlympaModule;
 import fr.olympa.api.module.OlympaModule.ModuleApi;
-import fr.olympa.api.module.PluginModule;
+import fr.olympa.api.module.SpigotModule;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
@@ -66,10 +65,14 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 
 	public ScoreboardManager(OlympaAPIPlugin pl, String displayName) {
 		this.displayName = displayName;
-		OlympaModule<ScoreboardManager<T>, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "scoreboard_" + pl.getName(),
-				plugin -> this, Arrays.asList(this.getClass()), null);
-		PluginModule.enableModule(scoreBoardModule);
-		PluginModule.addModule(scoreBoardModule);
+		OlympaModule<ScoreboardManager<T>, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new SpigotModule<>(pl, "scoreboard_" + pl.getName(),
+				p -> this).listener(this.getClass());
+		try {
+			scoreBoardModule.enableModule();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scoreBoardModule.registerModule();
 	}
 
 	public OlympaAPIPlugin getPlugin() {

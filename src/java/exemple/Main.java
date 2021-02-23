@@ -40,13 +40,17 @@ public class Main extends OlympaAPIPlugin {
 
 		new ExempleCommand(this).register();
 		new ExampleComplexCommand(this).register();
-		scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
-				new FixedLine<>("Yo"),
-				FixedLine.EMPTY_LINE,
-				new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {
-					Location lc = x.getOlympaPlayer().getPlayer().getLocation();
-					return lc.toString();
-				}, this, 5));
+		try {
+			scoreboards = new ScoreboardManager<>(this, "Exemple scoreboard").addLines(
+					new FixedLine<>("Yo"),
+					FixedLine.EMPTY_LINE,
+					new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {
+						Location lc = x.getOlympaPlayer().getPlayer().getLocation();
+						return lc.toString();
+					}, this, 5));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		final PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new ExempleListener(), this);

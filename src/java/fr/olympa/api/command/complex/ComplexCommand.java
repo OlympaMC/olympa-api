@@ -131,7 +131,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				result = arg;
 			else {
 				//				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).collect(Collectors.toList());
-				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.hasCache ? p.applyTabWithoutCache(sender, arg).contains(arg) : true).collect(Collectors.toList());
+				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.cache != null ? p.applyTabWithoutCache(sender, arg).contains(arg) : true).collect(Collectors.toList());
 				if (!parsers.isEmpty())
 					result = parsers.get(0).supplyArgumentFunction.apply(arg);
 				else {

@@ -1,7 +1,6 @@
 package fr.olympa.api.holograms;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import fr.olympa.api.holograms.Hologram.HologramLine;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.module.OlympaModule;
 import fr.olympa.api.module.OlympaModule.ModuleApi;
-import fr.olympa.api.module.PluginModule;
+import fr.olympa.api.module.SpigotModule;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.utils.Point2D;
 import fr.olympa.api.utils.observable.Observable.Observer;
@@ -98,11 +97,16 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		return hologramsFile;
 	}
 
-	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws IOException, ReflectiveOperationException {
+	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws NoSuchFieldException {
 		this.hologramsFile = hologramsFile;
-		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new OlympaModule<>(pl, "holograms_" + pl.getName(), plugin -> this, this.getClass(), HologramsCommand.class);
-		PluginModule.enableModule(scoreBoardModule);
-		PluginModule.addModule(scoreBoardModule);
+		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new SpigotModule<>(pl, "holograms_" + pl.getName(), plugin -> this)
+				.listener(this.getClass()).cmd(HologramsCommand.class);
+		try {
+			scoreBoardModule.enableModule();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scoreBoardModule.registerModule();
 		//		hologramsFile.getParentFile().mkdirs();
 		//		hologramsFile.createNewFile();
 	}

@@ -1,7 +1,6 @@
 package fr.olympa.api.module;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,9 +10,41 @@ import fr.olympa.api.module.OlympaModule.ModuleApi;
 import fr.olympa.api.plugin.OlympaPluginInterface;
 import fr.olympa.api.utils.CreateInstance;
 
-public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInterface, C extends IOlympaCommand> {
+@SuppressWarnings("unchecked")
+public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInterface, C extends IOlympaCommand> {
 
+	protected static final List<OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand>> modules = new ArrayList<>();
 	public static boolean DEBUG = false;
+
+	public static List<String> getModulesNames() {
+		return modules.stream().map(OlympaModule::getName).collect(Collectors.toList());
+	}
+
+	public static List<OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand>> getModules() {
+		return modules;
+	}
+
+	public static OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand> getModule(String x) {
+		return modules.stream().filter(m -> m.getName().equalsIgnoreCase(x)).findFirst().orElse(null);
+	}
+
+	public static void enableAll() {
+		for (OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand> module : modules)
+			try {
+				module.enableModule();
+			} catch (Exception e) {} // Exception already printed
+	}
+
+	public static void disableAll() {
+		for (OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand> module : modules)
+			try {
+				module.disableModule();
+			} catch (Exception e) {} // Exception already printed
+	}
+
+	public static void sendErrorModule(OlympaModule<?, ?, ?, ?> module, Exception e, String whileDoing) {
+		new Exception(String.format("§cError in Module§4 %s §cwhile do§4 %s§c.", module.getName(), whileDoing)).initCause(e).printStackTrace();
+	}
 
 	public interface ModuleApi<P> {
 		boolean disable(P plugin);
@@ -35,13 +66,13 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	T api;
 	P plugin;
 	boolean debug = false;
-	List<Class<? extends L>> eventsToRegister;
+	Class<? extends L>[] eventsToRegister;
 	List<L> eventsRegistered = new ArrayList<>();
-	List<Class<? extends C>> commandsToRegister;
+	Class<? extends C>[] commandsToRegister;
 	List<C> commandsRegistered = new ArrayList<>();
 	Function<P, T> functionInitialize;
-	List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> dependances;
-	List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> softDependances;
+	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] dependances;
+	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] softDependances;
 
 	/**
 	 * @param plugin
@@ -50,28 +81,34 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	 * @param functionInitialize
 	 * @param eventToRegister
 	 */
-	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, List<Class<? extends L>> eventsToRegister, List<Class<? extends C>> commandsToRegister) {
+	protected OlympaModule(P plugin, String name, Function<P, T> functionInitialize) {
 		this.plugin = plugin;
 		this.name = name;
 		this.functionInitialize = functionInitialize;
-		this.eventsToRegister = eventsToRegister;
-		this.commandsToRegister = commandsToRegister;
 	}
 
-	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister) {
-		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
+	@SafeVarargs
+	public final OlympaModule<T, L, P, C> listener(Class<? extends L>... listeners) {
+		this.eventsToRegister = listeners;
+		return this;
 	}
 
-	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister, OlympaModule<?, ?, ?, ?>... softDependances) {
-		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
-		this.softDependances = Arrays.stream(softDependances).collect(Collectors.toList());
+	@SafeVarargs
+	public final OlympaModule<T, L, P, C> cmd(Class<? extends C>... commands) {
+		this.commandsToRegister = commands;
+		return this;
 	}
 
-	public OlympaModule(P plugin, String name, Function<P, T> functionInitialize, Class<? extends L> eventToRegister, Class<? extends C> commandToRegister,
-			List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> softDependances, List<OlympaModule<? extends ModuleApi<?>, ?, ?, ?>> dependances) {
-		this(plugin, name, functionInitialize, eventToRegister != null ? List.of(eventToRegister) : null, commandToRegister != null ? List.of(commandToRegister) : null);
-		this.softDependances = softDependances;
-		this.dependances = dependances;
+	@SafeVarargs
+	public final OlympaModule<T, L, P, C> softDepend(OlympaModule<? extends ModuleApi<?>, ?, ?, ?>... softDependModule) {
+		this.softDependances = softDependModule;
+		return this;
+	}
+
+	@SafeVarargs
+	public final OlympaModule<T, L, P, C> depend(OlympaModule<? extends ModuleApi<?>, ?, ?, ?>... dependModule) {
+		this.dependances = dependModule;
+		return this;
 	}
 
 	public String getName() {
@@ -91,35 +128,36 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	}
 
 	public boolean registerCommands() {
-		if (commandsToRegister == null || commandsToRegister.isEmpty())
+		if (commandsToRegister == null || commandsToRegister.length == 0)
 			return false;
-		commandsToRegister.forEach(clazz -> {
+		for (Class<? extends C> clazz : commandsToRegister) {
 			C olympaCommand;
 			if (api.getClass().isAssignableFrom(clazz)) {
 				((IOlympaCommand) api).register();
 				if (DEBUG || debug)
-					((OlympaPluginInterface) plugin).sendMessage("&eModule &6%s&e : command &6%s&e register et liée à l'Api.", name, clazz.getSimpleName());
+					plugin.sendMessage("&eModule &6%s&e : command &6%s&e register et liée à l'Api.", name, clazz.getSimpleName());
 			} else {
 				olympaCommand = new CreateInstance<C>().of(clazz, plugin, api);
 				if (olympaCommand == null) {
 					plugin.sendMessage("&cModule &4%s&c : can't register &4%s&c command, constructor was not found.", name, clazz.getSimpleName());
-					return;
+					return false;
 				}
 				olympaCommand.register();
 				commandsRegistered.add(olympaCommand);
 				if (DEBUG || debug)
 					plugin.sendMessage("&eModule &6%s&e : command &6%s&e register.", name, clazz.getSimpleName());
 			}
-		});
+		}
 		return true;
 	}
 
 	public boolean unregisterCommands() {
 		if (commandsRegistered.isEmpty())
 			return false;
-		this.getCommandsRegistered().forEach(olympaCommand -> {
+		commandsRegistered.forEach(olympaCommand -> {
 			olympaCommand.unregister();
 		});
+		commandsRegistered.clear();
 		return true;
 	}
 
@@ -127,11 +165,11 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 	//
 	//	public void unregisterListeners();
 
-	public List<Class<? extends L>> getEventsToRegister() {
+	public Class<? extends L>[] getEventsToRegister() {
 		return eventsToRegister;
 	}
 
-	public List<Class<? extends C>> getCommandsToRegister() {
+	public Class<? extends C>[] getCommandsToRegister() {
 		return commandsToRegister;
 	}
 
@@ -162,7 +200,7 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 		}
 	}
 
-	public boolean enable() {
+	private boolean enable() {
 		if (isEnabled())
 			return false;
 		try {
@@ -191,7 +229,7 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 		}
 	}
 
-	public boolean disable() {
+	private boolean disable() {
 		if (!isEnabled())
 			return false;
 		try {
@@ -202,10 +240,6 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 			sendErrorModule(e, "disable");
 			return false;
 		}
-	}
-
-	public void sendErrorModule(Exception e, String whileDoing) {
-		sendErrorModule(this, e, whileDoing);
 	}
 
 	public T getApi() {
@@ -224,8 +258,46 @@ public class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInter
 		return debug;
 	}
 
-	public static void sendErrorModule(OlympaModule<?, ?, ?, ?> module, Exception e, String whileDoing) {
-		new Exception(String.format("§cError in Module§4 %s §cwhile do§4 %s§c.", module.getName(), whileDoing)).initCause(e).printStackTrace();
+	public abstract void registerListeners();
+
+	public abstract void unregisterListeners();
+
+	public void enableModule() throws Exception {
+		try {
+			this.initialize();
+			this.enable();
+			this.registerListeners();
+			this.setToPlugin();
+			this.registerCommands();
+		} catch (Exception e) {
+			this.sendErrorModule(e, "enable Module");
+			throw e;
+		}
+	}
+
+	public void disableModule() throws Exception {
+		try {
+			this.unregisterListeners();
+			this.unregisterCommands();
+			this.disable();
+		} catch (Exception e) {
+			this.sendErrorModule(e, "disable Module");
+			throw e;
+		}
+	}
+
+	public OlympaModule<T, L, P, C> registerModule() {
+		modules.add(this);
+		return this;
+	}
+
+	public OlympaModule<T, L, P, C> removeFromRegisterList() {
+		modules.remove(this);
+		return this;
+	}
+
+	public void sendErrorModule(Exception e, String whileDoing) {
+		sendErrorModule(this, e, whileDoing);
 	}
 
 }
