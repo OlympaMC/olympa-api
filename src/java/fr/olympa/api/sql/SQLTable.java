@@ -155,7 +155,7 @@ public class SQLTable<T> {
 			private OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), new String[] { column.getName() });
 
 			@Override
-			public void update(T object, Object sqlObject, int sqlType) throws SQLException {
+			public synchronized void update(T object, Object sqlObject, int sqlType) throws SQLException {
 				PreparedStatement statement = updateStatement.getStatement();
 				statement.setObject(1, sqlObject, sqlType);
 				statement.setObject(2, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
