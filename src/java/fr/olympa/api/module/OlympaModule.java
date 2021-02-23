@@ -10,7 +10,6 @@ import fr.olympa.api.module.OlympaModule.ModuleApi;
 import fr.olympa.api.plugin.OlympaPluginInterface;
 import fr.olympa.api.utils.CreateInstance;
 
-@SuppressWarnings("unchecked")
 public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPluginInterface, C extends IOlympaCommand> {
 
 	protected static final List<OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand>> modules = new ArrayList<>();
