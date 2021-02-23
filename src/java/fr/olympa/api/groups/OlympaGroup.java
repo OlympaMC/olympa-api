@@ -41,7 +41,7 @@ public enum OlympaGroup {
 	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%s ", ":&r", false),
 	CREA_CREATOR(24, 3, OlympaServer.CREATIF, "Créateur", "Créatrice", "&6%s ", ":&r", false),
 
-	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
+	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7 ", ":", false);
 
 	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
 
