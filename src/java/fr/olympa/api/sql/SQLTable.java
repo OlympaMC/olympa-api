@@ -50,38 +50,39 @@ public class SQLTable<T> {
 		return name.replace("`", "");
 	}
 
-	public synchronized void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
+	public void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
 		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
-		PreparedStatement statement = updateStatement.getStatement();
-		int i = 1;
-		for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet()) {
-			Object value = entry.getValue();
-			if (value instanceof SQLNullObject)
-				value = null;
-			statement.setObject(i++, value, entry.getKey().getSQLType());
+		try (PreparedStatement statement = updateStatement.createStatement()) {
+			int i = 1;
+			for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet()) {
+				Object value = entry.getValue();
+				if (value instanceof SQLNullObject)
+					value = null;
+				statement.setObject(i++, value, entry.getKey().getSQLType());
+			}
+			statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
+			updateStatement.executeUpdate(statement);
 		}
-		statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
-		statement.executeUpdate();
-		statement.close();
 	}
 
 	public synchronized List<T> select(Map<SQLColumn<?>, Object> whereSqlObjects) throws SQLException, IllegalAccessException {
 		if (initializeFromRow == null)
 			throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
-		PreparedStatement statement = new OlympaStatement(StatementType.SELECT, name, whereSqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new)).getStatement();
-		int i = 1;
-		for (Entry<SQLColumn<?>, Object> entry : whereSqlObjects.entrySet()) {
-			Object value = entry.getValue();
-			if (value instanceof SQLNullObject)
-				value = null;
-			statement.setObject(i++, value, entry.getKey().getSQLType());
+		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, whereSqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
+		try (PreparedStatement statement = selectStatement.createStatement()) {
+			int i = 1;
+			for (Entry<SQLColumn<?>, Object> entry : whereSqlObjects.entrySet()) {
+				Object value = entry.getValue();
+				if (value instanceof SQLNullObject)
+					value = null;
+				statement.setObject(i++, value, entry.getKey().getSQLType());
+			}
+			ResultSet rs = selectStatement.executeQuery(statement);
+			List<T> objects = new ArrayList<>();
+			while (rs.next()) objects.add(initializeFromRow.apply(rs));
+			rs.close();
+			return objects;
 		}
-		ResultSet rs = statement.executeQuery();
-		List<T> objects = new ArrayList<>();
-		while (rs.next())
-			objects.add(initializeFromRow.apply(rs));
-		rs.close();
-		return objects;
 	}
 
 	public void updateAsync(T object, Map<SQLColumn<?>, Object> sqlObjects, Runnable successCallback, Consumer<SQLException> failCallback) {
@@ -145,9 +146,11 @@ public class SQLTable<T> {
 
 			@Override
 			public ResultSet selectBasic(Object sqlObject, String... specifiedColumnsReturned) throws SQLException {
-				PreparedStatement statement = new OlympaStatement(StatementType.SELECT, name, column.getName(), specifiedColumnsReturned).getStatement();
-				statement.setObject(1, sqlObject, column.getSQLType());
-				return statement.executeQuery();
+				OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, column.getName(), specifiedColumnsReturned);
+				try (PreparedStatement statement = selectStatement.createStatement()) {
+					statement.setObject(1, sqlObject, column.getSQLType());
+					return selectStatement.executeQuery(statement);
+				}
 			}
 		}));
 		columns.stream().filter(SQLColumn::isUpdatable).forEach(column -> column.setSQLUpdater(new SQLUpdater<>() {
@@ -156,11 +159,11 @@ public class SQLTable<T> {
 
 			@Override
 			public synchronized void update(T object, Object sqlObject, int sqlType) throws SQLException {
-				PreparedStatement statement = updateStatement.getStatement();
-				statement.setObject(1, sqlObject, sqlType);
-				statement.setObject(2, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
-				updateStatement.executeUpdate();
-				statement.close();
+				try (PreparedStatement statement = updateStatement.createStatement()) {
+					statement.setObject(1, sqlObject, sqlType);
+					statement.setObject(2, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
+					updateStatement.executeUpdate(statement);
+				}
 			}
 
 			@Override
@@ -193,28 +196,30 @@ public class SQLTable<T> {
 	}
 
 	public synchronized ResultSet insert(Object... notDefaultObjects) throws SQLException {
-		PreparedStatement statement = insertStatement.getStatement();
-		int i = 1;
-		for (SQLColumn<T> column : columns)
-			if (column.isNotDefault()) {
+		try (PreparedStatement statement = insertStatement.createStatement()) {
+			int i = 1;
+			for (SQLColumn<T> column : columns) if (column.isNotDefault()) {
 				statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
 				i++;
 			}
-		//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
-		insertStatement.executeUpdate();
-		return statement.getGeneratedKeys();
+			//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
+			insertStatement.executeUpdate(statement);
+			return statement.getGeneratedKeys();
+		}
 	}
 
 	public synchronized void delete(T primaryObject) throws SQLException {
-		PreparedStatement statement = deleteStatement.getStatement();
-		statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
-		statement.executeUpdate();
+		try (PreparedStatement statement = deleteStatement.createStatement()) {
+			statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
+			deleteStatement.executeUpdate(statement);
+		}
 	}
 
 	public synchronized void deleteSQLObject(Object primaryObjectSQL) throws SQLException {
-		PreparedStatement statement = deleteStatement.getStatement();
-		statement.setObject(1, primaryObjectSQL, primaryColumn.getSQLType());
-		statement.executeUpdate();
+		try (PreparedStatement statement = deleteStatement.createStatement()) {
+			statement.setObject(1, primaryObjectSQL, primaryColumn.getSQLType());
+			deleteStatement.executeUpdate(statement);
+		}
 	}
 
 	public synchronized ResultSet get(Object primaryObject) throws SQLException {
@@ -222,20 +227,24 @@ public class SQLTable<T> {
 	}
 
 	public synchronized ResultSet getFromColumn(SQLColumn<T> column, Object object) throws SQLException {
-		PreparedStatement statement = column.getSelectStatement(this).getStatement();
-		statement.setObject(1, object, column.getSQLType());
-		return statement.executeQuery();
+		OlympaStatement selectStatement = column.getSelectStatement(this);
+		try (PreparedStatement statement = selectStatement.createStatement()) {
+			statement.setObject(1, object, column.getSQLType());
+			return selectStatement.executeQuery(statement);
+		}
 	}
 
 	public synchronized List<T> selectAll() throws SQLException {
 		if (initializeFromRow == null)
 			throw new IllegalStateException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
 		List<T> objects = new ArrayList<>();
-		ResultSet rs = new OlympaStatement(StatementType.SELECT, name, null).executeQuery();
-		while (rs.next())
-			objects.add(initializeFromRow.apply(rs));
-		rs.close();
-		return objects;
+		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, null);
+		try (PreparedStatement statement = selectStatement.createStatement()) {
+			ResultSet rs = selectStatement.executeQuery(statement);
+			while (rs.next()) objects.add(initializeFromRow.apply(rs));
+			rs.close();
+			return objects;
+		}
 	}
 
 }

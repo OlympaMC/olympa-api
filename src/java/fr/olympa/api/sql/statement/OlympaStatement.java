@@ -22,7 +22,7 @@ public class OlympaStatement {
 	}
 
 	IStatementType type;
-	private String statement;
+	private String statementCommand;
 	private boolean returnGeneratedKeys = false;
 
 	public OlympaStatement(StatementTypeInsertDelete type, String tableName, String... keys) {
@@ -47,7 +47,7 @@ public class OlympaStatement {
 			Arrays.stream(keys).forEach(w -> sj2.add("`" + w + "` = ?"));
 			sj.add(sj2.toString());
 		}
-		statement = sj.toString() + ";";
+		statementCommand = sj.toString() + ";";
 	}
 
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String what, String[] keys) {
@@ -105,7 +105,7 @@ public class OlympaStatement {
 			sj.add("LIMIT " + limit);
 		if (offset > 0)
 			sj.add("OFFSET " + offset);
-		statement = sj.toString() + ";";
+		statementCommand = sj.toString() + ";";
 	}
 
 	public OlympaStatement(StatementTypeDefault type, String tableName) {
@@ -113,7 +113,7 @@ public class OlympaStatement {
 		StringJoiner sj = new StringJoiner(" ");
 		sj.add(type.get());
 		sj.add(tableName);
-		statement = sj.toString() + ";";
+		statementCommand = sj.toString() + ";";
 	}
 
 	public OlympaStatement(String statement) {
@@ -121,21 +121,24 @@ public class OlympaStatement {
 	}
 
 	public OlympaStatement(String statement, boolean returnGeneratedKeys) {
-		this.statement = statement;
+		this.statementCommand = statement;
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 
 	public OlympaStatement(String statement, String tableName, boolean returnGeneratedKeys) {
-		this.statement = String.format(statement, tableName);
+		this.statementCommand = String.format(statement, tableName);
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 
-	private PreparedStatement prepared;
-
-	public synchronized PreparedStatement getStatement() throws SQLException {
+	/*private PreparedStatement prepared;
+	private ReentrantLock lock = new ReentrantLock();*/
+	
+	public PreparedStatement createStatement() throws SQLException {
+		/*if (!lock.tryLock(10, TimeUnit.SECONDS)) throw new SQLException("Le thread n'a pas été acquis au bout de 10 secondes");
 		if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0))
-			prepared = returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statement, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statement);
-		return prepared;
+			prepared = returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand);
+		return prepared;*/
+		return returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand);
 	}
 
 	private String acuteIfNeeded(String s) {
@@ -145,27 +148,80 @@ public class OlympaStatement {
 	}
 
 	public String getStatementCommand() {
-		return statement;
+		return statementCommand;
 	}
 
 	public OlympaStatement returnGeneratedKeys() {
 		returnGeneratedKeys = true;
 		return this;
 	}
-
-	public int executeUpdate() throws SQLException {
+	
+	public int executeUpdate(PreparedStatement statement) throws SQLException {
 		try {
-			return getStatement().executeUpdate();
-		} catch (SQLException e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e);
+			return statement.executeUpdate();
+		}catch (Exception e) {
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
 		}
 	}
-
-	public ResultSet executeQuery() throws SQLException {
+	
+	public ResultSet executeQuery(PreparedStatement statement) throws SQLException {
 		try {
-			return getStatement().executeQuery();
-		} catch (SQLException e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statement, e);
+			return statement.executeQuery();
+		}catch (Exception e) {
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
 		}
 	}
+	
+	/*public int executeUpdate(StatementProvider statementProvider) throws SQLException {
+		try {
+			PreparedStatement statement = getStatement();
+			statementProvider.call(statement);
+			return statement.executeUpdate();
+		}catch (Exception e) {
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+		}finally {
+			close();
+		}
+	}
+	
+	public int executeUpdate(StatementProvider statementProvider, ResultSetProvider generatedKeysProvider) throws SQLException {
+		try {
+			PreparedStatement statement = getStatement();
+			statementProvider.call(statement);
+			int update = statement.executeUpdate();
+			ResultSet resultSet = statement.getGeneratedKeys();
+			generatedKeysProvider.call(resultSet);
+			resultSet.close();
+			return update;
+		}catch (Exception e) {
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+		}finally {
+			close();
+		}
+	}
+	
+	public void executeQuery(StatementProvider statementProvider, ResultSetProvider queryProvider) throws SQLException {
+		try {
+			PreparedStatement statement = getStatement();
+			statementProvider.call(statement);
+			ResultSet resultSet = statement.executeQuery();
+			queryProvider.call(resultSet);
+			resultSet.close();
+		}catch (Exception e) {
+			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+		}finally {
+			close();
+		}
+	}
+	
+	@FunctionalInterface
+	public interface StatementProvider {
+		public void call(PreparedStatement statement) throws Exception;
+	}
+	
+	@FunctionalInterface
+	public interface ResultSetProvider {
+		public void call(ResultSet resultSet) throws Exception;
+	}*/
+	
 }

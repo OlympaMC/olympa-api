@@ -51,11 +51,12 @@ public class TaxManager {
 	}
 
 	public synchronized void update() throws SQLException {
-		PreparedStatement statement = insertStatement.getStatement();
-		statement.setLong(1, System.currentTimeMillis());
-		statement.setDouble(2, tax);
-		statement.setDouble(3, taxedMoney);
-		statement.executeUpdate();
+		try (PreparedStatement statement = insertStatement.createStatement()) {
+			statement.setLong(1, System.currentTimeMillis());
+			statement.setDouble(2, tax);
+			statement.setDouble(3, taxedMoney);
+			insertStatement.executeUpdate(statement);
+		}
 	}
 
 	public String getTax() {
