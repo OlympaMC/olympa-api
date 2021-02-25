@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class SQLTable<T> {
 	private final String name;
 	private final List<SQLColumn<T>> columns;
 	private final SQLColumn<T> primaryColumn;
-	public Function<ResultSet, T> initializeFromRow;
+	public ObjectInitizalizer<T> initializeFromRow;
 
 	private OlympaStatement insertStatement, deleteStatement;
 
@@ -37,7 +36,7 @@ public class SQLTable<T> {
 		CacheStats.addDebugList("SQL_COLUMNS_OF_TABLE_" + name, columns);
 	}
 
-	public SQLTable(String name, List<SQLColumn<T>> columns, Function<ResultSet, T> initializeFromRow) {
+	public SQLTable(String name, List<SQLColumn<T>> columns, ObjectInitizalizer<T> initializeFromRow) {
 		this(name, columns);
 		this.initializeFromRow = initializeFromRow;
 	}
@@ -79,7 +78,7 @@ public class SQLTable<T> {
 			}
 			ResultSet rs = selectStatement.executeQuery(statement);
 			List<T> objects = new ArrayList<>();
-			while (rs.next()) objects.add(initializeFromRow.apply(rs));
+			while (rs.next()) objects.add(initializeFromRow.initialize(rs));
 			rs.close();
 			return objects;
 		}
@@ -139,7 +138,7 @@ public class SQLTable<T> {
 					throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
 				ResultSet rs = selectBasic(sqlObject, specifiedColumnsReturned);
 				while (rs.next())
-					objects.add(initializeFromRow.apply(rs));
+					objects.add(initializeFromRow.initialize(rs));
 				rs.close();
 				return objects;
 			}
@@ -241,10 +240,14 @@ public class SQLTable<T> {
 		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, null);
 		try (PreparedStatement statement = selectStatement.createStatement()) {
 			ResultSet rs = selectStatement.executeQuery(statement);
-			while (rs.next()) objects.add(initializeFromRow.apply(rs));
+			while (rs.next()) objects.add(initializeFromRow.initialize(rs));
 			rs.close();
 			return objects;
 		}
 	}
 
+	public interface ObjectInitizalizer<T> {
+		public T initialize(ResultSet resultSet) throws SQLException;
+	}
+	
 }
