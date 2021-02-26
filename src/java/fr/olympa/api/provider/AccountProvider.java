@@ -1,6 +1,7 @@
 package fr.olympa.api.provider;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,10 @@ public class AccountProvider implements OlympaAccount {
 		return (T) olympaPlayer;
 	}
 
+	public static Collection<OlympaPlayer> getAll() {
+		return cache.values();
+	}
+	
 	public static OlympaPlayerInformations getPlayerInformations(long id) {
 		return cachedInformations.get(id);
 	}
