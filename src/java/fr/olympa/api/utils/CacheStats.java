@@ -155,7 +155,7 @@ public class CacheStats {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
 		builder.extra(new TxtComponentBuilder("&3ID       &bSize")).extraSpliter("\n");
 		for (Entry<String, Cache<?, ?>> entry : caches.entrySet())
-			builder.extra("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getKey(), entry.getValue(), receiver));
+			builder.extra(new TxtComponentBuilder("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getKey(), entry.getValue(), receiver)));
 		return builder;
 	}
 

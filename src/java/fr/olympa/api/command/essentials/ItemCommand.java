@@ -38,7 +38,7 @@ public class ItemCommand extends ComplexCommand {
 		sendSuccess("L'item est désormais %s§a.", meta.isUnbreakable() ? "§eincassable" : "§ccassable");
 	}
 	
-	@Cmd (description = "Modifier les flags", args = "FLAGS", syntax = "<flag>")
+	@Cmd (description = "Modifier les flags", args = "FLAGS", syntax = "<flag>", min = 1)
 	public void flag(CommandContext cmd) {
 		ItemStack item = getItemInHand();
 		if (item == null) return;
