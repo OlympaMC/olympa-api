@@ -33,6 +33,7 @@ import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.MoistureChangeEvent;
@@ -67,6 +68,7 @@ import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.FishFlag;
 import fr.olympa.api.region.tracking.flags.Flag;
 import fr.olympa.api.region.tracking.flags.FoodFlag;
+import fr.olympa.api.region.tracking.flags.FrostWalkerFlag;
 import fr.olympa.api.region.tracking.flags.ItemDurabilityFlag;
 import fr.olympa.api.region.tracking.flags.PhysicsFlag;
 import fr.olympa.api.region.tracking.flags.PlayerBlockInteractFlag;
@@ -312,7 +314,11 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onFade(BlockFadeEvent e) {
-		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+		if (e.getBlock().getType() == Material.FROSTED_ICE) {
+			fireEvent(e.getBlock().getLocation(), FrostWalkerFlag.class, x -> x.meltEvent(e));
+		}else {			
+			fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+		}
 	}
 
 	@EventHandler
@@ -327,7 +333,17 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onForm(BlockFormEvent e) {
+		if (e instanceof EntityBlockFormEvent) return;
 		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+	}
+	
+	@EventHandler
+	public void onEntityForm(EntityBlockFormEvent e) {
+		if (e.getEntity() instanceof Player && e.getBlock().getType() == Material.FROSTED_ICE) {
+			fireEvent(e.getBlock().getLocation(), FrostWalkerFlag.class, x -> x.formEvent(e));
+		}else {
+			fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+		}
 	}
 
 	@EventHandler
