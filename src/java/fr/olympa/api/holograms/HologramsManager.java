@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
@@ -112,6 +113,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	}
 
 	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
+		Validate.notNull(location, "Hologram location cannot be null");
 		int id = lastID++;
 		Hologram hologram = new Hologram(id, location, persistent, defaultVisibility, lines);
 		holograms.put(id, hologram);
