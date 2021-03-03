@@ -2,12 +2,14 @@ package fr.olympa.api.player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
+import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.server.OlympaServer;
 
 public interface OlympaPlayer {
 
@@ -35,15 +37,19 @@ public interface OlympaPlayer {
 
 	String getGroupPrefix();
 
-	TreeMap<OlympaGroup, Long> getGroups();
+	Map<OlympaGroup, Long> getGroups();
 
 	String getGroupsToHumainString();
 
 	String getGroupsToString();
 
-	TreeMap<Long, String> getHistHame();
+	Map<Long, String> getHistHame();
 
-	TreeMap<Long, String> getHistIp();
+	Map<Long, String> getHistIp();
+
+	Map<OlympaPermission, OlympaServer> getCustomPermissions();
+
+	Map<Long, String> getHistName();
 
 	long getId();
 
@@ -80,7 +86,7 @@ public interface OlympaPlayer {
 	void loadDatas(ResultSet resultSet) throws SQLException;
 
 	void loaded();
-	
+
 	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson/*, int discordOlympaId*/, int teamspeakId, boolean vanish);
 
 	void removeGroup(OlympaGroup group);
