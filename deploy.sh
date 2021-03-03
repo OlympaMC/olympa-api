@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 ##   ____  _
 ##  / __ \| |
 ## | |  | | |_   _ _ __ ___  _ __   __ _
@@ -30,11 +30,13 @@ else
 fi
 
 if [ -n "$BRANCH_NAME" ]; then
-	if [ `git branch --list $BRANCH_NAME` ]; then
+	#if [ `git branch --list $BRANCH_NAME` ]; then
 		git checkout $BRANCH_NAME --force
-	else
-		unset BRANCH_NAME
-	fi
+	#elif [[ $BRANCH_NAME =~ ^[0-9A-Fa-f]{1,}$ ]] ; then
+	#	git checkout $BRANCH_NAME --force
+	#else
+	#	unset BRANCH_NAME
+	#fi
 fi
 
 if [ -n "$DATE" ]; then
