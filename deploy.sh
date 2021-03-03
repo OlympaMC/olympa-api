@@ -54,7 +54,7 @@ if [ -n "$ACTUAL_COMMIT_ID" ]; then
 	git pull
 	if [ "$ACTUAL_COMMIT_ID" = `git rev-parse HEAD` ]; then
 		echo "\e[32mPas besoin de maven install, le jar est déjà crée.\e[0m"
-		exit 1
+		exit 0
 	fi
 fi
 git pull && mvn install
