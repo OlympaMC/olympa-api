@@ -42,6 +42,7 @@ fi
 if [ -n "$DATE" ]; then
 	git checkout 'master@{$DATE}' --force
 elif [ -z "$BRANCH_NAME" ]; then
+	git reset --hard HEAD
 	git checkout master --force
 fi
 
