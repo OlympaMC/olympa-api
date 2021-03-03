@@ -30,8 +30,12 @@ else
 fi
 
 if [ -n "$BRANCH_NAME" ]; then
-	#if [ `git branch --list $BRANCH_NAME` ]; then
+	exists=`git show-ref refs/heads/$BRANCH_NAME`
+	if [ -n "$exists" ]; then
 		git checkout $BRANCH_NAME --force
+	fi
+	#if [ `git branch --list $BRANCH_NAME` ]; then
+	#	git checkout $BRANCH_NAME --force
 	#elif [[ $BRANCH_NAME =~ ^[0-9A-Fa-f]{1,}$ ]] ; then
 	#	git checkout $BRANCH_NAME --force
 	#else
