@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ import fr.olympa.api.server.ServerType;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class OlympaPermission {
+public abstract class OlympaPermission implements IOlympaPermission {
 
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
 
@@ -84,6 +83,7 @@ public abstract class OlympaPermission {
 		this.lockPermission = lockPermission;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -156,10 +156,12 @@ public abstract class OlympaPermission {
 		minGroup = group;
 	}
 
+	@Override
 	public boolean hasPermission(UUID uniqueId) {
 		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
 	}
 
+	@Override
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()));
 	}
@@ -182,10 +184,12 @@ public abstract class OlympaPermission {
 		return b;
 	}
 
-	public boolean hasPermission(TreeMap<OlympaGroup, Long> groups) {
+	@Override
+	public boolean hasPermission(Map<OlympaGroup, Long> groups) {
 		return groups.entrySet().stream().anyMatch(entry -> this.hasPermission(entry.getKey()));
 	}
 
+	@Override
 	public boolean hasPermission(OlympaGroup group) {
 		return (!disabled || group.isHighStaff())
 				&& (minGroup != null && group.getPower() >= minGroup.getPower() || allowedGroups != null && Arrays.stream(allowedGroups).anyMatch(ga -> ga.getPower() == group.getPower()));

@@ -3,6 +3,7 @@ package fr.olympa.api.provider;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,9 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
+import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
+import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.utils.Utils;
 
 public class OlympaPlayerObject implements OlympaPlayer {
@@ -214,9 +217,8 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public void loadDatas(ResultSet resultSet) throws SQLException {
-	}
-	
+	public void loadDatas(ResultSet resultSet) throws SQLException {}
+
 	@Override
 	public void loaded() {}
 
@@ -325,6 +327,18 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int teamspeakId, boolean vanish) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Map<OlympaPermission, OlympaServer> getCustomPermissions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Long, String> getHistName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
