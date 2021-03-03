@@ -30,7 +30,7 @@ else
 fi
 
 if [ -n "$BRANCH_NAME" ]; then
-	if [[ $USE_BRANCH == *"$BRANCH_NAME"* ]]; then
+	if [ `git branch --list $BRANCH_NAME` ]; then
 		git checkout $BRANCH_NAME --force
 	else
 		unset BRANCH_NAME
@@ -44,7 +44,6 @@ elif [ -z "$BRANCH_NAME" ]; then
 fi
 
 if [ -n "$ACTUAL_COMMIT_ID" ]; then
-	git pull
 	if [ "$ACTUAL_COMMIT_ID" = `git rev-parse HEAD` ]; then
 		echo "\e[32mPas besoin de maven install, le jar est déjà crée.\e[0m"
 		exit 1
