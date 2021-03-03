@@ -69,10 +69,14 @@ public class TpCommand extends OlympaCommand {
 		sources.forEach(s -> {
 			s.teleport(target);
 			if (s instanceof Player) {
-				String turne = AccountProvider.get(s.getUniqueId()).getGender().getTurne();
+				String turneS = AccountProvider.get(s.getUniqueId()).getGender().getTurne();
 				if (s != player)
-					sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a a été téléporté à &2%s&a.", turne, s.getName(), target.getName());
-				Prefix.DEFAULT_GOOD.sendMessage(s, "&aTu as été téléporté%s à &2%s&a.", turne, target.getName());
+					if (target.getUniqueId().equals(player.getUniqueId())) {
+						String turneT = AccountProvider.get(s.getUniqueId()).getGender().getTurne();
+						sendMessage(Prefix.DEFAULT_GOOD, "&2Tu as téléporté%s &2%s&a &nICI&a.", s.getName(), turneT, target.getName());
+					} else
+						sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a a été téléporté%s à &2%s&a.", s.getName(), turneS, target.getName());
+				Prefix.DEFAULT_GOOD.sendMessage(s, "&aTu as été téléporté%s à &2%s&a.", turneS, target.getName());
 			}
 		});
 		return true;

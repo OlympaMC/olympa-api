@@ -1,17 +1,12 @@
 package fr.olympa.api.command.complex;
 
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class ArgumentParser<T> {
 
@@ -54,27 +49,28 @@ public class ArgumentParser<T> {
 	private ArgumentParser(Function<String, Object> supplyArgumentFunction, UnaryOperator<String> wrongArgTypeMessageFunction, boolean hasCache) {
 		this.supplyArgumentFunction = supplyArgumentFunction;
 		this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
-		if (hasCache)
-			cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+		//		if (hasCache)
+		//			cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
 		//		this.hasCache = hasCache;
 	}
 
 	public Collection<String> applyTab(T t, String arg) {
-		if (cache == null)
-			return applyTabWithoutCache(t, arg);
-		Collection<String> r = cache.getIfPresent(t);
-		SimpleEntry<T, String> entry = new AbstractMap.SimpleEntry<>(t, arg);
-		if (r == null) {
-			r = cache.asMap().entrySet().stream().filter(e -> e.getKey().getKey().equals(t) && e.getKey().getValue().startsWith(arg)).findFirst()
-					.map(e -> e.getValue().stream().filter(s -> arg.startsWith(s)).collect(Collectors.toList())).orElse(null);
-			if (r == null) {
-				r = applyTabWithoutCache(t, arg);
-				if (r != null && !r.isEmpty())
-					cache.put(entry, r);
-			} else if (!r.isEmpty())
-				cache.put(entry, r);
-		}
-		return r;
+		return applyTabWithoutCache(t, arg);
+		//		if (cache == null)
+		//			return applyTabWithoutCache(t, arg);
+		//		Collection<String> r = cache.getIfPresent(t);
+		//		SimpleEntry<T, String> entry = new AbstractMap.SimpleEntry<>(t, arg);
+		//		if (r == null) {
+		//			r = cache.asMap().entrySet().stream().filter(e -> e.getKey().getKey().equals(t) && e.getKey().getValue().startsWith(arg)).findFirst()
+		//					.map(e -> e.getValue().stream().filter(s -> arg.startsWith(s)).collect(Collectors.toList())).orElse(null);
+		//			if (r == null) {
+		//				r = applyTabWithoutCache(t, arg);
+		//				if (r != null && !r.isEmpty())
+		//					cache.put(entry, r);
+		//			} else if (!r.isEmpty())
+		//				cache.put(entry, r);
+		//		}
+		//		return r;
 	}
 
 	public Collection<String> applyTabWithoutCache(T t, String arg) {
