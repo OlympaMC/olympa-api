@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -74,9 +75,16 @@ public class CombatManager implements Listener {
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageByEntityEvent e) {
-		if (!e.isCancelled() && e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+		Player damager = null;
+		if (e.getDamager() instanceof Player) {
+			damager = (Player) e.getDamager();
+		}else if (e.getDamager() instanceof Projectile) {
+			Projectile proj = (Projectile) e.getDamager();
+			if (proj.getShooter() instanceof Player) damager = (Player) proj.getShooter();
+		}
+		if (!e.isCancelled() && e.getEntity() instanceof Player && damager != null) {
 			Player damaged = (Player) e.getEntity();
-			Player damager = (Player) e.getDamager();
+			if (damaged == damager) return;
 			if (canEnterCombat(damager, damaged)) {
 				getOrSetCombat(damaged).damageEvent = e;
 				getOrSetCombat(damager);

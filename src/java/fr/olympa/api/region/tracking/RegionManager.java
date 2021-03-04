@@ -341,7 +341,7 @@ public class RegionManager implements Listener {
 	
 	@EventHandler
 	public void onEntityForm(EntityBlockFormEvent e) {
-		if (e.getEntity() instanceof Player && e.getBlock().getType() == Material.FROSTED_ICE) {
+		if (e.getEntity() instanceof Player && e.getNewState().getType() == Material.FROSTED_ICE) {
 			fireEvent(e.getBlock().getLocation(), FrostWalkerFlag.class, x -> x.formEvent(e));
 		}else {
 			fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
@@ -388,7 +388,7 @@ public class RegionManager implements Listener {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
 		Material type = e.getClickedBlock().getType();
-		if (type == Material.DAYLIGHT_DETECTOR || type == Material.REDSTONE_WIRE || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type.name().endsWith("_SIGN") || type.name().startsWith("POTTED_")) {
+		if (type == Material.DAYLIGHT_DETECTOR || type == Material.REDSTONE_WIRE || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type == Material.JUKEBOX || type.name().endsWith("_SIGN") || type.name().startsWith("POTTED_")) {
 			fireEvent(e.getClickedBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getClickedBlock()));
 		}else fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
 	}
