@@ -27,6 +27,7 @@ public class CombatManager implements Listener {
 	
 	private final Map<Player, CombatPlayer> inCombat = new HashMap<>();
 	private final BukkitTask task;
+	private boolean sendMessages = true;
 	
 	public CombatManager(OlympaAPIPlugin plugin, int combatTime) {
 		this.plugin = plugin;
@@ -39,18 +40,22 @@ public class CombatManager implements Listener {
 				Entry<Player, CombatPlayer> entry = iterator.next();
 				long elapsed = System.currentTimeMillis() - entry.getValue().lastDamage;
 				if (elapsed > combatTimeMillis) {
-					sendExitCombatMessage(entry.getKey());
+					if (sendMessages) sendExitCombatMessage(entry.getKey());
 					iterator.remove();
 				}
 			}
 		}, 20, 20);
 	}
 	
+	public void setSendMessages(boolean sendMessages) {
+		this.sendMessages = sendMessages;
+	}
+	
 	public void unload() {
 		HandlerList.unregisterAll(this);
 		task.cancel();
 		plugin.sendMessage("§cArrêt du mode combat (%d joueurs).", inCombat.size());
-		inCombat.keySet().forEach(this::sendExitCombatMessage);
+		if (sendMessages) inCombat.keySet().forEach(this::sendExitCombatMessage);
 		inCombat.clear();
 	}
 	
@@ -59,7 +64,7 @@ public class CombatManager implements Listener {
 		if (combatPlayer == null) {
 			combatPlayer = new CombatPlayer();
 			inCombat.put(p, combatPlayer);
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tu entres en combat ! Ne tente pas de te déconnecter avant %d secondes !", combatTime);
+			if (sendMessages) Prefix.DEFAULT_BAD.sendMessage(p, "Tu entres en combat ! Ne tente pas de te déconnecter avant %d secondes !", combatTime);
 		}
 		combatPlayer.lastDamage = System.currentTimeMillis();
 		return combatPlayer;
@@ -96,7 +101,7 @@ public class CombatManager implements Listener {
 	public void onDeath(PlayerDeathEvent e) {
 		Player player = e.getEntity();
 		CombatPlayer removed = inCombat.remove(player);
-		if (removed != null) sendExitCombatMessage(player);
+		if (removed != null && sendMessages) sendExitCombatMessage(player);
 	}
 	
 	@EventHandler
