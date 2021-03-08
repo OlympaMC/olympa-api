@@ -24,6 +24,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class MachineUtils {
 
 	private static Boolean isPapermc;
+	private static Boolean isTunity;
 
 	@Deprecated(forRemoval = true)
 	public static TextComponent getInfos() {
@@ -39,10 +40,6 @@ public class MachineUtils {
 		textBuilder.extra(new TxtComponentBuilder("&3Serveur &b%s", main.getServerName()));
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3Status: %s", main.getStatus().getNameColored()));
-		if (main.isSpigot()) {
-			textBuilder.extra(" ");
-			textBuilder.extra(new TxtComponentBuilder("&3Versions: &b%s&3.", OlympaCore.getInstance().getRangeVersion()));
-		}
 		textBuilder.extra("\n");
 		textBuilder.extra(new TxtComponentBuilder("&3En ligne depuis &b%s&3.", main.getUptime()).onHoverText("&e%s.", Utils.timestampToDateAndHour(main.getUptimeLong())));
 		textBuilder.extra("\n");
@@ -82,7 +79,7 @@ public class MachineUtils {
 					textBuilder.extra(new TxtComponentBuilder("&4[&c!&4]&3.").onHoverText("&4Versions non supportées: &c%s&4.", unSupVer));
 			}
 			textBuilder.extra(
-					new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", "")).onHoverText("&eServeur sous &6%s&e.", TPS.isSpigot() ? isPaper() ? "PaperSpigot" : "Spigot" : "Bukkit"));
+					new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", "")).onHoverText("&eServeur sous &6%s&e.", getVersionBukkit()));
 			textBuilder.extra(" ");
 			for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
 				textBuilder.extra("\n");
@@ -104,6 +101,20 @@ public class MachineUtils {
 			textBuilder.extra(new TxtComponentBuilder("&3."));
 		}
 		return textBuilder.build();
+	}
+
+	private static String getVersionBukkit() {
+		return TPS.isSpigot() ? isPaper() ? isTunity() ? "Tunity" : "PaperSpigot" : "Spigot" : "Bukkit";
+	}
+
+	private static boolean isTunity() {
+		if (isTunity == null)
+			try {
+				isTunity = Class.forName("ca.spottedleaf.concrete.scheduler$AsyncConcreteTask") != null;
+			} catch (ClassNotFoundException e) {
+				isTunity = false;
+			}
+		return isTunity;
 	}
 
 	private static boolean isPaper() {

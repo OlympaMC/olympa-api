@@ -2,6 +2,7 @@ package fr.olympa.api.command.complex;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
@@ -50,11 +54,25 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
 	private final Map<String, ArgumentParser<CommandSender>> parsers = new HashMap<>();
 
+	@SuppressWarnings("deprecation")
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		addArgumentParser("PLAYERS", (sender, arg) -> plugin.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
-			return plugin.getServer().getPlayerExact(x);
+		List<String> offlinePlayers = Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
+		Server server = plugin.getServer();
+		addArgumentParser("OLYMPA_PLAYER", (sender, arg) -> offlinePlayers, x -> {
+			try {
+				return AccountProvider.get(x);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
+		addArgumentParser("OFFLINE_PLAYERS", (sender, arg) -> offlinePlayers, x -> {
+			return server.getOfflinePlayer(x);
+		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
+		addArgumentParser("PLAYERS", (sender, arg) -> server.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
+			return server.getPlayerExact(x);
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("SUBCOMMAND", (sender, arg) -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg() && !e.getValue().cmd.hide()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			InternalCommand result = getCommand(x);
@@ -62,8 +80,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return null;
 			return result;
 		}, x -> String.format("La commande &4%s&c n'existe pas", x));
-		addArgumentParser("WORLD", (sender, arg) -> plugin.getServer().getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
-			return plugin.getServer().getWorld(x);
+		addArgumentParser("WORLD", (sender, arg) -> server.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
+			return server.getWorld(x);
 		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
 		registerCommandsClass(this);
 	}
@@ -116,11 +134,19 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 
 		int rawArgIndex = cmd.otherArg() ? 0 : 1;
 		Object[] newArgs = new Object[rawArgs.length - rawArgIndex];
+
+		boolean canUseColors = hasPermission(OlympaAPIPermissions.ARG_COLOR);
 		for (int newArgIndex = 0; newArgIndex < newArgs.length; newArgIndex++) {
-			String arg = ChatColor.translateAlternateColorCodes('&', rawArgs[rawArgIndex++]);
+			String arg;
+			if (canUseColors)
+				arg = ChatColor.translateAlternateColorCodes('&', rawArgs[rawArgIndex++]);
+			else
+				arg = rawArgs[rawArgIndex++];
 			String[] types = newArgIndex >= cmd.args().length ? new String[0] : cmd.args()[newArgIndex].split("\\|");
-			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ") && cmd.args()[newArgIndex].equals(arg)) {
-				sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
+			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ")) {
+				System.out.println("DEBUG ComplexCommand > cmd.args()[newArgIndex] " + cmd.args()[newArgIndex] + " arg " + arg);
+				if (newArgIndex < newArgs.length - 1 && cmd.args()[newArgIndex].equalsIgnoreCase(buildText(newArgIndex, rawArgs)))
+					sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
 				return true;
 			}
 			Object result = null;
@@ -169,7 +195,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			newArgs[newArgIndex] = result;
 		}
 
-		try {
+		try
+
+		{
 			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");

@@ -34,6 +34,7 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission VANISH_SEE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission VANISH_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_STAFF, new OlympaGroup[] { OlympaGroup.MODP });
 	public static final OlympaSpigotPermission ITEM_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP);
+	public static final OlympaSpigotPermission ARG_COLOR = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 
 	{
 		OlympaServer.DEV.setJoinPermission(CONNECT_SERVER_DEV);

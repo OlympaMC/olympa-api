@@ -53,7 +53,7 @@ fi
 if [ -n "$ACTUAL_COMMIT_ID" ]; then
 	git pull
 	if [ "$ACTUAL_COMMIT_ID" = `git rev-parse HEAD` ]; then
-		echo "\e[32mPas besoin de maven install, le jar est déjà crée.\e[0m"
+		echo "\e[32mPas besoin de maven install l'api, le jar est déjà crée.\e[0m"
 		exit 0
 	fi
 fi
@@ -63,4 +63,4 @@ if [ "$?" -ne 0 ]; then
 else
 	echo `git rev-parse HEAD` > target/commitId
 fi
-echo "\e[32mLe jar du commit $(cat target/commitId) a été crée.\e[0m"
+echo "\e[32mLe jar du commit de l'api $(cat target/commitId) a été crée.\e[0m"
