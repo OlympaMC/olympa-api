@@ -41,15 +41,15 @@ public class ReportReason {
 		}
 	}
 
-	public static ReportReason CHAT = new ReportReason(1, "Chat Abusif");
-	public static ReportReason PV_SPAM = new ReportReason(2, "MP Abusif");
-	public static ReportReason INCORRECT_SKIN_OR_NAME = new ReportReason(3, "Pseudo/Skin incorrect");
-	public static ReportReason CHEAT_AURA = new ReportReason(3, "Cheat Combat");
-	public static ReportReason CHEAT_XRAY = new ReportReason(4, "Cheat XRay");
-	public static ReportReason CHEAT_FLY = new ReportReason(5, "Cheat Fly");
-	public static ReportReason CHEAT_GLOBAL = new ReportReason(6, "Cheat");
-	public static ReportReason ANTI_AFK = new ReportReason(7, "Anti AFK");
-	public static ReportReason OTHER = new ReportReason(8, "Autre");
+	public static final ReportReason CHAT = new ReportReason(1, "Chat Abusif");
+	public static final ReportReason PV_SPAM = new ReportReason(2, "MP Abusif");
+	public static final ReportReason INCORRECT_SKIN_OR_NAME = new ReportReason(3, "Pseudo/Skin incorrect");
+	public static final ReportReason CHEAT_AURA = new ReportReason(4, "Cheat Combat");
+	public static final ReportReason CHEAT_XRAY = new ReportReason(5, "Cheat XRay");
+	public static final ReportReason CHEAT_FLY = new ReportReason(6, "Cheat Fly");
+	public static final ReportReason CHEAT_GLOBAL = new ReportReason(7, "Cheat");
+	public static final ReportReason ANTI_AFK = new ReportReason(8, "Anti AFK");
+	public static final ReportReason OTHER = new ReportReason(9, "Autre");
 
 	static {
 		if (LinkSpigotBungee.Provider.link.isSpigot()) {
