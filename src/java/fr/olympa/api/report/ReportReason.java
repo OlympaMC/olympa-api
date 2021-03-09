@@ -42,14 +42,19 @@ public class ReportReason {
 	}
 
 	public static ReportReason CHAT = new ReportReason(1, "Chat Abusif");
-	public static ReportReason CHEAT_AURA = new ReportReason(2, "Cheat Combat");
-	public static ReportReason CHEAT_XRAY = new ReportReason(3, "Cheat XRay");
-	public static ReportReason CHEAT_FLY = new ReportReason(4, "Cheat Fly");
-	public static ReportReason OTHER = new ReportReason(5, "Autre");
+	public static ReportReason PV_SPAM = new ReportReason(2, "MP Abusif");
+	public static ReportReason INCORRECT_SKIN_OR_NAME = new ReportReason(3, "Pseudo/Skin incorrect");
+	public static ReportReason CHEAT_AURA = new ReportReason(3, "Cheat Combat");
+	public static ReportReason CHEAT_XRAY = new ReportReason(4, "Cheat XRay");
+	public static ReportReason CHEAT_FLY = new ReportReason(5, "Cheat Fly");
+	public static ReportReason ANTI_AFK = new ReportReason(6, "Anti AFK");
+	public static ReportReason OTHER = new ReportReason(7, "Autre");
 
 	static {
 		if (LinkSpigotBungee.Provider.link.isSpigot()) {
 			ReportReason.CHAT.setItem(new OlympaItemBuild(Material.BOOK, "&7Chat abusif").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
+			ReportReason.PV_SPAM.setItem(new OlympaItemBuild(Material.WRITABLE_BOOK, "&7Message privés abusifs").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
+			ReportReason.INCORRECT_SKIN_OR_NAME.setItem(new OlympaItemBuild(Material.PLAYER_HEAD, "&7Pseudo ou Skin incorrect").lore("", "&ePseudo insultant, provocant", "&eou skin choquant."));
 			ReportReason.CHEAT_AURA.setItem(new OlympaItemBuild(Material.GOLDEN_SWORD, "&7Cheat Combat").lore("", "&eKillAura, Aimbot, TriggerBot, AutoClick ...").flag(ItemFlag.HIDE_ATTRIBUTES));
 			ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod &cinterdit&e qui permet de voir à travers les blocks."));
 			ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod &cinterdit&e qui permet de voler."));
@@ -85,17 +90,23 @@ public class ReportReason {
 	boolean active = true;
 	OlympaItemStack item;
 
+	public ReportReason(int id, String name, String reason) {
+		this.id = id;
+		this.name = name;
+		this.reason = reason;
+	}
+
+	public ReportReason(int id, String reason) {
+		this.id = id;
+		this.reason = reason;
+	}
+
 	public OlympaItemStack getItem() {
 		return item;
 	}
 
 	public void setItem(OlympaItemStack item) {
 		this.item = item;
-	}
-
-	public ReportReason(int id, String reason) {
-		this.id = id;
-		this.reason = reason;
 	}
 
 	public String getName() {
@@ -128,5 +139,13 @@ public class ReportReason {
 
 	public boolean hasItem() {
 		return item != null;
+	}
+
+	public boolean isSame(ReportReason rr) {
+		return id == rr.getId() || getName().equals(rr.getName());
+	}
+
+	public boolean needUpdate(ReportReason rr) {
+		return id != rr.getId() || !getName().equals(rr.getName()) || !getReason().equals(rr.getReason());
 	}
 }

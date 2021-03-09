@@ -49,8 +49,7 @@ public class OlympaReport {
 		serverName = resultSet.getString("server");
 		time = resultSet.getTimestamp("time").getTime() / 1000L;
 		if (resultSet.getString("status_info") != null) {
-			Type founderListType = new TypeToken<ArrayList<ReportStatusInfo>>() {
-			}.getType();
+			Type founderListType = new TypeToken<ArrayList<ReportStatusInfo>>() {}.getType();
 			statusInfo = new Gson().fromJson(resultSet.getString("status_info"), founderListType);
 		}
 		if (resultSet.getString("note") != null && !resultSet.getString("note").isEmpty())
@@ -83,9 +82,7 @@ public class OlympaReport {
 	}
 
 	public ReportStatus getStatus() {
-		if (statusInfo != null && !statusInfo.isEmpty())
-			return statusInfo.get(0).getStatus();
-		return null;
+		return getLastStatusInfo().getStatus();
 	}
 
 	public ReportStatusInfo getLastStatusInfo() {
