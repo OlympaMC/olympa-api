@@ -47,8 +47,9 @@ public class ReportReason {
 	public static ReportReason CHEAT_AURA = new ReportReason(3, "Cheat Combat");
 	public static ReportReason CHEAT_XRAY = new ReportReason(4, "Cheat XRay");
 	public static ReportReason CHEAT_FLY = new ReportReason(5, "Cheat Fly");
-	public static ReportReason ANTI_AFK = new ReportReason(6, "Anti AFK");
-	public static ReportReason OTHER = new ReportReason(7, "Autre");
+	public static ReportReason CHEAT_GLOBAL = new ReportReason(6, "Cheat");
+	public static ReportReason ANTI_AFK = new ReportReason(7, "Anti AFK");
+	public static ReportReason OTHER = new ReportReason(8, "Autre");
 
 	static {
 		if (LinkSpigotBungee.Provider.link.isSpigot()) {
@@ -58,6 +59,7 @@ public class ReportReason {
 			ReportReason.CHEAT_AURA.setItem(new OlympaItemBuild(Material.GOLDEN_SWORD, "&7Cheat Combat").lore("", "&eKillAura, Aimbot, TriggerBot, AutoClick ...").flag(ItemFlag.HIDE_ATTRIBUTES));
 			ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod &cinterdit&e qui permet de voir à travers les blocks."));
 			ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod &cinterdit&e qui permet de voler."));
+			ReportReason.CHEAT_GLOBAL.setItem(new OlympaItemBuild(Material.FLOWER_POT, "&7Cheat Autre").lore("", "&eAutre type de Mod &cinterdit&e."));
 			ReportReason.OTHER.setItem(new OlympaItemBuild(Material.CAULDRON, "&7Autre"));
 		}
 	}
