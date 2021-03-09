@@ -145,10 +145,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			else
 				arg = rawArgs[rawArgIndex++];
 			String[] types = newArgIndex >= cmd.args().length ? new String[0] : cmd.args()[newArgIndex].split("\\|");
-			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ")) {
-				System.out.println("DEBUG ComplexCommand > cmd.args()[newArgIndex] " + cmd.args()[newArgIndex] + " arg " + arg);
-				if (newArgIndex < newArgs.length - 1 && cmd.args()[newArgIndex].equalsIgnoreCase(buildText(newArgIndex, rawArgs)))
-					sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[newArgIndex]);
+			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ") && newArgIndex < newArgs.length - 1 && cmd.args()[newArgIndex].equalsIgnoreCase(buildText(newArgIndex, rawArgs))) {
+				sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[newArgIndex]);
 				return true;
 			}
 			Object result = null;
@@ -162,22 +160,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.cache != null ? p.applyTabWithoutCache(sender, arg).contains(arg) : true).collect(Collectors.toList());
 				if (!parsers.isEmpty())
 					result = parsers.get(0).supplyArgumentFunction.apply(arg);
-				else {
-					// TODO : Choose between 2 parses here
-					//					ISender isender = ISender.of(sender, null);
-					//					AwaitResponse<?> response = new AwaitResponse<String>(isender, "&m----------------", "&m----------------", "&4Impossible de déterminer le type d'argument.", "&eTu dois choisir entre deux type d'argument");
-					//					for (SpigotArgumentParser p : parsers) {
-					//						Object r = p.supplyArgumentFunction.apply(arg);
-					//						response.choices(new ClickChoice(p, null, p.));
-					//					}
-					//					ReponseEvent.add(ISender.of(sender, null), response);
-				}
-				//				else
-				//					for (SpigotArgumentParser p : potentialParsers) {
-				//						result = p.supplyArgumentFunction.apply(arg);
-				//						if (result != null)
-				//							break;
-				//					}
+				// TODO : Choose between 2 parses here
 				if (result == null && !hasStringType) {
 					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
 						this.sendIncorrectSyntax(internal);
