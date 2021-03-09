@@ -138,9 +138,19 @@ public interface IComplexCommand<C> {
 	}
 
 	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command) {
+		TxtComponentBuilder builder = getHelpCommandComponent(cmd, command);
+		if (command.cmd.registerAliasesInTab() && command.cmd.aliases() != null) {
+			builder = builder.extraSpliterBN();
+			for (String aliase : command.cmd.aliases())
+				builder = builder.extraSpliterBN().extra(getHelpCommandComponent(cmd, command, aliase));
+		}
+		return builder;
+	}
+
+	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command, String subCommand) {
 		String fullCommand;
-		if (!command.cmd.otherArg())
-			fullCommand = "/" + cmd + " " + command.name;
+		if (subCommand != null && !subCommand.isBlank())
+			fullCommand = "/" + cmd + " " + subCommand;
 		else
 			fullCommand = "/" + cmd;
 		String description;

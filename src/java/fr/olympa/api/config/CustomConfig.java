@@ -24,6 +24,7 @@ import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.customevents.SpigotConfigReloadEvent;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
+import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.region.shapes.ChunkCuboid;
 import fr.olympa.api.region.shapes.ChunkPolygon;
 import fr.olympa.api.region.shapes.Cuboid;
@@ -119,7 +120,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	public void reload() throws FileNotFoundException, IOException, InvalidConfigurationException {
 		loadUnSafe();
-		plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this));
+		((OlympaAPIPlugin) plugin).getTask().runTaskAsynchronously(() -> plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this)));
 	}
 
 	public void loadUnSafe() throws FileNotFoundException, IOException, InvalidConfigurationException {

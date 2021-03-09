@@ -59,8 +59,21 @@ public @interface Cmd {
 
 	public String description() default "";
 
+	/**
+	 * Hide from tab and from /help
+	 */
 	public boolean hide() default false;
 
+	/**
+	 * If the command is not taken any of the other arguments,
+	 * the original argument 0 (the name of the method for the other arguments
+	 * of the command remains as argument 0 in the CommandContext.
+	 */
 	public boolean otherArg() default false;
+
+	/**
+	 * Add aliases to tab & /help
+	 */
+	public boolean registerAliasesInTab() default false;
 
 }

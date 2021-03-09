@@ -5,10 +5,12 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.bukkit.OfflinePlayer;
@@ -58,9 +60,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		List<String> offlinePlayers = Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
+		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
 		Server server = plugin.getServer();
-		addArgumentParser("OLYMPA_PLAYER", (sender, arg) -> offlinePlayers, x -> {
+		addArgumentParser("OLYMPA_PLAYER", offlinePlayers, x -> {
 			try {
 				return AccountProvider.get(x);
 			} catch (SQLException e) {
@@ -68,7 +70,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return null;
 			}
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
-		addArgumentParser("OFFLINE_PLAYERS", (sender, arg) -> offlinePlayers, x -> {
+		addArgumentParser("OFFLINE_PLAYERS", offlinePlayers, x -> {
 			return server.getOfflinePlayer(x);
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("PLAYERS", (sender, arg) -> server.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
@@ -146,7 +148,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			if (types.length == 1 && cmd.args()[newArgIndex].contains(" ")) {
 				System.out.println("DEBUG ComplexCommand > cmd.args()[newArgIndex] " + cmd.args()[newArgIndex] + " arg " + arg);
 				if (newArgIndex < newArgs.length - 1 && cmd.args()[newArgIndex].equalsIgnoreCase(buildText(newArgIndex, rawArgs)))
-					sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[0]);
+					sendMessage(Prefix.DEFAULT_BAD, "\"&4%s&c\" est une indication voyons, ne l'ajoute pas dans la commande !", cmd.args()[newArgIndex]);
 				return true;
 			}
 			Object result = null;
@@ -218,7 +220,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				if (en.getValue().cmd.otherArg())
 					find.addAll(findPotentialArgs(sender, args));
 				else if (!en.getValue().cmd.hide() && en.getValue().canRun())
-					find.add(en.getKey().get(0));
+					if (en.getValue().cmd.registerAliasesInTab())
+						find.addAll(en.getKey());
+					else
+						find.add(en.getKey().get(0));
 		} else if (args.length >= 2) {
 			find = findPotentialArgs(sender, args);
 			sel = args[args.length - 1];
