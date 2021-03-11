@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -26,9 +26,10 @@ import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaSpigotPermission;
-import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.utils.DivideList;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.ChatColor;
 
@@ -62,9 +63,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> Stream
-				.concat(Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName), AccountProvider.cachedInformations.values().stream().map(OlympaPlayerInformations::getName))
-				.distinct().collect(Collectors.toList());
+		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 3 ? Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())
+				: Collections.emptyList();
 		Server server = plugin.getServer();
 		addArgumentParser("OLYMPA_PLAYERS", offlinePlayers, x -> {
 			try {
@@ -154,18 +154,28 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return true;
 			}
 			Object result = null;
-			List<ArgumentParser<CommandSender>> potentialParsers = parsers.entrySet().stream().filter(entry -> Arrays.stream(types).anyMatch(type -> entry.getKey().equals(type)))
-					.map(Entry::getValue).collect(Collectors.toList());
-			boolean hasStringType = potentialParsers.size() != types.length;
+
+			DivideList<String> divideList = new DivideList<>(Arrays.asList(types), entry -> parsers.entrySet().stream().anyMatch(t -> entry.equals(t.getKey())));
+			List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(dl -> parsers.get(dl)).collect(Collectors.toList());
+			List<String> potentialString = divideList.getFalse();
+			List<String> potentialStringUpper = null;
+			if (!potentialString.isEmpty())
+				potentialStringUpper = potentialString.stream().filter(s -> Utils.isFullUpperCase(s)).collect(Collectors.toList());
 			if (potentialParsers.isEmpty())
 				result = arg;
 			else {
-				//				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.tabArgumentsFunction.apply(sender).contains(arg)).collect(Collectors.toList());
-				List<ArgumentParser<CommandSender>> parsers = potentialParsers.stream().filter(p -> p.cache != null ? p.applyTabWithoutCache(sender, arg).contains(arg) : true).collect(Collectors.toList());
-				if (!parsers.isEmpty())
-					result = parsers.get(0).supplyArgumentFunction.apply(arg);
+				ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTabWithoutCache(sender, arg).contains(arg)).findFirst().orElse(null);
+				if (parser != null)
+					result = parser.supplyArgumentFunction.apply(arg);
+				else
+					result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
 				// TODO : Choose between 2 parses here
-				if (result == null && !hasStringType) {
+				if (!potentialString.isEmpty() && result == null)
+					if (potentialStringUpper == null || potentialStringUpper.isEmpty())
+						result = arg;
+					else if (potentialStringUpper.contains(arg.toUpperCase()))
+						result = arg;
+				if (result == null) {
 					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
 						this.sendIncorrectSyntax(internal);
 						return true;
@@ -183,10 +193,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 
 			newArgs[newArgIndex] = result;
 		}
-
-		try
-
-		{
+		try {
 			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
@@ -229,15 +236,14 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		for (Method method : clazz.getDeclaredMethods())
 			if (method.isAnnotationPresent(Cmd.class)) {
 				Cmd cmd = method.getDeclaredAnnotation(Cmd.class);
-				if (method.getParameterCount() == 1)
-					if (method.getParameterTypes()[0] == CommandContext.class) {
-						List<String> argNames = new ArrayList<>();
-						argNames.add(method.getName().toLowerCase());
-						if (cmd.aliases() != null)
-							argNames.addAll(Arrays.asList(cmd.aliases()));
-						commands.put(argNames, new SpigotInternalCommand(cmd, method, commandsClassInstance));
-						continue;
-					}
+				if (method.getParameterCount() == 1 && method.getParameterTypes()[0] == CommandContext.class) {
+					List<String> argNames = new ArrayList<>();
+					argNames.add(method.getName().toLowerCase());
+					if (cmd.aliases() != null)
+						argNames.addAll(Arrays.asList(cmd.aliases()));
+					commands.put(argNames, new SpigotInternalCommand(cmd, method, commandsClassInstance));
+					continue;
+				}
 				OlympaCore.getInstance()
 						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}

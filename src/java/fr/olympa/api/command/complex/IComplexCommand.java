@@ -28,10 +28,8 @@ public interface IComplexCommand<C> {
 
 	default void addDefaultParsers() {
 		addArgumentParser("INTEGER", (sender, arg) -> INTEGERS, x -> {
-			System.out.printf("Match INT '%s'", x);
 			if (RegexMatcher.INT.is(x))
 				return RegexMatcher.INT.parse(x);
-			System.out.printf("Match not work '%s'", x);
 			return null;
 		}, x -> String.format("&4%s&c doit être un nombre entier", x), false);
 		addArgumentParser("UUID", (sender, arg) -> UUIDS, x -> {
@@ -67,7 +65,7 @@ public interface IComplexCommand<C> {
 				if (each.name().equalsIgnoreCase(playerInput))
 					return each;
 			return null;
-		}, x -> String.format("La valeur %s n'existe pas.", x));
+		}, x -> String.format("La valeur &4%s&c n'existe pas.", x));
 	}
 
 	default <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass, Function<? super T, ? extends String> getNameMethod) {
@@ -77,7 +75,7 @@ public interface IComplexCommand<C> {
 				if (each.name().equalsIgnoreCase(playerInput))
 					return each;
 			return null;
-		}, x -> String.format("La valeur %s n'existe pas.", x));
+		}, x -> String.format("La valeur &4%s&c n'existe pas.", x));
 	}
 
 	/**
@@ -138,11 +136,11 @@ public interface IComplexCommand<C> {
 	}
 
 	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command) {
-		TxtComponentBuilder builder = getHelpCommandComponent(command);
+		TxtComponentBuilder builder = new TxtComponentBuilder().extraSpliterBN();
 		if (command.cmd.registerAliasesInTab() && command.cmd.aliases() != null) {
 			builder = builder.extraSpliterBN();
 			for (String aliase : command.cmd.aliases())
-				builder = builder.extraSpliterBN().extra(getHelpCommandComponent(cmd, command, aliase));
+				builder.extra(getHelpCommandComponent(cmd, command, aliase));
 		}
 		return builder;
 	}
