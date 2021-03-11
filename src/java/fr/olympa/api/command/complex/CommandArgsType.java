@@ -1,9 +1,7 @@
 package fr.olympa.api.command.complex;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 import fr.olympa.api.match.MatcherPattern;
@@ -41,22 +39,21 @@ public enum CommandArgsType {
 		return type;
 	}
 
-	public static Entry<? extends IArgument, CommandArgsType> extractEntry(String s, Map<String, ? extends IArgument> parsers) {
-		CommandArgsType type;
+	public static IArgument extractEntry(String s, Map<String, ? extends Parser<?>> parsers) {
 		IArgument object;
 		boolean isUnlimited = s.endsWith("...");
 		object = parsers.get(isUnlimited ? s.substring(0, s.length() - 3) : s);
 		if (object != null)
 			if (isUnlimited)
-				type = PARSER_UNLIMETED;
+				object.setType(PARSER_UNLIMETED);
 			else
-				type = PARSER;
+				object.setType(PARSER);
 		else {
-			type = Arrays.stream(CommandArgsType.values()).filter(at -> at.detectType != null && at.detectType.apply(s)).findFirst().orElse(null);
+			CommandArgsType type = Arrays.stream(CommandArgsType.values()).filter(at -> at.detectType != null && at.detectType.apply(s)).findFirst().orElse(null);
 			if (type == null)
 				return null;
-			object = new ArguementParserString(s);
+			object = new ParserString(s, type);
 		}
-		return new AbstractMap.SimpleEntry<>(object, type);
+		return object;
 	}
 }

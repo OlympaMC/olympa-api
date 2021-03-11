@@ -8,7 +8,7 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.cache.Cache;
 
-public class ArgumentParser<T> implements IArgument {
+public class ArgumentParser<T> {
 
 	private BiFunction<T, String, Collection<String>> tabArgumentsFunction;
 	public Function<String, Object> supplyArgumentFunction;
@@ -73,7 +73,11 @@ public class ArgumentParser<T> implements IArgument {
 		//		return r;
 	}
 
-	public Collection<String> applyTabWithoutCache(T t, String arg) {
+	private Collection<String> applyTabWithoutCache(T t, String arg) {
 		return tabArgumentsFunction.apply(t, arg);
+	}
+
+	public boolean match(T sender, String arg) {
+		return applyTab(sender, arg).contains(arg);
 	}
 }

@@ -46,6 +46,10 @@ public class AccountProvider implements OlympaAccount {
 		return cache.values();
 	}
 
+	public static Collection<OlympaPlayerInformations> getAllPlayersInformations() {
+		return cachedInformations.values();
+	}
+
 	public static OlympaPlayerInformations getPlayerInformations(long id) {
 		return cachedInformations.get(id);
 	}

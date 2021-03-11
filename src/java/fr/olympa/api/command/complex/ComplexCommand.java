@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -22,10 +23,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.google.common.collect.Multimap;
+
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.DivideList;
 import fr.olympa.api.utils.Prefix;
@@ -58,13 +62,15 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 
 	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
 	private final Map<String, ArgumentParser<CommandSender>> parsers = new HashMap<>();
-	private Map<IArgument, CommandArgsType> listOfArgs;
 
 	@SuppressWarnings("deprecation")
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 1 ? Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())
+
+		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 1
+				? Stream.concat(Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName),
+						AccountProvider.getAllPlayersInformations().stream().map(OlympaPlayerInformations::getName)).collect(Collectors.toList())
 				: Collections.emptyList();
 		Server server = plugin.getServer();
 		addArgumentParser("OLYMPA_PLAYERS", offlinePlayers, x -> {
@@ -74,9 +80,11 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				e.printStackTrace();
 				return null;
 			}
-		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
+		}, x -> String.format("Le joueur &4%s&c est introuvable. Essaye avec &4%sc.", x));
 		addArgumentParser("OFFLINE_PLAYERS", offlinePlayers, x -> {
-			return server.getOfflinePlayer(x);
+			OfflinePlayer p = server.getOfflinePlayer(x);
+			//if (p.hasPlayedBefore())
+			return p;
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("PLAYERS", (sender, arg) -> server.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
 			return server.getPlayerExact(x);
@@ -90,8 +98,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		addArgumentParser("WORLD", (sender, arg) -> server.getWorlds().stream().map(World::getName).collect(Collectors.toList()), x -> {
 			return server.getWorld(x);
 		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
-		registerCommandsClass(this);
 		CommandArgsType.PARSER.setDetectType(s -> parsers.get(s.endsWith("...") ? s.substring(0, s.length() - 3) : s) != null);
+		registerCommandsClass(this);
 	}
 
 	@Override
@@ -107,19 +115,45 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	/*
 	 * Work in progress
 	 */
-	public void creatArgs(String cmdArg) {
+	private final static Map<String, Parser<CommandSender>> parsers2 = new HashMap<>();
+	private Multimap<Integer, IArgument> listOfArgs;
+
+	public void creatArgs(int index, String cmdArg) {
 		if (cmdArg == null || cmdArg.isBlank())
 			return;
 		String[] types = cmdArg.split("\\|");
 		for (String type : types) {
-			Entry<ArgumentParser<CommandSender>, CommandArgsType> entry = (Entry<ArgumentParser<CommandSender>, CommandArgsType>) CommandArgsType.extractEntry(type, parsers);
-			if (entry == null)
+			IArgument iArg = CommandArgsType.extractEntry(type, parsers2);
+			if (iArg == null)
 				new IllegalAccessError("L'argument renseigné dans @Cmd du ComplexCommand n'est pas correct, '" + types + "' doit être tous en lower case si c'est un string classic ou en majucule si il faut partit d'une liste. ")
 						.printStackTrace();
 			else
-				listOfArgs.put(entry.getKey(), entry.getValue());
+				listOfArgs.put(index, iArg);
 		}
 	}
+
+	public void addParser(String s, ArgumentParser<CommandSender> p) {
+		if (!parsers2.containsKey(s))
+			parsers2.put(s, new Parser<>(p));
+	}
+
+	//	@Override
+	public OlympaCommand register2() {
+		OlympaCommand reg = register();
+		try {
+			parsers.entrySet().forEach(entry -> addParser(entry.getKey(), entry.getValue()));
+			getCommands().forEach((aliases, internal) -> {
+				for (int i = 0; i < internal.cmd.args().length; i++)
+					creatArgs(i, internal.cmd.args()[i]);
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return reg;
+	}
+	/*
+	 *
+	 */
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] rawArgs) {
@@ -177,7 +211,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(sType -> parsers.get(sType)).collect(Collectors.toList());
 			List<String> potentialString = divideList.getFalse();
 			List<String> potentialStringUpper = potentialString.stream().filter(s -> Utils.isAllUpperCase(s)).collect(Collectors.toList());
-			ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTabWithoutCache(sender, arg).contains(arg)).findFirst().orElse(null);
+			ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTab(sender, arg).contains(arg)).findFirst().orElse(null);
 			if (parser != null)
 				result = parser.supplyArgumentFunction.apply(arg);
 			else
@@ -186,17 +220,16 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase())))
 				result = arg;
 			if (result == null) {
-				if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
+				if ("".equals(cmd.syntax()) && potentialParsers.isEmpty())
 					this.sendIncorrectSyntax(internal);
-					return true;
-				} else if (!potentialParsers.isEmpty()) {
+				else if (!potentialParsers.isEmpty()) {
 					sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
 							.map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", ""))
 							.collect(Collectors.joining(" &4&lou&c ")));
 					if (potentialParsers.size() <= 1)
 						return true;
-				}
-				this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
+				} else
+					this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
 				return true;
 			}
 			newArgs[newArgIndex] = result;
@@ -300,6 +333,10 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	@Override
 	public Map<String, ArgumentParser<CommandSender>> getParsers() {
 		return parsers;
+	}
+
+	public static Map<String, Parser<CommandSender>> getParsers2() {
+		return parsers2;
 	}
 
 }
