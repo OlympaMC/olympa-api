@@ -80,7 +80,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				e.printStackTrace();
 				return null;
 			}
-		}, x -> String.format("Le joueur &4%s&c est introuvable. Essaye avec &4%sc.", x));
+		}, x -> String.format("Le joueur &4%s&c est introuvable.", x));
 		addArgumentParser("OFFLINE_PLAYERS", offlinePlayers, x -> {
 			OfflinePlayer p = server.getOfflinePlayer(x);
 			//if (p.hasPlayedBefore())

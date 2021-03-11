@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.player.Gender;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
@@ -330,7 +329,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public Map<OlympaPermission, OlympaServer> getCustomPermissions() {
+	public Map<String, OlympaServer> getCustomPermissions() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -339,6 +338,12 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	public Map<Long, String> getHistName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean hasCustomPermission(String per, OlympaServer serv) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

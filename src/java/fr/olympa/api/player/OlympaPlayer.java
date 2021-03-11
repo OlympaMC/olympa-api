@@ -8,7 +8,6 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.server.OlympaServer;
 
 public interface OlympaPlayer {
@@ -47,7 +46,7 @@ public interface OlympaPlayer {
 
 	Map<Long, String> getHistIp();
 
-	Map<OlympaPermission, OlympaServer> getCustomPermissions();
+	Map<String, OlympaServer> getCustomPermissions();
 
 	Map<Long, String> getHistName();
 
@@ -116,6 +115,8 @@ public interface OlympaPlayer {
 	void setTeamspeakId(int teamspeakId);
 
 	void setVanish(boolean vanish);
+
+	boolean hasCustomPermission(String permission, OlympaServer serv);
 
 	//	int getDiscordOlympaId();
 	//
