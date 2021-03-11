@@ -2,7 +2,6 @@ package fr.olympa.api.sort;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.ToLongFunction;
@@ -21,11 +20,11 @@ public class Sorting<T> implements Comparator<T> {
 	}
 
 	public Sorting(ToLongFunction<T>... sortingArgs) {
-		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y, LinkedHashMap::new)));
+		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y)));
 	}
 
 	public Sorting(boolean ascending, ToLongFunction<T>... sortingArgs) {
-		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y, LinkedHashMap::new)));
+		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y)));
 	}
 
 	public Sorting(Map<ToLongFunction<T>, Boolean> sortArgs) {

@@ -1,5 +1,8 @@
 package fr.olympa.api.chat;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -236,6 +239,10 @@ public enum Chat {
 			compensated += spaceLength;
 		}
 		player.sendMessage(sb.toString() + message);
+	}
+
+	public static String getCenteredMessage(List<String> list) {
+		return list.stream().map(msg -> getCenteredMessage(msg)).collect(Collectors.joining("\n"));
 	}
 
 	public static String getCenteredMessage(String message) {
