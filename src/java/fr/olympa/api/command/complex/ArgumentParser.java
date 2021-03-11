@@ -8,7 +8,7 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.cache.Cache;
 
-public class ArgumentParser<T> {
+public class ArgumentParser<T> implements IArgument {
 
 	private BiFunction<T, String, Collection<String>> tabArgumentsFunction;
 	public Function<String, Object> supplyArgumentFunction;

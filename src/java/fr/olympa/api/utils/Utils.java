@@ -55,15 +55,22 @@ public class Utils {
 		return list;
 	});
 
-	public static boolean isFullUpperCase(String s) {
+	public static boolean isAllUpperCase(String s) {
 		for (int i = 0; i < s.length(); i++)
 			if (!Character.isUpperCase(s.charAt(i)))
 				return false;
 		return true;
 	}
 
+	public static boolean isAllLowerCase(String s) {
+		for (int i = 0; i < s.length(); i++)
+			if (!Character.isLowerCase(s.charAt(i)))
+				return false;
+		return true;
+	}
+
 	public static Map<String, String> jsonToHumainReadable(String json) {
-		Matcher matcher = new MatcherPattern<>("\"?([^\":]+)\"?:\"?([^\",]+)\"?,?").getPattern().matcher(json);
+		Matcher matcher = MatcherPattern.of("\"?([^\":]+)\"?:\"?([^\",]+)\"?,?").getPattern().matcher(json);
 		Map<String, String> map = new HashMap<>();
 		while (matcher.find()) {
 			String gr1 = matcher.group(1);

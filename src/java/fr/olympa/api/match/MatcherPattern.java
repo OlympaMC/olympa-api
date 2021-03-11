@@ -23,7 +23,7 @@ public class MatcherPattern<T> {
 	private Function<String, T> supplyArgumentFunction;
 	private String typeName = "Unknown Type";
 
-	public static MatcherPattern<?> create(String regex) {
+	public static MatcherPattern<?> of(String regex) {
 		MatcherPattern<?> matcherPattern = cache.getIfPresent(regex);
 		if (matcherPattern == null) {
 			matcherPattern = new MatcherPattern<>(regex);
@@ -55,7 +55,7 @@ public class MatcherPattern<T> {
 		this.supplyArgumentFunction = supplyArgumentFunction;
 	}
 
-	public MatcherPattern(String regex) {
+	protected MatcherPattern(String regex) {
 		this.regex = regex;
 	}
 
@@ -141,6 +141,14 @@ public class MatcherPattern<T> {
 	 */
 	public boolean contains(String text) {
 		return getPattern(wholeWord(false)).matcher(text).find();
+	}
+
+	public boolean contains(String text, int min) {
+		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
+		while (min-- > 0)
+			if (!matcher.find())
+				return false;
+		return true;
 	}
 
 	/**

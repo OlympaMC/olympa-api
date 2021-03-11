@@ -58,12 +58,13 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 
 	public final Map<List<String>, InternalCommand> commands = new HashMap<>();
 	private final Map<String, ArgumentParser<CommandSender>> parsers = new HashMap<>();
+	private Map<IArgument, CommandArgsType> listOfArgs;
 
 	@SuppressWarnings("deprecation")
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 3 ? Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())
+		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 1 ? Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList())
 				: Collections.emptyList();
 		Server server = plugin.getServer();
 		addArgumentParser("OLYMPA_PLAYERS", offlinePlayers, x -> {
@@ -90,6 +91,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			return server.getWorld(x);
 		}, x -> String.format("Le monde &4%s&c n'existe pas", x));
 		registerCommandsClass(this);
+		CommandArgsType.PARSER.setDetectType(s -> parsers.get(s.endsWith("...") ? s.substring(0, s.length() - 3) : s) != null);
 	}
 
 	@Override
@@ -100,6 +102,23 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		return false;
+	}
+
+	/*
+	 * Work in progress
+	 */
+	public void creatArgs(String cmdArg) {
+		if (cmdArg == null || cmdArg.isBlank())
+			return;
+		String[] types = cmdArg.split("\\|");
+		for (String type : types) {
+			Entry<ArgumentParser<CommandSender>, CommandArgsType> entry = (Entry<ArgumentParser<CommandSender>, CommandArgsType>) CommandArgsType.extractEntry(type, parsers);
+			if (entry == null)
+				new IllegalAccessError("L'argument renseigné dans @Cmd du ComplexCommand n'est pas correct, '" + types + "' doit être tous en lower case si c'est un string classic ou en majucule si il faut partit d'une liste. ")
+						.printStackTrace();
+			else
+				listOfArgs.put(entry.getKey(), entry.getValue());
+		}
 	}
 
 	@Override
@@ -154,43 +173,32 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return true;
 			}
 			Object result = null;
-
-			DivideList<String> divideList = new DivideList<>(Arrays.asList(types), entry -> parsers.entrySet().stream().anyMatch(t -> entry.equals(t.getKey())));
-			List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(dl -> parsers.get(dl)).collect(Collectors.toList());
+			DivideList<String> divideList = new DivideList<>(Arrays.asList(types), sType -> parsers.entrySet().stream().anyMatch(t -> sType.equals(t.getKey()))).divide();
+			List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(sType -> parsers.get(sType)).collect(Collectors.toList());
 			List<String> potentialString = divideList.getFalse();
-			List<String> potentialStringUpper = null;
-			if (!potentialString.isEmpty())
-				potentialStringUpper = potentialString.stream().filter(s -> Utils.isFullUpperCase(s)).collect(Collectors.toList());
-			if (potentialParsers.isEmpty())
-				result = arg;
-			else {
-				ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTabWithoutCache(sender, arg).contains(arg)).findFirst().orElse(null);
-				if (parser != null)
-					result = parser.supplyArgumentFunction.apply(arg);
-				else
-					result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
+			List<String> potentialStringUpper = potentialString.stream().filter(s -> Utils.isAllUpperCase(s)).collect(Collectors.toList());
+			ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTabWithoutCache(sender, arg).contains(arg)).findFirst().orElse(null);
+			if (parser != null)
+				result = parser.supplyArgumentFunction.apply(arg);
+			else
 				// TODO : Choose between 2 parses here
-				if (!potentialString.isEmpty() && result == null)
-					if (potentialStringUpper == null || potentialStringUpper.isEmpty())
-						result = arg;
-					else if (potentialStringUpper.contains(arg.toUpperCase()))
-						result = arg;
-				if (result == null) {
-					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
-						this.sendIncorrectSyntax(internal);
-						return true;
-					} else if (!potentialParsers.isEmpty()) {
-						sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
-								.map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", ""))
-								.collect(Collectors.joining(" &4&lou&c ")));
-						if (potentialParsers.size() <= 1)
-							return true;
-					}
-					this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
+				result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
+			if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase())))
+				result = arg;
+			if (result == null) {
+				if ("".equals(cmd.syntax()) && potentialParsers.isEmpty()) {
+					this.sendIncorrectSyntax(internal);
 					return true;
+				} else if (!potentialParsers.isEmpty()) {
+					sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
+							.map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", ""))
+							.collect(Collectors.joining(" &4&lou&c ")));
+					if (potentialParsers.size() <= 1)
+						return true;
 				}
+				this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
+				return true;
 			}
-
 			newArgs[newArgIndex] = result;
 		}
 		try {
