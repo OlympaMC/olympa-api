@@ -20,12 +20,12 @@ public class Sorting<T> implements Comparator<T> {
 		this(Map.of(sortArg, ascending));
 	}
 
-	public Sorting(ToLongFunction<T>... sortArgs) {
-		this(Arrays.stream(sortArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y, LinkedHashMap::new)));
+	public Sorting(ToLongFunction<T>... sortingArgs) {
+		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y, LinkedHashMap::new)));
 	}
 
-	public Sorting(boolean ascending, ToLongFunction<T>... sortArg) {
-		this(Arrays.stream(sortArg).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y, LinkedHashMap::new)));
+	public Sorting(boolean ascending, ToLongFunction<T>... sortingArgs) {
+		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y, LinkedHashMap::new)));
 	}
 
 	public Sorting(Map<ToLongFunction<T>, Boolean> sortArgs) {
