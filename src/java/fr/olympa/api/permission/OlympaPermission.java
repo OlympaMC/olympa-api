@@ -47,6 +47,7 @@ public abstract class OlympaPermission implements IOlympaPermission {
 		//		}
 	}
 
+	String permissionIfBukkit = null;
 	OlympaGroup minGroup = null;
 	OlympaGroup[] allowedGroups = null;
 	boolean disabled = false;

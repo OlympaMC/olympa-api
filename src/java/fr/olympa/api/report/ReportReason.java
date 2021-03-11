@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -14,11 +15,12 @@ import org.bukkit.inventory.ItemFlag;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.item.OlympaItemBuild;
 import fr.olympa.api.item.OlympaItemStack;
+import fr.olympa.api.sort.Sorting;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class ReportReason {
 
-	public static final Map<String, ReportReason> reportReasons = new HashMap<>();
+	public static Map<String, ReportReason> reportReasons = new HashMap<>();
 
 	public static void registerReason(Class<?> clazz) {
 		try {
@@ -34,6 +36,7 @@ public class ReportReason {
 					reportReason.setName(f.getName());
 					reportReasons.put(f.getName(), reportReason);
 				}
+			reportReasons = reportReasons.entrySet().stream().sorted(new Sorting<>(e -> Long.valueOf(e.getValue().getId()))).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 			OlympaCore.getInstance().sendMessage("Registered " + (reportReasons.size() - initialSize) + " report reason from " + clazz.getName());
 		} catch (ReflectiveOperationException e) {
 			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
@@ -47,8 +50,8 @@ public class ReportReason {
 	public static final ReportReason CHEAT_AURA = new ReportReason(4, "Cheat Combat");
 	public static final ReportReason CHEAT_XRAY = new ReportReason(5, "Cheat XRay");
 	public static final ReportReason CHEAT_FLY = new ReportReason(6, "Cheat Fly");
-	public static final ReportReason CHEAT_GLOBAL = new ReportReason(7, "Cheat");
-	public static final ReportReason ANTI_AFK = new ReportReason(8, "Anti AFK");
+	public static final ReportReason ANTI_AFK = new ReportReason(7, "Anti AFK");
+	public static final ReportReason CHEAT_GLOBAL = new ReportReason(8, "Cheat");
 	public static final ReportReason OTHER = new ReportReason(9, "Autre");
 
 	static {
@@ -57,8 +60,9 @@ public class ReportReason {
 			ReportReason.PV_SPAM.setItem(new OlympaItemBuild(Material.WRITABLE_BOOK, "&7Message privés abusifs").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
 			ReportReason.INCORRECT_SKIN_OR_NAME.setItem(new OlympaItemBuild(Material.PLAYER_HEAD, "&7Pseudo ou Skin incorrect").lore("", "&ePseudo insultant, provocant", "&eou skin choquant."));
 			ReportReason.CHEAT_AURA.setItem(new OlympaItemBuild(Material.GOLDEN_SWORD, "&7Cheat Combat").lore("", "&eKillAura, Aimbot, TriggerBot, AutoClick ...").flag(ItemFlag.HIDE_ATTRIBUTES));
-			ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod &cinterdit&e qui permet de voir à travers les blocks."));
-			ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod &cinterdit&e qui permet de voler."));
+			ReportReason.CHEAT_XRAY.setItem(new OlympaItemBuild(Material.DIAMOND_ORE, "&7Cheat XRay").lore("", "&eMod qui permet de voir à travers les blocks."));
+			ReportReason.CHEAT_FLY.setItem(new OlympaItemBuild(Material.FEATHER, "&7Cheat Fly").lore("", "&eMod qui permet de voler."));
+			ReportReason.ANTI_AFK.setItem(new OlympaItemBuild(Material.FLOWER_POT, "&7Cheat AFK").lore("", "&eMacro, saut automatique."));
 			ReportReason.CHEAT_GLOBAL.setItem(new OlympaItemBuild(Material.FLOWER_POT, "&7Cheat Autre").lore("", "&eAutre type de Mod &cinterdit&e."));
 			ReportReason.OTHER.setItem(new OlympaItemBuild(Material.CAULDRON, "&7Autre"));
 		}

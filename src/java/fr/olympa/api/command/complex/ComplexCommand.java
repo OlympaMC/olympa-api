@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -25,6 +26,7 @@ import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
@@ -60,9 +62,11 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	public ComplexCommand(Plugin plugin, String command, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).collect(Collectors.toList());
+		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> Stream
+				.concat(Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName), AccountProvider.cachedInformations.values().stream().map(OlympaPlayerInformations::getName))
+				.distinct().collect(Collectors.toList());
 		Server server = plugin.getServer();
-		addArgumentParser("OLYMPA_PLAYER", offlinePlayers, x -> {
+		addArgumentParser("OLYMPA_PLAYERS", offlinePlayers, x -> {
 			try {
 				return AccountProvider.get(x);
 			} catch (SQLException e) {

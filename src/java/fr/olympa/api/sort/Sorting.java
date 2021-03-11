@@ -5,34 +5,43 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
 public class Sorting<T> implements Comparator<T> {
 
-	Map<Function<T, Long>, Boolean> sortArgs;
+	Map<ToLongFunction<T>, Boolean> sortArgs;
 
-	public Sorting(Function<T, Long>... sortArg) {
-		this(Arrays.stream(sortArg).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y, LinkedHashMap::new)));
+	public Sorting(ToLongFunction<T> sortArg) {
+		this(Map.of(sortArg, true));
 	}
 
-	public Sorting(boolean ascending, Function<T, Long>... sortArg) {
+	public Sorting(ToLongFunction<T> sortArg, boolean ascending) {
+		this(Map.of(sortArg, ascending));
+	}
+
+	public Sorting(ToLongFunction<T>... sortArgs) {
+		this(Arrays.stream(sortArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y, LinkedHashMap::new)));
+	}
+
+	public Sorting(boolean ascending, ToLongFunction<T>... sortArg) {
 		this(Arrays.stream(sortArg).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y, LinkedHashMap::new)));
 	}
 
-	public Sorting(Map<Function<T, Long>, Boolean> sortArgs) {
+	public Sorting(Map<ToLongFunction<T>, Boolean> sortArgs) {
 		this.sortArgs = sortArgs;
 	}
 
 	@Override
 	public int compare(T o1, T o2) {
 		int compared = 0;
-		for (Entry<Function<T, Long>, Boolean> entry : sortArgs.entrySet()) {
-			Function<T, Long> f = entry.getKey();
+		for (Entry<ToLongFunction<T>, Boolean> entry : sortArgs.entrySet()) {
+			ToLongFunction<T> f = entry.getKey();
+			entry.getKey().applyAsLong(o1);
 			if (entry.getValue())
-				compared = entry.getKey().apply(o1).compareTo(f.apply(o2));
+				compared = Long.compare(entry.getKey().applyAsLong(o1), f.applyAsLong(o2));
 			else
-				compared = entry.getKey().apply(o2).compareTo(f.apply(o1));
+				compared = Long.compare(entry.getKey().applyAsLong(o2), f.applyAsLong(o1));
 			if (compared != 0)
 				break;
 		}

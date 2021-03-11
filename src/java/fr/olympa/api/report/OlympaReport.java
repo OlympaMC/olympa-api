@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 
 import fr.olympa.api.player.OlympaPlayerInformations;
@@ -17,17 +18,25 @@ import fr.olympa.api.utils.Utils;
 
 public class OlympaReport {
 
-	long id = 0;
+	@Expose
+	long id;
+	@Expose
 	long targetId;
+	@Expose
 	public String targetName;
+	@Expose
 	long authorId;
+	@Expose
 	public String authorName;
+	@Expose
 	ReportReason reason;
+	@Expose
 	String note;
-
+	@Expose
 	List<ReportStatusInfo> statusInfo;
+	@Expose
 	long time;
-
+	@Expose
 	String serverName;
 
 	public OlympaReport(long targetId, long authorId, ReportReason reason, String serverName, String note) {
