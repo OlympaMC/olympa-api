@@ -104,7 +104,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 	}
 
 	@Override
-	public TreeMap<OlympaGroup, Long> getGroups() {
+	public Map<OlympaGroup, Long> getGroups() {
 		return groups;
 	}
 
