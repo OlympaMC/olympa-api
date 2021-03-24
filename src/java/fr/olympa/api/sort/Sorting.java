@@ -36,7 +36,6 @@ public class Sorting<T> implements Comparator<T> {
 		int compared = 0;
 		for (Entry<ToLongFunction<T>, Boolean> entry : sortArgs.entrySet()) {
 			ToLongFunction<T> f = entry.getKey();
-			entry.getKey().applyAsLong(o1);
 			if (entry.getValue())
 				compared = Long.compare(entry.getKey().applyAsLong(o1), f.applyAsLong(o2));
 			else

@@ -81,6 +81,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return null;
 			}
 		}, x -> String.format("Le joueur &4%s&c est introuvable.", x));
+		addArgumentParser("OLYMPA_PLAYERS_INFO", offlinePlayers, x -> {
+			return AccountProvider.getPlayerInformations(x);
+		}, x -> String.format("Le joueur &4%s&c est introuvable.", x));
 		addArgumentParser("OFFLINE_PLAYERS", offlinePlayers, x -> {
 			OfflinePlayer p = server.getOfflinePlayer(x);
 			//if (p.hasPlayedBefore())
@@ -182,13 +185,15 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		}
 
 		int minArg = cmd.min();
-		if (cmd.otherArg())
+		if (cmd.otherArg()) {
+			methodName = null;
 			minArg--;
+		}
 		if (rawArgs.length - 1 < minArg) {
 			if ("".equals(cmd.syntax()))
 				this.sendIncorrectSyntax();
 			else
-				this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
+				this.sendIncorrectSyntax("/" + label + (methodName != null ? " " + methodName : "") + " " + cmd.syntax());
 			return true;
 		}
 
@@ -218,7 +223,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			else
 				// TODO : Choose between 2 parses here
 				result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
-			if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase())))
+			if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase()) || types.length == 0))
 				result = arg;
 			if (result == null) {
 				if ("".equals(cmd.syntax()) && potentialParsers.isEmpty())
@@ -236,7 +241,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			newArgs[newArgIndex] = result;
 		}
 		try {
-			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label));
+			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label, methodName));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
 			e.printStackTrace();

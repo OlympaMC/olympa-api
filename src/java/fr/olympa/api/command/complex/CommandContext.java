@@ -13,6 +13,7 @@ public class CommandContext {
 	public String methodName; // = aliases of cmd
 	private final Object[] args;
 
+	@Deprecated(forRemoval = true)
 	public CommandContext(Object sender, IComplexCommand<?> command, Object[] args, String label) {
 		this.sender = sender;
 		this.command = command;
@@ -36,8 +37,8 @@ public class CommandContext {
 		return methodName;
 	}
 
-	public boolean isAliase(String aliase) {
-		return methodName.equalsIgnoreCase(aliase);
+	public boolean isAlias(String aliase) {
+		return methodName != null && methodName.equalsIgnoreCase(aliase);
 	}
 
 	public int getArgumentsLength() {

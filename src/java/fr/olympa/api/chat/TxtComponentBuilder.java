@@ -30,6 +30,10 @@ public class TxtComponentBuilder {
 		return new TxtComponentBuilder(message).onHover(hoverAction, contents).build();
 	}
 
+	public static HoverEvent hoverEvent(HoverEvent.Action hoverAction, String message, Object... args) {
+		return new HoverEvent(hoverAction, new Text(format(message, args)));
+	}
+
 	private static String getStringColored(String s) {
 		return ColorUtils.color(s);
 	}
@@ -182,8 +186,8 @@ public class TxtComponentBuilder {
 			else
 				text = new TextComponent();
 			if (isConsole) {
-				if (contents != null && contents.length != 0 && contents instanceof Text[])
-					text.addExtra(getText(String.format("&r(%s) ", ((Text) contents[0]).getValue())));
+				if (contents != null && contents.length != 0 && contents[0] instanceof Text)
+					text.addExtra(getText(String.format("&r(%s&r) ", ((Text) contents[0]).getValue())));
 			} else {
 				if (clickAction != null && clickActionValue != null)
 					text.setClickEvent(new ClickEvent(clickAction, clickActionValue));

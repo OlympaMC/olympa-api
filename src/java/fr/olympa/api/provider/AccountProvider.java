@@ -54,6 +54,10 @@ public class AccountProvider implements OlympaAccount {
 		return cachedInformations.get(id);
 	}
 
+	public static OlympaPlayerInformations getPlayerInformations(String name) {
+		return cachedInformations.values().stream().filter(opi -> opi.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+	}
+
 	public static OlympaPlayer getFromDatabase(long id) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
@@ -93,7 +97,7 @@ public class AccountProvider implements OlympaAccount {
 	/*@Override
 	public void saveToDb(OlympaPlayer olympaPlayer) {
 		// TODO Auto-generated method stub
-	
+
 	}*/
 
 	@Override

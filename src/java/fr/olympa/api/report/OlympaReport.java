@@ -5,8 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
@@ -19,30 +20,33 @@ import fr.olympa.api.utils.Utils;
 public class OlympaReport {
 
 	@Expose
-	long id;
+	private long id;
 	@Expose
-	long targetId;
+	private long targetId;
 	@Expose
-	public String targetName;
+	private String targetName;
 	@Expose
-	long authorId;
+	private long authorId;
 	@Expose
-	public String authorName;
+	private String authorName;
+	private final ReportReason reason;
 	@Expose
-	ReportReason reason;
+	private String reasonName;
 	@Expose
-	String note;
+	private String note;
 	@Expose
-	List<ReportStatusInfo> statusInfo;
+	private List<ReportStatusInfo> statusInfo;
 	@Expose
-	long time;
+	private long time;
 	@Expose
-	String serverName;
+	private String serverName;
 
 	public OlympaReport(long targetId, long authorId, ReportReason reason, String serverName, String note) {
 		this.targetId = targetId;
 		this.authorId = authorId;
 		this.reason = reason;
+		if (reason != null)
+			reasonName = reason.getReason();
 		this.serverName = serverName;
 		time = Utils.getCurrentTimeInSeconds();
 		if (note != null && !note.isEmpty())
@@ -54,7 +58,8 @@ public class OlympaReport {
 		id = resultSet.getLong("id");
 		targetId = resultSet.getLong("target_id");
 		authorId = resultSet.getLong("author_id");
-		reason = ReportReason.get(resultSet.getInt("reason"));
+		reasonName = resultSet.getString("reason");
+		reason = ReportReason.get(reasonName);
 		serverName = resultSet.getString("server");
 		time = resultSet.getTimestamp("time").getTime() / 1000L;
 		if (resultSet.getString("status_info") != null) {
@@ -65,13 +70,47 @@ public class OlympaReport {
 			note = resultSet.getString("note");
 	}
 
-	public String getNote() {
-		return note;
+	public void resolveAll() {
+		resolveAuthorName();
+		resolveTargetName();
 	}
 
-	@Deprecated
-	public UUID getAuthor() {
-		return null;
+	public void resolveAuthorName() {
+		if (authorName == null || authorName.isBlank())
+			authorName = AccountProvider.getPlayerInformations(authorId).getName();
+	}
+
+	public void resolveTargetName() {
+		if (targetName == null || targetName.isBlank())
+			targetName = AccountProvider.getPlayerInformations(targetId).getName();
+	}
+
+	/**
+	 * Nullable if the name of target was not resolve. If the name was not retrieved from the id. (for example if the object is out of the database)
+	 */
+	@Nullable
+	public String getTargetName() {
+		return targetName;
+	}
+
+	public void setTargetName(String targetName) {
+		this.targetName = targetName;
+	}
+
+	/**
+	 * Nullable if the name of target was not resolve. If the name was not retrieved from the id. (for example if the object is out of the database)
+	 */
+	@Nullable
+	public String getAuthorName() {
+		return authorName;
+	}
+
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public String getNote() {
+		return note;
 	}
 
 	public long getAuthorId() {
@@ -82,8 +121,20 @@ public class OlympaReport {
 		return id;
 	}
 
+	/**
+	 * Nullable if the ReportReason is specific to a server, and we are not in the specific server.
+	 */
+	@Nullable
 	public ReportReason getReason() {
 		return reason;
+	}
+
+	public String getReasonName() {
+		return reasonName;
+	}
+
+	public String getReasonNameUpper() {
+		return reasonName.toUpperCase();
 	}
 
 	public String getServerName() {
@@ -112,11 +163,6 @@ public class OlympaReport {
 
 	public String getStatusString() {
 		return new Gson().toJson(this);
-	}
-
-	@Deprecated
-	public UUID getTarget() {
-		return null;
 	}
 
 	public long getTargetId() {
@@ -151,7 +197,7 @@ public class OlympaReport {
 		lore.add(String.format("&2%s &a->&2 %s", opAuthor.getName(), opTarget.getName()));
 		lore.add(String.format("&aServeur %s", serverName));
 		lore.add(String.format("&aStatus %s", getStatus().getNameColored()));
-		lore.add(String.format("&aRaison &2%s", reason.getReason()));
+		lore.add(String.format("&aRaison &2%s", reasonName));
 		if (note != null && !note.isBlank())
 			lore.add(String.format("&aNote &2%s", note));
 		lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));

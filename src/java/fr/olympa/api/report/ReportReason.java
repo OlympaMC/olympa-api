@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -28,15 +29,15 @@ public class ReportReason {
 			for (Field f : clazz.getDeclaredFields())
 				if (f.getType() == ReportReason.class && Modifier.isStatic(f.getModifiers())) {
 					ReportReason reportReason = (ReportReason) f.get(null);
-					Optional<Entry<String, ReportReason>> already = reportReasons.entrySet().stream().filter(rr -> rr.getValue().getId() == reportReason.getId()).findFirst();
+					Optional<Entry<String, ReportReason>> already = reportReasons.entrySet().stream().filter(rr -> rr.getValue().getSortId() == reportReason.getSortId()).findFirst();
 					if (already.isPresent()) {
-						OlympaCore.getInstance().sendMessage("&cCan't register ReportReason &4%s&c with id &4%d&c. Already used by &4%s&c.", reportReason.getName(), reportReason.getId(), already.get().getKey());
+						OlympaCore.getInstance().sendMessage("&cCan't register ReportReason &4%s&c with id &4%d&c. Already used by &4%s&c.", reportReason.getName(), reportReason.getSortId(), already.get().getKey());
 						continue;
 					}
 					reportReason.setName(f.getName());
 					reportReasons.put(f.getName(), reportReason);
 				}
-			reportReasons = reportReasons.entrySet().stream().sorted(new Sorting<>(e -> Long.valueOf(e.getValue().getId()))).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+			reportReasons = reportReasons.entrySet().stream().sorted(new Sorting<>(e -> Long.valueOf(e.getValue().getSortId()))).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 			OlympaCore.getInstance().sendMessage("Registered " + (reportReasons.size() - initialSize) + " report reason from " + clazz.getName());
 		} catch (ReflectiveOperationException e) {
 			OlympaCore.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
@@ -47,12 +48,12 @@ public class ReportReason {
 	public static final ReportReason CHAT = new ReportReason(1, "Chat Abusif");
 	public static final ReportReason PV_SPAM = new ReportReason(2, "MP Abusif");
 	public static final ReportReason INCORRECT_SKIN_OR_NAME = new ReportReason(3, "Pseudo/Skin incorrect");
-	public static final ReportReason CHEAT_AURA = new ReportReason(4, "Cheat Combat");
-	public static final ReportReason CHEAT_XRAY = new ReportReason(5, "Cheat XRay");
-	public static final ReportReason CHEAT_FLY = new ReportReason(6, "Cheat Fly");
-	public static final ReportReason ANTI_AFK = new ReportReason(7, "Anti AFK");
+	public static final ReportReason ANTI_AFK = new ReportReason(4, "Anti AFK");
+	public static final ReportReason CHEAT_AURA = new ReportReason(5, "Cheat Combat");
+	public static final ReportReason CHEAT_XRAY = new ReportReason(6, "Cheat XRay");
+	public static final ReportReason CHEAT_FLY = new ReportReason(7, "Cheat Fly");
 	public static final ReportReason CHEAT_GLOBAL = new ReportReason(8, "Cheat");
-	public static final ReportReason OTHER = new ReportReason(9, "Autre");
+	public static final ReportReason OTHER = new ReportReason(99, "Autre");
 
 	static {
 		if (LinkSpigotBungee.Provider.link.isSpigot()) {
@@ -68,8 +69,9 @@ public class ReportReason {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static ReportReason get(int id) {
-		return ReportReason.values().stream().filter(itemGui -> itemGui.getId() == id).findFirst().orElse(null);
+		return ReportReason.values().stream().filter(itemGui -> itemGui.getSortId() == id).findFirst().orElse(null);
 	}
 
 	//	public static ReportReason get(ItemStack itemStack) {
@@ -84,11 +86,15 @@ public class ReportReason {
 		return reportReasons.values();
 	}
 
+	public static List<ReportReason> valuesSorted() {
+		return reportReasons.values().stream().sorted(new Sorting<>(r -> r.getSortId())).collect(Collectors.toList());
+	}
+
 	public static ReportReason getByReason(String reason) {
 		return ReportReason.values().stream().filter(itemGui -> itemGui.getReason().equalsIgnoreCase(reason)).findFirst().orElse(null);
 	}
 
-	int id;
+	int sortId;
 	String reason;
 	String name;
 
@@ -96,14 +102,14 @@ public class ReportReason {
 	boolean active = true;
 	OlympaItemStack item;
 
-	public ReportReason(int id, String name, String reason) {
-		this.id = id;
+	public ReportReason(int sortId, String name, String reason) {
+		this.sortId = sortId;
 		this.name = name;
 		this.reason = reason;
 	}
 
-	public ReportReason(int id, String reason) {
-		this.id = id;
+	public ReportReason(int sortId, String reason) {
+		this.sortId = sortId;
 		this.reason = reason;
 	}
 
@@ -119,24 +125,20 @@ public class ReportReason {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getId() {
-		return id;
-	}
-
 	public String getReason() {
 		return reason;
 	}
 
-	public String getReasonUpper() {
-		return reason.toUpperCase();
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getReasonClear() {
-		return reason.replace(" ", "_");
+	//	private int getId() {
+	//		return sortId;
+	//	}
+
+	private int getSortId() {
+		return sortId;
 	}
 
 	public void disable() {
@@ -148,10 +150,10 @@ public class ReportReason {
 	}
 
 	public boolean isSame(ReportReason rr) {
-		return id == rr.getId() || getName().equals(rr.getName());
+		return getName().equals(rr.getName()) || getReason().equals(rr.getReason());
 	}
 
-	public boolean needUpdate(ReportReason rr) {
-		return id != rr.getId() || !getName().equals(rr.getName()) || !getReason().equals(rr.getReason());
-	}
+	//	public boolean needUpdate(ReportReason rr) {
+	//		return !getName().equals(rr.getName()) || !getReason().equals(rr.getReason());
+	//	}
 }

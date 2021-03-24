@@ -23,19 +23,19 @@ public enum OlympaGroup {
 	RESP_ANIMATION(10, 65, OlympaServer.ALL, "Resp._Animateur", "Resp._Animatrice", "&3%s ", ":&r", true),
 	RESP_BUILDER(11, 60, OlympaServer.ALL, "Resp._Buildeur", "Resp._Buildeuse", "&a%s ", ":&r", true),
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
-	MOD(7, 75, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
-	ASSISTANT(8, 70, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
-	GAMEMASTER(4, 53, OlympaServer.ALL, "GameMaster", "GameMaster", "&c%s ", ":&r", true),
-	DEVP(19, 51, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
-	DEV(12, 50, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
-	BUILDER(14, 48, OlympaServer.ALL, "Buildeur", "Buildeuse", "&2%s ", ":&r", false),
-	ANIMATOR(13, 46, OlympaServer.ALL, "Animateur", "Animatrice", "&d%s ", ":&r", false),
-	GRAPHISTE(15, 44, OlympaServer.ALL, "Graphiste", "Graphiste", "&b%s ", ":&r", false),
-	FRIEND(16, 42, OlympaServer.ALL, "Ami", "Amie", "&e%s ", ":&r", false),
-	YOUTUBER(17, 40, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
-	MINI_YOUTUBER(18, 38, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
+	MOD(7, 53, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
+	ASSISTANT(8, 50, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
+	GAMEMASTER(4, 47, OlympaServer.ALL, "GameMaster", "GameMaster", "&c%s ", ":&r", true),
+	DEVP(19, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
+	DEV(12, 43, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
+	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&2%s ", ":&r", false),
+	ANIMATOR(13, 38, OlympaServer.ALL, "Animateur", "Animatrice", "&d%s ", ":&r", false),
+	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&b%s ", ":&r", false),
+	FRIEND(16, 34, OlympaServer.ALL, "Ami", "Amie", "&e%s ", ":&r", false),
+	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
+	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
-	VIP(19, 30, OlympaServer.ALL, "VIP", "VIP", "&6%s", ":&r", false),
+	VIP(19, 20, OlympaServer.ALL, "VIP", "VIP", "&6%s", ":&r", false),
 
 	CREA_CONSTRUCTOR(22, 1, OlympaServer.CREATIF, "Constructeur", "Constructrice", "&9%s ", ":&r", false),
 	CREA_ARCHITECT(23, 2, OlympaServer.CREATIF, "Architecte", "Architecte", "&e%s ", ":&r", false),
@@ -81,7 +81,7 @@ public enum OlympaGroup {
 
 	public Map<String, Boolean> runtimePermissions = new HashMap<>();
 
-	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff) {
+	OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff) {
 		this.id = id;
 		this.power = power;
 		this.server = server;
@@ -92,7 +92,7 @@ public enum OlympaGroup {
 		this.highStaff = highStaff;
 	}
 
-	private OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff, boolean visible) {
+	OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff, boolean visible) {
 		this(id, power, server, name, nameFem, prefix, chatSuffix, highStaff);
 		this.visible = visible;
 	}

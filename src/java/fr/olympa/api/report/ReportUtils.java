@@ -1,8 +1,8 @@
 package fr.olympa.api.report;
 
+import fr.olympa.api.chat.TxtComponentBuilder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -16,16 +16,16 @@ public class ReportUtils {
 		tc = new TextComponent(targetName);
 		if (targetServer == null) {
 			tc.setColor(ChatColor.RED);
-			tc.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Joueur déconnecté").color(ChatColor.RED).create()));
+			tc.setHoverEvent(TxtComponentBuilder.hoverEvent(HoverEvent.Action.SHOW_TEXT, "&cJoueur déconnecté"));
 		} else if (targetServer.equals(authorServer)) {
 			tc.setColor(ChatColor.AQUA);
-			tc.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Joueur connecté ici").color(ChatColor.AQUA).create()));
+			tc.setHoverEvent(TxtComponentBuilder.hoverEvent(HoverEvent.Action.SHOW_TEXT, "&bJoueur connecté ici"));
 		} else if (targetServer.equals(report.getServerName())) {
 			tc.setColor(ChatColor.GREEN);
-			tc.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Joueur toujours connecté sur le serveur  " + targetServer).color(ChatColor.GREEN).create()));
+			tc.setHoverEvent(TxtComponentBuilder.hoverEvent(HoverEvent.Action.SHOW_TEXT, "&aJoueur toujours connecté sur le serveur %s", targetServer));
 		} else {
 			tc.setColor(ChatColor.LIGHT_PURPLE);
-			tc.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Joueur connecté au serveur " + targetServer).color(ChatColor.LIGHT_PURPLE).create()));
+			tc.setHoverEvent(TxtComponentBuilder.hoverEvent(HoverEvent.Action.SHOW_TEXT, "&dJoueur connecté au serveur %s", targetServer));
 		}
 		out.addExtra(tc);
 		tc = new TextComponent(" par ");
@@ -49,8 +49,8 @@ public class ReportUtils {
 		tc = new TextComponent(".");
 		tc.setColor(ChatColor.DARK_PURPLE);
 		out.addExtra(tc);
-		out.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique pour avoir plus d'info").color(ChatColor.YELLOW).create()));
-		out.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report see " + report.getId()));
+		out.setHoverEvent(TxtComponentBuilder.hoverEvent(HoverEvent.Action.SHOW_TEXT, "&eClique pour avoir plus d'info"));
+		out.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report seeId " + report.getId()));
 		return out;
 	}
 }
