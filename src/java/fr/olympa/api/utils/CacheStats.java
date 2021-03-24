@@ -80,7 +80,7 @@ public class CacheStats {
 		switch (action.toLowerCase()) {
 		case "clear":
 			long size = cache.size();
-			cache.cleanUp();
+			cache.invalidateAll();
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a a été clear (de %d éléments).", cacheName, size);
 			break;
 		case "print":

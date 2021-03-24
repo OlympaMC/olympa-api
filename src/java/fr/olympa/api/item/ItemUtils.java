@@ -125,13 +125,11 @@ public class ItemUtils {
 			String str;
 			while ((str = in.readLine()) != null)
 				sb.append(str);
-		} catch (Exception ignored) {
-		} finally {
+		} catch (Exception ignored) {} finally {
 			try {
 				if (in != null)
 					in.close();
-			} catch (IOException ignored) {
-			}
+			} catch (IOException ignored) {}
 		}
 		return sb.toString();
 	}
@@ -147,9 +145,9 @@ public class ItemUtils {
 		ItemStack is = new ItemStack(Material.PLAYER_HEAD);
 		SkullMeta im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
+		skullCustom(im, value);
 		if (lore != null && lore.length != 0)
 			lore(is, lore);
-		skullCustom(im, value);
 		is.setItemMeta(im);
 		return is;
 	}

@@ -163,7 +163,8 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			return true;
 		}
 
-		InternalCommand internal = getCommand(rawArgs[0]);
+		String methodName = rawArgs[0];
+		InternalCommand internal = getCommand(methodName);
 		if (internal == null) {
 			sendError("La commande n'existe pas.");
 			return true;

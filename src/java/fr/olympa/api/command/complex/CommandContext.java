@@ -10,6 +10,7 @@ public class CommandContext {
 	public final Object sender;
 	public final IComplexCommand<?> command;
 	public final String label;
+	public String methodName; // = aliases of cmd
 	private final Object[] args;
 
 	public CommandContext(Object sender, IComplexCommand<?> command, Object[] args, String label) {
@@ -19,8 +20,24 @@ public class CommandContext {
 		this.label = label;
 	}
 
+	public CommandContext(Object sender, IComplexCommand<?> command, Object[] args, String label, String methodName) {
+		this.sender = sender;
+		this.command = command;
+		this.args = args;
+		this.label = label;
+		this.methodName = methodName;
+	}
+
 	public Receiver getSenderType() {
 		return Receiver.of(sender);
+	}
+
+	public String getMethodName() {
+		return methodName;
+	}
+
+	public boolean isAliase(String aliase) {
+		return methodName.equalsIgnoreCase(aliase);
 	}
 
 	public int getArgumentsLength() {
