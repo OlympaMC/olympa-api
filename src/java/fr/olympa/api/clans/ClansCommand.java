@@ -57,16 +57,9 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 			return;
 		}
 		String name = cmd.getFrom(0);
-		if (name.length() > manager.getMaxClanNameLength()) {
-			sendError(manager.stringClanNameTooLong, manager.getMaxClanNameLength());
-			return;
-		}
-		if (manager.clanExists(name)) {
-			sendError(manager.stringClanAlreadyExists);
-			return;
-		}
+		if (!manager.checkName(getPlayer(), name)) return;
 		try {
-			manager.createClan(player, name);
+			manager.createClan(player, name, manager.generateTag(name));
 			sendSuccess(manager.stringClanCreated);
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -88,7 +81,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		manager.invite(clan, getPlayer(), targetPlayer);
 	}
 	
-	@Cmd (player = true, min = 1, syntax = "<nom du clan>", description = "Permet d'accepter une invitation de clan")
+	@Cmd (player = true, min = 1, syntax = "<nom du clan>", description = "Permet d'accepter une invitation de clan", aliases = "join")
 	public void accept(CommandContext cmd) {
 		String name = cmd.getFrom(0);
 		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(name)).findFirst().orElse(null);
@@ -141,9 +134,20 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		clan.setChief(target.getInformation());
 	}
 
+	@Cmd (player = true, aliases = { "settag" }, args = { "6_lettres_max" }, min = 1)
+	public void tag(CommandContext cmd) {
+		T clan = getPlayerClan(false);
+		if (clan == null) return;
+		
+		String tag = cmd.<String>getArgument(0).toUpperCase();
+		if (manager.checkTag(getPlayer(), tag)) return;
+		
+		clan.setTag(tag);
+	}
+	
 	protected T getPlayerClan(boolean chief) {
 		ClanPlayerInterface<T, D> p = getOlympaPlayer();
-		T clan = (T) p.getClan();
+		T clan = p.getClan();
 		if (clan == null){
 			sendError(manager.stringMustBeInClan);
 			return null;

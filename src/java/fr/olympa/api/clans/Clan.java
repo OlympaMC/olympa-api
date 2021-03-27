@@ -28,18 +28,20 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	protected Map<OlympaPlayerInformations, D> members = new HashMap<>(8);
 	private OlympaPlayerInformations chief;
 	private String name;
+	private String tag;
 	private int maxSize;
 	private OlympaMoney money;
 	private long created;
 
-	public Clan(ClansManager<T, D> manager, int id, String name, OlympaPlayerInformations chief, int maxSize) {
-		this(manager, id, name, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
+	public Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
+		this(manager, id, name, tag, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
 	}
 
-	public Clan(ClansManager<T, D> manager, int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created) {
+	public Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created) {
 		this.manager = manager;
 		this.id = id;
 		this.name = name;
+		this.tag = tag;
 		this.chief = chief;
 		this.maxSize = maxSize;
 		this.created = created;
@@ -122,6 +124,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return name;
 	}
 
+	public String getTag() {
+		return tag;
+	}
+	
 	public OlympaMoney getMoney() {
 		return money;
 	}
@@ -203,6 +209,13 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		}, null);
 	}
 
+	public void setTag(String tag) {
+		manager.tagColumn.updateAsync((T) this, tag, () -> {
+			this.tag = tag;
+			broadcast(manager.stringNameChange);
+		}, null);
+	}
+	
 	private void updateMoney() {
 		manager.moneyColumn.updateAsync((T) this, money.get(), null, SQLException::printStackTrace);
 	}

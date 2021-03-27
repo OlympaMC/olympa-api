@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -65,6 +68,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringPlayerLeave = "Le joueur %s a quitté le clan.";
 	public String stringPlayerJoin = "Le joueur %s rejoint le clan.";
 	public String stringNameChange = "Le clan a changé de nom pour s'appeler %s.";
+	public String stringTagChange = "Le clan a changé de tag et devient [%s] !";
 	public String stringSureDisband = "§7Veux-tu vraiment supprimer le clan ?";
 	public String stringSureChief = "§7Veux-tu vraiment donner la direction au joueur %s ?";
 	public String stringSureKick = "§7Veux-tu vraiment éjecter le joueur %s ?";
@@ -77,10 +81,13 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringAddedMoney = "Tu viens d'ajouter %s à la cagnotte du clan !";
 	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
 	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
+	public String stringClanNameTooShort = "Le nom d'un clan ne peut pas faire moins de %d caractères !";
+	public String stringClanNameInvalid = "Le nom du clan est invalide...";
 	public String stringItemDisband = "§cDémenteler le clan";
 	
 	protected final SQLTable<T> clansTable;
 	protected SQLColumn<T> nameColumn;
+	protected SQLColumn<T> tagColumn;
 	protected SQLColumn<T> chiefColumn;
 	protected SQLColumn<T> sizeColumn;
 	protected SQLColumn<T> moneyColumn;
@@ -88,6 +95,10 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	protected final SQLTable<D> playersTable;
 	protected SQLColumn<D> playerIDColumn;
 	protected SQLColumn<D> clanIDColumn;
+	
+	private Pattern clanNamePattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ-']+$");
+	private Pattern clanTagPattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ]+$");
+	private String randomTagCharacters = "AZERTYUIOPQSDFGHJKLMWXCVBN0123456789";
 	
 	public ClansManager(OlympaAPIPlugin plugin, String clansName, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
@@ -99,7 +110,15 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable.getName());
 		while (resultSet.next()) {
 			try {
-				T clan = provideClan(resultSet.getInt("id"), resultSet.getString("name"), AccountProvider.getPlayerInformations(resultSet.getLong("chief")), resultSet.getInt("max_size"), resultSet.getDouble("money"), resultSet.getDate("created").getTime() / 1000L, resultSet);
+				T clan = provideClan(
+						resultSet.getInt("id"),
+						resultSet.getString("name"),
+						resultSet.getString("tag"),
+						AccountProvider.getPlayerInformations(resultSet.getLong("chief")),
+						resultSet.getInt("max_size"),
+						resultSet.getDouble("money"),
+						resultSet.getDate("created").getTime() / 1000L,
+						resultSet);
 				
 				ResultSet playersSet = playersTable.getFromColumn(clanIDColumn, clan.getID());
 				while (playersSet.next()) {
@@ -125,12 +144,16 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			if (clanTo.getClan() != null) {
 				color = clanTo.getClan() == clanPlayer.getClan() ? ChatColor.GREEN : ChatColor.RED;
 			}else color = ChatColor.RED;
-			nametag.appendPrefix(color + "[" + clanPlayer.getClan().getName() + "]");
+			nametag.appendPrefix(color + "[" + clanPlayer.getClan().getTag() + "]");
 		});
 	}
 	
-	public boolean clanExists(String name) {
+	public boolean nameExists(String name) {
 		return clans.values().stream().anyMatch(x -> x.getName().equalsIgnoreCase(name));
+	}
+	
+	public boolean tagExists(String tag) {
+		return clans.values().stream().anyMatch(x -> x.getTag().equalsIgnoreCase(tag));
 	}
 	
 	public T getClan(int id) {
@@ -145,13 +168,17 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		return 16;
 	}
 	
+	public int getMinClanNameLength() {
+		return 6;
+	}
+	
 	/* Abstraction */
 	
 	protected abstract String getClansCommand();
 	
-	protected abstract T createClan(int id, String name, OlympaPlayerInformations chief, int maxSize);
+	protected abstract T createClan(int id, String name, String tag, OlympaPlayerInformations chief, int maxSize);
 	
-	protected abstract T provideClan(int id, String name, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
+	protected abstract T provideClan(int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created, ResultSet resultSet) throws SQLException;
 	
 	protected abstract D createClanData(OlympaPlayerInformations informations);
 	
@@ -160,6 +187,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public List<SQLColumn<T>> addDBClansCollums(List<SQLColumn<T>> columns) {
 		columns.add(new SQLColumn<T>("id", "int(11) unsigned NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(T::getID));
 		columns.add(nameColumn = new SQLColumn<T>("name", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable());
+		columns.add(tagColumn = new SQLColumn<T>("tag", "char(3) NOT NULL UNIQUE", Types.CHAR).setUpdatable());
 		columns.add(chiefColumn = new SQLColumn<T>("chief", "bigint(20) NOT NULL", Types.BIGINT).setUpdatable());
 		columns.add(sizeColumn = new SQLColumn<T>("max_size", "tinyint(1) NOT NULL DEFAULT " + defaultMaxSize, Types.TINYINT).setUpdatable());
 		columns.add(moneyColumn = new SQLColumn<T>("money", "DOUBLE NOT NULL DEFAULT 0", Types.DOUBLE).setUpdatable());
@@ -173,14 +201,78 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		return columns;
 	}
 	
+	public Pattern getClanNamePattern() {
+		return clanNamePattern;
+	}
+	
+	public Pattern getClanTagPattern() {
+		return clanTagPattern;
+	}
+	
+	public final boolean checkName(Player p, String name) {
+		if (name.length() > getMaxClanNameLength()) {
+			Prefix.DEFAULT_BAD.sendMessage(p, stringClanNameTooLong, getMaxClanNameLength());
+			return false;
+		}
+		if (name.length() < getMinClanNameLength()) {
+			Prefix.DEFAULT_BAD.sendMessage(p, stringClanNameTooShort, getMinClanNameLength());
+			return false;
+		}
+		if (!getClanNamePattern().matcher(name).matches()) {
+			Prefix.DEFAULT_BAD.sendMessage(p, stringClanNameInvalid);
+			return false;
+		}
+		if (nameExists(name)) {
+			Prefix.DEFAULT_BAD.sendMessage(p, stringClanAlreadyExists);
+			return false;
+		}
+		return true;
+	}
+	
+	public final boolean checkTag(Player p, String tag) {
+		if (tag.length() != 3) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Le tag doit faire 3 caractères de long.");
+			return false;
+		}
+		if (!getClanTagPattern().matcher(tag).matches()) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tag invalide.");
+			return false;
+		}
+		if (tagExists(tag)) {
+			Prefix.DEFAULT_BAD.sendMessage(p, "Le tag est déjà utilisé");
+			return false;
+		}
+		return true;
+	}
+	
+	public final String generateTag(String name) {
+		name = name.replaceAll("['-]", "").toUpperCase();
+		if (name.length() < 3) name += "a".repeat(3 - name.length());
+		for (int removedIndex = -1; removedIndex < name.length(); removedIndex++) { // enlève 1 lettre au fur et à mesure pour tenter des combinaisons pas encore faites
+			String nameM = removedIndex == -1 ? name : name.substring(0, removedIndex) + name.substring(removedIndex + 1);
+			for (int startIndex = 0; startIndex + 3 < nameM.length(); startIndex++) { // prend les 3 lettres en partant à chaque fois d'un peu + loin dans le mot
+				String tag = nameM.substring(startIndex, startIndex + 3);
+				if (!tagExists(tag)) return tag;
+			}
+		}
+		
+		Random random = ThreadLocalRandom.current();
+		String tag;
+		do {
+			tag = "";
+			for (int i = 0; i < 3; i++) tag += randomTagCharacters.charAt(random.nextInt(randomTagCharacters.length()));
+		}while (tagExists(tag));
+		return tag;
+	}
+	
 	/* SQL statements */
 	
-	public T createClan(ClanPlayerInterface<T, D> p, String name) throws SQLException {
+	public T createClan(ClanPlayerInterface<T, D> p, String name, String tag) throws SQLException {
 		ResultSet resultSet = clansTable.insert(name, p.getId());
 		resultSet.next();
 		int id = resultSet.getInt(1);
 		resultSet.close();
-		T clan = createClan(id, name, p.getInformation(), defaultMaxSize);
+		T clan = createClan(id, name, tag, p.getInformation(), defaultMaxSize);
 		clans.put(id, clan);
 		clan.addPlayer(p);
 		plugin.sendMessage("Clan " + name + " créé.");

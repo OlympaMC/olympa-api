@@ -35,12 +35,12 @@ public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> ext
 		case 1:
 			Prefix.DEFAULT.sendMessage(p, manager.stringChooseName);
 			new TextEditor<String>(p, (msg) -> {
-				if (msg.length() > manager.getMaxClanNameLength()) {
-					Prefix.DEFAULT_BAD.sendMessage(p, manager.stringClanNameTooLong, manager.getMaxClanNameLength());
+				if (!manager.checkName(p, msg)) {
+					Inventories.closeAndExit(p);
 					return;
 				}
 				try {
-					manager.createClan(AccountProvider.get(p.getUniqueId()), msg);
+					manager.createClan(AccountProvider.get(p.getUniqueId()), msg, manager.generateTag(msg));
 				}catch (SQLException e) {
 					e.printStackTrace();
 					Inventories.closeAndExit(p);
@@ -48,10 +48,7 @@ public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> ext
 				}
 				manager.provideManagementGUI(AccountProvider.get(p.getUniqueId())).create(p);
 			}, () -> {}, false, (player, msg) -> {
-				if (manager.clanExists(msg)) {
-					Prefix.DEFAULT_BAD.sendMessage(player, manager.stringClanAlreadyExists);
-					return null;
-				}
+				if (!manager.checkName(p, msg)) return null;
 				return msg;
 			}).enterOrLeave();
 			break;
