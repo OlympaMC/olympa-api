@@ -25,7 +25,7 @@ public class InvitationsGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>
 	}
 
 	public ItemStack getItemStack(T clan) {
-		return ItemUtils.item(Material.PAPER, "§a" + clan.getName());
+		return ItemUtils.item(Material.PAPER, "§a" + clan.getNameAndTag());
 	}
 
 	public void click(T existing, Player p, ClickType click) {

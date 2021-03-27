@@ -81,10 +81,10 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		manager.invite(clan, getPlayer(), targetPlayer);
 	}
 	
-	@Cmd (player = true, min = 1, syntax = "<nom du clan>", description = "Permet d'accepter une invitation de clan", aliases = "join")
+	@Cmd (player = true, min = 1, syntax = "<tag du clan>", description = "Permet d'accepter une invitation de clan", aliases = "join")
 	public void accept(CommandContext cmd) {
-		String name = cmd.getFrom(0);
-		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getName().equals(name)).findFirst().orElse(null);
+		String tag = cmd.getFrom(0);
+		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getTag().equals(tag)).findFirst().orElse(null);
 		if (clan == null) {
 			sendError(manager.stringNoInvitation, cmd.getArgument(0));
 			return;

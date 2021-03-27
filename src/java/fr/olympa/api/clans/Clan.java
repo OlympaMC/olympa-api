@@ -128,6 +128,10 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return tag;
 	}
 	
+	public String getNameAndTag() {
+		return name + " [" + tag + "]";
+	}
+	
 	public OlympaMoney getMoney() {
 		return money;
 	}

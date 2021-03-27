@@ -335,9 +335,9 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		localInvites.add(clan);
 		Prefix.DEFAULT_GOOD.sendMessage(inviter, stringPlayerInvited);
 		
-		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getName()));
+		BaseComponent[] texts = TextComponent.fromLegacyText(Prefix.DEFAULT_GOOD.formatMessage(stringInvitationReceive, inviter.getName(), clan.getNameAndTag()));
 		for (BaseComponent comp : texts) {
-			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + getClansCommand() + " accept " + clan.getName()));
+			comp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + getClansCommand() + " accept " + clan.getTag()));
 			comp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(ColorUtils.color(stringClickToJoin)))));
 		}
 		targetPlayer.spigot().sendMessage(texts);
@@ -372,7 +372,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public void onChat(AsyncPlayerChatEvent e) {
 		ClanPlayerInterface<T, D> target = AccountProvider.get(e.getPlayer().getUniqueId());
 		if (target.getClan() == null) return;
-		e.setFormat("§8[" + target.getClan().getName() + "] " + target.getGroupPrefix() + "%s " + target.getGroup().getChatSuffix() + " %s");
+		e.setFormat("§8[" + target.getClan().getTag() + "] " + target.getGroupPrefix() + "%s " + target.getGroup().getChatSuffix() + " %s");
 	}
 	
 	/*public void setSuffix(Player p) {
