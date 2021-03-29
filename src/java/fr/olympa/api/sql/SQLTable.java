@@ -122,12 +122,19 @@ public class SQLTable<T> {
 				statement.executeUpdate("ALTER TABLE " + name + " ADD " + column.toDeclaration());
 				link.sendMessage("La colonne §6%s §ea été créée dans la table §6%s§e.", column.toDeclaration(), name);
 			}
-		} else if (statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")") >= 1)
-			link.sendMessage("Table SQL §6%s §ecréée !", name);
-		else
-			new IllegalAccessError(
-					"La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.")
-							.printStackTrace();
+		}else {
+			int updateResult = statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")");
+			columnsSet.close();
+			columnsSet = link.getDatabase().getMetaData().getColumns(schemaPattern, null, tablePattern, "%");
+			if (updateResult < 1 && !columnsSet.first()) {
+				new IllegalAccessError(
+						"La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.")
+				.printStackTrace();
+			}else {
+				link.sendMessage("Table SQL §6%s §ecréée !", name);
+			}
+		}
+		statement.close();
 
 		columns.forEach(column -> column.setSQLSelector(new SQLSelector<>() {
 
