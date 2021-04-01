@@ -96,7 +96,7 @@ public interface IComplexCommand<C> {
 	boolean noArguments(C sender);
 
 	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction) {
-		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
+		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
 	default void addArgumentParser(String name, BiFunction<C, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction, boolean hasCache) {
@@ -105,7 +105,7 @@ public interface IComplexCommand<C> {
 
 	@Deprecated(forRemoval = true)
 	default void addArgumentParser(String name, Function<C, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction) {
-		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, true));
+		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
 	}
 
 	default InternalCommand getCommand(String argName) {

@@ -22,14 +22,14 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 	public ClansCommand(ClansManager<T, D> manager, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(manager.plugin, manager.getClansCommand(), description, permission, aliases);
 		this.manager = manager;
-		super.addArgumentParser("CLANPLAYER", (player) -> {
+		super.addArgumentParser("CLANPLAYER", (player, arg) -> {
 			ClanPlayerInterface<T, D> p = getOlympaPlayer();
-			T clan = (T) p.getClan();
-			if (clan == null) return Collections.EMPTY_LIST;
+			T clan = p.getClan();
+			if (clan == null) return Collections.emptyList();
 			return clan.getMembers().stream().map(x -> x.getPlayerInformations().getName()).collect(Collectors.toList());
 		}, arg -> {
 			ClanPlayerInterface<T, D> p = getOlympaPlayer();
-			T clan = (T) p.getClan();
+			T clan = p.getClan();
 			if (clan == null) return null;
 			return clan.getMembers().stream().filter(x -> x.getPlayerInformations().getName().equalsIgnoreCase(arg)).findFirst().orElse(null);
 		}, x -> String.format(manager.stringPlayerNotInClan, x));
