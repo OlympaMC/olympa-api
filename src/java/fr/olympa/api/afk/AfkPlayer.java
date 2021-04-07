@@ -3,9 +3,11 @@ package fr.olympa.api.afk;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import fr.olympa.api.customevents.PlayerAfkEvent;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.utils.Prefix;
@@ -24,6 +26,8 @@ public class AfkPlayer {
 	private static final int scoreToDeactiveAfk = 6;
 	private static final double minScoreToDetermineAfk = 0.6;
 
+	private Player p;
+	
 	private int afkScore = 0;
 	private boolean isAfk;
 	private long startAfkTime;
@@ -34,7 +38,8 @@ public class AfkPlayer {
 
 	public AfkPlayer(Player player) {
 		isAfk = false;
-
+		this.p = player;
+		
 		oldLog = new EnumMap<>(ListenedPacket.class);
 		newLog = new EnumMap<>(ListenedPacket.class);
 
@@ -50,9 +55,9 @@ public class AfkPlayer {
 				afkScore = Math.min(Math.max(afkScore, 0), scoreToActiveAfk);
 
 				if (isAfk && afkScore < scoreToDeactiveAfk)
-					setNotAfk(player);
+					setNotAfk();
 				else if (!isAfk && afkScore >= scoreToActiveAfk)
-					setAfk(player);
+					setAfk();
 
 				oldLog = newLog;
 				newLog = new EnumMap<>(ListenedPacket.class);
@@ -72,28 +77,27 @@ public class AfkPlayer {
 		task.cancel();
 	}
 
-	public void setAfk(Player player) {
+	public void setAfk() {
 		isAfk = true;
 		startAfkTime = System.currentTimeMillis();
 
-		Prefix.DEFAULT_BAD.sendMessage(player, "Tu es désormais &4AFK&c.");
+		Prefix.DEFAULT_BAD.sendMessage(p, "Tu es désormais &4AFK&c.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
-			/*Nametag oldNameTag = api.getNametag(player);
-			lastSuffix = oldNameTag.getSuffix();
-			if (AFK_SUFFIX.contains(lastSuffix))
-				lastSuffix = lastSuffix.replace(AFK_SUFFIX, "");
-			OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(oldNameTag.getPrefix(), lastSuffix + AFK_SUFFIX), players));*/
-			api.callNametagUpdate(AccountProvider.get(player.getUniqueId()));
+			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
+		
+		Bukkit.getServer().getPluginManager().callEvent(new PlayerAfkEvent(p, isAfk));
 	}
 
-	public void setNotAfk(Player player) {
+	public void setNotAfk() {
 		isAfk = false;
-		Prefix.DEFAULT_GOOD.sendMessage(player, "Tu n'es plus &2AFK&a.");
+		
+		Prefix.DEFAULT_GOOD.sendMessage(p, "Tu n'es plus &2AFK&a.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
-			//OlympaAPIPermissions.AFK_SEE_IN_TAB.getPlayers(players -> api.updateFakeNameTag(player, new Nametag(api.getNametag(player).getPrefix(), getLastSuffix()), players));
-			api.callNametagUpdate(AccountProvider.get(player.getUniqueId()));
+			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
+		
+		Bukkit.getServer().getPluginManager().callEvent(new PlayerAfkEvent(p, isAfk));
 	}
 
 	/*private String getLastSuffix() {
@@ -110,9 +114,9 @@ public class AfkPlayer {
 
 	public void toggleAfk(Player player) {
 		if (isAfk)
-			setNotAfk(player);
+			setNotAfk();
 		else
-			setAfk(player);
+			setAfk();
 	}
 
 	public void addToLog(Object packet) {
@@ -133,7 +137,7 @@ public class AfkPlayer {
 		CHAT_PACKET(PacketPlayInChat.class, 0.4),
 		BREAK_PACKET(PacketPlayInBlockDig.class, 0.15),
 		PLACE_PACKET(PacketPlayInBlockPlace.class, 0.15),
-		MOVE_PACKET(PacketPlayInPosition.class, 0.1),
+		MOVE_PACKET(PacketPlayInPosition.class, 0.2),
 		ARM_ANIMATION_PACKET(PacketPlayInArmAnimation.class, 0.15)
 
 		;
