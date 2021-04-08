@@ -14,12 +14,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-@SuppressWarnings ("rawtypes")
+@SuppressWarnings("rawtypes")
 public class ObservableList<T> extends AbstractObservable implements List<T> {
 
-	public static final ObservableList EMPTY_LIST = new ObservableList<>(Collections.EMPTY_LIST);
+	public static final ObservableList EMPTY_LIST = new ObservableList<>(Collections.emptyList());
 	public static final CollectorObservable COLLECTOR = new CollectorObservable<>();
 
+	@SuppressWarnings("unchecked")
 	public static <A, B> CollectorObservable<A, B> getCollector() {
 		return COLLECTOR;
 	}
@@ -59,7 +60,7 @@ public class ObservableList<T> extends AbstractObservable implements List<T> {
 		return sub.toArray();
 	}
 
-	@SuppressWarnings ("hiding")
+	@SuppressWarnings("hiding")
 	@Override
 	public <T> T[] toArray(T[] a) {
 		return sub.toArray(a);
@@ -75,7 +76,8 @@ public class ObservableList<T> extends AbstractObservable implements List<T> {
 	@Override
 	public boolean remove(Object o) {
 		boolean remove = sub.remove(o);
-		if (remove) update();
+		if (remove)
+			update();
 		return remove;
 	}
 

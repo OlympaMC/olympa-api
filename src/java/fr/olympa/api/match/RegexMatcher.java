@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class RegexMatcher {
 
+	public static final MatcherPattern<String> NOT_LETTER = new MatcherPattern<>("[^\\w]");
 	public static final MatcherPattern<String> USERNAME = new MatcherPattern<>("[\\w_]{3,16}");
 	public static final MatcherPattern<String> IP = new MatcherPattern<>("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}");
 
@@ -81,8 +82,7 @@ public class RegexMatcher {
 	public static final MatcherPattern<Integer> NUMBER = new MatcherPattern<>("\\d+", x -> {
 		try {
 			return Integer.parseInt(x);
-		} catch (NumberFormatException e) {
-		}
+		} catch (NumberFormatException e) {}
 		return null;
 	}, Integer.class);
 	public static final MatcherPattern<Integer> DIGIT = new MatcherPattern<>("\\d", x -> {
@@ -90,8 +90,7 @@ public class RegexMatcher {
 			Integer i = Integer.parseInt(x);
 			if (i >= 0 && i <= 10)
 				return i;
-		} catch (NumberFormatException e) {
-		}
+		} catch (NumberFormatException e) {}
 		return null;
 	}, Integer.class);
 	public static final MatcherPattern<String> HEX_COLOR = new MatcherPattern<>("[xX#]?[0-9a-fA-F]{6}", x -> {
