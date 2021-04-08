@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.util.function.Consumer;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.ChatColor;
 
 public class OlympaRuntime {
@@ -55,6 +56,10 @@ public class OlympaRuntime {
 				while ((line = br.readLine()) != null) {
 					if (line.isEmpty())
 						continue;
+					if (LinkSpigotBungee.Provider.link != null && line.startsWith(" " + LinkSpigotBungee.Provider.link.getServerName() + " s'est arrêté")) {
+						Runtime.getRuntime().addShutdownHook(action("sh start.sh"));
+						OlympaCore.getInstance().getServer().shutdown();
+					}
 					line = line.replace("", "")
 							.replace("[0m", "§f").replace("[1m", "§l").replace("[4m", "§n").replace("[32m", "§3").replace("[36m", "§b").replace("[49m", "§f").replace("[30m", "§0").replace("[31m", "§4")
 							.replace("[32m", "§2").replace("[33m", "§6").replace("[34m", "§1").replace("[35m", "§5").replace("[36m", "§3").replace("[37m", "§7").replace("[90m", "§8").replace("[91m", "§c")
