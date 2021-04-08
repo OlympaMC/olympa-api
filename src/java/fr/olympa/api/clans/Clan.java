@@ -217,6 +217,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		manager.tagColumn.updateAsync((T) this, tag, () -> {
 			this.tag = tag;
 			broadcast(manager.stringNameChange);
+			getMembers().stream().filter(D::isConnected).map(D::getConnectedPlayer).forEach(OlympaCore.getInstance().getNameTagApi()::callNametagUpdate);
 		}, null);
 	}
 	
