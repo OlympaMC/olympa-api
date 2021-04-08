@@ -235,11 +235,11 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			return false;
 		}
 		if (!getClanTagPattern().matcher(tag).matches()) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Tag invalide.");
+			Prefix.DEFAULT_BAD.sendMessage(p, "Tag invalide (le tag doit être uniquement composé de lettres et de chiffres).");
 			return false;
 		}
 		if (tagExists(tag)) {
-			Prefix.DEFAULT_BAD.sendMessage(p, "Le tag est déjà utilisé");
+			Prefix.DEFAULT_BAD.sendMessage(p, "Le tag est déjà utilisé.");
 			return false;
 		}
 		return true;

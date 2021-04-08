@@ -134,13 +134,17 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		clan.setChief(target.getInformation());
 	}
 
-	@Cmd (player = true, aliases = { "settag" }, args = { "6_lettres_max" }, min = 1)
+	@Cmd (player = true, aliases = { "settag" }, args = { "TAG" }, min = 1, syntax = "<nouveau tag>")
 	public void tag(CommandContext cmd) {
-		T clan = getPlayerClan(false);
+		T clan = getPlayerClan(true);
 		if (clan == null) return;
 		
 		String tag = cmd.<String>getArgument(0).toUpperCase();
-		if (manager.checkTag(getPlayer(), tag)) return;
+		if (clan.getTag().equals(tag)) {
+			sendError("Le tag proposé est identique à celui déjà choisi.");
+			return;
+		}
+		if (!manager.checkTag(getPlayer(), tag)) return;
 		
 		clan.setTag(tag);
 	}
