@@ -82,7 +82,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String[] stringItemLeaveChiefLore = { "§7§oPour pouvoir quitter votre clan,", "§7§ovous devez tout d'abord", "§7§otransmettre la direction de celui-ci", "§7§oà un autre membre." };
 	public String stringClanNameTooLong = "Le nom d'un clan ne peut pas excéder %d caractères !";
 	public String stringClanNameTooShort = "Le nom d'un clan ne peut pas faire moins de %d caractères !";
-	public String stringClanNameInvalid = "Le nom du clan est invalide...";
+	public String stringClanNameInvalid = "Le nom du clan est invalide... Il doit seulement être constitué de lettres, de chiffres et de ces caractères : §l-'_";
 	public String stringItemDisband = "§cDémenteler le clan";
 	
 	protected final SQLTable<T> clansTable;
@@ -96,7 +96,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	protected SQLColumn<D> playerIDColumn;
 	protected SQLColumn<D> clanIDColumn;
 	
-	private Pattern clanNamePattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ-']+$");
+	private Pattern clanNamePattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ-'_]+$");
 	private Pattern clanTagPattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ]+$");
 	private String randomTagCharacters = "AZERTYUIOPQSDFGHJKLMWXCVBN0123456789";
 	
@@ -246,7 +246,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public final String generateTag(String name) {
-		name = name.replaceAll("['-]", "").toUpperCase();
+		name = name.replaceAll("['\\-_]", "").toUpperCase();
 		if (name.length() < 3) name += "a".repeat(3 - name.length());
 		for (int removedIndex = -1; removedIndex < name.length(); removedIndex++) { // enlève 1 lettre au fur et à mesure pour tenter des combinaisons pas encore faites
 			String nameM = removedIndex == -1 ? name : name.substring(0, removedIndex) + name.substring(removedIndex + 1);
@@ -268,7 +268,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	/* SQL statements */
 	
 	public T createClan(ClanPlayerInterface<T, D> p, String name, String tag) throws SQLException {
-		ResultSet resultSet = clansTable.insert(name, p.getId());
+		ResultSet resultSet = clansTable.insert(name, tag, p.getId());
 		resultSet.next();
 		int id = resultSet.getInt(1);
 		resultSet.close();
