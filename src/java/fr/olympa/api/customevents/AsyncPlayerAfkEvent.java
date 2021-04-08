@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 
 import fr.olympa.api.player.OlympaPlayer;
 
-public class PlayerAfkEvent extends Event {
+public class AsyncPlayerAfkEvent extends Event {
 	
 	public static final HandlerList handlers = new HandlerList();
 
@@ -17,8 +17,8 @@ public class PlayerAfkEvent extends Event {
 	final private Player p;
 	final private boolean isAfk;
 
-	public PlayerAfkEvent(Player p, boolean isAfk) {
-		super(false);
+	public AsyncPlayerAfkEvent(Player p, boolean isAfk) {
+		super(true);
 		this.p = p;
 		this.isAfk = isAfk;
 	}

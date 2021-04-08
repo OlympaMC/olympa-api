@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.customevents.PlayerAfkEvent;
+import fr.olympa.api.customevents.AsyncPlayerAfkEvent;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
 import fr.olympa.api.utils.Prefix;
@@ -85,8 +85,8 @@ public class AfkPlayer {
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
 			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
-		
-		Bukkit.getServer().getPluginManager().callEvent(new PlayerAfkEvent(p, isAfk));
+
+		OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> Bukkit.getServer().getPluginManager().callEvent(new AsyncPlayerAfkEvent(p, isAfk)));
 	}
 
 	public void setNotAfk() {
@@ -97,7 +97,7 @@ public class AfkPlayer {
 		if (api != null)
 			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
 		
-		Bukkit.getServer().getPluginManager().callEvent(new PlayerAfkEvent(p, isAfk));
+		OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> Bukkit.getServer().getPluginManager().callEvent(new AsyncPlayerAfkEvent(p, isAfk)));
 	}
 
 	/*private String getLastSuffix() {
