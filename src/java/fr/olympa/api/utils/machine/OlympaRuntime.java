@@ -60,14 +60,14 @@ public class OlympaRuntime {
 							.replace("[0m", "§f").replace("[1m", "§l").replace("[4m", "§n").replace("[32m", "§3").replace("[36m", "§b").replace("[49m", "§f").replace("[30m", "§0").replace("[31m", "§4")
 							.replace("[32m", "§2").replace("[33m", "§6").replace("[34m", "§1").replace("[35m", "§5").replace("[36m", "§3").replace("[37m", "§7").replace("[90m", "§8").replace("[91m", "§c")
 							.replace("[92m", "§a").replace("[91m", "§e").replace("[91m", "§9").replace("[91m", "§d").replace("[91m", "§b").replace("[97m", "§f").replace("[1;32m", "§6")
-							.replace("[1;33m", "§7").replace("[1;33", "§5").replace("[1;34m", "").replace("[36m", "").replace("[m", "").replace("0;", "");
+							.replace("[1;33m", "§7").replace("[1;33", "§5").replace("[1;34m", "").replace("[1m", "").replace("[36m", "").replace("[m", "").replace("0;", "");
 					if (LinkSpigotBungee.Provider.link != null && line.startsWith(" " + LinkSpigotBungee.Provider.link.getServerName() + " s'est arrêté")) {
 						Runtime.getRuntime().addShutdownHook(action("sh start.sh"));
 						OlympaCore.getInstance().getServer().shutdown();
 					}
 					LinkSpigotBungee.Provider.link.sendMessage("&dREAD BASH > " + line);
 					//					sb.append(line);
-					if (functionForAllLines != null)
+					if (functionForAllLines != null) // [1m
 						functionForAllLines.accept(line);
 				}
 				//				out = sb.toString();
