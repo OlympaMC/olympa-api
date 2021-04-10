@@ -100,7 +100,7 @@ public class TradesManager implements Listener {
 		
 		trades.stream().filter(trade -> trade.containsPlayer(e.getWhoClicked())).findAny().ifPresent(trade -> trade.click(e));
 	}
-	
+	 
 	@EventHandler
 	public void onInvClose(InventoryCloseEvent e) {
 		if (e.getPlayer().getType() != EntityType.PLAYER)
