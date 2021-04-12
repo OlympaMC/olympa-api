@@ -34,7 +34,7 @@ import fr.olympa.core.spigot.OlympaCore;
 public class TradesManager implements Listener {
 
 	private static TradesManager tradesManager;
-	public static TradesManager getInstance() {
+	private static TradesManager getInstance() {
 		return tradesManager;
 	}
 
@@ -71,7 +71,7 @@ public class TradesManager implements Listener {
 	}
 	
 	public TradesManager(JavaPlugin plugin) {
-		this(plugin, null, null, null, "");
+		this(plugin, null, null, null, null);
 	}
 	
 	
@@ -79,7 +79,7 @@ public class TradesManager implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInvClick(InventoryClickEvent e) {
-		if (e.getClickedInventory() == null)
+		if (e.getClickedInventory() == null || e.getWhoClicked() instanceof Player)
 			return;
 		
 		if (selectMoney.containsKey(e.getWhoClicked()) && e.getInventory().getType() == InventoryType.ANVIL) {
@@ -91,6 +91,7 @@ public class TradesManager implements Listener {
 					selectMoney.get(e.getWhoClicked()).selectMoney((Player) e.getWhoClicked(), 0);
 				}
 				
+				((Player)e.getWhoClicked()).closeInventory();
 				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(e.getWhoClicked()));
 			}
 
@@ -141,6 +142,9 @@ public class TradesManager implements Listener {
 	
 	@SuppressWarnings("deprecation")
 	void openMoneySelectionGuiFor(Player p, UniqueTradeManager trade) {
+		if (!canTradeMoney())
+			return;
+		
 		selectMoney.put(p, trade);
 		selectMoneyTask.put(p, OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20));
 		
@@ -161,15 +165,17 @@ public class TradesManager implements Listener {
 	}
 	
 	boolean hasMoney(Player p, double money) {
-		return hasMoney.apply(p, money);
+		return canTradeMoney() ? hasMoney.apply(p, money) : false;
 	}
 	
 	void addMoney(Player p, double amount) {
-		addMoney.accept(p, amount);
+		if (canTradeMoney())
+			addMoney.accept(p, amount);
 	}
 	
 	void removeMoney(Player p, double amount) {
-		removeMoney.accept(p, amount);
+		if (canTradeMoney())
+			removeMoney.accept(p, amount);
 	}
 	
 	String getMoneySymbol() {

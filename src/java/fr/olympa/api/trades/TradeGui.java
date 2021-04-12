@@ -47,14 +47,12 @@ public class TradeGui implements InventoryHolder {
 	
 	private Inventory inv;
 	private double playerMoney = 0;
-	private double otherMoney = 0;
 	
 	private TradeStep otherStep = TradeStep.FILLING;
 	private TradeStep step = TradeStep.FILLING;
 	
 	private int currentCountdown = countdownInit;
 	
-	@SuppressWarnings("deprecation")
 	public TradeGui(UniqueTradeManager manager, Player p) {
 		this.inv = Bukkit.createInventory(this, 9 * 6, "Echange avec " + manager.getOtherPlayer(p).getName());
 
@@ -63,8 +61,10 @@ public class TradeGui implements InventoryHolder {
 		inv.setItem(stepIndicatorSlot, step.indicator);
 		inv.setItem(otherStepIndicatorSlot, step.indicator);
 		
-		inv.setItem(moneySelectButtonSlot, defaultPlayerMoneyItem);
-		inv.setItem(otherMoneyIndicatorSlot, defaultOtherMoneyItem);
+		if (manager.getMoneySymbol() != null) {
+			inv.setItem(moneySelectButtonSlot, defaultPlayerMoneyItem);
+			inv.setItem(otherMoneyIndicatorSlot, defaultOtherMoneyItem);	
+		}
 		
 		inv.setItem(nextStepButtonSlot, nextStepEnabledItem);
 		
@@ -128,19 +128,24 @@ public class TradeGui implements InventoryHolder {
 	
 	
 	public void setPlayerMoney(double money) {
+		if (manager.getMoneySymbol() == null)
+			return;
+		
 		playerMoney = money;
 		if (money == 0)
 			inv.setItem(moneySelectButtonSlot, defaultPlayerMoneyItem);
 		else
-			inv.setItem(moneySelectButtonSlot, ItemUtils.name(otherMoneyItem, "§6Tu enverras " + money + TradesManager.getInstance().getMoneySymbol()));
+			inv.setItem(moneySelectButtonSlot, ItemUtils.name(playerMoneyItem, "§6Tu enverras " + money + manager.getMoneySymbol()));
 	}
 	
 	public void setOtherMoney(double money) {
-		otherMoney = money;
+		if (manager.getMoneySymbol() == null)
+			return;
+		
 		if (money == 0)
 			inv.setItem(otherMoneyIndicatorSlot, defaultOtherMoneyItem);
 		else
-			inv.setItem(otherMoneyIndicatorSlot, ItemUtils.name(otherMoneyItem, "§6Tu recevras " + money + TradesManager.getInstance().getMoneySymbol()));
+			inv.setItem(otherMoneyIndicatorSlot, ItemUtils.name(otherMoneyItem, "§6Tu recevras " + money + manager.getMoneySymbol()));
 	}
 	
 	public double getPlayerMoney() {

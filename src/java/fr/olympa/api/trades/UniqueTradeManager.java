@@ -27,10 +27,19 @@ public class UniqueTradeManager {
 	private Map<Player, TradeGui> map = new HashMap<Player, TradeGui>();
 	
 	private int timerId;
+	private TradesManager manager;
 	
-	public UniqueTradeManager(Player p1, Player p2) {
+	public UniqueTradeManager(TradesManager manager, Player p1, Player p2) {
 		map.put(p1, new TradeGui(this, p1));
 		map.put(p2, new TradeGui(this, p2));
+	}
+	
+	/**
+	 * 
+	 * @return null if money trade is disabled, otherwise money symbol
+	 */
+	String getMoneySymbol() {
+		return manager.getMoneySymbol();
 	}
 	
 	public void click(InventoryClickEvent e) {
@@ -52,7 +61,7 @@ public class UniqueTradeManager {
 					removeItemFromTrade(p, e.getCurrentItem());
 			
 				else if (TradeGui.isMoneySelectionButton(e.getRawSlot()))
-					return;//TODO
+					manager.openMoneySelectionGuiFor(p, this);
 		}
 		
 		if (e.getClickedInventory().getType() != InventoryType.PLAYER && TradeGui.isNextStepButton(e.getRawSlot()))
@@ -130,20 +139,19 @@ public class UniqueTradeManager {
 	
 	private void addItems(boolean success, Player p, List<ItemStack> items, double money) {
 		if (success)
-			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu " + items.size() + " objets" + (TradesManager.getInstance().canTradeMoney() ? " et " + money + TradesManager.getInstance().getMoneySymbol() : "") + " !");
+			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu " + items.size() + " objets" + (manager.canTradeMoney() ? " et " + money + manager.getMoneySymbol() : "") + " !");
 		else
-			Prefix.DEFAULT_BAD.sendMessage(p, "L'échange a échoué, tu as récupéré tes objets" + (TradesManager.getInstance().canTradeMoney() ? " et ton argent." : "."));
+			Prefix.DEFAULT_BAD.sendMessage(p, "L'échange a échoué, tu as récupéré tes objets" + (manager.canTradeMoney() ? " et ton argent." : "."));
 		
-		TradesManager.getInstance().setBag(AccountProvider.get(p.getUniqueId()), p.getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
-		if (TradesManager.getInstance().canTradeMoney())
-			TradesManager.getInstance().addMoney(p, money);
+		manager.setBag(AccountProvider.get(p.getUniqueId()), p.getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
+		manager.addMoney(p, money);
 	}
 	
 	
 	public void selectMoney(Player p, double money) {
-		if (TradesManager.getInstance().hasMoney(p, money))
+		if (manager.hasMoney(p, money))
 			if (map.containsKey(p)) {
-				TradesManager.getInstance().removeMoney(p, money);
+				manager.removeMoney(p, money);
 				map.get(p).setPlayerMoney(money);
 				map.get(getOtherPlayer(p)).setOtherMoney(money);
 			}
