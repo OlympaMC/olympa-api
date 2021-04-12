@@ -43,6 +43,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -297,10 +299,16 @@ public class RegionManager implements Listener {
 	public void onHangingPlace(HangingPlaceEvent e) {
 		fireEvent(e.getEntity().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getEntity()));
 	}
+	
+	@EventHandler
+	public void onHangingBreak(HangingBreakEvent e) {
+		if (e instanceof HangingBreakByEntityEvent) return;
+		fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
+	}
 
 	@EventHandler
-	public void onHangingBreak(HangingBreakByEntityEvent e) {
-		if (e.getRemover() instanceof Player) {
+	public void onHangingBreakByEntity(HangingBreakByEntityEvent e) {
+		if (e.getRemover() instanceof Player && e.getCause() != RemoveCause.EXPLOSION) {
 			fireEvent(e.getEntity().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, (Player) e.getRemover(), e.getEntity()));
 		}else fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
 	}
