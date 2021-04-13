@@ -134,7 +134,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		clan.setChief(target.getInformation());
 	}
 
-	@Cmd (player = true, aliases = { "settag" }, args = { "TAG" }, min = 1, syntax = "<nouveau tag>")
+	@Cmd (player = true, aliases = { "settag" }, min = 1, syntax = "<nouveau tag>")
 	public void tag(CommandContext cmd) {
 		T clan = getPlayerClan(true);
 		if (clan == null) return;

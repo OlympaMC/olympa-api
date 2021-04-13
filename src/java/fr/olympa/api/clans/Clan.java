@@ -2,10 +2,8 @@ package fr.olympa.api.clans;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -70,12 +68,12 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		return true;
 	}
 
-	protected String format(String message) {
-		return "§6§l" + name + " §7➤ §e" + message + " Terminé.";
+	protected String format(String message, Object... args) {
+		return "§6§l" + name + " §7➤ §e" + String.format(message, args) + " Terminé.";
 	}
 
-	public void broadcast(String message) {
-		String finalMessage = format(message);
+	public void broadcast(String message, Object... args) {
+		String finalMessage = format(message, args);
 		executeAllPlayers(p -> p.sendMessage(finalMessage));
 	}
 
@@ -166,22 +164,13 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	protected void removedOnlinePlayer(ClanPlayerInterface<T, D> oplayer) {
 		oplayer.setClan(null);
-		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
-		//Player player = oplayer.getPlayer();
-		/*Nametag nametag = new Nametag(null, " §c" + this.getName());
-		for (Player otherP : getPlayers())
-			nameTagApi.updateFakeNameTag(otherP, nametag, Arrays.asList(player));*/
-		List<OlympaPlayer> playerQuit = Arrays.asList(oplayer);
-		for (OlympaPlayer otherP : getOlympaPlayers()) nameTagApi.callNametagUpdate(otherP, playerQuit);
+		OlympaCore.getInstance().getNameTagApi().callNametagUpdate(oplayer);
 	}
 
 	public void removePlayer(OlympaPlayerInformations pinfo, boolean message) {
 		if (message)
 			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
 		D member = members.remove(pinfo);
-		/*INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
-		Nametag nametag = new Nametag(null, "");
-		nameTagApi.updateFakeNameTag(pinfo.getName(), nametag, Bukkit.getOnlinePlayers());*/
 
 		try {
 			manager.removePlayerFromClan(member);
@@ -209,14 +198,14 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	public void setName(String name) {
 		manager.nameColumn.updateAsync((T) this, name, () -> {
 			this.name = name;
-			broadcast(manager.stringNameChange);
+			broadcast(manager.stringNameChange, name);
 		}, null);
 	}
 
 	public void setTag(String tag) {
 		manager.tagColumn.updateAsync((T) this, tag, () -> {
 			this.tag = tag;
-			broadcast(manager.stringNameChange);
+			broadcast(manager.stringTagChange, tag);
 			getMembers().stream().filter(D::isConnected).map(D::getConnectedPlayer).forEach(OlympaCore.getInstance().getNameTagApi()::callNametagUpdate);
 		}, null);
 	}

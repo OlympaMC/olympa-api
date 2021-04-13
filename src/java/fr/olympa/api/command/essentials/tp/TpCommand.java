@@ -120,7 +120,7 @@ public class TpCommand extends OlympaCommand {
 		if (doub.is(args[++i]))
 			location.setY(doub.parse(args[i]));
 		else if (relative.is(args[i]))
-			location.add(0d, doub.extractAndParse(args[i]), 0d);
+			location.add(0d, relative.extractAndParse(args[i]), 0d);
 		else {
 			sendError("La position y = &4%s&c n'est pas valide.", args[i]);
 			return null;
@@ -128,7 +128,7 @@ public class TpCommand extends OlympaCommand {
 		if (doub.is(args[++i]))
 			location.setZ(doub.parse(args[i]));
 		else if (relative.is(args[i]))
-			location.add(0d, 0d, doub.extractAndParse(args[i]));
+			location.add(0d, 0d, relative.extractAndParse(args[i]));
 		else {
 			sendError("La position z = &4%s&c n'est pas valide.", args[i]);
 			return null;

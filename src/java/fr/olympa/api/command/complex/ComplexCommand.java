@@ -213,30 +213,32 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return true;
 			}
 			Object result = null;
-			DivideList<String> divideList = new DivideList<>(Arrays.asList(types), sType -> parsers.entrySet().stream().anyMatch(t -> sType.equals(t.getKey()))).divide();
-			List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(sType -> parsers.get(sType)).collect(Collectors.toList());
-			List<String> potentialString = divideList.getFalse();
-			List<String> potentialStringUpper = potentialString.stream().filter(s -> Utils.isAllUpperCase(s)).collect(Collectors.toList());
-			ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTab(sender, arg).contains(arg)).findFirst().orElse(null);
-			if (parser != null)
-				result = parser.supplyArgumentFunction.apply(arg);
-			else
-				// TODO : Choose between 2 parses here
-				result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
-			if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase()) || types.length == 0))
+			if (types.length == 0) {
 				result = arg;
-			if (result == null) {
-				if ("".equals(cmd.syntax()) && potentialParsers.isEmpty())
-					this.sendIncorrectSyntax(internal);
-				else if (!potentialParsers.isEmpty()) {
-					sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null)
-							.map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", ""))
-							.collect(Collectors.joining(" &4&lou&c ")));
-					if (potentialParsers.size() <= 1)
-						return true;
-				} else
-					this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
-				return true;
+			}else {
+				DivideList<String> divideList = new DivideList<>(Arrays.asList(types), sType -> parsers.entrySet().stream().anyMatch(t -> sType.equals(t.getKey()))).divide();
+				List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(sType -> parsers.get(sType)).collect(Collectors.toList());
+				List<String> potentialString = divideList.getFalse();
+				List<String> potentialStringUpper = potentialString.stream().filter(s -> Utils.isAllUpperCase(s)).collect(Collectors.toList());
+				ArgumentParser<CommandSender> parser = potentialParsers.stream().filter(p -> p.applyTab(sender, arg).contains(arg)).findFirst().orElse(null);
+				if (parser != null)
+					result = parser.supplyArgumentFunction.apply(arg);
+				else
+					// TODO : Choose between 2 parses here
+					result = potentialParsers.stream().map(p -> p.supplyArgumentFunction.apply(arg)).filter(r -> r != null).findFirst().orElse(null);
+				if (!potentialString.isEmpty() && result == null && (potentialStringUpper.isEmpty() || potentialStringUpper.contains(arg.toUpperCase()) || types.length == 0))
+					result = arg;
+				if (result == null) {
+					if ("".equals(cmd.syntax()) && potentialParsers.isEmpty())
+						this.sendIncorrectSyntax(internal);
+					else if (!potentialParsers.isEmpty()) {
+						sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null).map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", "")).collect(Collectors.joining(" &4&lou&c ")));
+						if (potentialParsers.size() <= 1)
+							return true;
+					}else
+						this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
+					return true;
+				}
 			}
 			newArgs[newArgIndex] = result;
 		}

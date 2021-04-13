@@ -60,5 +60,9 @@ public class Point2D {
 		int index = string.indexOf('|');
 		return new Point2D(Integer.parseInt(string.substring(0, index)), Integer.parseInt(string.substring(index + 1)));
 	}
+	
+	public static Point2D chunkPointFromLocation(Location location) {
+		return new Point2D(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+	}
 
 }
