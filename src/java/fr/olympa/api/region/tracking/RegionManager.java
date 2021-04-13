@@ -46,6 +46,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -293,6 +294,11 @@ public class RegionManager implements Listener {
 	@EventHandler
 	public void onEntityInteract(PlayerInteractEntityEvent e) {
 		if (e.getRightClicked() instanceof ItemFrame || e.getRightClicked() instanceof ArmorStand) fireEvent(e.getRightClicked().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getRightClicked()));
+	}
+	
+	@EventHandler
+	public void onArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+		fireEvent(e.getRightClicked().getLocation(), PlayerBlocksFlag.class, x -> x.entityEvent(e, e.getPlayer(), e.getRightClicked()));
 	}
 
 	@EventHandler

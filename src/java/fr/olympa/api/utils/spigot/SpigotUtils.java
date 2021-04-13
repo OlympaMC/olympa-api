@@ -55,6 +55,10 @@ public class SpigotUtils {
 	public static Location addYToLocation(Location location, float y) {
 		return new Location(location.getWorld(), location.getX(), location.getY() + 1, location.getZ(), location.getYaw(), location.getPitch());
 	}
+	
+	public static Location normalizeLocationToBlock(Location location) {
+		return new Location(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
 
 	public static int clearPlayer(Player player) {
 		PlayerInventory inventory = player.getInventory();
@@ -95,7 +99,7 @@ public class SpigotUtils {
 		double x = loc.getX();
 		double y = loc.getY();
 		double z = loc.getZ();
-		if ((int) loc.getPitch() != 0) {
+		if ((int) loc.getPitch() != 0 || (int) loc.getYaw() != 0) {
 			int yaw = (int) loc.getYaw();
 			int pitch = (int) loc.getPitch();
 			return world + " " + x + " " + y + " " + z + " " + yaw + " " + pitch;
