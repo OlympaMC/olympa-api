@@ -1,9 +1,11 @@
 package fr.olympa.api.trades;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -17,9 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.item.ItemUtils;
@@ -28,6 +33,7 @@ import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
+import net.kyori.adventure.text.Component;
 
 /**
  * Instantiate this class to enable trades. Command /trade is registered internally
@@ -35,9 +41,6 @@ import fr.olympa.core.spigot.OlympaCore;
  * @param <T> OlympaPlayer implementation for current plugin
  */
 public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
-
-	private boolean isEnabled = false;
-	//private OlympaCommand cmd = null;
 	
 	private Function<T, Runnable> itemBagReminderSupplier = p -> 
 		() -> Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "Tu n'avais pas assez de place dans ton inventaire, certains objets n'ont pas pu y être placés. Fais /A DEFINIR pour les récupérer.\n§4Tu as jusqu'à ce soir, demain ils seront perdus !");
@@ -47,8 +50,8 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 
 	private Set<UniqueTradeManager<T>> trades = new HashSet<UniqueTradeManager<T>>();
 
-	private Map<Player, UniqueTradeManager<T>> selectMoney = new HashMap<Player, UniqueTradeManager<T>>();
-	private Map<Player, Integer> selectMoneyTask = new HashMap<Player, Integer>();
+	//private Map<Player, UniqueTradeManager<T>> selectMoney = new HashMap<Player, UniqueTradeManager<T>>();
+	private Map<Player, Entry<UniqueTradeManager<T>, Integer>> selectMoney = new HashMap<Player, Map.Entry<UniqueTradeManager<T>,Integer>>();
 	
 	/*
 	private BiFunction<T, Double, Boolean> hasMoney;
@@ -73,21 +76,22 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		new TradeCommand(plugin, this).register();
 		
 		this.canTradeMoney = canTradeMoney;
+		
+		plugin.getLogger().info("§aTrades manager enabled.");
 	}
 	
 	
 	
-	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInvClick(InventoryClickEvent e) {
-		if (e.getClickedInventory() == null || e.getWhoClicked() instanceof Player)
+		if (e.getClickedInventory() == null || !(e.getWhoClicked() instanceof Player))
 			return;
 		
-		if (selectMoney.containsKey(e.getWhoClicked())) {
+		/*if (selectMoneyTask.containsKey(e.getWhoClicked())) {
 			
 			if (e.getRawSlot() == 2 && trades.contains(selectMoney.get(e.getWhoClicked()))) {
 				try {
-					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), Double.valueOf(((AnvilInventory)e.getInventory()).getResult().getItemMeta().getDisplayName()));
+					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), Double.valueOf((e.getInventory().getItem(2).getItemMeta().getDisplayName())));
 				}catch(NumberFormatException ex) {
 					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), 0);
 				}
@@ -98,9 +102,26 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 
 			e.setCancelled(true);
 			return;
-		}
+		}*/
 		
-		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getWhoClicked().getUniqueId()))).findAny().ifPresent(trade -> trade.click(e));
+		T p = AccountProvider.<T>get(e.getWhoClicked().getUniqueId());
+		trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().ifPresent(trade -> trade.click(e, p));
+	}
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onChat(PlayerChatEvent e) {
+		if (selectMoney.containsKey(e.getPlayer())) {
+			try {
+				selectMoney.get(e.getPlayer()).getKey().selectMoney(AccountProvider.get(e.getPlayer().getUniqueId()), Double.valueOf(e.getMessage()));
+			}catch(NumberFormatException ex) {
+				selectMoney.get(e.getPlayer()).getKey().selectMoney(AccountProvider.get(e.getPlayer().getUniqueId()), 0);
+			}
+			
+			OlympaCore.getInstance().getTask().cancelTaskById(selectMoney.get(e.getPlayer()).getValue());
+			selectMoney.remove(e.getPlayer()).getKey().openFor(AccountProvider.get(e.getPlayer().getUniqueId()));
+			e.setCancelled(true);
+		}
 	}
 	 
 	@EventHandler
@@ -108,27 +129,37 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		if (e.getPlayer().getType() != EntityType.PLAYER)
 			return;
 		
-		if (selectMoney.containsKey(e.getPlayer())) {
-			//si le joueur ferme l'inventaire de l'échange car il vient d'ouvrir celui de la sélection de la money tout va bien
-			if (e.getInventory().equals(selectMoney.get(e.getPlayer()).getTradeGuiOf(AccountProvider.get(e.getPlayer().getUniqueId())).getInventory()))
-				return;
-			
-			selectMoney.remove(e.getPlayer()).openFor((AccountProvider.get(e.getPlayer().getUniqueId())));
-			OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(e.getPlayer()));
-			return;	
-		}
+		T p = AccountProvider.get(e.getPlayer().getUniqueId());
 		
-		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false));
+		if (selectMoney.containsKey(e.getPlayer()))
+			return;	
+		
+		trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().ifPresent(trade -> trade.endTrade(false));
+	}
+	
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	public void onMove(PlayerMoveEvent e) {
+		if (e.getFrom().getBlock().equals(e.getTo().getBlock()))
+			return;
+		
+		if (selectMoney.containsKey(e.getPlayer()))
+			selectMoney.get(e.getPlayer()).getKey().endTrade(false);
+	}
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	public void onTeleport(PlayerTeleportEvent e) {
+		trades.stream().filter(trade -> 
+				trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false));
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		OlympaPlayer op = AccountProvider.get(e.getPlayer().getUniqueId());
+		T op = AccountProvider.get(e.getPlayer().getUniqueId());
 		
 		if (itemBagsTasks.containsKey(op.getId()))
 			OlympaCore.getInstance().getTask().cancelTaskById(itemBagsTasks.remove(op.getId()));
 		
-		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false)); 
+		trades.stream().filter(trade -> trade.containsPlayer(op)).findAny().ifPresent(trade -> trade.endTrade(false)); 
 	}
 	
 	@EventHandler
@@ -142,17 +173,21 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	
 	
 	
-	@SuppressWarnings("deprecation")
-	void openMoneySelectionGuiFor(T p, UniqueTradeManager<T> trade) {
+	void openMoneySelectionFor(T p, UniqueTradeManager<T> trade) {
 		if (!canTradeMoney())
 			return;
+
+		addMoney(p, trade.getTradeGuiOf(p).getPlayerMoney());
+		trade.selectMoney(p, 0);
 		
-		selectMoney.put(p.getPlayer(), trade);
-		selectMoneyTask.put(p.getPlayer(), OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20));
+		selectMoney.put(p.getPlayer(), new AbstractMap.SimpleEntry<UniqueTradeManager<T>, Integer>(trade, 
+				OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20)));
+		p.getPlayer().closeInventory();
 		
-		AnvilInventory inv = (AnvilInventory) Bukkit.createInventory(p.getPlayer(), InventoryType.ANVIL, "Argent à donner");
-		inv.setFirstItem(ItemUtils.item(Material.DIRT, "", "§7Ecris le montant que", "§7tu souhaites donner dans", "§7le champ de texte"));
-		p.getPlayer().openInventory(inv);
+		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez l'argent à ajouter à l'échange : ");
+		/*Inventory inv = Bukkit.createInventory(p.getPlayer(), InventoryType.ANVIL, Component.text("Argent à donner"));
+		inv.setItem(0, ItemUtils.item(Material.DIRT, "", "§7Ecris le montant que", "§7tu souhaites donner dans", "§7le champ de texte"));
+		p.getPlayer().openInventory(inv);*/
 	}
 	
 	
@@ -210,11 +245,7 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	}
 	
 	
-	public void startTrade(T p1, T p2) {
-		if (!isEnabled)
-			return;
-		
-		if (itemBags.containsKey(p1.getId())) {
+	public void startTrade(T p1, T p2) {if (itemBags.containsKey(p1.getId())) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p2.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p1.getName());
 			
@@ -238,8 +269,8 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		
 		trade.getPlayers().forEach(p -> {
 			p.getPlayer().closeInventory();
-			if (trade.equals(selectMoney.remove(p.getPlayer())))
-				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(p.getPlayer()));
+			if (selectMoney.containsKey(p.getPlayer()))
+				OlympaCore.getInstance().getTask().cancelTaskById(selectMoney.remove(p.getPlayer()).getValue());
 		});
 		
 	}

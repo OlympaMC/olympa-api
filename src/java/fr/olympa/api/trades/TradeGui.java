@@ -1,5 +1,6 @@
 package fr.olympa.api.trades;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -23,16 +24,16 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	private static int nextStepButtonSlot = 2;
 	private static int moneySelectButtonSlot = 3;
 
-	private static int otherStepIndicatorSlot = 4;
+	private static int otherStepIndicatorSlot = 5;
 	private static int otherMoneyIndicatorSlot = 6;
 
 	private static ItemStack playerBlankItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.LIGHT_GRAY), "§1§2§3§4§5§9§8§7§6"));
 	private static ItemStack otherBlankItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.GRAY), "§1§2§3§4§5§9§8§7§6"));
-	private static ItemStack middleBlankItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.GREEN), "§1§2§3§4§5§9§8§7§6"));
-	private static ItemStack topBlankItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.GREEN), "§1§2§3§4§5§9§8§7§6"));
+	private static ItemStack separatorItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.GREEN), "§1§2§3§4§5§9§8§7§6"));
+	//private static ItemStack topBlankItem = UniqueTradeManager.getAsLocked(ItemUtils.name(ItemUtils.itemSeparator(DyeColor.GREEN), "§1§2§3§4§5§9§8§7§6"));
 
-	private static ItemStack defaultPlayerMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.COAL, "§eTu n'envoies pas d'argent", "§7Cliques pour sélectionner", "§7un montant à échanger"));
-	private static ItemStack defaultOtherMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.COAL, "§eTu ne reçois pas d'argent", "§7Ton partenaire n'a pas sélectionné", "§7d'argent à échanger avec toi"));
+	private static ItemStack defaultPlayerMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§eTu n'envoies pas d'argent", "§7Cliques pour sélectionner", "§7un montant à échanger"));
+	private static ItemStack defaultOtherMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§eTu ne reçois pas d'argent", "§7Ton partenaire n'a pas sélectionné", "§7d'argent à échanger avec toi"));
 
 	private static ItemStack nextStepEnabledItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GREEN_CONCRETE, "§aPasser à l'étape suivante"));
 	private static ItemStack nextStepDisabledItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.YELLOW_CONCRETE, "§cAttend que ton partenaire change d'étape"));
@@ -40,8 +41,8 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	
 	private ItemStack countdownTimerItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.CLOCK, "§eFinalisation dans..."));
 	
-	private ItemStack playerMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§6Tu enverras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera débité de ce montant", "§7et sera crédité à ton partenaire"));
-	private ItemStack otherMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§6Tu recevras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera crédité de ce montant"));
+	private ItemStack playerMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_BLOCK, "§6Tu enverras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera débité de ce montant", "§7et sera crédité à ton partenaire"));
+	private ItemStack otherMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_BLOCK, "§6Tu recevras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera crédité de ce montant"));
 	
 	private UniqueTradeManager<T> manager;
 	
@@ -53,11 +54,24 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	
 	private int currentCountdown = countdownInit;
 	
+	private List<ItemStack> items = new ArrayList<ItemStack>();
+	
 	@SuppressWarnings("deprecation")
-	public TradeGui(UniqueTradeManager<T> manager, T p) {
-		this.inv = Bukkit.createInventory(this, 9 * 6, "Echange avec " + manager.getOtherPlayer(p).getName());
+	public TradeGui(UniqueTradeManager<T> manager, T p, T other) {
+		this.inv = Bukkit.createInventory(this, 9 * 6, "Echange avec " + other.getName());
 
 		this.manager = manager;
+		
+		for (int i = 0 ; i < 9 ; i++)
+			inv.setItem(i, separatorItem);
+		
+		for (int i = 9 ; i < inv.getSize() ; i++)
+			if (i % 9 < 4)
+				inv.setItem(i, playerBlankItem);
+			else if (i % 9 > 4)
+				inv.setItem(i, otherBlankItem);
+			else
+				inv.setItem(i, separatorItem);
 		
 		inv.setItem(stepIndicatorSlot, step.indicator);
 		inv.setItem(otherStepIndicatorSlot, step.indicator);
@@ -68,51 +82,39 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 		}
 		
 		inv.setItem(nextStepButtonSlot, nextStepEnabledItem);
-		
-		for (int i = 0 ; i < 9 ; i++)
-			inv.setItem(i, topBlankItem);
-		
-		for (int i = 9 ; i < inv.getSize() ; i++)
-			if (i / 9 < 4)
-				inv.setItem(i, playerBlankItem);
-			else if (i / 9 > 4)
-				inv.setItem(i, otherBlankItem);
-			else
-				inv.setItem(i, middleBlankItem);
 	}
 
 	
 	
-	public boolean addItemOnPlayerSide(ItemStack it) {
+	boolean addItemOnPlayerSide(ItemStack it) {
 		for (Entry<Integer, ItemStack> e : inv.addItem(it.clone()).entrySet()) 
 			if (getNextFreePlayerSlot() == -1) {
 				e.getValue().setAmount(e.getValue().getAmount() - it.getAmount());
 				return false;	
-			}
-			else
+			}else {
 				inv.setItem(getNextFreePlayerSlot(), e.getValue());
-		
-		
+				items.add(it);
+			}
 		return true;
 	}
 	
-	public void addItemOnOtherSide(ItemStack it) {
+	void addItemOnOtherSide(ItemStack it) {
 		for (Entry<Integer, ItemStack> e : inv.addItem(UniqueTradeManager.getAsLocked(it)).entrySet()) 
 			if (getNextFreeOtherSlot() != -1)
 				inv.setItem(getNextFreeOtherSlot(), e.getValue());
 	}
 
 	
-	public boolean removeItemOnPlayerSide(ItemStack it) {
-		int i = inv.first(it);
-		if (i == -1)
+	boolean removeItemOnPlayerSide(ItemStack it) {
+		if (!items.contains(it))
 			return false;
 		
-		inv.setItem(i, playerBlankItem);
+		inv.setItem(inv.first(it), playerBlankItem);
+		items.remove(it);
 		return true; 
 	}
 	
-	public void removeItemOnOtherSide(ItemStack it) {
+	void removeItemOnOtherSide(ItemStack it) {
 		int i = inv.first(UniqueTradeManager.getAsLocked(it));
 		if (i > -1)
 			inv.setItem(i, otherBlankItem);
@@ -128,7 +130,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	}
 	
 	
-	public void setPlayerMoney(double money) {
+	void setPlayerMoney(double money) {
 		if (manager.getMoneySymbol() == null)
 			return;
 		
@@ -139,7 +141,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 			inv.setItem(moneySelectButtonSlot, ItemUtils.name(playerMoneyItem, "§6Tu enverras " + money + manager.getMoneySymbol()));
 	}
 	
-	public void setOtherMoney(double money) {
+	void setOtherMoney(double money) {
 		if (manager.getMoneySymbol() == null)
 			return;
 		
@@ -155,7 +157,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	
 	
 	
-	public boolean nextTradeStep() {		
+	boolean nextTradeStep() {		
 		if (!step.isLastStep && (otherStep == step || otherStep == TradeStep.getNext(step))) {
 			step = TradeStep.getNext(step);
 			inv.setItem(stepIndicatorSlot, step.indicator);
@@ -167,7 +169,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 			return false;
 	}
 	
-	public void setNextStepOther(TradeStep newOtherStep) {
+	void setNextStepOther(TradeStep newOtherStep) {
 		inv.setItem(otherStepIndicatorSlot, newOtherStep.indicator);
 		inv.setItem(nextStepButtonSlot, nextStepEnabledItem);
 		otherStep = newOtherStep;
@@ -177,6 +179,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 		return step;
 	}
 
+	
 
 	public static boolean isMoneySelectionButton(int rawSlot) {
 		return rawSlot == moneySelectButtonSlot;
@@ -192,7 +195,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	 * 
 	 * @return true if timer has been updated, false if it has ended
 	 */
-	public boolean updateTimer() {
+	boolean updateTimer() {
 		if (currentCountdown == 0)
 			return false;
 		
@@ -203,8 +206,9 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 	
 	
 	
-	public List<ItemStack> getPlayerItems() {
-		return Stream.of(inv.getContents()).filter(it -> it != null && !UniqueTradeManager.isLocked(it)).collect(Collectors.toList());
+	List<ItemStack> getPlayerItems() {
+		//return Stream.of(inv.getContents()).filter(it -> it != null && !UniqueTradeManager.isLocked(it)).collect(Collectors.toList());
+		return items;
 	}
 	
 	
@@ -225,7 +229,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 		
 		private TradeStep(boolean isLastStep, ItemStack item) {
 			this.isLastStep = isLastStep;
-			this.indicator = item;
+			this.indicator = UniqueTradeManager.getAsLocked(item);
 		}
 
 

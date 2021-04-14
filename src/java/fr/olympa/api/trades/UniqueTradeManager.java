@@ -3,7 +3,9 @@ package fr.olympa.api.trades;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -12,6 +14,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import fr.olympa.api.economy.MoneyPlayerInterface;
@@ -30,9 +33,15 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	private int timerId;
 	private TradesManager<T> manager;
 	
+	private boolean hasEnded = false;
+	
 	public UniqueTradeManager(TradesManager<T> manager, T p1, T p2) {
-		map.put(p1, new TradeGui<T>(this, p1));
-		map.put(p2, new TradeGui<T>(this, p2));
+		this.manager = manager;
+		
+		map.put(p1, new TradeGui<T>(this, p1, p2));
+		map.put(p2, new TradeGui<T>(this, p2, p1));
+		
+		map.forEach((p, gui) -> p.getPlayer().openInventory(gui.getInventory()));
 	}
 	
 	/**
@@ -43,43 +52,40 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 		return manager.getMoneySymbol();
 	}
 	
-	void click(InventoryClickEvent e) {
+	void click(InventoryClickEvent e, T p) {
 		e.setCancelled(true);
 		
 		if ((e.getClick() != ClickType.LEFT && e.getClick() != ClickType.RIGHT) || 
-				e.getWhoClicked().getType() != EntityType.PLAYER)
+				e.getWhoClicked().getType() != EntityType.PLAYER || e.getCurrentItem() == null)
 			return;
 		
-		T p = AccountProvider.get(e.getWhoClicked().getUniqueId());
 		TradeGui<T> pGui = map.get(p);
 		
-		if (e.getCurrentItem() != null) {
-			if (pGui.getStep() == TradeStep.FILLING)
-				if (e.getClickedInventory().getType() == InventoryType.PLAYER)
-					addItemToTrade(p, e.getCurrentItem());
-			
-				else if (hasClickedOwnItems(e.getRawSlot()))
-					removeItemFromTrade(p, e.getCurrentItem());
-			
-				else if (TradeGui.isMoneySelectionButton(e.getRawSlot()))
-					manager.openMoneySelectionGuiFor(p, this);
-		}
+		if (pGui.getStep() == TradeStep.FILLING)
+			if (e.getClickedInventory().getType() == InventoryType.PLAYER) {
+				addItemToTrade(p, e.getCurrentItem());
+				e.setCurrentItem(null);
+				
+			}else if (!isLocked(e.getCurrentItem()))
+				removeItemFromTrade(p, e.getCurrentItem());
 		
-		if (e.getClickedInventory().getType() != InventoryType.PLAYER && TradeGui.isNextStepButton(e.getRawSlot()))
+			else if (TradeGui.isMoneySelectionButton(e.getRawSlot()))
+				manager.openMoneySelectionFor(p, this);
+			
+		
+		if (pGui.getInventory().equals(e.getClickedInventory()) && TradeGui.isNextStepButton(e.getRawSlot()))
 			if (pGui.nextTradeStep()) {
 				TradeGui<T> otherGui = getOtherTrade(pGui);
 				otherGui.setNextStepOther(pGui.getStep());
-				if (otherGui.getStep() == pGui.getStep())
+				if (otherGui.getStep() == TradeStep.TIMER && pGui.getStep() == TradeStep.TIMER)
 					startTradeTimer();
 			}
 				
 	}
 	
 	private void addItemToTrade(T p, ItemStack item) {
-		if (map.get(p).addItemOnPlayerSide(item)) {
+		if (map.get(p).addItemOnPlayerSide(item)) 
 			map.get(getOtherPlayer(p)).addItemOnOtherSide(item);
-			item.setType(Material.AIR);
-		}
 	}
 	
 	private void removeItemFromTrade(T p, ItemStack item) {
@@ -123,19 +129,23 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	
 	
 	
-	private void startTradeTimer() {
-		timerId = OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(() -> 
-			map.forEach((p, gui) -> {
-				if (!gui.updateTimer()) {
+	private void startTradeTimer() {		
+		timerId = OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(() -> {
+			
+			for (Entry<T, TradeGui<T>> e : map.entrySet())
+				if (!e.getValue().updateTimer()) {
 					endTrade(true);
 					OlympaCore.getInstance().getTask().cancelTaskById(timerId);
 					return;
 				}
-			})
-		, 0, 20);
+		
+		
+		}, 0, 20);
 	}
 	
 	void endTrade(boolean success) {
+		hasEnded = true;
+		
 		if (success) {
 			map.keySet().forEach(p -> {
 				TradeGui<T> gui = map.get(getOtherPlayer(p));
@@ -153,8 +163,9 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	
 	
 	private void addItems(boolean success, T p, List<ItemStack> items, double money) {
+		int count = items.stream().mapToInt(it -> it.getAmount()).sum();
 		if (success)
-			Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Tu as reçu " + items.size() + " objets" + (manager.canTradeMoney() ? " et " + money + manager.getMoneySymbol() : "") + " !");
+			Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Tu as reçu " + count + (count <= 1 ? " objet" : " objets") + (manager.canTradeMoney() ? " et " + money + manager.getMoneySymbol() : "") + " !");
 		else
 			Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "L'échange a échoué, tu as récupéré tes objets" + (manager.canTradeMoney() ? " et ton argent." : "."));
 		
@@ -181,21 +192,16 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	
 	static ItemStack getAsLocked(ItemStack item) {
 		ItemStack it = item.clone();
-		it.getItemMeta().getPersistentDataContainer().set(ownerKey, PersistentDataType.BYTE, (byte) 1);
+		ItemMeta meta = it.getItemMeta();
+		meta.getPersistentDataContainer().set(ownerKey, PersistentDataType.BYTE, (byte) 1);
+		it.setItemMeta(meta);
 		return it;
 	}
 	
 	
 	static boolean isLocked(ItemStack item) {
 		return item.getItemMeta().getPersistentDataContainer().has(ownerKey, PersistentDataType.BYTE);
-	}
-	
-
-	
-	public static boolean hasClickedOwnItems(int rawSlot) {
-		return rawSlot > 8 && (rawSlot / 9) < 4;
-	}
-	
+	}	
 }
 
 

@@ -29,7 +29,7 @@ public class TradeCommand extends ComplexCommand {
 	}
 	
 	@Cmd(args = "PLAYERS", min = 1, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
-	public void trade(CommandContext cmd) {
+	public void with(CommandContext cmd) {
 		/*if (!trades.isEnabled()) {
 			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Les échanges sont temporairement désactivés, réessaies plus tard.");
 			return;
@@ -37,7 +37,10 @@ public class TradeCommand extends ComplexCommand {
 		
 		Player partner = cmd.getArgument(0);
 		
-		if (map.containsEntry(getPlayer(), partner))
+		if (getPlayer().equals(partner))
+			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu ne peux pas échanger avec toi même...");
+		
+		else if (map.containsEntry(getPlayer(), partner))
 			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu as déjà envoyé une demande à %s, patientes un peu avant d'en renvoyer une !", ((Player)partner).getName());
 		
 		else if (map.remove(partner, getPlayer()))
