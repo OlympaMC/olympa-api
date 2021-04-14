@@ -3,6 +3,8 @@ package fr.olympa.api.trades;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
@@ -14,6 +16,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.trades.TradeGui.TradeStep;
 import fr.olympa.api.utils.Prefix;
@@ -29,9 +32,9 @@ public class UniqueTradeManager {
 	private int timerId;
 	private TradesManager manager;
 	
-	public UniqueTradeManager(TradesManager manager, Player p1, Player p2) {
-		map.put(p1, new TradeGui(this, p1));
-		map.put(p2, new TradeGui(this, p2));
+	public UniqueTradeManager(TradesManager manager, OlympaPlayer p1, OlympaPlayer p2) {
+		map.put(p1.getPlayer(), new TradeGui(this, p1.getPlayer()));
+		map.put(p2.getPlayer(), new TradeGui(this, p2.getPlayer()));
 	}
 	
 	/**
@@ -42,7 +45,7 @@ public class UniqueTradeManager {
 		return manager.getMoneySymbol();
 	}
 	
-	public void click(InventoryClickEvent e) {
+	void click(InventoryClickEvent e) {
 		e.setCancelled(true);
 		
 		if ((e.getClick() != ClickType.LEFT && e.getClick() != ClickType.RIGHT) || 
@@ -92,8 +95,13 @@ public class UniqueTradeManager {
 	
 	
 
-	public boolean containsPlayer(HumanEntity whoClicked) {
-		return map.containsKey(whoClicked);
+
+	public Set<Player> getPlayers() {
+		return map.keySet();
+	}
+	
+	public boolean containsPlayer(Player p) {
+		return map.containsKey(p);
 	}
 	
 	public Player getOtherPlayer(Player p) {
@@ -103,7 +111,12 @@ public class UniqueTradeManager {
 			return null;
 	}
 	
-	public TradeGui getOtherTrade(TradeGui gui) {
+	
+	TradeGui getTradeGuiOf(Player p) {
+		return map.get(p);
+	}
+	
+	TradeGui getOtherTrade(TradeGui gui) {
 		if (map.containsValue(gui))
 			return map.values().stream().filter(gui2 -> !gui2.equals(gui)).findFirst().get();
 		else
@@ -124,7 +137,7 @@ public class UniqueTradeManager {
 		, 0, 20);
 	}
 	
-	public void endTrade(boolean success) {
+	void endTrade(boolean success) {
 		if (success) {
 			map.keySet().forEach(p -> {
 				TradeGui gui = map.get(getOtherPlayer(p));
@@ -135,7 +148,11 @@ public class UniqueTradeManager {
 				TradeGui gui = map.get(p);
 				addItems(success, p, gui.getPlayerItems(), gui.getPlayerMoney());
 			});
+		
+		manager.cancelTasksFor(this);
 	}
+	
+	
 	
 	private void addItems(boolean success, Player p, List<ItemStack> items, double money) {
 		if (success)
@@ -148,7 +165,7 @@ public class UniqueTradeManager {
 	}
 	
 	
-	public void selectMoney(Player p, double money) {
+	void selectMoney(Player p, double money) {
 		if (manager.hasMoney(p, money))
 			if (map.containsKey(p)) {
 				manager.removeMoney(p, money);
@@ -158,20 +175,20 @@ public class UniqueTradeManager {
 	}
 	
 	
-	public void openFor(Player p) {
+	void openFor(Player p) {
 		if (map.containsKey(p))
 			p.openInventory(map.get(p).getInventory());
 	}
 	
 	
-	public static ItemStack getAsLocked(ItemStack item) {
+	static ItemStack getAsLocked(ItemStack item) {
 		ItemStack it = item.clone();
 		it.getItemMeta().getPersistentDataContainer().set(ownerKey, PersistentDataType.BYTE, (byte) 1);
 		return it;
 	}
 	
 	
-	public static boolean isLocked(ItemStack item) {
+	static boolean isLocked(ItemStack item) {
 		return item.getItemMeta().getPersistentDataContainer().has(ownerKey, PersistentDataType.BYTE);
 	}
 	
