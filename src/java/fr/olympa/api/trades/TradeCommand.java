@@ -32,10 +32,10 @@ public class TradeCommand extends ComplexCommand {
 	
 	@Cmd(args = "PLAYERS", min = 1, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
 	public void trade(CommandContext cmd) {
-		if (!trades.isEnabled()) {
+		/*if (!trades.isEnabled()) {
 			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Les échanges sont temporairement désactivés, réessaies plus tard.");
 			return;
-		}
+		}*/
 		
 		Player partner = cmd.getArgument(0);
 		

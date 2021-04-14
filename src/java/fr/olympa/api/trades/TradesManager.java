@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.item.ItemUtils;
 import fr.olympa.api.module.OlympaModule.ModuleApi;
 import fr.olympa.api.player.OlympaPlayer;
@@ -34,43 +35,45 @@ import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class TradesManager implements Listener, ModuleApi<Tradeable> {
+public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 
 	private boolean isEnabled = false;
-	private OlympaCommand cmd = null;
+	//private OlympaCommand cmd = null;
 	
-	private Function<OlympaPlayer, Runnable> itemBagReminderSupplier = p -> 
+	private Function<T, Runnable> itemBagReminderSupplier = p -> 
 		() -> Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "Tu n'avais pas assez de place dans ton inventaire, certains objets n'ont pas pu y être placés. Fais /A DEFINIR pour les récupérer.\n§4Tu as jusqu'à ce soir, demain ils seront perdus !");
 	
 	private Map<Long, ItemStack[]> itemBags = new HashMap<Long, ItemStack[]>();
 	private Map<Long, Integer> itemBagsTasks = new HashMap<Long, Integer>();
 
-	private Set<UniqueTradeManager> trades = new HashSet<UniqueTradeManager>();
+	private Set<UniqueTradeManager<T>> trades = new HashSet<UniqueTradeManager<T>>();
 
-	private Map<Player, UniqueTradeManager> selectMoney = new HashMap<Player, UniqueTradeManager>();
+	private Map<Player, UniqueTradeManager<T>> selectMoney = new HashMap<Player, UniqueTradeManager<T>>();
 	private Map<Player, Integer> selectMoneyTask = new HashMap<Player, Integer>();
 	
-	private BiFunction<Player, Double, Boolean> hasMoney;
-	private BiConsumer<Player, Double> addMoney;
-	private BiConsumer<Player, Double> removeMoney;
-	private String moneySymbol;
+	/*
+	private BiFunction<T, Double, Boolean> hasMoney;
+	private BiConsumer<T, Double> addMoney;
+	private BiConsumer<T, Double> removeMoney;
+	private String moneySymbol;*/
 	
-	public TradesManager(JavaPlugin plugin, 
-			BiFunction<Player, Double, Boolean> hasMoney, 
-			BiConsumer<Player, Double> addMoney,  
-			BiConsumer<Player, Double> removeMoney,
-			String moneySymbol) {
+	private boolean canTradeMoney = true;
+	
+	public TradesManager(OlympaAPIPlugin plugin) {
+		this(plugin, true);
 		
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		
+		/*
 		this.hasMoney = hasMoney;
 		this.addMoney = addMoney;
 		this.removeMoney = removeMoney;
-		this.moneySymbol = moneySymbol;
+		this.moneySymbol = moneySymbol;*/
 	}
 	
-	public TradesManager(JavaPlugin plugin) {
-		this(plugin, null, null, null, null);
+	public TradesManager(OlympaAPIPlugin plugin, boolean canTradeMoney) {
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		new TradeCommand(plugin, this).register();
+		
+		this.canTradeMoney = canTradeMoney;
 	}
 	
 	
@@ -85,9 +88,9 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 			
 			if (e.getRawSlot() == 2 && trades.contains(selectMoney.get(e.getWhoClicked()))) {
 				try {
-					selectMoney.get(e.getWhoClicked()).selectMoney((Player) e.getWhoClicked(), Double.valueOf(((AnvilInventory)e.getInventory()).getResult().getItemMeta().getDisplayName()));
+					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), Double.valueOf(((AnvilInventory)e.getInventory()).getResult().getItemMeta().getDisplayName()));
 				}catch(NumberFormatException ex) {
-					selectMoney.get(e.getWhoClicked()).selectMoney((Player) e.getWhoClicked(), 0);
+					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), 0);
 				}
 				
 				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(e.getWhoClicked()));
@@ -98,7 +101,7 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 			return;
 		}
 		
-		trades.stream().filter(trade -> trade.containsPlayer((Player) e.getWhoClicked())).findAny().ifPresent(trade -> trade.click(e));
+		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getWhoClicked().getUniqueId()))).findAny().ifPresent(trade -> trade.click(e));
 	}
 	 
 	@EventHandler
@@ -108,15 +111,15 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 		
 		if (selectMoney.containsKey(e.getPlayer())) {
 			//si le joueur ferme l'inventaire de l'échange car il vient d'ouvrir celui de la sélection de la money tout va bien
-			if (e.getInventory().equals(selectMoney.get(e.getPlayer()).getTradeGuiOf((Player) e.getPlayer()).getInventory()))
+			if (e.getInventory().equals(selectMoney.get(e.getPlayer()).getTradeGuiOf(AccountProvider.get(e.getPlayer().getUniqueId())).getInventory()))
 				return;
 			
-			selectMoney.remove(e.getPlayer()).openFor((Player) e.getPlayer());
+			selectMoney.remove(e.getPlayer()).openFor((AccountProvider.get(e.getPlayer().getUniqueId())));
 			OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(e.getPlayer()));
 			return;	
 		}
 		
-		trades.stream().filter(trade -> trade.containsPlayer((Player) e.getPlayer())).findAny().ifPresent(trade -> trade.endTrade(false));
+		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false));
 	}
 	
 	@EventHandler
@@ -126,12 +129,12 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 		if (itemBagsTasks.containsKey(op.getId()))
 			OlympaCore.getInstance().getTask().cancelTaskById(itemBagsTasks.remove(op.getId()));
 		
-		trades.stream().filter(trade -> trade.containsPlayer(e.getPlayer())).findAny().ifPresent(trade -> trade.endTrade(false)); 
+		trades.stream().filter(trade -> trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false)); 
 	}
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		OlympaPlayer op = AccountProvider.get(e.getPlayer().getUniqueId());
+		T op = AccountProvider.get(e.getPlayer().getUniqueId());
 		
 		if (itemBags.containsKey(op.getId()))
 			itemBagsTasks.put(op.getId(), OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(itemBagReminderSupplier.apply(op), 1, 20 * 30));
@@ -141,16 +144,16 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	
 	
 	@SuppressWarnings("deprecation")
-	void openMoneySelectionGuiFor(Player p, UniqueTradeManager trade) {
+	void openMoneySelectionGuiFor(T p, UniqueTradeManager<T> trade) {
 		if (!canTradeMoney())
 			return;
 		
-		selectMoney.put(p, trade);
-		selectMoneyTask.put(p, OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20));
+		selectMoney.put(p.getPlayer(), trade);
+		selectMoneyTask.put(p.getPlayer(), OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20));
 		
-		AnvilInventory inv = (AnvilInventory) Bukkit.createInventory(p, InventoryType.ANVIL, "Argent à donner");
+		AnvilInventory inv = (AnvilInventory) Bukkit.createInventory(p.getPlayer(), InventoryType.ANVIL, "Argent à donner");
 		inv.setFirstItem(ItemUtils.item(Material.DIRT, "", "§7Ecris le montant que", "§7tu souhaites donner dans", "§7le champ de texte"));
-		p.openInventory(inv);
+		p.getPlayer().openInventory(inv);
 	}
 	
 	
@@ -159,25 +162,25 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	
 	
 	public boolean canTradeMoney() {
-		return hasMoney != null;
+		return canTradeMoney;
 	}
 	
-	boolean hasMoney(Player p, double money) {
-		return canTradeMoney() ? hasMoney.apply(p, money) : false;
+	boolean hasMoney(T p, double money) {
+		return canTradeMoney() ? p.getGameMoney().has(money) : false;
 	}
 	
-	void addMoney(Player p, double amount) {
+	void addMoney(T p, double amount) {
 		if (canTradeMoney())
-			addMoney.accept(p, amount);
+			p.getGameMoney().give(amount);
 	}
 	
-	void removeMoney(Player p, double amount) {
+	void removeMoney(T p, double amount) {
 		if (canTradeMoney())
-			removeMoney.accept(p, amount);
+			p.getGameMoney().withdraw(amount);
 	}
 	
 	String getMoneySymbol() {
-		return moneySymbol;
+		return "$";
 	}
 	
 	/**
@@ -186,7 +189,7 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	 * @param items
 	 * @return true if bag size is > 0
 	 */
-	boolean setBag(OlympaPlayer op, Collection<ItemStack> items) {
+	boolean setBag(T op, Collection<ItemStack> items) {
 		if (items.size() == 0)
 			return false;
 		
@@ -199,7 +202,7 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 		return true;
 	}
 	
-	public void flushBag(OlympaPlayer op) {		
+	public void flushBag(T op) {		
 		if (itemBags.containsKey(op.getId()))
 			if (setBag(op, op.getPlayer().getInventory().addItem(itemBags.get(op.getId())).values()))
 				Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "Tu as récupéré certains de tes objets.");
@@ -208,7 +211,7 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	}
 	
 	
-	public void startTrade(OlympaPlayer p1, OlympaPlayer p2) {
+	public void startTrade(T p1, T p2) {
 		if (!isEnabled)
 			return;
 		
@@ -220,22 +223,22 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
 			
-		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p1.getPlayer()))) {
+		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p1))) {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p1.getName());
 			
-		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p2.getPlayer()))) {
+		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p2))) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
 			
 		}else
-			trades.add(new UniqueTradeManager(this, p1, p2));
+			trades.add(new UniqueTradeManager<T>(this, p1, p2));
 	}
 
-	void cancelTasksFor(UniqueTradeManager trade) {
+	void cancelTasksFor(UniqueTradeManager<T> trade) {
 		if (!trades.remove(trade))
 			return;
 		
 		trade.getPlayers().forEach(p -> {
-			p.closeInventory();
+			p.getPlayer().closeInventory();
 			if (trade.equals(selectMoney.remove(p)))
 				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(p));
 		});
@@ -245,14 +248,14 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	
 	
 	
-
+/*
 	@Override
 	public boolean isEnabled() {
 		return isEnabled;
 	}
 
 	@Override
-	public boolean enable(Tradeable plugin) {
+	public boolean enable(OlympaCore plugin) {
 		if (!isEnabled())
 			return isEnabled;
 		
@@ -263,7 +266,7 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	}
 
 	@Override
-	public boolean disable(Tradeable plugin) {
+	public boolean disable(OlympaCore plugin) {
 		if (isEnabled())
 			return isEnabled;
 		
@@ -274,10 +277,10 @@ public class TradesManager implements Listener, ModuleApi<Tradeable> {
 	}
 
 	@Override
-	public boolean setToPlugin(Tradeable plugin) {
+	public boolean setToPlugin(OlympaCore plugin) {
 		plugin.setTradeManager(this);
 		return true;
-	}
+	}*/
 }
 
 

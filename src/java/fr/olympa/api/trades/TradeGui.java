@@ -13,9 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+
+import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.item.ItemUtils;
 
-public class TradeGui implements InventoryHolder {
+public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder {
 	private static int countdownInit = 5;
 
 	private static int stepIndicatorSlot = 0;
@@ -43,7 +45,7 @@ public class TradeGui implements InventoryHolder {
 	private ItemStack playerMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§6Tu enverras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera débité de ce montant", "§7et sera crédité à ton partenaire"));
 	private ItemStack otherMoneyItem = UniqueTradeManager.getAsLocked(ItemUtils.item(Material.GOLD_INGOT, "§6Tu recevras : XXX", "§7Lorsque l'échange sera conclu ton", "§7compte sera crédité de ce montant"));
 	
-	private UniqueTradeManager manager;
+	private UniqueTradeManager<T> manager;
 	
 	private Inventory inv;
 	private double playerMoney = 0;
@@ -53,7 +55,8 @@ public class TradeGui implements InventoryHolder {
 	
 	private int currentCountdown = countdownInit;
 	
-	public TradeGui(UniqueTradeManager manager, Player p) {
+	@SuppressWarnings("deprecation")
+	public TradeGui(UniqueTradeManager<T> manager, T p) {
 		this.inv = Bukkit.createInventory(this, 9 * 6, "Echange avec " + manager.getOtherPlayer(p).getName());
 
 		this.manager = manager;
