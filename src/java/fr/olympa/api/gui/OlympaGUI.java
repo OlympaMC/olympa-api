@@ -9,6 +9,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.chat.ColorUtils;
+import fr.olympa.api.chat.TxtComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class OlympaGUI implements InventoryHolder {
 	
@@ -19,7 +21,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	}
 
 	public OlympaGUI(String name, InventoryType type) {
-		this.inv = Bukkit.createInventory(this, type, ColorUtils.color(name));
+		this.inv = Bukkit.createInventory(this, type,ColorUtils.color(name));
 	}
 
 	public Inventory getInventory() {

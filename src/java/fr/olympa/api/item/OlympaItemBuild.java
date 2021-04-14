@@ -215,6 +215,12 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 		return this;
 	}
 
+	public OlympaItemBuild resetLore() {
+		if (lore != null)
+			lore.clear();
+		return this;
+	}
+
 	@Override
 	public OlympaItemBuild size(int size) {
 		this.size = size;

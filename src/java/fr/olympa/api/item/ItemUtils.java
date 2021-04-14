@@ -143,13 +143,12 @@ public class ItemUtils {
 	 */
 	public static ItemStack skullCustom(String name, String value, String... lore) {
 		ItemStack is = new ItemStack(Material.PLAYER_HEAD);
-		SkullMeta im = (SkullMeta) is.getItemMeta();
-		im.setDisplayName(name);
-		is.setItemMeta(im);
+		SkullMeta im;
 		if (lore != null && lore.length != 0)
-			lore(is, lore);
+			is = lore(is, lore);
+		im = (SkullMeta) is.getItemMeta();
+		im.setDisplayName(name);
 		skullCustom(im, value);
-		is.setItemMeta(im);
 		return is;
 	}
 
