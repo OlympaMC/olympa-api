@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.bukkit.Bukkit;
@@ -23,18 +21,19 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.module.OlympaModule.ModuleApi;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
+/**
+ * Instantiate this class to enable trades. Command /trade is registered internally
+ *
+ * @param <T> OlympaPlayer implementation for current plugin
+ */
 public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 
 	private boolean isEnabled = false;
@@ -239,8 +238,8 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		
 		trade.getPlayers().forEach(p -> {
 			p.getPlayer().closeInventory();
-			if (trade.equals(selectMoney.remove(p)))
-				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(p));
+			if (trade.equals(selectMoney.remove(p.getPlayer())))
+				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(p.getPlayer()));
 		});
 		
 	}

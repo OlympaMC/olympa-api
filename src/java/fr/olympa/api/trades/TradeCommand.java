@@ -1,8 +1,6 @@
 package fr.olympa.api.trades;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.google.common.collect.HashMultimap;
 
 import fr.olympa.api.command.complex.Cmd;
@@ -20,11 +18,11 @@ import fr.olympa.api.utils.Prefix;
 public class TradeCommand extends ComplexCommand {
 
 	private OlympaAPIPlugin plugin;
-	private TradesManager trades;
+	private TradesManager<?> trades;
 	
 	private HashMultimap<Player, Player> map = HashMultimap.create();
 	
-	public TradeCommand(OlympaAPIPlugin plugin, TradesManager trades) {
+	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<?> trades) {
 		super(plugin, "trade", "Echange des objets et de l'argent avec un autre joueur", OlympaAPIPermissions.TRADE_COMMAND);
 		this.plugin = plugin;
 		this.trades = trades;
