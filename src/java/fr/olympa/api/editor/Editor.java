@@ -113,5 +113,4 @@ public abstract class Editor implements Listener {
 			leave(this.p);
 		}
 	}
-
 }

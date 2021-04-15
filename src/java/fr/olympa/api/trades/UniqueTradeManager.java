@@ -143,6 +143,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> {
 			return;
 		
 		hasEnded = true;
+		map.keySet().forEach(p -> p.getPlayer().closeInventory());
 		
 		if (success) {
 			map.keySet().forEach(p -> {
@@ -174,6 +175,9 @@ public class UniqueTradeManager<T extends TradePlayerInterface> {
 	
 	
 	void selectMoney(T p, double money) {
+		if (hasEnded)
+			return;
+		
 		if (manager.hasMoney(p, money))
 			if (map.containsKey(p)) {
 				manager.removeMoney(p, money);
@@ -184,6 +188,9 @@ public class UniqueTradeManager<T extends TradePlayerInterface> {
 	
 	
 	void openFor(T p) {
+		if (hasEnded)
+			return;
+		
 		if (map.containsKey(p))
 			p.getPlayer().openInventory(map.get(p).getInventory());
 	}
