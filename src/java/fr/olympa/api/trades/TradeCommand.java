@@ -58,8 +58,8 @@ public class TradeCommand extends ComplexCommand {
 		}
 	}
 	
-	@Cmd(args = "PLAYERS", min = 1, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
-	public void bag(CommandContext cmd) {
+	@Cmd(args = "PLAYERS", min = 1, description = "Récupère les objets que tu n'as pas pu récupérer de ton échange précédent")
+	public void flushbag(CommandContext cmd) {
 		trades.flushBag(getOlympaPlayer());
 	}
 	

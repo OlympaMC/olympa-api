@@ -238,6 +238,8 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 				Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "Tu as récupéré certains de tes objets.");
 			else
 				Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "Tu as récupéré tous tes objets !");
+		else
+			Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "§7Tu as déjà récupéré tous tes objets.");
 	}
 	
 	
