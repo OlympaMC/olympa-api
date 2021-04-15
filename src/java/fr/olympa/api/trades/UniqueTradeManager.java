@@ -144,6 +144,9 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	}
 	
 	void endTrade(boolean success) {
+		if (hasEnded)
+			return;
+		
 		hasEnded = true;
 		
 		if (success) {
@@ -157,7 +160,7 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 				addItems(success, p, gui.getPlayerItems(), gui.getPlayerMoney());
 			});
 		
-		manager.cancelTasksFor(this);
+		manager.unregister(this);
 	}
 	
 	

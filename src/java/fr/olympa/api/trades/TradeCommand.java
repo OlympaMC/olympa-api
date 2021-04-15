@@ -6,6 +6,7 @@ import com.google.common.collect.HashMultimap;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
+import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
@@ -18,11 +19,11 @@ import fr.olympa.api.utils.Prefix;
 public class TradeCommand extends ComplexCommand {
 
 	private OlympaAPIPlugin plugin;
-	private TradesManager<?> trades;
+	private TradesManager<? extends MoneyPlayerInterface> trades;
 	
 	private HashMultimap<Player, Player> map = HashMultimap.create();
 	
-	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<?> trades) {
+	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<? extends MoneyPlayerInterface> trades) {
 		super(plugin, "trade", "Echange des objets et de l'argent avec un autre joueur", OlympaAPIPermissions.TRADE_COMMAND);
 		this.plugin = plugin;
 		this.trades = trades;
@@ -56,4 +57,11 @@ public class TradeCommand extends ComplexCommand {
 			Prefix.DEFAULT_GOOD.sendMessage(partner, "Demande d'échange reçue de %s, fais /trade %s pour l'accepter.", getPlayer().getName(), getPlayer().getName());
 		}
 	}
+	
+	@Cmd(args = "PLAYERS", min = 1, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
+	public void bag(CommandContext cmd) {
+		trades.flushBag(getOlympaPlayer());
+	}
+	
+	
 }

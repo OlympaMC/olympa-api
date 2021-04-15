@@ -74,7 +74,7 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 				inv.setItem(i, separatorItem);
 		
 		inv.setItem(stepIndicatorSlot, step.indicator);
-		inv.setItem(otherStepIndicatorSlot, step.indicator);
+		inv.setItem(otherStepIndicatorSlot, step.indicatorOther);
 		
 		if (manager.getMoneySymbol() != null) {
 			inv.setItem(moneySelectButtonSlot, defaultPlayerMoneyItem);
@@ -163,14 +163,14 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 			inv.setItem(stepIndicatorSlot, step.indicator);
 			
 			if (otherStep != step)
-				inv.setItem(otherStepIndicatorSlot, nextStepDisabledItem);
+				inv.setItem(nextStepButtonSlot, nextStepDisabledItem);
 			return true;
 		}else
 			return false;
 	}
 	
 	void setNextStepOther(TradeStep newOtherStep) {
-		inv.setItem(otherStepIndicatorSlot, newOtherStep.indicator);
+		inv.setItem(otherStepIndicatorSlot, newOtherStep.indicatorOther);
 		inv.setItem(nextStepButtonSlot, nextStepEnabledItem);
 		otherStep = newOtherStep;
 	}
@@ -226,10 +226,12 @@ public class TradeGui<T extends MoneyPlayerInterface> implements InventoryHolder
 		
 		public boolean isLastStep;
 		public ItemStack indicator;
+		public ItemStack indicatorOther;
 		
 		private TradeStep(boolean isLastStep, ItemStack item) {
 			this.isLastStep = isLastStep;
 			this.indicator = UniqueTradeManager.getAsLocked(item);
+			this.indicatorOther = ItemUtils.lore(indicator.clone());
 		}
 
 

@@ -59,23 +59,19 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	private BiConsumer<T, Double> removeMoney;
 	private String moneySymbol;*/
 	
+	private double tradeRange = -1;
 	private boolean canTradeMoney = true;
 	
-	public TradesManager(OlympaAPIPlugin plugin) {
-		this(plugin, true);
-		
-		/*
-		this.hasMoney = hasMoney;
-		this.addMoney = addMoney;
-		this.removeMoney = removeMoney;
-		this.moneySymbol = moneySymbol;*/
+	public TradesManager(OlympaAPIPlugin plugin, double tradeRange) {
+		this(plugin, tradeRange, true);
 	}
 	
-	public TradesManager(OlympaAPIPlugin plugin, boolean canTradeMoney) {
+	public TradesManager(OlympaAPIPlugin plugin, double tradeRange, boolean canTradeMoney) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		new TradeCommand(plugin, this).register();
 		
 		this.canTradeMoney = canTradeMoney;
+		this.tradeRange = tradeRange;
 		
 		plugin.getLogger().info("§aTrades manager enabled.");
 	}
@@ -245,13 +241,18 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	}
 	
 	
-	public void startTrade(T p1, T p2) {if (itemBags.containsKey(p1.getId())) {
+	public void startTrade(T p1, T p2) {
+		if (itemBags.containsKey(p1.getId())) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p2.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p1.getName());
 			
 		} else if (itemBags.containsKey(p2.getId())) {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
+		
+		}else if (tradeRange == -1 || (p1.getPlayer().getWorld().getUID().equals(p2.getPlayer().getWorld().getUID()) && p1.getPlayer().getLocation().distance(p2.getPlayer().getLocation()) < tradeRange)) {
+			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p2.getName());
+			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p1.getName());
 			
 		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p1))) {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p1.getName());
@@ -263,7 +264,7 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 			trades.add(new UniqueTradeManager<T>(this, p1, p2));
 	}
 
-	void cancelTasksFor(UniqueTradeManager<T> trade) {
+	void unregister(UniqueTradeManager<T> trade) {
 		if (!trades.remove(trade))
 			return;
 		
