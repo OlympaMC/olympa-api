@@ -6,7 +6,6 @@ import com.google.common.collect.HashMultimap;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.economy.MoneyPlayerInterface;
 import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
@@ -16,14 +15,14 @@ import fr.olympa.api.utils.Prefix;
  * The trade command is registered by the module TradesManager, it should not be instanciated separately
  *
  */
-public class TradeCommand extends ComplexCommand {
+public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand {
 
 	private OlympaAPIPlugin plugin;
-	private TradesManager<? extends MoneyPlayerInterface> trades;
+	private TradesManager<T> trades;
 	
 	private HashMultimap<Player, Player> map = HashMultimap.create();
 	
-	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<? extends MoneyPlayerInterface> trades) {
+	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<T> trades) {
 		super(plugin, "trade", "Echange des objets et de l'argent avec un autre joueur", OlympaAPIPermissions.TRADE_COMMAND);
 		this.plugin = plugin;
 		this.trades = trades;
@@ -60,7 +59,8 @@ public class TradeCommand extends ComplexCommand {
 	
 	@Cmd(args = "PLAYERS", min = 1, description = "Récupère les objets que tu n'as pas pu récupérer de ton échange précédent")
 	public void flushbag(CommandContext cmd) {
-		trades.flushBag(getOlympaPlayer());
+		T p = getOlympaPlayer();
+		p.getTradeBag().flushBag();
 	}
 	
 	

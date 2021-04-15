@@ -1,13 +1,10 @@
 package fr.olympa.api.trades;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.ClickType;
@@ -17,13 +14,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import fr.olympa.api.economy.MoneyPlayerInterface;
-import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.trades.TradeGui.TradeStep;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class UniqueTradeManager<T extends MoneyPlayerInterface> {
+public class UniqueTradeManager<T extends TradePlayerInterface> {
 
 	private static NamespacedKey ownerKey = NamespacedKey.fromString("is_owned_by_someone_else"); 
 	
@@ -35,7 +30,7 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	
 	private boolean hasEnded = false;
 	
-	public UniqueTradeManager(TradesManager<T> manager, T p1, T p2) {
+	UniqueTradeManager(TradesManager<T> manager, T p1, T p2) {
 		this.manager = manager;
 		
 		map.put(p1, new TradeGui<T>(this, p1, p2));
@@ -165,14 +160,15 @@ public class UniqueTradeManager<T extends MoneyPlayerInterface> {
 	
 	
 	
-	private void addItems(boolean success, T p, List<ItemStack> items, double money) {
+	private void addItems(boolean success, T p, Collection<ItemStack> items, double money) {
 		int count = items.stream().mapToInt(it -> it.getAmount()).sum();
 		if (success)
 			Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Tu as reçu " + count + (count <= 1 ? " objet" : " objets") + (manager.canTradeMoney() ? " et " + money + manager.getMoneySymbol() : "") + " !");
 		else
 			Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "L'échange a échoué, tu as récupéré tes objets" + (manager.canTradeMoney() ? " et ton argent." : "."));
 		
-		manager.setBag(AccountProvider.get(p.getUniqueId()), p.getPlayer().getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
+		p.getTradeBag().setItems(items);
+		//manager.setBag(AccountProvider.get(p.getUniqueId()), p.getPlayer().getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
 		manager.addMoney(p, money);
 	}
 	

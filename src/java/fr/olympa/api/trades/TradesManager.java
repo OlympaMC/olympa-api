@@ -1,16 +1,11 @@
 package fr.olympa.api.trades;
 
 import java.util.AbstractMap;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,35 +13,29 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import fr.olympa.api.economy.MoneyPlayerInterface;
-import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
-import net.kyori.adventure.text.Component;
 
 /**
  * Instantiate this class to enable trades. Command /trade is registered internally
  *
  * @param <T> OlympaPlayer implementation for current plugin
  */
-public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
+@SuppressWarnings("deprecation")
+public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	
-	private Function<T, Runnable> itemBagReminderSupplier = p -> 
+	/*private Function<T, Runnable> itemBagReminderSupplier = p -> 
 		() -> Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "Tu n'avais pas assez de place dans ton inventaire, certains objets n'ont pas pu y être placés. Fais /A DEFINIR pour les récupérer.\n§4Tu as jusqu'à ce soir, demain ils seront perdus !");
 	
 	private Map<Long, ItemStack[]> itemBags = new HashMap<Long, ItemStack[]>();
-	private Map<Long, Integer> itemBagsTasks = new HashMap<Long, Integer>();
+	private Map<Long, Integer> itemBagsTasks = new HashMap<Long, Integer>();*/
 
 	private Set<UniqueTradeManager<T>> trades = new HashSet<UniqueTradeManager<T>>();
 
@@ -68,7 +57,7 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	
 	public TradesManager(OlympaAPIPlugin plugin, double tradeRange, boolean canTradeMoney) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		new TradeCommand(plugin, this).register();
+		new TradeCommand<T>(plugin, this).register();
 		
 		this.canTradeMoney = canTradeMoney;
 		this.tradeRange = tradeRange;
@@ -104,7 +93,6 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().ifPresent(trade -> trade.click(e, p));
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onChat(PlayerChatEvent e) {
 		if (selectMoney.containsKey(e.getPlayer())) {
@@ -150,20 +138,8 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		T op = AccountProvider.get(e.getPlayer().getUniqueId());
-		
-		if (itemBagsTasks.containsKey(op.getId()))
-			OlympaCore.getInstance().getTask().cancelTaskById(itemBagsTasks.remove(op.getId()));
-		
-		trades.stream().filter(trade -> trade.containsPlayer(op)).findAny().ifPresent(trade -> trade.endTrade(false)); 
-	}
-	
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		T op = AccountProvider.get(e.getPlayer().getUniqueId());
-		
-		if (itemBags.containsKey(op.getId()))
-			itemBagsTasks.put(op.getId(), OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(itemBagReminderSupplier.apply(op), 1, 20 * 30));
+		trades.stream().filter(trade -> 
+		trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false)); 
 	}
 	
 	
@@ -177,7 +153,7 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		trade.selectMoney(p, 0);
 		
 		selectMoney.put(p.getPlayer(), new AbstractMap.SimpleEntry<UniqueTradeManager<T>, Integer>(trade, 
-				OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 20)));
+				OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 30)));
 		p.getPlayer().closeInventory();
 		
 		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez l'argent à ajouter à l'échange : ");
@@ -210,45 +186,31 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 	}
 	
 	String getMoneySymbol() {
-		return "$";
+		return OlympaMoney.OMEGA;
 	}
 	
-	/**
-	 * 
-	 * @param p
-	 * @param items
-	 * @return true if bag size is > 0
-	 */
+	/*
 	boolean setBag(T op, Collection<ItemStack> items) {
-		if (items.size() == 0)
-			return false;
-		
 		if (itemBagsTasks.containsKey(op.getId()))
 			OlympaCore.getInstance().getTask().cancelTaskById(itemBagsTasks.get(op.getId()));
 		
-		itemBags.put(op.getId(), items.toArray(new ItemStack[items.size()]));
-		itemBagsTasks.put(op.getId(), OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(itemBagReminderSupplier.apply(op), 1, 20 * 30));	
+		if (items.size() > 0) {
+			itemBags.put(op.getId(), items.toArray(new ItemStack[items.size()]));
+			itemBagsTasks.put(op.getId(), OlympaCore.getInstance().getTask().scheduleSyncRepeatingTask(itemBagReminderSupplier.apply(op), 1, 20 * 30));
+			return true;
+		}else
+			itemBags.remove(op.getId());
 		
-		return true;
-	}
-	
-	public void flushBag(T op) {		
-		if (itemBags.containsKey(op.getId()))
-			if (setBag(op, op.getPlayer().getInventory().addItem(itemBags.get(op.getId())).values()))
-				Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "Tu as récupéré certains de tes objets.");
-			else
-				Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "Tu as récupéré tous tes objets !");
-		else
-			Prefix.DEFAULT_GOOD.sendMessage(op.getPlayer(), "§7Tu as déjà récupéré tous tes objets.");
-	}
+		return false;
+	}*/
 	
 	
 	public void startTrade(T p1, T p2) {
-		if (itemBags.containsKey(p1.getId())) {
+		if (!p1.getTradeBag().isEmpty()) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p2.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p1.getName());
 			
-		} else if (itemBags.containsKey(p2.getId())) {
+		} else if (!p2.getTradeBag().isEmpty()) {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
 		
@@ -265,6 +227,14 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		}else
 			trades.add(new UniqueTradeManager<T>(this, p1, p2));
 	}
+	
+	public boolean isInTrade(T p) {
+		return trades.stream().anyMatch(trade -> trade.containsPlayer(p));
+	}
+	
+	public UniqueTradeManager<T> getTradeOf(T p){
+		return trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().orElse(null);
+	}
 
 	void unregister(UniqueTradeManager<T> trade) {
 		if (!trades.remove(trade))
@@ -277,43 +247,6 @@ public class TradesManager<T extends MoneyPlayerInterface> implements Listener {
 		});
 		
 	}
-	
-	
-	
-	
-/*
-	@Override
-	public boolean isEnabled() {
-		return isEnabled;
-	}
-
-	@Override
-	public boolean enable(OlympaCore plugin) {
-		if (!isEnabled())
-			return isEnabled;
-		
-		if (cmd == null)
-			cmd = new TradeCommand(OlympaCore.getInstance(), this).register();
-		
-		return isEnabled = true;
-	}
-
-	@Override
-	public boolean disable(OlympaCore plugin) {
-		if (isEnabled())
-			return isEnabled;
-		
-		trades.forEach(trade -> trade.endTrade(false));
-		trades.clear();
-		
-		return isEnabled = false;
-	}
-
-	@Override
-	public boolean setToPlugin(OlympaCore plugin) {
-		plugin.setTradeManager(this);
-		return true;
-	}*/
 }
 
 
