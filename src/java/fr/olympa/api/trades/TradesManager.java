@@ -21,6 +21,7 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
 /**
@@ -41,12 +42,6 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 
 	//private Map<Player, UniqueTradeManager<T>> selectMoney = new HashMap<Player, UniqueTradeManager<T>>();
 	private Map<Player, Entry<UniqueTradeManager<T>, Integer>> selectMoney = new HashMap<Player, Map.Entry<UniqueTradeManager<T>,Integer>>();
-	
-	/*
-	private BiFunction<T, Double, Boolean> hasMoney;
-	private BiConsumer<T, Double> addMoney;
-	private BiConsumer<T, Double> removeMoney;
-	private String moneySymbol;*/
 	
 	private double tradeRange = -1;
 	private boolean canTradeMoney = true;
@@ -71,23 +66,6 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	public void onInvClick(InventoryClickEvent e) {
 		if (e.getClickedInventory() == null || !(e.getWhoClicked() instanceof Player))
 			return;
-		
-		/*if (selectMoneyTask.containsKey(e.getWhoClicked())) {
-			
-			if (e.getRawSlot() == 2 && trades.contains(selectMoney.get(e.getWhoClicked()))) {
-				try {
-					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), Double.valueOf((e.getInventory().getItem(2).getItemMeta().getDisplayName())));
-				}catch(NumberFormatException ex) {
-					selectMoney.get(e.getWhoClicked()).selectMoney(AccountProvider.get(e.getWhoClicked().getUniqueId()), 0);
-				}
-				
-				OlympaCore.getInstance().getTask().cancelTaskById(selectMoneyTask.remove(e.getWhoClicked()));
-				((Player)e.getWhoClicked()).closeInventory();
-			}
-
-			e.setCancelled(true);
-			return;
-		}*/
 		
 		T p = AccountProvider.<T>get(e.getWhoClicked().getUniqueId());
 		trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().ifPresent(trade -> trade.click(e, p));
@@ -123,7 +101,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onMove(PlayerMoveEvent e) {
-		if (e.getFrom().getBlock().equals(e.getTo().getBlock()))
+		if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
 			return;
 		
 		if (selectMoney.containsKey(e.getPlayer()))
@@ -157,9 +135,6 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		p.getPlayer().closeInventory();
 		
 		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez l'argent à ajouter à l'échange : ");
-		/*Inventory inv = Bukkit.createInventory(p.getPlayer(), InventoryType.ANVIL, Component.text("Argent à donner"));
-		inv.setItem(0, ItemUtils.item(Material.DIRT, "", "§7Ecris le montant que", "§7tu souhaites donner dans", "§7le champ de texte"));
-		p.getPlayer().openInventory(inv);*/
 	}
 	
 	
