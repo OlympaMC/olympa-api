@@ -28,7 +28,7 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 		this.trades = trades;
 	}
 	
-	@Cmd(args = "PLAYERS", min = 1, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
+	@Cmd(args = "PLAYERS", min = 1, player = true, description = "Envoies ou acceptes une requête d'échange à un autre joueur")
 	public void with(CommandContext cmd) {
 		/*if (!trades.isEnabled()) {
 			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Les échanges sont temporairement désactivés, réessaies plus tard.");
@@ -57,10 +57,10 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 		}
 	}
 	
-	@Cmd(args = "PLAYERS", min = 1, description = "Récupère les objets que tu n'as pas pu récupérer de ton échange précédent")
+	@SuppressWarnings("unchecked")
+	@Cmd(player = true, description = "Récupère les objets que tu n'as pas pu récupérer de ton échange précédent")
 	public void flushbag(CommandContext cmd) {
-		T p = getOlympaPlayer();
-		p.getTradeBag().flushBag();
+		((T)getOlympaPlayer()).getTradeBag().flushBag();
 	}
 	
 	

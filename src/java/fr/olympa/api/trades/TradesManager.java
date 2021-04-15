@@ -1,8 +1,6 @@
 package fr.olympa.api.trades;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -14,9 +12,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import fr.olympa.api.economy.OlympaMoney;
-import fr.olympa.api.editor.Editor;
-import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
@@ -38,20 +33,14 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	private Set<UniqueTradeManager<T>> trades = new HashSet<UniqueTradeManager<T>>();
 
 	//private Map<Player, UniqueTradeManager<T>> selectMoney = new HashMap<Player, UniqueTradeManager<T>>();
-	private Map<Player, Editor> selectMoney = new HashMap<Player, Editor>();
+	//private Map<Player, Editor> selectMoney = new HashMap<Player, Editor>();
 	
 	private double tradeRange = -1;
-	private boolean canTradeMoney = true;
 	
 	public TradesManager(OlympaAPIPlugin plugin, double tradeRange) {
-		this(plugin, tradeRange, true);
-	}
-	
-	public TradesManager(OlympaAPIPlugin plugin, double tradeRange, boolean canTradeMoney) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		new TradeCommand<T>(plugin, this).register();
 		
-		this.canTradeMoney = canTradeMoney;
 		this.tradeRange = tradeRange;
 		
 		plugin.getLogger().info("§aTrades manager enabled.");
@@ -64,8 +53,8 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (e.getClickedInventory() == null || !(e.getWhoClicked() instanceof Player))
 			return;
 		
-		T p = AccountProvider.<T>get(e.getWhoClicked().getUniqueId());
-		trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().ifPresent(trade -> trade.click(e, p));
+		T p = AccountProvider.get(e.getWhoClicked().getUniqueId());
+		trades.forEach(trade -> trade.click(e, p));
 	}
 	 
 	@EventHandler
@@ -73,11 +62,8 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (e.getPlayer().getType() != EntityType.PLAYER)
 			return;
 		
-		if (selectMoney.containsKey(e.getPlayer()))
-			return;	
-		
-		trades.stream().filter(trade -> trade.containsPlayer(
-				AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false));
+		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		trades.forEach(trade -> trade.hasClosedInventory(p));
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -85,34 +71,32 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
 			return;
 		
-		if (selectMoney.containsKey(e.getPlayer()))
-			selectMoney.remove(e.getPlayer()).chat("cancel");
+		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);});
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onTeleport(PlayerTeleportEvent e) {
-		trades.stream().filter(trade -> 
-				trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false));
+		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);});
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		trades.stream().filter(trade -> 
-		trade.containsPlayer(AccountProvider.get(e.getPlayer().getUniqueId()))).findAny().ifPresent(trade -> trade.endTrade(false)); 
+		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);}); 
 	}
 	
 	
 	
-	
+	/*
 	void openMoneySelectionFor(T p, UniqueTradeManager<T> trade) {
 		if (!canTradeMoney())
 			return;
 
-		
-		addMoney(p, trade.getTradeGuiOf(p).getPlayerMoney());
 		trade.selectMoney(p, 0);
 
-		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez l'argent à ajouter à l'échange : ");
+		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "§eSélectionnez l'argent à ajouter à l'échange (§7\"cancel\" pour annuler) §e: ");
 		
 		selectMoney.put(p.getPlayer(), new TextEditor<Double>(p.getPlayer(), d -> {
 			trade.selectMoney(p, d);
@@ -127,19 +111,11 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 
 		p.getPlayer().closeInventory();
 		/*selectMoney.put(p.getPlayer(), new AbstractMap.SimpleEntry<UniqueTradeManager<T>, Integer>(trade, 
-				OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 30)));*/
+				OlympaCore.getInstance().getTask().runTaskLater(() -> trade.endTrade(false), 20 * 30)));
 		
-	}
+	}*/
 	
-	
-	
-	
-	
-	
-	public boolean canTradeMoney() {
-		return canTradeMoney;
-	}
-	
+	/*
 	boolean hasMoney(T p, double money) {
 		return canTradeMoney() ? p.getGameMoney().has(money) : false;
 	}
@@ -152,11 +128,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	void removeMoney(T p, double amount) {
 		if (canTradeMoney())
 			p.getGameMoney().withdraw(amount);
-	}
-	
-	String getMoneySymbol() {
-		return OlympaMoney.OMEGA;
-	}
+	}*/
 	
 	
 	public void startTrade(T p1, T p2) {
@@ -179,7 +151,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
 			
 		}else
-			trades.add(new UniqueTradeManager<T>(this, p1, p2));
+			trades.add(new UniqueTradeManager<T>(p1, p2, this));
 	}
 	
 	public boolean isInTrade(T p) {
@@ -190,11 +162,8 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		return trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().orElse(null);
 	}
 
-	void unregister(UniqueTradeManager<T> trade) {
-		trade.getPlayers().forEach(p -> {
-			if (selectMoney.containsKey(p.getPlayer()))
-				selectMoney.remove(p.getPlayer()).chat("cancel");
-		});
+	boolean unregister(UniqueTradeManager<?> trade) {
+		return trades.remove(trade);
 	}
 }
 
