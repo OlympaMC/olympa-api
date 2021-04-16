@@ -149,6 +149,7 @@ public class ItemUtils {
 		im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
 		skullCustom(im, value);
+		is.setItemMeta(im);
 		return is;
 	}
 
