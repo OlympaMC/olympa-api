@@ -150,6 +150,7 @@ public class ItemUtils {
 		im.setDisplayName(name);
 		is.setItemMeta(im);
 		skullCustom(im, value);
+		is.setItemMeta(im);
 		return is;
 	}
 
