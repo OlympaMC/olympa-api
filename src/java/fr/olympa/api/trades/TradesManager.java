@@ -150,8 +150,12 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p2))) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
 			
-		}else
-			trades.add(new UniqueTradeManager<T>(p1, p2, this));
+		}else {
+			UniqueTradeManager<T> trade = new UniqueTradeManager<T>(p1, p2);
+			trades.add(trade);
+			trade.observe("cancel_trade", () -> trades.remove(trade));
+		}
+			
 	}
 	
 	public boolean isInTrade(T p) {
@@ -162,9 +166,10 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		return trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().orElse(null);
 	}
 
+	/*
 	boolean unregister(UniqueTradeManager<?> trade) {
 		return trades.remove(trade);
-	}
+	}*/
 }
 
 
