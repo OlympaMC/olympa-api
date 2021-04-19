@@ -1,4 +1,4 @@
-package fr.olympa.api.utils.spigot;
+package fr.olympa.api.ranking;
 
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -12,20 +12,28 @@ import fr.olympa.api.lines.DynamicLine;
 import fr.olympa.api.lines.FixedLine;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
+import net.md_5.bungee.api.ChatColor;
 
 public abstract class AbstractRank {
 	
 	private static final DecimalFormat format = new DecimalFormat("0.##");
 	
 	protected final String id;
+	private final int maxSlots;
+	private final boolean keepTopScore;
+	
 	protected final Hologram hologram;
 	
 	private DynamicLine<HologramLine>[] scoreLines = new DynamicLine[10];
-	private ScoreEntry[] scores = new ScoreEntry[10];
+	private ScoreEntry[] scores;
+
 	
-	protected AbstractRank(String id, Location location) throws SQLException {
+	protected AbstractRank(String id, Location location, int maxSlots, boolean keepTopScore) throws SQLException {
 		this.id = id;
+		this.maxSlots = maxSlots;
+		this.keepTopScore = keepTopScore;
 		
+		scores = new ScoreEntry[maxSlots];
 		for (int i = 0; i < scores.length; i++) scores[i] = new ScoreEntry();
 		
 		fillUpScores(scores);
@@ -33,7 +41,7 @@ public abstract class AbstractRank {
 		hologram = OlympaCore.getInstance().getHologramsManager().createHologram(location, false, true, new FixedLine<>(getHologramName()), FixedLine.EMPTY_LINE);
 		for (int i = 0; i < scoreLines.length; i++) {
 			int slot = i;
-			DynamicLine<HologramLine> line = new DynamicLine<>(x -> scores[slot].toString());
+			DynamicLine<HologramLine> line = new DynamicLine<>(x -> scores[slot].toString(slot));
 			scoreLines[i] = line;
 			hologram.addLine(scoreLines[i]);
 		}
@@ -43,25 +51,32 @@ public abstract class AbstractRank {
 		return id;
 	}
 	
+	public Hologram getHologram() {
+		return hologram;
+	}
+	
+	public int getMaxSlots() {
+		return maxSlots;
+	}
+	
 	public abstract String getHologramName();
 	
 	public abstract String getMessageName();
 	
-	public void handleNewScore(Player player, double scoreValue) {
+	public void handleNewScore(String name, Player player, double scoreValue) {
 		if (player == null) return;
-		String name = player.getName();
 		int oldSlot = -1;
 		int newSlot = -1;
 		
 		for (int slot = 0; slot < scores.length; slot++) {
 			ScoreEntry score = scores[slot];
 			if (name.equals(score.name)) {
-				if (score.score < scoreValue) {
+				if (!keepTopScore || (score.score < scoreValue)) {
 					System.arraycopy(scores, slot + 1, scores, slot, scores.length - slot - 1); // supprimer cette entrée et tout décaler d'un cran à gauche
 					scoreLines[slot].updateGlobal();
 					oldSlot = slot;
-				}
-				break;
+					break;
+				}else return;
 			}
 		}
 		
@@ -81,6 +96,7 @@ public abstract class AbstractRank {
 			}
 		}
 		
+		if (player == null || !player.isOnline()) return;
 		if (newSlot == -1) return;
 		if (oldSlot == -1) {
 			Prefix.DEFAULT_GOOD.sendMessage(player, "Félicitations ! Tu arrives dans le classement %s à la %de place !", getMessageName(), newSlot);
@@ -117,7 +133,22 @@ public abstract class AbstractRank {
 		}
 		
 		public String toString(int slot) {
-			return slot + " - " + toString();
+			ChatColor color;
+			switch (slot) {
+			case 0:
+				color = ChatColor.GREEN;
+				break;
+			case 1:
+				color = ChatColor.YELLOW;
+				break;
+			case 2:
+				color = ChatColor.RED;
+				break;
+			default:
+				color = ChatColor.DARK_GRAY;
+				break;
+			}
+			return color.toString() + "#" + (slot + 1) + " §7" + toString();
 		}
 		
 		@Override

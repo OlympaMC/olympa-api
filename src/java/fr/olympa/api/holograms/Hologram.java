@@ -111,6 +111,10 @@ public class Hologram extends AbstractObservable {
 		destroyEntities();
 	}
 	
+	public boolean isHidden() {
+		return !willSpawn;
+	}
+	
 	public boolean isVisibleTo(Player p) {
 		return defaultVisibility != players.contains(p);
 	}

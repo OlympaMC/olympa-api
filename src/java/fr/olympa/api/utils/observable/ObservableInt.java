@@ -37,4 +37,8 @@ public class ObservableInt extends AbstractObservable {
 		return value;
 	}
 	
+	public double getAsDouble() {
+		return (double) value;
+	}
+	
 }
