@@ -47,7 +47,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		this.money.observe("clan_update_db", this::updateMoney);
 	}
 
-	public boolean addPlayer(ClanPlayerInterface<T, D> p) {
+	public boolean addPlayer(ClanPlayerInterface<T, D> p, boolean msg) {
 		if (members.size() >= getMaxSize())
 			return false;
 		p.setClan((T) this);
@@ -59,7 +59,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		nameTagApi.callNametagUpdate(p);
 		members.put(p.getInformation(), manager.createClanData(p.getInformation()));
 		memberJoin(p);
-		broadcast(String.format(manager.stringPlayerJoin, p.getName()));
+		if (msg) broadcast(String.format(manager.stringPlayerJoin, p.getName()));
 		try {
 			manager.insertPlayerInClan(p, this);
 		} catch (SQLException e) {

@@ -33,6 +33,9 @@ public abstract class AbstractSQLRank extends AbstractRank {
 				i++;
 			}
 			resultSet.close();
+		}catch (SQLException ex) {
+			if (ex.getCause().getMessage().contains("doesn't exist")) return; // table does not exist
+			ex.printStackTrace();
 		}
 	}
 	

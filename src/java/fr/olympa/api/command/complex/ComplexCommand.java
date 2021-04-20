@@ -301,7 +301,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 	@Override
 	public void sendHelp(CommandSender sender) {
 		super.sendHelp(sender);
-		sender.spigot().sendMessage(helpExtra().build());
+		sender.sendMessage(helpExtra().build());
 	}
 
 	@Override

@@ -19,18 +19,15 @@ public abstract class AbstractRank {
 	private static final DecimalFormat format = new DecimalFormat("0.##");
 	
 	protected final String id;
-	private final int maxSlots;
 	private final boolean keepTopScore;
+	private final ScoreEntry[] scores;
 	
 	protected final Hologram hologram;
 	
 	private DynamicLine<HologramLine>[] scoreLines = new DynamicLine[10];
-	private ScoreEntry[] scores;
-
 	
 	protected AbstractRank(String id, Location location, int maxSlots, boolean keepTopScore) throws SQLException {
 		this.id = id;
-		this.maxSlots = maxSlots;
 		this.keepTopScore = keepTopScore;
 		
 		scores = new ScoreEntry[maxSlots];
@@ -56,7 +53,7 @@ public abstract class AbstractRank {
 	}
 	
 	public int getMaxSlots() {
-		return maxSlots;
+		return scores.length;
 	}
 	
 	public abstract String getHologramName();
@@ -64,7 +61,7 @@ public abstract class AbstractRank {
 	public abstract String getMessageName();
 	
 	public void handleNewScore(String name, Player player, double scoreValue) {
-		if (player == null) return;
+		if (name == null) return;
 		int oldSlot = -1;
 		int newSlot = -1;
 		
@@ -73,6 +70,7 @@ public abstract class AbstractRank {
 			if (name.equals(score.name)) {
 				if (!keepTopScore || (score.score < scoreValue)) {
 					System.arraycopy(scores, slot + 1, scores, slot, scores.length - slot - 1); // supprimer cette entrée et tout décaler d'un cran à gauche
+					scores[scores.length - 1] = new ScoreEntry();
 					scoreLines[slot].updateGlobal();
 					oldSlot = slot;
 					break;
@@ -105,7 +103,15 @@ public abstract class AbstractRank {
 	
 	protected abstract void fillUpScores(ScoreEntry[] scores) throws SQLException;
 	
-	public static class ScoreEntry {
+	protected double getMinValue() {
+		return -1;
+	}
+	
+	protected String formatScore(double score) {
+		return format.format(score);
+	}
+	
+	public class ScoreEntry {
 		private String name;
 		private double score;
 		
@@ -153,7 +159,7 @@ public abstract class AbstractRank {
 		
 		@Override
 		public String toString() {
-			return name == null ? "§ovide" : (name + " : " + format.format(score));
+			return name == null ? "§ovide" : (name + " : " + formatScore(score));
 		}
 		
 	}
