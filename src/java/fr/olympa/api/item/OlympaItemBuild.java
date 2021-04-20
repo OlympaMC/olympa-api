@@ -56,6 +56,10 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 			unbreakable = true;
 	}
 
+	public OlympaItemBuild(Material material) {
+		this.material = material;
+	}
+
 	public OlympaItemBuild(Material material, String name) {
 		this.material = material;
 		this.name = name;
@@ -115,8 +119,13 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 			else
 				itemStack.addEnchantments(enchantments);
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (name != null)
-			itemMeta.setDisplayName(ColorUtils.color(name));
+		if (name != null) {
+			name = ColorUtils.color(name);
+			if (name.contains("§"))
+				itemMeta.setDisplayName(name);
+			else
+				itemMeta.setDisplayName("§r" + name);
+		}
 		if (customModelData != null)
 			itemMeta.setCustomModelData(customModelData);
 		if (lore != null)

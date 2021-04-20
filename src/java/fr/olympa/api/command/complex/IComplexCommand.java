@@ -44,7 +44,12 @@ public interface IComplexCommand<C> {
 			if (RegexMatcher.DOUBLE.is(x))
 				return RegexMatcher.DOUBLE.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c doit être un nombre décimal", x), false);
+		}, x -> String.format("&4%s&c doit être un nombre décimal de type double", x), false);
+		addArgumentParser("FLOAT", (sender, arg) -> Collections.emptyList(), x -> {
+			if (RegexMatcher.FLOAT.is(x))
+				return RegexMatcher.FLOAT.parse(x);
+			return null;
+		}, x -> String.format("&4%s&c doit être un nombre décimal de type float", x), false);
 		addArgumentParser("HEX_COLOR", (sender, arg) -> HEX_COLOR, x -> {
 			if (RegexMatcher.HEX_COLOR.is(x))
 				return RegexMatcher.HEX_COLOR.parse(x);
