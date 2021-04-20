@@ -126,6 +126,7 @@ public class Inventories implements Listener {
 			close = false;
 			return;
 		}
+		if (!g.containsKey(p)) return;
 		OlympaGUI gui = getGUI(e.getView().getTopInventory());
 		if (gui == null)
 			return;

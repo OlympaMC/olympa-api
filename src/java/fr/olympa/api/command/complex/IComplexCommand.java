@@ -143,10 +143,9 @@ public interface IComplexCommand<C> {
 	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command) {
 		TxtComponentBuilder builder = new TxtComponentBuilder().extraSpliterBN();
 		if (command.cmd.registerAliasesInTab() && command.cmd.aliases() != null) {
-			builder = builder.extraSpliterBN();
 			for (String aliase : command.cmd.aliases())
 				builder.extra(getHelpCommandComponent(cmd, command, aliase));
-		}
+		}else builder.extra(getHelpCommandComponent(cmd, command, command.name));
 		return builder;
 	}
 

@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -401,6 +402,7 @@ public class RegionManager implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getClickedBlock() == null) return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND) return;
+		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Material type = e.getClickedBlock().getType();
 		if (type == Material.DAYLIGHT_DETECTOR || type == Material.REDSTONE_WIRE || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type == Material.JUKEBOX || type.name().endsWith("_SIGN") || type.name().startsWith("POTTED_")) {
 			fireEvent(e.getClickedBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getClickedBlock()));
