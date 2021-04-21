@@ -136,7 +136,7 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	}
 
 	
-	
+	 
 	void openMoneyEditor() {
 		moneyEditor.enterOrLeave();
 		p.getPlayer().closeInventory();
