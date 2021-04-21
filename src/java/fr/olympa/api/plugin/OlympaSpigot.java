@@ -93,17 +93,15 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		new Thread(() -> {
-			while (!Bukkit.getOnlinePlayers().isEmpty()) {
-				for (Player p : Bukkit.getOnlinePlayers())
-					p.kickPlayer("Server closed");
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		while (!Bukkit.getOnlinePlayers().isEmpty()) {
+			for (Player p : Bukkit.getOnlinePlayers())
+				p.kickPlayer("Server closed");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		}).start();
+		}
 	}
 
 	@Override
