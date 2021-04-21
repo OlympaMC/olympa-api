@@ -54,7 +54,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringClickToJoin = "§e§lClique pour rejoindre le clan !";
 	public String stringYouAlreadyInClan = "Tu fais déjà partie d'un clan.";
 	public String stringClanAlreadyExists = "Un clan avec ce nom existe déjà.";
-	public String stringClanCreated = "Tu viens de créer ton clan !";
+	public String stringClanCreated = "Le clan a été créé !";
 	public String stringNoInvitation = "Tu n'as pas reçu d'invitation de la part du clan \"%s\".";
 	public String stringClanJoined = "Tu viens de rejoindre le clan §l\"%s\"§r§a !";
 	public String stringClanFull = "Ce clan n'a plus la place pour accueillir un autre joueur...";
@@ -274,7 +274,8 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		resultSet.close();
 		T clan = createClan(id, name, tag, p.getInformation(), defaultMaxSize);
 		clans.put(id, clan);
-		clan.addPlayer(p);
+		clan.addPlayer(p, false);
+		clan.broadcast(stringClanCreated);
 		plugin.sendMessage("Clan " + name + " créé.");
 		return clan;
 	}

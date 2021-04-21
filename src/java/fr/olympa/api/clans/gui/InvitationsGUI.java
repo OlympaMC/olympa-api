@@ -29,7 +29,7 @@ public class InvitationsGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>
 	}
 
 	public void click(T existing, Player p, ClickType click) {
-		if (existing.addPlayer(AccountProvider.get(p.getUniqueId()))) {
+		if (existing.addPlayer(AccountProvider.get(p.getUniqueId()), true)) {
 			Inventories.closeAndExit(p);
 			manager.clearPlayerInvitations(p);
 		}else {

@@ -3,7 +3,6 @@ package fr.olympa.api.command.complex;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +19,7 @@ import fr.olympa.api.match.RegexMatcher;
 public interface IComplexCommand<C> {
 
 	List<String> INTEGERS = Arrays.asList("1", "2", "3");
+	List<String> DOUBLE = Arrays.asList("1", "2.5", "3.1");
 	String TEMP_UUID = UUID.randomUUID().toString();
 	List<String> UUIDS = Arrays.asList(TEMP_UUID, TEMP_UUID.replace("-", ""));
 	List<String> BOOLEAN = Arrays.asList("true", "false");
@@ -40,11 +40,16 @@ public interface IComplexCommand<C> {
 			String random = UUID.randomUUID().toString();
 			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
 		}, false);
-		addArgumentParser("DOUBLE", (sender, arg) -> Collections.emptyList(), x -> {
+		addArgumentParser("DOUBLE", (sender, arg) -> DOUBLE, x -> {
 			if (RegexMatcher.DOUBLE.is(x))
 				return RegexMatcher.DOUBLE.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c doit être un nombre décimal", x), false);
+		}, x -> String.format("&4%s&c doit être un nombre décimal de type double", x), false);
+		addArgumentParser("FLOAT", (sender, arg) -> DOUBLE, x -> {
+			if (RegexMatcher.FLOAT.is(x))
+				return RegexMatcher.FLOAT.parse(x);
+			return null;
+		}, x -> String.format("&4%s&c doit être un nombre décimal de type float", x), false);
 		addArgumentParser("HEX_COLOR", (sender, arg) -> HEX_COLOR, x -> {
 			if (RegexMatcher.HEX_COLOR.is(x))
 				return RegexMatcher.HEX_COLOR.parse(x);
@@ -137,11 +142,11 @@ public interface IComplexCommand<C> {
 
 	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command) {
 		TxtComponentBuilder builder = new TxtComponentBuilder().extraSpliterBN();
-		if (command.cmd.registerAliasesInTab() && command.cmd.aliases() != null) {
-			builder = builder.extraSpliterBN();
+		if (command.cmd.registerAliasesInTab() && command.cmd.aliases() != null)
 			for (String aliase : command.cmd.aliases())
 				builder.extra(getHelpCommandComponent(cmd, command, aliase));
-		}
+		else
+			builder.extra(getHelpCommandComponent(cmd, command, command.name));
 		return builder;
 	}
 

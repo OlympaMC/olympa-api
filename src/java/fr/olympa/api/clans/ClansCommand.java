@@ -60,7 +60,6 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		if (!manager.checkName(getPlayer(), name)) return;
 		try {
 			manager.createClan(player, name, manager.generateTag(name));
-			sendSuccess(manager.stringClanCreated);
 		}catch (SQLException e) {
 			e.printStackTrace();
 			sendError("Une erreur est survenue.");
@@ -90,7 +89,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 			return;
 		}
 
-		if (clan.addPlayer(getOlympaPlayer())) {
+		if (clan.addPlayer(getOlympaPlayer(), true)) {
 			sendSuccess(manager.stringClanJoined, clan.getName());
 			manager.clearPlayerInvitations(getPlayer());
 		}else {

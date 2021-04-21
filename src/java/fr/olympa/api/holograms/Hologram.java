@@ -101,6 +101,20 @@ public class Hologram extends AbstractObservable {
 		if (isNear(p)) lines.forEach(line -> line.hideTo(p));
 	}
 	
+	public void show() {
+		willSpawn = true;
+		spawnEntities();
+	}
+	
+	public void hide() {
+		willSpawn = false;
+		destroyEntities();
+	}
+	
+	public boolean isHidden() {
+		return !willSpawn;
+	}
+	
 	public boolean isVisibleTo(Player p) {
 		return defaultVisibility != players.contains(p);
 	}

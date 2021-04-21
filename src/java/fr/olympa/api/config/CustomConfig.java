@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -100,6 +101,10 @@ public class CustomConfig extends YamlConfiguration {
 		return SpigotUtils.convertStringToLocation(this.getString(path));
 	}
 
+	public Material getMaterial(String path) {
+		return Material.valueOf(this.getString(path));
+	}
+
 	@Override
 	public String getString(String path) {
 		return ColorUtils.color(super.getString(path));
@@ -185,6 +190,10 @@ public class CustomConfig extends YamlConfiguration {
 
 	public void set(String path, Location location) {
 		this.set(path, SpigotUtils.convertLocationToString(location));
+	}
+
+	public void set(String path, Material material) {
+		this.set(path, material.name());
 	}
 
 	public InputStream getRessource() {
