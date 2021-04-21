@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.chat.TxtComponentBuilder;
+import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.match.RegexMatcher;
 
 public interface IComplexCommand<C> {
@@ -26,7 +27,9 @@ public interface IComplexCommand<C> {
 	List<String> HEX_COLOR = Arrays.asList("#123456", "#FFFFFF");
 	List<String> IP = Arrays.asList("127.0.0.1");
 
+	@SuppressWarnings("deprecation")
 	default void addDefaultParsers() {
+		addArgumentParser("GROUPS", OlympaGroup.class, g -> g.getName());
 		addArgumentParser("INTEGER", (sender, arg) -> INTEGERS, x -> {
 			if (RegexMatcher.INT.is(x))
 				return RegexMatcher.INT.parse(x);
@@ -77,7 +80,7 @@ public interface IComplexCommand<C> {
 		List<String> values = Arrays.stream(enumClass.getEnumConstants()).map(getNameMethod).collect(Collectors.toList());
 		addArgumentParser(name, (sender, arg) -> values, playerInput -> {
 			for (T each : enumClass.getEnumConstants())
-				if (each.name().equalsIgnoreCase(playerInput))
+				if (getNameMethod.apply(each).equalsIgnoreCase(playerInput))
 					return each;
 			return null;
 		}, x -> String.format("La valeur &4%s&c n'existe pas.", x));
