@@ -11,13 +11,10 @@
 ## Script to deploy api with good version
 ## Author > Tristiisch
 #
-# $1 = 1979-02-26 ou <branchName>
-# $2 = 18:30:00
 
 USE_BRANCH="master"
 
 ACTUAL_COMMIT_ID=`cat target/commitId`
-
 
 if [ -n "$1" ]; then
 	if [ -n "$2" ]; then
@@ -26,7 +23,7 @@ if [ -n "$1" ]; then
 		BRANCH_NAME="$1"
 	fi
 else
-	echo "\e[0;36mTu peux choisir la version de l'api en ajoutant une date (ex ./deploy.sh 1979-02-26 18:30:00) ou une branch (ex ./deploy.sh dev).\e[0m"
+	echo "\e[0;36mTu peux choisir la version du core en ajoutant une date (ex './deploy.sh date \"2021-02-26 18:30:00\"') ou une branch (ex './deploy.sh dev').\e[0m"
 fi
 
 if [ -n "$BRANCH_NAME" ]; then
