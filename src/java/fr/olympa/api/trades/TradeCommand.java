@@ -49,11 +49,11 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 		else {
 			map.put(getPlayer(), partner);
 			plugin.getTask().runTaskLater(() -> {if (map.remove(getPlayer(), partner)) 
-				Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "La demande d'échange à %s a expiré.", partner.getName());}
+				Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "La demande d'échange envoyée à %s a expiré.", partner.getName());}
 			, 1200);
 			
 			Prefix.DEFAULT_GOOD.sendMessage(getPlayer(), "Demande d'échange envoyée à %s.", partner.getName());
-			Prefix.DEFAULT_GOOD.sendMessage(partner, "Demande d'échange reçue de %s, fais /trade %s pour l'accepter.", getPlayer().getName(), getPlayer().getName());
+			Prefix.DEFAULT_GOOD.sendMessage(partner, "Demande d'échange reçue de %s, fais /trade with %s pour l'accepter.", getPlayer().getName(), getPlayer().getName());
 		}
 	}
 	

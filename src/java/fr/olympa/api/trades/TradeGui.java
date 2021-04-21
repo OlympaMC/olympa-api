@@ -14,6 +14,7 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.editor.Editor;
 import fr.olympa.api.editor.TextEditor;
 import fr.olympa.api.item.ItemUtils;
+import fr.olympa.api.utils.Prefix;
 
 public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder {
 	private static int countdownInit = 5;
@@ -135,9 +136,11 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	}
 
 	
-	
+	 
 	void openMoneyEditor() {
 		moneyEditor.enterOrLeave();
+		p.getPlayer().closeInventory();
+		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez le montant à ajouter à l'échange :");
 	}
 	
 	

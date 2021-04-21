@@ -18,21 +18,22 @@ import fr.olympa.api.economy.OlympaMoney;
 import fr.olympa.api.editor.Editor;
 import fr.olympa.api.trades.TradeGui.TradeStep;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class UniqueTradeManager<T extends TradePlayerInterface> {
+public class UniqueTradeManager<T extends TradePlayerInterface> extends AbstractObservable {
 
 	private static NamespacedKey ownerKey = NamespacedKey.fromString("is_owned_by_someone_else"); 
 	
-	private TradesManager<T> manager;
+	//private TradesManager<T> manager;
 	
 	private Map<T, TradeGui<T>> map = new HashMap<T, TradeGui<T>>();
 	
 	private int timerId;
 	private boolean hasEnded = false;
 	
-	UniqueTradeManager(T p1, T p2, TradesManager<T> manager) {
-		this.manager = manager;
+	UniqueTradeManager(T p1, T p2/*, TradesManager<T> manager*/) {
+		//this.manager = manager;
 		
 		map.put(p1, new TradeGui<T>(this, p1, p2));
 		map.put(p2, new TradeGui<T>(this, p2, p1));
@@ -143,8 +144,9 @@ public class UniqueTradeManager<T extends TradePlayerInterface> {
 		if (hasEnded)
 			return;
 		
-		if (!manager.unregister(this))
-			throw new IllegalStateException("Tryed to unregister a trade between " + map.keySet() + " but it was alredy unregistered, this shouldn't happen!!");
+		update(); //tells manager that trade has ended
+		/*if (!manager.unregister(this))
+			throw new IllegalStateException("Tryed to unregister a trade between " + map.keySet() + " but it was alredy unregistered, this shouldn't happen!!");*/
 			
 		hasEnded = true;
 		map.entrySet().forEach(e -> {
@@ -176,7 +178,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> {
 		else
 			Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "L'échange a échoué, tu as récupéré " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + ".");
 		
-		p.getTradeBag().setItems(items);
+		p.getTradeBag().setItems(p.getPlayer().getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
 		if (money > 0)
 			p.getGameMoney().give(money);
 	}

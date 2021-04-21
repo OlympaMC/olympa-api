@@ -140,7 +140,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
 		
-		}else if (tradeRange == -1 || (p1.getPlayer().getWorld().getUID().equals(p2.getPlayer().getWorld().getUID()) && p1.getPlayer().getLocation().distance(p2.getPlayer().getLocation()) < tradeRange)) {
+		}else if (tradeRange == -1 || (p1.getPlayer().getWorld().getUID().equals(p2.getPlayer().getWorld().getUID()) && p1.getPlayer().getLocation().distance(p2.getPlayer().getLocation()) > tradeRange)) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p2.getName());
 			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p1.getName());
 			
@@ -150,8 +150,12 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p2))) {
 			Prefix.BAD.sendMessage(p1.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
 			
-		}else
-			trades.add(new UniqueTradeManager<T>(p1, p2, this));
+		}else {
+			UniqueTradeManager<T> trade = new UniqueTradeManager<T>(p1, p2);
+			trades.add(trade);
+			trade.observe("cancel_trade", () -> trades.remove(trade));
+		}
+			
 	}
 	
 	public boolean isInTrade(T p) {
@@ -162,9 +166,10 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		return trades.stream().filter(trade -> trade.containsPlayer(p)).findAny().orElse(null);
 	}
 
+	/*
 	boolean unregister(UniqueTradeManager<?> trade) {
 		return trades.remove(trade);
-	}
+	}*/
 }
 
 
