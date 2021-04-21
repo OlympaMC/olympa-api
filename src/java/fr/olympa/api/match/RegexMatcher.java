@@ -55,14 +55,14 @@ public class RegexMatcher {
 			return null;
 		}
 	});
-	public static final MatcherPattern<Integer> INT = new MatcherPattern<>("-?\\d+", x -> {
+	public static final MatcherPattern<Integer> INT = new MatcherPattern<>("-?\\d{0,10}", x -> {
 		try {
 			return Integer.parseInt(x);
 		} catch (NumberFormatException e) {
 			return null;
 		}
 	}, Integer.class);
-	public static final MatcherPattern<Long> LONG = new MatcherPattern<>("-?\\d+", x -> {
+	public static final MatcherPattern<Long> LONG = new MatcherPattern<>("-?\\d{0,19}", x -> {
 		try {
 			return Long.parseLong(x);
 		} catch (NumberFormatException e) {

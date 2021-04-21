@@ -93,7 +93,6 @@ public class Inventories implements Listener {
 					event.setCancelled(gui.onMoveItem(p, current));
 				return;
 			}
-
 			if (gui.noDoubleClick() && event.getClick() == ClickType.DOUBLE_CLICK)
 				return;
 
@@ -126,7 +125,8 @@ public class Inventories implements Listener {
 			close = false;
 			return;
 		}
-		if (!g.containsKey(p)) return;
+		if (!g.containsKey(p))
+			return;
 		OlympaGUI gui = getGUI(e.getView().getTopInventory());
 		if (gui == null)
 			return;
