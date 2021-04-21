@@ -178,7 +178,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 		else
 			Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "L'échange a échoué, tu as récupéré " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + ".");
 		
-		p.getTradeBag().setItems(items);
+		p.getTradeBag().setItems(p.getPlayer().getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
 		if (money > 0)
 			p.getGameMoney().give(money);
 	}

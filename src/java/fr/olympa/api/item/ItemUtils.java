@@ -148,7 +148,6 @@ public class ItemUtils {
 			is = lore(is, lore);
 		im = (SkullMeta) is.getItemMeta();
 		im.setDisplayName(name);
-		is.setItemMeta(im);
 		skullCustom(im, value);
 		is.setItemMeta(im);
 		return is;
