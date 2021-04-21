@@ -23,7 +23,7 @@ if [ -n "$1" ]; then
 		BRANCH_NAME="$1"
 	fi
 else
-	echo "\e[0;36mTu peux choisir la version du core en ajoutant une date (ex './deploy.sh date \"2021-02-26 18:30:00\"') ou une branch (ex './deploy.sh dev').\e[0m"
+	echo -e "\e[0;36mTu peux choisir la version du core en ajoutant une date (ex './deploy.sh date \"2021-02-26 18:30:00\"') ou une branch (ex './deploy.sh dev').\e[0m"
 fi
 
 if [ -n "$BRANCH_NAME" ]; then
@@ -50,7 +50,7 @@ fi
 if [ -n "$ACTUAL_COMMIT_ID" ]; then
 	git pull
 	if [ "$ACTUAL_COMMIT_ID" = `git rev-parse HEAD` ]; then
-		echo "\e[32mPas besoin de maven install l'api, le jar est déjà crée.\e[0m"
+		echo -e "\e[32mPas besoin de maven install l'api, le jar est déjà crée.\e[0m"
 		exit 0
 	fi
 fi
@@ -60,4 +60,4 @@ if [ "$?" -ne 0 ]; then
 else
 	echo `git rev-parse HEAD` > target/commitId
 fi
-echo "\e[32mLe jar du commit de l'api $(cat target/commitId) a été crée.\e[0m"
+echo -e "\e[32mLe jar du commit de l'api $(cat target/commitId) a été crée.\e[0m"
