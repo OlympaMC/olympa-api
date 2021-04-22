@@ -10,7 +10,7 @@ import org.bukkit.util.NumberConversions;
 public class ExpandedCuboid extends Cuboid {
 
 	public ExpandedCuboid(World world, int x1, int z1, int x2, int z2) {
-		super(world, x1, 0, z1, x2, 256, z2);
+		super(world, x1, world.getMinHeight(), z1, x2, world.getMaxHeight(), z2);
 	}
 
 	@Override

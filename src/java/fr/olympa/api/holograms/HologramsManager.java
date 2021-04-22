@@ -3,6 +3,7 @@ package fr.olympa.api.holograms;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 
 	private final Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
 
-	Map<Integer, Hologram> holograms = new HashMap<>();
+	Map<Integer, Hologram> holograms = Collections.synchronizedMap(new HashMap<>());
 	private int lastID = 0;
 
 	private final File hologramsFile;
