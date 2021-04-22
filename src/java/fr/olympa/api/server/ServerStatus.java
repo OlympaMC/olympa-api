@@ -12,13 +12,13 @@ import net.md_5.bungee.api.ChatColor;
 public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "Off"),
-	STARTING(8, "Démarrage", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, null),
 	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
 	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta"),
 	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermer"),
 	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "On"),
 	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "Dev"),
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null),
+	STARTING(8, "Démarrage", ChatColor.BLUE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, null),
 	CLOSE(10, "Fermé", ChatColor.RED, null, null);
 
 	public static ServerStatus get(int id) {

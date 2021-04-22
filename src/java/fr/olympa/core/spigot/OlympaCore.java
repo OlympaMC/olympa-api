@@ -146,7 +146,7 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback) {
+	public void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback, boolean freshDoubleCallBack) {
 
 	}
 }

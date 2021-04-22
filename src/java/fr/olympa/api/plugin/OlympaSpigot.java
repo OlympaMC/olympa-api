@@ -2,7 +2,6 @@ package fr.olympa.api.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,6 +22,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();
 	private String serverName;
 
+	protected long lastInfo;
 	protected List<MonitorInfo> monitorInfos = new ArrayList<>();
 	protected RegionManager regionManager;
 	protected ImageFrameManager imageFrameManager;
@@ -69,13 +69,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 
 	public abstract IProtocolSupport getProtocolSupport();
 
-	/**
-	 * Pour récupérer les dernières informations des serveurs spigot si possible en temps réel. Si les données sont plus anciennes de 30 secondes, on demande au bungee des nouvelles données
-	 * renvoyé par {@link fr.olympa.api.customevents.MonitorServerInfoReceiveEvent#MonitorServerInfoReceiveEvent monitorServerInfoReceiveEvent}
-	 */
-	@Override
-	public abstract void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback);
-
 	@Override
 	public String getServerName() {
 		return serverName != null ? serverName : serverNameIp;
@@ -101,11 +94,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		return imageFrameManager;
-	}
-
-	@Override
-	public List<MonitorInfo> getMonitorInfos() {
-		return monitorInfos;
 	}
 
 	@Override

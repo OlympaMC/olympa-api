@@ -36,8 +36,11 @@ public interface OlympaCoreInterface {
 
 	Connection getDatabase() throws SQLException;
 
-	List<MonitorInfo> getMonitorInfos();
-
-	void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback);
+	/**
+	 * Execute le @param callback avec les dernières informations des serveurs spigot si possible. Si les données sont plus anciennes de 10 secondes,
+	 * on demande au bungee, et lors qu'un recevera la réponse, @param callback sera exécuté une seconde fois.
+	 * Tous les callback dans {@link fr.olympa.core.spigot.redis.receiver#BungeeServerInfoReceiver callbacksRegister} sont aussi executés.
+	 */
+	void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback, boolean freshDoubleCallBack);
 
 }
