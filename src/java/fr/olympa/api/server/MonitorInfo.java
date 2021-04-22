@@ -4,6 +4,8 @@ import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import com.google.gson.annotations.Expose;
+
 import fr.olympa.api.utils.Utils;
 
 public class MonitorInfo {
@@ -20,20 +22,35 @@ public class MonitorInfo {
 		return new AbstractMap.SimpleEntry<>(olympaServer, serverID);
 	}
 
+	@Expose
 	protected String serverName;
+	@Expose
 	protected OlympaServer olympaServer;
+	@Expose
 	protected int serverID;
+	@Expose
 	protected Integer ping;
+	@Expose
 	protected Integer onlinePlayers;
+	@Expose
 	protected Integer maxPlayers;
+	@Expose
 	protected Integer ramUsage;
+	@Expose
 	protected Integer threads;
+	@Expose
 	protected Integer allThreads;
+	@Expose
 	protected ServerStatus status = ServerStatus.UNKNOWN;
+	@Expose
 	protected String error;
+	@Expose
 	protected Float tps;
+	@Expose
 	protected String firstVersion = "unknown";
+	@Expose
 	protected String lastVersion = "unknown";
+	@Expose
 	protected String lastModifiedCore;
 
 	public static Pattern getIdPattern() {
