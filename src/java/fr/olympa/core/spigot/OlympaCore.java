@@ -3,6 +3,8 @@ package fr.olympa.core.spigot;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
@@ -17,6 +19,7 @@ import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.tracking.RegionManager;
+import fr.olympa.api.server.MonitorInfo;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
 
@@ -142,4 +145,8 @@ public class OlympaCore extends OlympaSpigot {
 		return null;
 	}
 
+	@Override
+	public void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback) {
+
+	}
 }

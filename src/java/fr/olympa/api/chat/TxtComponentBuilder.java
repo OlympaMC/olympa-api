@@ -26,6 +26,10 @@ public class TxtComponentBuilder {
 		return new TxtComponentBuilder(prefix, message).onHover(hoverAction, contents).build();
 	}
 
+	public static TextComponent of(Prefix prefix, String message, Object... object) {
+		return new TxtComponentBuilder(prefix, message, object).build();
+	}
+
 	public static TextComponent of(String message, HoverEvent.Action hoverAction, Content... contents) {
 		return new TxtComponentBuilder(message).onHover(hoverAction, contents).build();
 	}

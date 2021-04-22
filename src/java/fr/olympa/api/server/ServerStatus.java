@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.OlympaSpigotPermission;
 import net.md_5.bungee.api.ChatColor;
 
 public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "Off"),
+	STARTING(8, "Démarrage", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, null),
 	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
 	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta"),
 	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermer"),
@@ -43,10 +45,10 @@ public enum ServerStatus {
 	private String name;
 
 	private ChatColor color;
-	private OlympaSpigotPermission permission;
+	private OlympaPermission permission;
 	private String commandArg;
 
-	private ServerStatus(int id, String name, ChatColor color, OlympaSpigotPermission permission, String commandArg) {
+	ServerStatus(int id, String name, ChatColor color, OlympaSpigotPermission permission, String commandArg) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
@@ -74,7 +76,7 @@ public enum ServerStatus {
 		return color + name;
 	}
 
-	public OlympaSpigotPermission getPermission() {
+	public OlympaPermission getPermission() {
 		return permission;
 	}
 

@@ -15,8 +15,8 @@ public class Sorting<T> implements Comparator<T> {
 		this(Map.of(sortArg, true));
 	}
 
-	public Sorting(ToLongFunction<T> sortArg, boolean ascending) {
-		this(Map.of(sortArg, ascending));
+	public Sorting(ToLongFunction<T> sortArg, boolean downward) {
+		this(Map.of(sortArg, downward));
 	}
 
 	public Sorting(ToLongFunction<T>... sortingArgs) {
