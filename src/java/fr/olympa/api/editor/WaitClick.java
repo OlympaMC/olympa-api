@@ -39,7 +39,8 @@ public class WaitClick extends InventoryClear{
 		leave(e.getPlayer());
 	}
 
-	public void begin(){
+	@Override
+	protected void begin() {
 		super.begin();
 		if (none == null){
 			p.getInventory().setItem(4, validateItem);

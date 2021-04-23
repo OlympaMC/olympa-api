@@ -46,7 +46,7 @@ public class RegionEditor extends InventoryClear {
 	}
 
 	@Override
-	public void begin() {
+	protected void begin() {
 		super.begin();
 		Inventory inv = p.getInventory();
 		inv.setItem(0, blockSelector);
