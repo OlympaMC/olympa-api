@@ -16,7 +16,6 @@ import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.server.ServerType;
 import fr.olympa.api.utils.Prefix;
-import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaPermission implements IOlympaPermission {
@@ -166,7 +165,7 @@ public abstract class OlympaPermission implements IOlympaPermission {
 	@Override
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && (this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()))
-				|| olympaPlayer.hasCustomPermission(name, OlympaCore.getInstance().getOlympaServer()));
+				|| olympaPlayer.hasCustomPermission(name, LinkSpigotBungee.Provider.link.getOlympaServer()));
 	}
 
 	/**
