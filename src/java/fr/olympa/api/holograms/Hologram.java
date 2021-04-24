@@ -179,6 +179,11 @@ public class Hologram extends AbstractObservable {
 		update();
 	}
 	
+	@Deprecated
+	public List<HologramLine> getLines() {
+		return lines;
+	}
+	
 	private boolean isNear(Player player) {
 		return player.isOnline() && player.getWorld().equals(bottom.getWorld()) && player.getLocation().distanceSquared(getBottom()) < VISIBILITY_DISTANCE_SQUARED;
 	}
@@ -251,6 +256,10 @@ public class Hologram extends AbstractObservable {
 				entity = null;
 			}
 			line.removeHolder(this);
+		}
+		
+		public ArmorStand getEntity() {
+			return entity;
 		}
 		
 		public Location getPosition() {
