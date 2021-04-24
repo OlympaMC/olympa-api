@@ -96,9 +96,10 @@ public abstract class AbstractRank {
 		
 		if (player == null || !player.isOnline()) return;
 		if (newSlot == -1) return;
+		if (newSlot == oldSlot) return;
 		if (oldSlot == -1) {
-			Prefix.DEFAULT_GOOD.sendMessage(player, "Félicitations ! Tu arrives dans le classement %s à la %de place !", getMessageName(), newSlot);
-		}else Prefix.DEFAULT_GOOD.sendMessage(player, "Félicitations ! Tu progresses dans le classement %s de la %de à la %de place !", getMessageName(), oldSlot, newSlot);
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Félicitations ! Tu arrives dans le classement %s à la %de place !", getMessageName(), newSlot + 1);
+		}else Prefix.DEFAULT_GOOD.sendMessage(player, "Félicitations ! Tu progresses dans le classement %s de la %de à la %de place !", getMessageName(), oldSlot + 1, newSlot + 1);
 	}
 	
 	protected abstract void fillUpScores(ScoreEntry[] scores) throws SQLException;
