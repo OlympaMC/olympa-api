@@ -24,7 +24,7 @@ public class AfkPlayer {
 
 	private static final int scoreToActiveAfk = 10;
 	private static final int scoreToDeactiveAfk = 6;
-	private static final double minScoreToDetermineAfk = 0.6;
+	private static final double minRatioToDetermineAfk = 0.6;
 
 	private Player p;
 	
@@ -47,7 +47,7 @@ public class AfkPlayer {
 
 			@Override
 			public void run() {
-				if (ListenedPacket.getOutOfToleranceRatio(oldLog, newLog) >= minScoreToDetermineAfk)
+				if (ListenedPacket.getOutOfToleranceRatio(oldLog, newLog) >= minRatioToDetermineAfk)
 					afkScore++;
 				else
 					afkScore -= 3;
@@ -64,7 +64,7 @@ public class AfkPlayer {
 			}
 		};
 
-		task.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, 20 * 6);
+		task.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, 20 * 20);
 	}
 
 	/*public AfkPlayer(boolean afk, String lastAction) {
@@ -80,7 +80,8 @@ public class AfkPlayer {
 	public void setAfk() {
 		isAfk = true;
 		startAfkTime = System.currentTimeMillis();
-
+		afkScore = scoreToActiveAfk;
+		
 		Prefix.DEFAULT_BAD.sendMessage(p, "Tu es désormais &4AFK&c.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
@@ -91,6 +92,7 @@ public class AfkPlayer {
 
 	public void setNotAfk() {
 		isAfk = false;
+		afkScore = 0;
 		
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Tu n'es plus &2AFK&a.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
