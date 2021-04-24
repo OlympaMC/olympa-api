@@ -39,13 +39,10 @@ public class WaitBlockClick extends InventoryClear{
 		run.accept(e.getClickedBlock());
 	}
 
-	public void begin(){
+	@Override
+	protected void begin() {
 		super.begin();
 		p.getInventory().setItem(4, item);
-	}
-	
-	public void end(){
-		super.end();
 	}
 	
 }

@@ -7,16 +7,18 @@ public abstract class InventoryClear extends Editor{
 	
 	private ItemStack[] contents = new ItemStack[0];
 
-	public InventoryClear(Player p){
+	protected InventoryClear(Player p) {
 		super(p);
 	}
 
-	public void begin(){
+	@Override
+	protected void begin() {
 		super.begin();
 		contents = p.getInventory().getContents();
 		p.getInventory().setContents(new ItemStack[0]);
 	}
 
+	@Override
 	public void end(){
 		p.getInventory().setContents(contents);
 	}

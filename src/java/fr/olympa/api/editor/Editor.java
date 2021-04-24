@@ -63,11 +63,11 @@ public abstract class Editor implements Listener {
 
 	protected final Player p;
 
-	public Editor(Player p) {
+	protected Editor(Player p) {
 		this.p = p;
 	}
 
-	public void begin() {
+	protected void begin() {
 		Inventories.closeWithoutExit(this.p);
 	}
 
