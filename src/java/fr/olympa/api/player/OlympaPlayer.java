@@ -59,6 +59,10 @@ public interface OlympaPlayer {
 	long getLastConnection();
 
 	String getName();
+	
+	default String getNameWithPrefix() {
+		return getGroupPrefix() + getName();
+	}
 
 	String getPassword();
 
