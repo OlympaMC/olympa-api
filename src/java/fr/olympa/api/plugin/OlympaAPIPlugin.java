@@ -1,5 +1,11 @@
 package fr.olympa.api.plugin;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+
+import javax.annotation.Nullable;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.olympa.api.chat.ColorUtils;
@@ -7,12 +13,15 @@ import fr.olympa.api.config.CustomConfig;
 import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.task.OlympaTask;
 import fr.olympa.api.task.TaskManager;
+import fr.olympa.api.utils.Utils;
 
 public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPluginInterface {
 
 	protected final OlympaTask task;
 	protected CustomConfig config;
 	protected HologramsManager hologramsManager;
+	@Nullable
+	private Long lastModifiedTime;
 
 	public HologramsManager getHologramsManager() {
 		return hologramsManager;
@@ -34,6 +43,21 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 	@Override
 	public String getPrefixConsole() {
 		return "&f[&6" + getDescription().getName() + "&f] &e";
+	}
+
+	public String getLastModifiedTime() {
+		if (lastModifiedTime != null)
+			return Utils.tsToShortDur(lastModifiedTime);
+		try {
+			File file = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+			BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			lastModifiedTime = attr.lastModifiedTime().toMillis() / 1000L;
+		} catch (Exception | NoClassDefFoundError e) {
+			e.printStackTrace();
+		}
+		if (lastModifiedTime == null)
+			return null;
+		return Utils.tsToShortDur(lastModifiedTime);
 	}
 
 	@Override
