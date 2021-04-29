@@ -20,27 +20,27 @@ public enum OlympaGroup {
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp._Technique", "Resp._Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp._Staff", "Resp._Staff", "&c%s ", ":&r", true),
 	//	RESP_COM(5, 70, OlympaServer.ALL, "Resp._Communication", "Resp._Communication", "&3%s ", ":&r", true),
-	RESP_ANIMATION(10, 65, OlympaServer.ALL, "Resp._Animateur", "Resp._Animatrice", "&3%s ", ":&r", true),
-	RESP_BUILDER(11, 60, OlympaServer.ALL, "Resp._Buildeur", "Resp._Buildeuse", "&a%s ", ":&r", true),
+	RESP_ANIMATION(10, 65, OlympaServer.ALL, "Resp._Animateur", "Resp._Animatrice", "&5%s ", ":&r", true),
+	RESP_BUILDER(11, 60, OlympaServer.ALL, "Resp._Buildeur", "Resp._Buildeuse", "&2%s ", ":&r", true),
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
 	MOD(7, 53, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
 	ASSISTANT(8, 50, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
-	GAMEMASTER(4, 47, OlympaServer.ALL, "GameMaster", "GameMaster", "&c%s ", ":&r", true),
+	GAMEMASTER(4, 47, OlympaServer.ALL, "GameMaster", "GameMaster", "&0%s ", ":&r", true),
 	DEVP(19, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
 	DEV(12, 43, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
-	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&2%s ", ":&r", false),
+	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&a%s ", ":&r", false),
 	ANIMATOR(13, 38, OlympaServer.ALL, "Animateur", "Animatrice", "&d%s ", ":&r", false),
-	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&b%s ", ":&r", false),
-	FRIEND(16, 34, OlympaServer.ALL, "Ami", "Amie", "&e%s ", ":&r ", false),
+	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&a%s ", ":&r", false),
 	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
 	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
 	VIP(19, 20, OlympaServer.ALL, "VIP", "VIP", "&6%s", ":&r", false),
- 
+
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),
 	CREA_CONSTRUCTOR(22, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
-													
+
+	FRIEND(16, 0, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 
 	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
