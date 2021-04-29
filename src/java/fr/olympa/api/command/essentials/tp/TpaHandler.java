@@ -34,8 +34,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class TpaHandler implements Listener {
 
-	private static final int TELEPORTATION_SECONDS = 3;
-	private static final int TELEPORTATION_TICKS = TELEPORTATION_SECONDS * 20;
+	private static int TELEPORTATION_SECONDS;
+	private static int TELEPORTATION_TICKS;// = TELEPORTATION_SECONDS * 20;
 
 	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
 
@@ -43,9 +43,16 @@ public class TpaHandler implements Listener {
 	OlympaSpigotPermission permission;
 
 	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission) {
+		this(plugin, permission, 3);
+	}
+
+	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission, int tpDelay) {
 		this.plugin = plugin;
 		this.permission = permission;
 
+		TELEPORTATION_SECONDS = tpDelay;
+		TELEPORTATION_TICKS = tpDelay * 20;
+		
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
 		//		new TpHereConfirmCommand(this).register();
@@ -160,8 +167,10 @@ public class TpaHandler implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(target, "Tu es déjà en train de te faire téléporter !");
 			return;
 		}
-
-		Prefix.INFO.sendMessage(request.from, "Téléportation vers %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+		
+		if (TELEPORTATION_SECONDS > 0)
+			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+		
 		Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
 		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			if (request.from.isOnline() && request.to.isOnline()) {

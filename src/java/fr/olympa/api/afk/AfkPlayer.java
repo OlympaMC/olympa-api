@@ -64,7 +64,7 @@ public class AfkPlayer {
 			}
 		};
 
-		task.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, 20 * 20);
+		task.runTaskTimerAsynchronously(OlympaCore.getInstance(), 1, 20 * 40);
 	}
 
 	/*public AfkPlayer(boolean afk, String lastAction) {
@@ -136,11 +136,11 @@ public class AfkPlayer {
 	}
 
 	private enum ListenedPacket {
-		CHAT_PACKET(PacketPlayInChat.class, 0.4),
+		CHAT_PACKET(PacketPlayInChat.class, 0.2),
 		BREAK_PACKET(PacketPlayInBlockDig.class, 0.15),
 		PLACE_PACKET(PacketPlayInBlockPlace.class, 0.15),
-		MOVE_PACKET(PacketPlayInPosition.class, 0.2),
-		ARM_ANIMATION_PACKET(PacketPlayInArmAnimation.class, 0.15)
+		MOVE_PACKET(PacketPlayInPosition.class, 0.15),
+		ARM_ANIMATION_PACKET(PacketPlayInArmAnimation.class, 0.1)
 
 		;
 
