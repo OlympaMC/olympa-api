@@ -168,10 +168,11 @@ public class TpaHandler implements Listener {
 			return;
 		}
 		
-		if (TELEPORTATION_SECONDS > 0)
+		if (TELEPORTATION_SECONDS > 0) {
 			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+			Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
+		}
 		
-		Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
 		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			if (request.from.isOnline() && request.to.isOnline()) {
 				String tune = AccountProvider.get(request.from.getUniqueId()).getGender().getTurne();
