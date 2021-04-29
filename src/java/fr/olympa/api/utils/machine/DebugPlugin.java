@@ -24,7 +24,7 @@ public class DebugPlugin {
 	Boolean dependNotFound;
 	@Nullable
 	Boolean softDependNotFound;
-	String lastModifiedTime;
+	long lastModifiedTime;
 	boolean hasConfig;
 
 	public DebugPlugin(Plugin plugin) {
@@ -41,7 +41,7 @@ public class DebugPlugin {
 		try {
 			File file = new File(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 			BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-			lastModifiedTime = Utils.tsToShortDur(attr.lastModifiedTime().toMillis() / 1000L);
+			lastModifiedTime = attr.lastModifiedTime().toMillis() / 1000L;
 		} catch (Exception | NoClassDefFoundError e) {
 			e.printStackTrace();
 		}
@@ -81,6 +81,10 @@ public class DebugPlugin {
 	}
 
 	public String getLastModifiedTime() {
+		return Utils.tsToShortDur(lastModifiedTime);
+	}
+
+	public long getLastModifiedTimeLong() {
 		return lastModifiedTime;
 	}
 }
