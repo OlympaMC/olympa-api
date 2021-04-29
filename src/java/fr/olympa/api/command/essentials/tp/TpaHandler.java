@@ -92,7 +92,7 @@ public class TpaHandler implements Listener {
 	public List<Request> getRequestsByPlayerTeleported(Player target) {
 		return requests.asMap().entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
 	}
-
+  
 	public Player getCreatorByTarget(Player target) {
 		UUID targetUUID = target.getUniqueId();
 		return requests.asMap().entrySet().stream().filter(entry -> !entry.getValue().getUniqueId().equals(targetUUID) &&
