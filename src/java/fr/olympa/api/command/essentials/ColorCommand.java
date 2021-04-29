@@ -1,5 +1,8 @@
 package fr.olympa.api.command.essentials;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -51,7 +54,7 @@ public class ColorCommand extends ComplexCommand {
 	public void hex(CommandContext cmd) {
 		String arg = cmd.getArgument(0);
 		ChatColor color = ChatColor.of(arg);
-		sendMessage(Prefix.NONE, "%s[%s] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et felis quis eros facilisis dignissim sit amet vitae diam.", color, arg);
+		sendHoverAndSuggest(Prefix.NONE, color + "[" + color.getName() + "] Lorem ipsum dolor sit amet.", color + "Clique pour récupérer le code Hexa de " + color.toString().replace("§", "&"), "/color " + color.getName());
 	}
 
 	@Cmd()
@@ -60,5 +63,24 @@ public class ColorCommand extends ComplexCommand {
 			ChatColor color = ColorUtils.randomColor();
 			sendHoverAndSuggest(Prefix.NONE, color + "[" + color.getName() + "] Lorem ipsum dolor sit amet.", color + "Clique pour récupérer le code Hexa", "/color " + color.getName());
 		}
+	}
+
+	@Cmd(min = 1)
+	public void test(CommandContext cmd) {
+		player.sendMessage(translateHexColorCodes(cmd.getFrom(0)));
+	}
+
+	public String translateHexColorCodes(String message) {
+		final Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
+		Matcher matcher = hexPattern.matcher(message);
+		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+		while (matcher.find()) {
+			String group = matcher.group(1);
+			matcher.appendReplacement(buffer, ChatColor.COLOR_CHAR + "x"
+					+ ChatColor.COLOR_CHAR + group.charAt(0) + ChatColor.COLOR_CHAR + group.charAt(1)
+					+ ChatColor.COLOR_CHAR + group.charAt(2) + ChatColor.COLOR_CHAR + group.charAt(3)
+					+ ChatColor.COLOR_CHAR + group.charAt(4) + ChatColor.COLOR_CHAR + group.charAt(5));
+		}
+		return matcher.appendTail(buffer).toString();
 	}
 }

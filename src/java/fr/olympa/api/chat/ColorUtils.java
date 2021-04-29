@@ -7,10 +7,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.match.MatcherPattern;
+import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.player.OlympaPlayer;
 import net.md_5.bungee.api.ChatColor;
 
@@ -49,8 +52,24 @@ public class ColorUtils {
 		return color(String.format(format, args));
 	}
 
+	public static String translateHexColorCodes(String message) {
+		MatcherPattern<String> regex = RegexMatcher.HEX_COLOR_CHAT;
+		if (!regex.contains(message))
+			return message;
+		Matcher matcher = regex.getPattern().matcher(message);
+		StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+		while (matcher.find()) {
+			String group = matcher.group(1);
+			matcher.appendReplacement(buffer, ChatColor.COLOR_CHAR + "x"
+					+ ChatColor.COLOR_CHAR + group.charAt(0) + ChatColor.COLOR_CHAR + group.charAt(1)
+					+ ChatColor.COLOR_CHAR + group.charAt(2) + ChatColor.COLOR_CHAR + group.charAt(3)
+					+ ChatColor.COLOR_CHAR + group.charAt(4) + ChatColor.COLOR_CHAR + group.charAt(5));
+		}
+		return matcher.appendTail(buffer).toString();
+	}
+
 	public static String color(String string) {
-		return string != null ? ChatColor.translateAlternateColorCodes('&', string) : null;
+		return string != null ? ChatColor.translateAlternateColorCodes('&', translateHexColorCodes(string)) : null;
 	}
 
 	public static String joinGold(CharSequence... elements) {

@@ -9,7 +9,14 @@ import org.bukkit.Bukkit;
 
 import fr.olympa.api.chat.ColorUtils;
 
-// https://wiki.vg/Protocol_version_numbers
+/**
+ * Lors d'une nouvelle versionn de protocol, récupérer le numéro via ce lien: https://wiki.vg/Protocol_version_numbers
+ * - Ajouter dans l'eum
+ * - Mettre à jour le repo maven de protocolLib
+ * - Mettre a jour le .jar ProtocolLib
+ * - Mettre a jour le .jar Cs Stats sur le bungee
+ * - Ajouter ViaVersion si la version serveur sur olympa n'est pas la dernière disponible
+ */
 public enum ProtocolAPI {
 
 	V1_16_5(754),
@@ -72,7 +79,7 @@ public enum ProtocolAPI {
 
 	private static String version = null;
 	private static ProtocolAPI defaultProtocol = null;
-	
+
 	public static ProtocolAPI get(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).findFirst().get();
 	}
@@ -86,7 +93,8 @@ public enum ProtocolAPI {
 	}
 
 	public static ProtocolAPI getDefaultProtocol() {
-		if (defaultProtocol == null) defaultProtocol = get(getVersion());
+		if (defaultProtocol == null)
+			defaultProtocol = get(getVersion());
 		return defaultProtocol;
 	}
 
@@ -103,7 +111,8 @@ public enum ProtocolAPI {
 	}
 
 	public static String getVersion() {
-		if (version == null) version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
+		if (version == null)
+			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
 		return version;
 	}
 
@@ -127,11 +136,11 @@ public enum ProtocolAPI {
 	private final int protocolNumber;
 	private boolean allow = true;
 
-	private ProtocolAPI(int protocolNumber) {
+	ProtocolAPI(int protocolNumber) {
 		this.protocolNumber = protocolNumber;
 	}
 
-	private ProtocolAPI(int versionNumber, boolean allow) {
+	ProtocolAPI(int versionNumber, boolean allow) {
 		protocolNumber = versionNumber;
 		this.allow = allow;
 	}

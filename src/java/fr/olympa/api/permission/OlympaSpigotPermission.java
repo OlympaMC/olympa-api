@@ -105,7 +105,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		if (!playersWithPerm.isEmpty() && success != null)
 			success.accept(playersWithPerm);
 		if (!playersWithNoPerm.isEmpty() && noPerm != null)
-			noPerm.accept(playersWithPerm);
+			noPerm.accept(playersWithNoPerm);
 	}
 
 	public void getOlympaPlayers(Consumer<? super Set<OlympaPlayer>> success, Consumer<? super Set<OlympaPlayer>> noPerm) {
@@ -122,7 +122,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		if (!playersWithPerm.isEmpty() && success != null)
 			success.accept(playersWithPerm);
 		if (!playersWithNoPerm.isEmpty() && noPerm != null)
-			noPerm.accept(playersWithPerm);
+			noPerm.accept(playersWithNoPerm);
 	}
 
 	@Override
