@@ -122,7 +122,8 @@ public class OlympaReport {
 	}
 
 	/**
-	 * Nullable if the ReportReason is specific to a server, and we are not in the specific server.
+	 * Null if the ReportReason is specific to a server, and we are not in the specific server.
+	 * Or if object is from JSON, like in redis channels
 	 */
 	@Nullable
 	public ReportReason getReason() {

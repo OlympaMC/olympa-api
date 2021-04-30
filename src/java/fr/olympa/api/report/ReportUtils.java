@@ -37,7 +37,7 @@ public class ReportUtils {
 		tc = new TextComponent(" pour ");
 		tc.setColor(ChatColor.DARK_PURPLE);
 		out.addExtra(tc);
-		tc = new TextComponent(report.getReason().getReason());
+		tc = new TextComponent(report.getReasonName());
 		tc.setColor(ChatColor.LIGHT_PURPLE);
 		out.addExtra(tc);
 		tc = new TextComponent(" sur ");
