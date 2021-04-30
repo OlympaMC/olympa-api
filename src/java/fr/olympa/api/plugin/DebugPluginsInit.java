@@ -1,33 +1,15 @@
-package fr.olympa.api.server;
+package fr.olympa.api.plugin;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import fr.olympa.api.utils.Utils;
-
-public class DebugPlugin {
-	String name;
-	String version;
-	List<String> authors;
-	boolean enabled;
-	@Nullable
-	String website;
-	@Nullable
-	Boolean dependNotFound;
-	@Nullable
-	Boolean softDependNotFound;
-	long lastModifiedTime;
-	boolean hasConfig;
-
-	public DebugPlugin(Plugin plugin) {
+public class DebugPluginsInit extends DebugPlugins {
+	public DebugPluginsInit(Plugin plugin) {
 		PluginDescriptionFile desc = plugin.getDescription();
 		name = plugin.getName();
 		version = desc.getVersion();
@@ -46,45 +28,5 @@ public class DebugPlugin {
 			e.printStackTrace();
 		}
 		hasConfig = plugin.getConfig() != null;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public List<String> getAuthors() {
-		return authors;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public boolean hasWebsite() {
-		return website != null;
-	}
-
-	public String getWebsite() {
-		return website;
-	}
-
-	public Boolean getDependNotFound() {
-		return dependNotFound;
-	}
-
-	public Boolean getSoftDependNotFound() {
-		return softDependNotFound;
-	}
-
-	public String getLastModifiedTime() {
-		return Utils.tsToShortDur(lastModifiedTime);
-	}
-
-	public long getLastModifiedTimeLong() {
-		return lastModifiedTime;
 	}
 }
