@@ -32,15 +32,15 @@ else
 fi
 git pull --all
 if [ "$?" -ne 0 ]; then
-	echo -e "\e[91mEchec du git pull ! Regarde les conflits. Code erreur $rc\e[0m"
+	echo -e "\e[91mEchec du git pull ! Regarde les conflits.\e[0m"
 	echo -e "\e[91mTentative de git reset\e[0m"
 	git reset --hard HEAD
 	if [ "$?" -ne 0 ]; then
-		echo -e "\e[91mEchec du git reset ! Code erreur $rc\e[0m"; exit $rc
+		echo -e "\e[91mEchec du git reset !\e[0m"; exit 1
 	fi
 	git pull --all
 	if [ "$?" -ne 0 ]; then
-		echo -e "\e[91mEchec du git pull ! Regarde les conflits. Code erreur $rc\e[0m"; exit $rc
+		echo -e "\e[91mEchec du git pull ! Regarde les conflits.\e[0m"; exit 1
 	fi
 fi
 if [ -n "$BRANCH_NAME" ]; then
@@ -70,7 +70,7 @@ if [ -n "$ACTUAL_COMMIT_ID" ]; then
 fi
 mvn install
 if [ "$?" -ne 0 ]; then
-	echo -e "\e[91m\n\nLe build de l'$PLUGIN_NAME a échoué !\e[0m"; exit $rc
+	echo -e "\e[91m\n\nLe build de l'$PLUGIN_NAME a échoué !\e[0m"; exit 1
 else
 	echo `git rev-parse HEAD` > target/commitId
 fi
