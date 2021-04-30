@@ -1,4 +1,4 @@
-package fr.olympa.api.utils.machine;
+package fr.olympa.api.server;
 
 import java.io.File;
 import java.nio.file.Files;

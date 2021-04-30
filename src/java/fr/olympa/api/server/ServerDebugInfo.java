@@ -1,4 +1,4 @@
-package fr.olympa.api.utils.machine;
+package fr.olympa.api.server;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -10,8 +10,8 @@ import org.bukkit.Bukkit;
 import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.server.ServerStatus;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.api.utils.machine.MachineInfo;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.core.spigot.OlympaCore;
 
