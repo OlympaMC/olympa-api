@@ -9,8 +9,8 @@ import fr.olympa.api.utils.machine.MachineInfo;
 
 public class ServerDebug extends MachineInfo {
 
-	public static ServerDebugInit fromJson(String string) {
-		return new Gson().fromJson(string, ServerDebugInit.class);
+	public static ServerDebug fromJson(String string) {
+		return new Gson().fromJson(string, ServerDebug.class);
 	}
 
 	protected static List<DebugPluginsInit> cachePlugins = null;
