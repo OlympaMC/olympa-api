@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import fr.olympa.api.plugin.DebugPluginsInit;
+import fr.olympa.api.plugin.DebugPlugins;
 import fr.olympa.api.utils.machine.MachineInfo;
 
 public class ServerDebug extends MachineInfo {
@@ -13,12 +13,12 @@ public class ServerDebug extends MachineInfo {
 		return new Gson().fromJson(string, ServerDebug.class);
 	}
 
-	protected static List<DebugPluginsInit> cachePlugins = null;
+	protected static List<DebugPlugins> cachePlugins = null;
 	protected String name;
 	protected ServerStatus status;
 	protected String uptime;
 	protected float tps;
-	protected List<DebugPluginsInit> plugins;
+	protected List<DebugPlugins> plugins;
 	protected String firstVersionMinecraft;
 	protected String lastVersionMinecraft;
 	protected String bukkitVersion;
@@ -42,7 +42,7 @@ public class ServerDebug extends MachineInfo {
 		return tps;
 	}
 
-	public List<DebugPluginsInit> getPlugins() {
+	public List<DebugPlugins> getPlugins() {
 		return plugins;
 	}
 
