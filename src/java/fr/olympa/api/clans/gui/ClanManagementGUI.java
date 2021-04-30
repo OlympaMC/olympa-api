@@ -41,11 +41,11 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 	protected boolean isChief;
 	private List<D> playersOrder = new ArrayList<>();
 
-	public ClanManagementGUI(ClanPlayerInterface<T, D> p, ClansManager<T, D> manager, int rows) {
+	public ClanManagementGUI(ClanPlayerInterface<T, D> p, T clan, ClansManager<T, D> manager, int rows) {
 		super(manager.stringInventoryManage, rows);
 		this.player = p;
 		this.manager = manager;
-		this.clan = (T) p.getClan();
+		this.clan = clan;
 		this.playerData = clan.getMember(p.getInformation());
 
 		leave = ItemUtils.item(Material.OAK_DOOR, "§c" + manager.stringItemLeave);

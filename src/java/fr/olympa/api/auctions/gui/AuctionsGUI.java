@@ -59,7 +59,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 				if (existing.hasExpired() || existing.bought) {
 					Prefix.BAD.sendMessage(p, "Trop tard... cette vente n'est plus disponible.");
 				}else existing.buy(p);
-			}, () -> p.closeInventory(), "Voulez-vous acheter cet objet ?").create(p);
+			}, () -> p.closeInventory(), "§7§oVeux-tu acheter cet objet ?").create(p);
 		}
 	}
 
