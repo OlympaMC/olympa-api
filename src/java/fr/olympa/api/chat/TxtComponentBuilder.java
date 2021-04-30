@@ -202,8 +202,11 @@ public class TxtComponentBuilder {
 			text = new TextComponent();
 		TextComponent extrasSeparatorBuild = null;
 		if (extras != null) {
-			if (extrasSeparator != null && !extrasSeparator.isEmpty())
+			if (extrasSeparator != null && !extrasSeparator.isEmpty()) {
 				extrasSeparatorBuild = extrasSeparator.build();
+				if (isNotEmpty)
+					text.addExtra(extrasSeparatorBuild);
+			}
 			/*if (isNotEmpty && extrasSeparatorBuild != null)
 				text.addExtra(extrasSeparatorBuild);*/ // pourquoi mettre le séparateur ici ? le but d'un séparateur c'est d'être entre, pas avant
 			for (int i = 0; i < extras.size(); i++) {

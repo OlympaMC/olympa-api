@@ -3,12 +3,15 @@ package fr.olympa.api.report;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Utils;
 
 public class ReportStatusInfo {
 
 	String note;
+	@Nullable
 	Long time;
 	ReportStatus status;
 	Long idAuthor;
@@ -33,6 +36,7 @@ public class ReportStatusInfo {
 		return status;
 	}
 
+	@Nullable
 	public Long getTime() {
 		return time;
 	}

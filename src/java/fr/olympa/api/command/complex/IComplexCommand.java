@@ -19,10 +19,9 @@ import fr.olympa.api.match.RegexMatcher;
 
 public interface IComplexCommand<C> {
 
-	List<String> INTEGERS = Arrays.asList("1", "2", "3");
+	List<String> INTEGERS = Arrays.asList("10");
 	List<String> DOUBLE = Arrays.asList("1", "2.5", "3.1");
-	String TEMP_UUID = UUID.randomUUID().toString();
-	List<String> UUIDS = Arrays.asList(TEMP_UUID, TEMP_UUID.replace("-", ""));
+	List<String> UUIDS = Arrays.asList("5e577d2f-1a20-4a2c-aee2-74682439e40a");
 	List<String> BOOLEAN = Arrays.asList("true", "false");
 	List<String> HEX_COLOR = Arrays.asList("#123456", "#FFFFFF");
 	List<String> IP = Arrays.asList("127.0.0.1");
@@ -41,7 +40,7 @@ public interface IComplexCommand<C> {
 			return null;
 		}, x -> {
 			String random = UUID.randomUUID().toString();
-			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c ou &4%s&c", x, random, random.replace("-", ""));
+			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c", x, random);
 		}, false);
 		addArgumentParser("DOUBLE", (sender, arg) -> DOUBLE, x -> {
 			if (RegexMatcher.DOUBLE.is(x))
@@ -57,7 +56,7 @@ public interface IComplexCommand<C> {
 			if (RegexMatcher.HEX_COLOR.is(x))
 				return RegexMatcher.HEX_COLOR.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456&c ou &4#FFFFFF&c.", x), false);
+		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456", x), false);
 		addArgumentParser("BOOLEAN", (sender, arg) -> BOOLEAN, Boolean::parseBoolean, null);
 		addArgumentParser("IP", (sender, arg) -> IP, x -> {
 			if (RegexMatcher.IP.is(x))
@@ -155,7 +154,7 @@ public interface IComplexCommand<C> {
 
 	default TxtComponentBuilder getHelpCommandComponent(String cmd, InternalCommand command, String subCommand) {
 		String fullCommand;
-		if (subCommand != null && !subCommand.isBlank())
+		if (!command.cmd.otherArg() && subCommand != null && !subCommand.isBlank())
 			fullCommand = "/" + cmd + " " + subCommand;
 		else
 			fullCommand = "/" + cmd;

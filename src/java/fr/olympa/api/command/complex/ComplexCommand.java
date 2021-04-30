@@ -213,9 +213,9 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 				return true;
 			}
 			Object result = null;
-			if (types.length == 0) {
+			if (types.length == 0)
 				result = arg;
-			}else {
+			else {
 				DivideList<String> divideList = new DivideList<>(Arrays.asList(types), sType -> parsers.entrySet().stream().anyMatch(t -> sType.equals(t.getKey()))).divide();
 				List<ArgumentParser<CommandSender>> potentialParsers = divideList.getTrue().stream().map(sType -> parsers.get(sType)).collect(Collectors.toList());
 				List<String> potentialString = divideList.getFalse();
@@ -235,7 +235,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 						sendError("%s.", potentialParsers.stream().filter(e -> e.wrongArgTypeMessageFunction != null).map(e -> e.wrongArgTypeMessageFunction.apply(arg).replaceFirst("\\.$", "")).collect(Collectors.joining(" &4&lou&c ")));
 						if (potentialParsers.size() <= 1)
 							return true;
-					}else
+					} else
 						this.sendIncorrectSyntax("/" + label + " " + (!cmd.otherArg() ? internal.method.getName() : "") + " " + cmd.syntax());
 					return true;
 				}
