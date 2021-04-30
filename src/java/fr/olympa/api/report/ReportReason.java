@@ -129,6 +129,10 @@ public class ReportReason {
 		return reason;
 	}
 
+	public String getReasonOneWord() {
+		return reason.replace(" ", "_");
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
