@@ -46,8 +46,6 @@ if [ -n "$BRANCH_NAME" ]; then
 	exists=`git show-ref refs/heads/$BRANCH_NAME`
 	if [ -n "$exists" ]; then
 		git checkout $BRANCH_NAME --force
-	else
-		echo -e "\e[91mLa branch $BRANCH_NAME n'existe pas !\e[0m"; exit 1
 	fi
 fi
 if [ -n "$DATE" ]; then
