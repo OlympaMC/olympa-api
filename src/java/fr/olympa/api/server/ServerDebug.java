@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gson.Gson;
 
 import fr.olympa.api.plugin.DebugPlugins;
+import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.machine.MachineInfo;
 
 public class ServerDebug extends MachineInfo {
@@ -13,10 +14,9 @@ public class ServerDebug extends MachineInfo {
 		return new Gson().fromJson(string, ServerDebug.class);
 	}
 
-	protected static List<DebugPlugins> cachePlugins = null;
 	protected String name;
 	protected ServerStatus status;
-	protected String uptime;
+	protected long uptime;
 	protected float tps;
 	protected List<DebugPlugins> plugins;
 	protected String firstVersionMinecraft;
@@ -57,6 +57,26 @@ public class ServerDebug extends MachineInfo {
 	@Override
 	public String toString() {
 		return new Gson().toJson(this);
+	}
+
+	public String getUptime() {
+		return Utils.tsToShortDur(uptime);
+	}
+
+	public String getBukkitVersion() {
+		return bukkitVersion;
+	}
+
+	public boolean isHasConfig() {
+		return hasConfig;
+	}
+
+	public boolean isDatabaseConnected() {
+		return databaseConnected;
+	}
+
+	public boolean isRedisConnected() {
+		return redisConnected;
 	}
 
 }

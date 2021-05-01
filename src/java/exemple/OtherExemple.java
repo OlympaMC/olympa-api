@@ -19,7 +19,7 @@ public class OtherExemple {
 		time.print(); // print time taken
 
 		// DEBUG Cache, Map, List
-		Cache<String, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+		Cache<String, Object> cache = CacheBuilder.newBuilder().recordStats().expireAfterWrite(5, TimeUnit.MINUTES).build();
 		CacheStats.addCache("CACHE", cache);
 		cache.put("test_cache", new Object());
 

@@ -53,7 +53,7 @@ public class Reflection {
 		Object invoke(Object p0, Object... p1);
 	}
 
-	private static Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+	private static Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().recordStats().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
 	static {
 		CacheStats.addCache("CLASS", classCache);
@@ -261,7 +261,7 @@ public class Reflection {
 	/*public static void sendMessage(Player p, Object message) throws Exception { // quel intérêt ??
 		Object nmsPlayer = getNmsPlayer(p);
 		nmsPlayer.getClass().getMethod("sendMessage", Reflection.getClass(ClassEnum.NMS, "IChatBaseComponent")).invoke(nmsPlayer, message);
-
+	
 	}*/
 
 	public static void sendPacket(Collection<? extends Player> players, Object packet) {
