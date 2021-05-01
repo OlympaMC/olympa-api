@@ -17,7 +17,7 @@ import fr.olympa.api.provider.AccountProvider;
 
 public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> extends ComplexCommand {
 
-	private ClansManager<T, D> manager;
+	protected final ClansManager<T, D> manager;
 
 	public ClansCommand(ClansManager<T, D> manager, String description, OlympaSpigotPermission permission, String... aliases) {
 		super(manager.plugin, manager.getClansCommand(), description, permission, aliases);

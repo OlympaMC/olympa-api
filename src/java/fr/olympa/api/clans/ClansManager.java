@@ -45,7 +45,6 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	protected Map<Integer, T> clans = new HashMap<>();
 	private Map<Player, ObservableList<T>> invitations = new HashMap<>();
-	public int defaultMaxSize;
 	
 	public String stringAlreadyInClan = "Ce joueur est déjà dans un clan.";
 	public String stringAlreadyInvited = "Tu as déjà invité ce joueur.";
@@ -100,9 +99,8 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	private Pattern clanTagPattern = Pattern.compile("^[0-9A-Za-zÀ-ÖØ-öø-ÿ]+$");
 	private String randomTagCharacters = "AZERTYUIOPQSDFGHJKLMWXCVBN0123456789";
 	
-	public ClansManager(OlympaAPIPlugin plugin, String clansName, int defaultMaxSize) throws SQLException, ReflectiveOperationException {
+	public ClansManager(OlympaAPIPlugin plugin, String clansName) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
-		this.defaultMaxSize = defaultMaxSize;
 		
 		this.clansTable = new SQLTable<T>(clansName, addDBClansCollums(new ArrayList<>())).createOrAlter();
 		this.playersTable = new SQLTable<D>(clansName + "_players", addDBPlayersCollums(new ArrayList<>())).createOrAlter();
@@ -184,12 +182,14 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	protected abstract D provideClanData(OlympaPlayerInformations informations, ResultSet resultSet) throws SQLException;
 	
+	public abstract int getMaxSize(ClanPlayerInterface<T, D> p);
+	
 	public List<SQLColumn<T>> addDBClansCollums(List<SQLColumn<T>> columns) {
 		columns.add(new SQLColumn<T>("id", "int(11) unsigned NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(T::getID));
 		columns.add(nameColumn = new SQLColumn<T>("name", "varchar(45) NOT NULL", Types.VARCHAR).setUpdatable());
 		columns.add(tagColumn = new SQLColumn<T>("tag", "char(3) NOT NULL UNIQUE", Types.CHAR).setUpdatable());
 		columns.add(chiefColumn = new SQLColumn<T>("chief", "bigint(20) NOT NULL", Types.BIGINT).setUpdatable());
-		columns.add(sizeColumn = new SQLColumn<T>("max_size", "tinyint(1) NOT NULL DEFAULT " + defaultMaxSize, Types.TINYINT).setUpdatable());
+		columns.add(sizeColumn = new SQLColumn<T>("max_size", "tinyint(1) NOT NULL", Types.TINYINT).setUpdatable());
 		columns.add(moneyColumn = new SQLColumn<T>("money", "DOUBLE NOT NULL DEFAULT 0", Types.DOUBLE).setUpdatable());
 		columns.add(new SQLColumn<T>("created", "DATE NOT NULL DEFAULT curdate()", Types.DATE));
 		return columns;
@@ -268,11 +268,12 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	/* SQL statements */
 	
 	public T createClan(ClanPlayerInterface<T, D> p, String name, String tag) throws SQLException {
-		ResultSet resultSet = clansTable.insert(name, tag, p.getId());
+		int maxSize = getMaxSize(p);
+		ResultSet resultSet = clansTable.insert(name, tag, p.getId(), maxSize);
 		resultSet.next();
 		int id = resultSet.getInt(1);
 		resultSet.close();
-		T clan = createClan(id, name, tag, p.getInformation(), defaultMaxSize);
+		T clan = createClan(id, name, tag, p.getInformation(), maxSize);
 		clans.put(id, clan);
 		clan.addPlayer(p, false);
 		clan.broadcast(stringClanCreated);
@@ -302,7 +303,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public ClanManagementGUI<T, D> provideManagementGUI(ClanPlayerInterface<T, D> player) {
-		return new ClanManagementGUI<>(player, this, 2);
+		return new ClanManagementGUI<>(player, player.getClan(), this, 2);
 	}
 	
 	/* Invitations */

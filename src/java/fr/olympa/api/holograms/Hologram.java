@@ -237,15 +237,15 @@ public class Hologram extends AbstractObservable {
 		void spawnEntity() {
 			if (entity != null) return;
 			if (!willSpawn || !bottom.getChunk().isLoaded()) return;
-			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class);
-			entity.setGravity(false);
-			entity.setMarker(true);
-			entity.setSmall(true);
-			entity.setVisible(false);
-			entity.setInvulnerable(true);
-			entity.getEntityId();
-			entity.setPersistent(false);
-			entity.setMetadata("hologram", entityMetadata);
+			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class, entity -> {
+				entity.setGravity(false);
+				entity.setMarker(true);
+				entity.setSmall(true);
+				entity.setVisible(false);
+				entity.setInvulnerable(true);
+				entity.setPersistent(false);
+				entity.setMetadata("hologram", entityMetadata);
+			});
 			update(line, line.getValue(this));
 			line.addHolder(this);
 		}

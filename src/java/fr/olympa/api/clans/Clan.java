@@ -191,7 +191,9 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 
 	public void setMaxSize(int maxSize) {
 		manager.sizeColumn.updateAsync((T) this, maxSize, () -> {
+			int old = this.maxSize;
 			this.maxSize = maxSize;
+			broadcast("Le nombre maximal de membres est passé de %d à %d !", old, maxSize);
 		}, null);
 	}
 
