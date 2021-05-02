@@ -76,7 +76,7 @@ public class MatcherPattern<T> {
 	}
 
 	public List<T> extractsAndParse(String text) throws IllegalArgumentException {
-		Matcher matcher = getPattern().matcher(text);
+		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
 		List<T> list = new ArrayList<>();
 		while (matcher.find())
 			list.add(parse(matcher.group()));
@@ -87,7 +87,7 @@ public class MatcherPattern<T> {
 	 * Extract alls occurance
 	 */
 	public List<String> extracts(String text) {
-		Matcher matcher = getPattern().matcher(text);
+		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
 		List<String> list = new ArrayList<>();
 		while (matcher.find())
 			list.add(matcher.group());
@@ -98,7 +98,7 @@ public class MatcherPattern<T> {
 	 * replace
 	 */
 	public String replace(String text, String replaced) {
-		Matcher matcher = getPattern().matcher(text);
+		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
 		while (matcher.find())
 			text = text.replace(matcher.group(), replaced);
 		return text;
@@ -108,7 +108,7 @@ public class MatcherPattern<T> {
 	 * Extract first occurances
 	 */
 	public String extract(String text) {
-		Matcher matcher = getPattern().matcher(text);
+		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
 		if (matcher.find())
 			return matcher.group();
 		return null;
@@ -160,5 +160,4 @@ public class MatcherPattern<T> {
 	public boolean is(String text) {
 		return getPattern(wholeWord(true)).matcher(text).find();
 	}
-
 }
