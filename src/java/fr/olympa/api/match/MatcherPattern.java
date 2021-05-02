@@ -118,7 +118,10 @@ public class MatcherPattern<T> {
 	 * Extract first occurances
 	 */
 	public T extractAndParse(String text) {
-		return parse(extract(text));
+		String extract = extract(text);
+		if (extract == null)
+			return null;
+		return parse(extract);
 	}
 
 	/**

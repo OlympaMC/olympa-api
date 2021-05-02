@@ -32,10 +32,11 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission ERRORS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission PING_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission VANISH_SEE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
-	public static final OlympaSpigotPermission VANISH_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_STAFF, new OlympaGroup[] { OlympaGroup.MODP });
+	public static final OlympaSpigotPermission VANISH_COMMAND = new OlympaSpigotPermission(OlympaGroup.MODP);
+	public static final OlympaSpigotPermission VANISH_COMMAND_HIDE_STAFF = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission ITEM_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP);
 	public static final OlympaSpigotPermission TRADE_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
-	
+
 	public static final OlympaSpigotPermission ARG_COLOR = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 
 	{
