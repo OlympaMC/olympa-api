@@ -45,7 +45,21 @@ public class NativeTask implements OlympaTask {
 	}
 
 	/**
-	 * As {@link #cancelTaskById(int)} but without kill the current task if running
+	 * As {@link #cancelTaskByName(String)} but with killing the current task if running
+	 */
+	public boolean terminateTaskByName(String taskName) {
+		Integer id = tasksNames.remove(taskName);
+		UniversalTask task;
+		if (id != null) {
+			task = tasks.get(id);
+			if (task != null)
+				return task.cancel(true);
+		}
+		return false;
+	}
+
+	/**
+	 * As {@link #cancelTaskById(int)} but with killing the current task if running
 	 */
 	public void terminateTaskById(int id) {
 		UniversalTask task = tasks.remove(id);
