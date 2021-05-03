@@ -1,14 +1,20 @@
 package fr.olympa.api.scoreboard.tab;
 
-import java.util.StringJoiner;
+import net.md_5.bungee.api.ChatColor;
 
 public class Nametag {
-	private final StringJoiner prefix, suffix;
+	//private final StringJoiner prefix, suffix;
 	private String cachedPrefix, cachedSuffix;
+	private StringBuilder prefix;
+	private StringBuilder suffix;
+	private boolean prefixSpace = false;
+	private boolean suffixSpace = false;
 
 	public Nametag() {
-		prefix = new StringJoiner(" ");
-		suffix = new StringJoiner(" ");
+		/*prefix = new StringJoiner(" ");
+		suffix = new StringJoiner(" ");*/
+		prefix = new StringBuilder();
+		suffix = new StringBuilder();
 	}
 
 	/*public Nametag(String prefix, String suffix) {
@@ -17,12 +23,18 @@ public class Nametag {
 	}*/
 
 	public String getPrefix() {
-		if (cachedPrefix == null) cachedPrefix = prefix.toString();
+		if (cachedPrefix == null) {
+			if (prefixSpace) prefix.append(' ');
+			cachedPrefix = prefix.toString();
+		}
 		return cachedPrefix;
 	}
 
 	public String getSuffix() {
-		if (cachedSuffix == null) cachedSuffix = suffix.toString();
+		if (cachedSuffix == null) {
+			cachedSuffix = suffix.toString();
+			if (!ChatColor.stripColor(cachedSuffix).isBlank()) cachedSuffix = " " + cachedSuffix;
+		}
 		return cachedSuffix;
 	}
 
@@ -40,13 +52,21 @@ public class Nametag {
 
 	public void appendPrefix(String prefix) {
 		if (prefix.isBlank()) return;
-		this.prefix.add(prefix);
+		//this.prefix.add(prefix);
+		boolean blank = ChatColor.stripColor(prefix).isBlank();
+		if (prefixSpace && !blank) this.prefix.append(' ');
+		this.prefix.append(prefix);
+		prefixSpace = !blank || prefixSpace;
 		cachedPrefix = null;
 	}
 	
 	public void appendSuffix(String suffix) {
 		if (suffix.isBlank()) return;
-		this.suffix.add(suffix);
+		//this.suffix.add(suffix);
+		boolean blank = ChatColor.stripColor(suffix).isBlank();
+		if (suffixSpace && !blank) this.suffix.append(' ');
+		this.suffix.append(suffix);
+		suffixSpace = !blank || suffixSpace;
 		cachedSuffix = null;
 	}
 	

@@ -36,7 +36,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	private boolean willScroll;
 	private int position;
 	private boolean goDown;
-	private Date nextUpdate;
+	private Date nextUpdate = new Date();
 	private int maxLine;
 	private int linesSize;
 	
@@ -92,7 +92,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void setNextUpdate(long time) {
-		nextUpdate = new Date(System.currentTimeMillis() + time);
+		nextUpdate.setTime(System.currentTimeMillis() + time);
 	}
 	
 	@Override

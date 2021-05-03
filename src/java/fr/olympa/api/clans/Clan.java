@@ -31,11 +31,11 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	private OlympaMoney money;
 	private long created;
 
-	public Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
+	protected Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize) {
 		this(manager, id, name, tag, chief, maxSize, 0, Utils.getCurrentTimeInSeconds());
 	}
 
-	public Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created) {
+	protected Clan(ClansManager<T, D> manager, int id, String name, String tag, OlympaPlayerInformations chief, int maxSize, double money, long created) {
 		this.manager = manager;
 		this.id = id;
 		this.name = name;
