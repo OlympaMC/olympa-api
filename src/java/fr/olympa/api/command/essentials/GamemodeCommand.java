@@ -86,7 +86,9 @@ public class GamemodeCommand extends OlympaCommand {
 		if (shortCommand) {
 			gm = Gm.getByStartWith(label.substring(2));
 		}else {
-			gm = Gm.get(args[0]);
+			if (args.length == 0) {
+				sendIncorrectSyntax();
+			}else gm = Gm.get(args[0]);
 		}
 		
 		if (args.length == 0) {
