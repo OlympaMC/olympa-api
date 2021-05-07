@@ -60,16 +60,20 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		setItems();
 	}
 
-	private void setItems(){
+	private void setItems() {
 		for (int i = 0; i < itemsPerPage; i++) setMainItem(i, null);
 		for (int i = page * itemsPerPage; i < objects.size(); i++) {
 			if (i == (page + 1) * itemsPerPage) break;
 			T obj = objects.get(i);
-			setMainItem(i - page * itemsPerPage, getItemStack(obj));
+			setItem(i - page * itemsPerPage, obj);
 		}
 	}
 	
-	private int setMainItem(int mainSlot, ItemStack is){
+	protected void setItem(int mainSlot, T object) {
+		setMainItem(mainSlot, getItemStack(object));
+	}
+	
+	protected int setMainItem(int mainSlot, ItemStack is) {
 		int line = (int) Math.floor(mainSlot * 1.0 / 7.0);
 		int slot = mainSlot + (2 * line);
 		inv.setItem(slot, is);
