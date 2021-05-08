@@ -13,7 +13,7 @@ public class MoneyAmountParser extends NumberParser<Double> {
 	private double max;
 
 	public MoneyAmountParser(MoneyPlayerInterface player) {
-		this(player, 0, Double.MAX_VALUE);
+		this(player, 1, Double.MAX_VALUE);
 	}
 	
 	public MoneyAmountParser(MoneyPlayerInterface player, double min, double max) {
