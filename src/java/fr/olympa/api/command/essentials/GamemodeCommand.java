@@ -2,6 +2,8 @@ package fr.olympa.api.command.essentials;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -71,11 +73,17 @@ public class GamemodeCommand extends OlympaCommand {
 		}
 	}
 
+	private BiFunction<CommandSender, Player, Boolean> canExecute = (sender, target) -> true;
+
 	public GamemodeCommand(Plugin plugin) {
-		super(plugin, "gamemode", "Change ton mode de jeux", OlympaAPIPermissions.GAMEMODE_COMMAND, "gm", "gms", "gma", "gmc", "gmsp");
+		super(plugin, "gm", "Change ton mode de jeu", OlympaAPIPermissions.GAMEMODE_COMMAND, "gms", "gma", "gmc", "gmsp");
 		addArgs(false, "adventure", "creative", "survival", "spectator", "JOUEUR");
 		addArgs(false, "JOUEUR");
 		allowConsole = true;
+	}
+	
+	public void setCanExecuteFunction(BiFunction<CommandSender, Player, Boolean> function) {
+		canExecute = function;
 	}
 
 	@Override
@@ -126,6 +134,9 @@ public class GamemodeCommand extends OlympaCommand {
 				return false;
 			}
 		}
+		
+		if (!canExecute.apply(sender, target))
+			return false;
 		
 		if (gm == Gm.CREATIVE && !hasPermission(OlympaAPIPermissions.GAMEMODE_COMMAND_CREATIVE)) {
 			sendDoNotHavePermission();
