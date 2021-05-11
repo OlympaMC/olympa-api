@@ -295,8 +295,9 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public void insertPlayerInClan(ClanPlayerInterface<T, D> p, Clan<T, D> clan) {
-		playersTable.deleteSQLObjectAsync(p.getId(), null, null);
-		playersTable.insertAsync(null, null, p.getId(), clan.getID());
+		playersTable.deleteSQLObjectAsync(p.getId(), () -> {
+			playersTable.insertAsync(null, null, p.getId(), clan.getID());
+		}, null);
 	}
 	
 	public void removePlayerFromClan(D player, Runnable success, Consumer<SQLException> fail) {

@@ -178,7 +178,7 @@ public class RegionManager implements Listener {
 	}
 	
 	public <T extends Flag> T getMostImportantFlag(Location location, Class<T> flagClass) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location) && x.getFlag(flagClass) != null).sorted(REGION_COMPARATOR_INVERT).findFirst().map(region -> region.getFlag(flagClass)).orElse(null);
+		return trackedRegions.values().stream().filter(x -> x.getFlag(flagClass) != null && x.getRegion().isIn(location)).sorted(REGION_COMPARATOR_INVERT).findFirst().map(region -> region.getFlag(flagClass)).orElse(null);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
