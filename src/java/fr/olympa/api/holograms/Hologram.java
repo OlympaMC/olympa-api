@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
@@ -23,7 +24,9 @@ import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.utils.observable.AbstractObservable;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
 import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
@@ -39,6 +42,7 @@ public class Hologram extends AbstractObservable {
 	private final int id;
 	private final FixedMetadataValue entityMetadata;
 	private final boolean persistent;
+	private final boolean packetHolo;
 	
 	private final boolean defaultVisibility;
 	private final Set<Player> players = new HashSet<>();
@@ -46,22 +50,34 @@ public class Hologram extends AbstractObservable {
 	private boolean willSpawn = false;
 	
 	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
+		this(id, bottom, persistent, defaultVisibility, false, lines);
+	}
+	
+	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, boolean packetHolo, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
 		
 		this.id = id;
 		this.entityMetadata = new FixedMetadataValue(OlympaCore.getInstance(), id);
 		this.persistent = persistent;
+		this.packetHolo = packetHolo;
 		this.defaultVisibility = defaultVisibility;
 
 		for (AbstractLine<HologramLine> line : lines) {
 			addLine(line);
+			if (line instanceof FixedLine)
+				System.out.println(((FixedLine<HologramLine>)line).getValue(null));
 		}
+		
+		/*System.out.println("WILL ATTEMPT TO UPDATE POS");
+		this.lines.forEach(line -> line.updatePosition());
+		System.out.println("END OF UPDATE POS ATTEMPT");*/
 		
 		willSpawn = true;
 		if (Bukkit.isPrimaryThread()) {
 			spawnEntities();
 		}else Bukkit.getScheduler().runTask(OlympaCore.getInstance(), this::spawnEntities);
 	}
+	
 
 	public Location getBottom() {
 		return bottom;
@@ -81,6 +97,10 @@ public class Hologram extends AbstractObservable {
 		return persistent;
 	}
 	
+	public boolean isPacketHolo() {
+		return packetHolo;
+	}
+	
 	public void setVisibility(Player p, boolean visibility) {
 		if (visibility) {
 			show(p);
@@ -88,35 +108,54 @@ public class Hologram extends AbstractObservable {
 	}
 	
 	public void show(Player p) {
-		if (defaultVisibility) {
-			if (!players.remove(p)) return;
-		}else if (!players.add(p)) return;
-		if (isNear(p)) lines.forEach(line -> line.showTo(p));
+		/*if (defaultVisibility) {
+			if (!players.remove(p)) 
+				return;
+		}else if (!players.add(p)) 
+			return;*/
+		if (!players.add(p))
+			return;
+		
+		if (isNear(p)) 
+			lines.forEach(line -> line.showTo(p));
 	}
 	
 	public void hide(Player p) {
-		if (defaultVisibility) {
-			if (!players.add(p)) return;
-		}else if (!players.remove(p)) return;
-		if (isNear(p)) lines.forEach(line -> line.hideTo(p));
+		/*if (defaultVisibility) {
+			if (!players.add(p)) 
+				return;
+		}else if (!players.remove(p)) 
+			return;*/
+		if (!players.remove(p))
+			return;
+		
+		if (isNear(p)) 
+			lines.forEach(line -> line.hideTo(p));
 	}
 	
 	public void show() {
+		if (packetHolo)
+			return;
+		
 		willSpawn = true;
 		spawnEntities();
 	}
 	
 	public void hide() {
+		if (packetHolo)
+			return;
+		
 		willSpawn = false;
 		destroyEntities();
 	}
 	
 	public boolean isHidden() {
-		return !willSpawn;
+		return !willSpawn && !packetHolo;
 	}
 	
 	public boolean isVisibleTo(Player p) {
-		return defaultVisibility != players.contains(p);
+		//return defaultVisibility != players.contains(p);
+		return defaultVisibility || players.contains(p);
 	}
 	
 	public boolean containsArmorStand(int entityID) {
@@ -140,8 +179,9 @@ public class Hologram extends AbstractObservable {
 	public void insertLine(AbstractLine<HologramLine> line, int index) {
 		HologramLine holoLine = new HologramLine(line);
 		lines.add(index, holoLine);
-		lines.forEach(HologramLine::updatePosition);
+		//lines.forEach(HologramLine::updatePosition);
 		holoLine.spawnEntity();
+		lines.forEach(HologramLine::updatePosition);
 		update();
 	}
 
@@ -149,8 +189,8 @@ public class Hologram extends AbstractObservable {
 		for (int i = 0; i < lines.size(); i++) {
 			HologramLine hline = lines.get(i);
 			if (hline.line == line) {
-				hline.destroyEntity();
 				lines.remove(i);
+				hline.destroyEntity();
 				lines.forEach(HologramLine::updatePosition);
 				update();
 				break;
@@ -159,6 +199,9 @@ public class Hologram extends AbstractObservable {
 	}
 
 	public void removeLine(int index) {
+		if (lines.size() <= index)
+			return;
+		
 		lines.remove(index).destroyEntity();
 		lines.forEach(HologramLine::updatePosition);
 		update();
@@ -229,32 +272,61 @@ public class Hologram extends AbstractObservable {
 	public class HologramLine implements LinesHolder<HologramLine> {
 		private final AbstractLine<HologramLine> line;
 		private ArmorStand entity;
+		private EntityArmorStand entityNms;
 
 		public HologramLine(AbstractLine<HologramLine> line) {
 			this.line = line;
+			
+			if (isPacketHolo())
+				spawnEntity();
 		}
 		
 		void spawnEntity() {
-			if (entity != null) return;
-			if (!willSpawn || !bottom.getChunk().isLoaded()) return;
-			entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class, entity -> {
-				entity.setGravity(false);
-				entity.setMarker(true);
-				entity.setSmall(true);
-				entity.setVisible(false);
-				entity.setInvulnerable(true);
-				entity.setPersistent(false);
-				entity.setMetadata("hologram", entityMetadata);
-			});
-			update(line, line.getValue(this));
-			line.addHolder(this);
+			if (isPacketHolo() && entityNms == null) {
+				entityNms = new EntityArmorStand(EntityTypes.ARMOR_STAND, ((CraftWorld)getBottom().getWorld()).getHandle());
+				entityNms.setLocation(getPosition().getX(), getPosition().getY(), getPosition().getZ(), 0, 0);
+				entityNms.setInvisible(true);
+				entityNms.persistentInvisibility = true;
+				
+				entityNms.setInvulnerable(true);
+				entityNms.setNoGravity(true);
+				entityNms.setMarker(true);
+				entityNms.setSmall(true);
+				
+				update(line, line.getValue(this));
+				line.addHolder(this);
+				//updatePosition();
+				
+				players.forEach(p -> show(p));
+				
+			}else if (!isPacketHolo() && entity == null) {
+				
+				if (!willSpawn || !bottom.getChunk().isLoaded()) 
+					return;
+				entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class, entity -> {
+					entity.setGravity(false);
+					entity.setMarker(true);
+					entity.setSmall(true);
+					entity.setVisible(false);
+					entity.setInvulnerable(true);
+					entity.setPersistent(false);
+					entity.setMetadata("hologram", entityMetadata);
+				});
+				update(line, line.getValue(this));
+				line.addHolder(this);
+			}
 		}
 
 		private void destroyEntity() {
-			if (entity != null) {
+			if (entityNms != null) {
+				players.forEach(p -> hideTo(p));
+				entityNms = null;
+				
+			}else if (entity != null) {
 				entity.remove();
 				entity = null;
 			}
+			
 			line.removeHolder(this);
 		}
 		
@@ -262,34 +334,70 @@ public class Hologram extends AbstractObservable {
 			return entity;
 		}
 		
+		public EntityArmorStand getNmsEntity() {
+			return entityNms;
+		}
+		
 		public Location getPosition() {
 			return bottom.clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0);
 		}
 		 
 		public void updatePosition() {
-			if (entity == null) return;
-			entity.teleport(getPosition());
+			if (entityNms != null) {
+				players.forEach(p -> hideTo(p));
+				entityNms.setLocation(getPosition().getX(), getPosition().getY(), getPosition().getZ(), 0, 0);
+				//System.out.println("Set line " + line + " at pos " + bottom.clone().add(0, (lines.size() - lines.indexOf(this) - 1) * LINE_SPACING, 0));
+				players.forEach(p -> showTo(p));
+				
+			}
+			
+			if (entity != null)
+				entity.teleport(getPosition());
 		}
 		
 		@Override
 		public void update(AbstractLine<HologramLine> line, String newValue) {
-			if (entity == null) return;
-			if (!"".equals(newValue)) {
-				entity.setCustomNameVisible(true);
-				entity.setCustomName(newValue);
-			}else entity.setCustomNameVisible(false);
+			if (entityNms != null) {
+				players.forEach(p -> hideTo(p));
+				if (!"".equals(newValue)) {
+					entityNms.setCustomNameVisible(true);
+					entityNms.setCustomName(new ChatComponentText(newValue));
+				}else
+					entityNms.setCustomNameVisible(false);
+				players.forEach(p -> showTo(p));
+				
+			}
+			
+			if (entity != null) {
+				if (!"".equals(newValue)) {
+					entity.setCustomNameVisible(true);
+					entity.setCustomName(newValue);
+				}else 
+					entity.setCustomNameVisible(false);
+			}
 		}
 		
 		private void hideTo(Player p) {
-			if (entity == null) return;
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entity.getEntityId()));
+			if (entityNms != null) {
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entityNms.getId()));
+			}
+			
+			if (entity != null) 
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entity.getEntityId()));
 		}
 		
 		private void showTo(Player p) {
-			if (entity == null) return;
-			EntityArmorStand nmsEntity = ((CraftArmorStand) entity).getHandle();
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(nmsEntity));
-			((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(nmsEntity.getId(), nmsEntity.getDataWatcher(), true));
+			if (entityNms != null) {
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(entityNms));
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(entityNms.getId(), entityNms.getDataWatcher(), true));
+				
+			}
+			
+			if (entity != null) {
+				EntityArmorStand nmsEntity = ((CraftArmorStand) entity).getHandle();
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(nmsEntity));
+				((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(nmsEntity.getId(), nmsEntity.getDataWatcher(), true));
+			}
 		}
 		
 		@Override

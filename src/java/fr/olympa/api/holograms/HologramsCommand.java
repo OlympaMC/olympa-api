@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.chat.ColorUtils;
@@ -12,6 +13,7 @@ import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.holograms.Hologram.HologramLine;
+import fr.olympa.api.holograms.HologramsManager.HoloActionType;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
@@ -22,17 +24,20 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class HologramsCommand extends ComplexCommand {
-
+	
 	private HologramsManager holograms;
 	private Paginator<Hologram> paginator;
 
-	public HologramsCommand(OlympaAPIPlugin plugin, HologramsManager holograms) {
+	public HologramsCommand(OlympaAPIPlugin plugin, HologramsManager hologramsManager) {
 		super(plugin, "holograms", "Permet de gérer les hologrammes", OlympaAPIPermissions.COMMAND_HOLOGRAMS_MANAGE, "holo");
-		this.holograms = holograms;
-		super.addArgumentParser("PERSHOLOGRAM", (x, arg) -> holograms.holograms.values().stream().map(hologram -> Integer.toString(hologram.getID())).collect(Collectors.toList()), (arg) -> {
+		
+		this.holograms = hologramsManager;
+		super.addArgumentParser("PERSHOLOGRAM", (sender, arg) -> hologramsManager.holograms.values().stream()
+				.filter(holo -> holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND))
+				.map(hologram -> Integer.toString(hologram.getID())).collect(Collectors.toList()), (arg) -> {
 			try {
-				Hologram hologram = holograms.getHologram(Integer.parseInt(arg));
-				if (hologram != null && hologram.isPersistent())
+				Hologram hologram = hologramsManager.getHologram(Integer.parseInt(arg));
+				if (holograms.hasAccessTo(sender, hologram, HoloActionType.COMMAND))
 					return hologram;
 			} catch (NumberFormatException ex) {
 			}
@@ -43,7 +48,7 @@ public class HologramsCommand extends ComplexCommand {
 
 			@Override
 			protected List<Hologram> getObjects() {
-				return holograms.holograms.values().stream().filter(Hologram::isPersistent).collect(Collectors.toList());
+				return hologramsManager.holograms.values().stream().filter(holo -> holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND)).collect(Collectors.toList());
 			}
 
 			@Override
@@ -60,8 +65,16 @@ public class HologramsCommand extends ComplexCommand {
 
 	@Cmd(player = true, min = 1, syntax = "<lignes séparées par des |>")
 	public void create(CommandContext cmd) {
+		if (!holograms.hasAccessTo(getSender(), null, HoloActionType.CREATE_PREPROCESS))
+			return;
+		
 		String[] linesStrings = cmd.getFrom(0).split("\\|");
-		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), true, true, Arrays.stream(linesStrings).map(this::createLine).toArray(AbstractLine[]::new)).getID();
+		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), holograms.hasTempHoloCreationMode(), true,
+				holograms.hasTempHoloCreationMode(), Arrays.stream(linesStrings).map(this::createLine).toArray(AbstractLine[]::new)).getID();
+
+		if (!holograms.hasAccessTo(getSender(), holograms.getHologram(id), HoloActionType.CREATED))
+			return;
+		
 		sendSuccess("Hologramme %d créé.", id);
 	}
 
@@ -73,6 +86,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme>")
 	public void remove(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+		
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.REMOVE))
+			return;
+		
 		if (holograms.deleteHologram(hologram))
 			sendSuccess("L'hologramme %d vient d'être supprimé.", hologram.getID());
 		else
@@ -82,6 +99,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme>")
 	public void move(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+		
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.MOVE))
+			return;
+		
 		hologram.move(player.getLocation().add(0, 1, 0));
 		sendSuccess("L'hologramme a été déplacé à votre position.");
 	}
@@ -89,6 +110,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme>")
 	public void teleport(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.TELEPORT))
+			return;
+		
 		player.teleport(hologram.getBottom());
 		sendSuccess("Vous vous êtes téléporté à l'hologramme.");
 	}
@@ -96,6 +121,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme> <ligne>")
 	public void addLine(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.EDIT))
+			return;
+		
 		hologram.addLine(cmd.getArgumentsLength() == 1 ? FixedLine.EMPTY_LINE : createLine(cmd.getFrom(1)));
 		sendSuccess("La ligne a bien été ajoutée à l'hologramme.");
 	}
@@ -103,6 +132,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne> <ligne>")
 	public void editLine(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.EDIT))
+			return;
+		
 		hologram.setLine(cmd.getArgumentsLength() == 2 ? FixedLine.EMPTY_LINE : createLine(cmd.getFrom(2)), cmd.getArgument(1));
 		sendSuccess("La ligne a bien été modifiée.");
 	}
@@ -110,6 +143,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne> <ligne>")
 	public void insertLine(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.EDIT))
+			return;
+		
 		hologram.insertLine(cmd.getArgumentsLength() == 2 ? FixedLine.EMPTY_LINE : createLine(cmd.getFrom(2)), cmd.getArgument(1));
 		sendSuccess("La ligne a bien été insérée.");
 	}
@@ -117,6 +154,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(player = true, min = 2, args = { "PERSHOLOGRAM", "INTEGER" }, syntax = "<id de l'hologramme> <id de la ligne>")
 	public void removeLine(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.EDIT))
+			return;
+		
 		try {
 			hologram.removeLine(cmd.<Integer>getArgument(1));
 			sendSuccess("La ligne a bien été supprimée de l'hologramme.");
@@ -128,6 +169,10 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(min = 2, args = { "PERSHOLOGRAM", "PLAYERS", "BOOLEAN" }, syntax = "<id de l'hologramme> <joueur> [visibilité]")
 	public void visibility(CommandContext cmd) {
 		Hologram hologram = cmd.getArgument(0);
+
+		if (!holograms.hasAccessTo(getSender(), hologram, HoloActionType.VISIBILITY))
+			return;
+		
 		Player p = cmd.getArgument(1);
 		boolean visibility;
 		if (cmd.getArgumentsLength() > 2)
@@ -160,6 +205,11 @@ public class HologramsCommand extends ComplexCommand {
 			return CyclingLine.olympaAnimation();
 		else
 			return new FixedLine<>(ColorUtils.color(string));
-	}
-
+	}	
 }
+
+
+
+
+
+
