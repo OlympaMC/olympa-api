@@ -289,7 +289,8 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		CREATE_PREPROCESS,
 		CREATED,
 		REMOVE,
-		EDIT,
+		EDIT_ADDLINE,
+		EDIT_OTHER,
 		MOVE,
 		TELEPORT,
 		VISIBILITY
