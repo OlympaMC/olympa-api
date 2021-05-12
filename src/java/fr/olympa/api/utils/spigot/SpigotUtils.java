@@ -20,7 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -307,7 +306,7 @@ public class SpigotUtils {
 				continue;
 			if (i.isSimilar(item)) {
 				if (item.getAmount() == amount) {
-					inv.setItem(slot, new ItemStack(Material.AIR));
+					inv.setItem(slot, null);
 					return true;
 				}
 				if (item.getAmount() > amount) {
@@ -315,7 +314,7 @@ public class SpigotUtils {
 					return true;
 				}else if (item.getAmount() < amount) {
 					amount -= item.getAmount();
-					inv.setItem(slot, new ItemStack(Material.AIR));
+					inv.setItem(slot, null);
 				}
 			}
 		}

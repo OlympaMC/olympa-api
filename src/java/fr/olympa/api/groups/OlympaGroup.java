@@ -12,7 +12,7 @@ import fr.olympa.api.player.Gender;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.utils.Utils;
 
-public enum OlympaGroup {
+public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4%s ", ":&r", true),

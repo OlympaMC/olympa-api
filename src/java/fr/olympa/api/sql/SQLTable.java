@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -214,11 +215,64 @@ public class SQLTable<T> {
 		}
 	}
 
+	public void insertAsync(Consumer<ResultSet> successCallback, Consumer<SQLException> failCallback, Object... notDefaultObjects) {
+		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+			try {
+				ResultSet resultSet = insert(notDefaultObjects);
+				if (successCallback != null) successCallback.accept(resultSet);
+				resultSet.close();
+			}catch (SQLException e) {
+				e.printStackTrace();
+				if (failCallback != null) failCallback.accept(e);
+			}
+		});
+	}
+	
 	public synchronized void delete(T primaryObject) throws SQLException {
 		try (PreparedStatement statement = deleteStatement.createStatement()) {
 			statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
 			deleteStatement.executeUpdate(statement);
 		}
+	}
+	
+	public void deleteAsync(T primaryObject, Runnable successCallback, Consumer<SQLException> failCallback) {
+		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+			try {
+				delete(primaryObject);
+				if (successCallback != null)
+					successCallback.run();
+			}catch (SQLException e) {
+				e.printStackTrace();
+				if (failCallback != null)
+					failCallback.accept(e);
+			}
+		});
+	}
+	
+	public void deleteMulti(T... primaryObjects) throws SQLException {
+		if (primaryObjects.length == 1) {
+			delete(primaryObjects[0]);
+			return;
+		}
+		
+		OlympaStatement deletionStatement = new OlympaStatement("DELETE FROM " + name + " WHERE " + primaryColumn.getName() + " IN (" + Arrays.stream(primaryObjects).map(x -> primaryColumn.getPrimaryKeySQLObject(x).toString()).collect(Collectors.joining(", ")) + ")");
+		try (PreparedStatement statement = deletionStatement.createStatement()) {
+			deletionStatement.executeUpdate(statement);
+		}
+	}
+	
+	public void deleteMultiAsync(Runnable successCallback, Consumer<SQLException> failCallback, T... primaryObjects) {
+		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+			try {
+				deleteMulti(primaryObjects);
+				if (successCallback != null)
+					successCallback.run();
+			}catch (SQLException e) {
+				e.printStackTrace();
+				if (failCallback != null)
+					failCallback.accept(e);
+			}
+		});
 	}
 
 	public synchronized void deleteSQLObject(Object primaryObjectSQL) throws SQLException {
@@ -226,6 +280,20 @@ public class SQLTable<T> {
 			statement.setObject(1, primaryObjectSQL, primaryColumn.getSQLType());
 			deleteStatement.executeUpdate(statement);
 		}
+	}
+	
+	public void deleteSQLObjectAsync(Object primaryObjectSQL, Runnable successCallback, Consumer<SQLException> failCallback) {
+		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+			try {
+				deleteSQLObject(primaryObjectSQL);
+				if (successCallback != null)
+					successCallback.run();
+			}catch (SQLException e) {
+				e.printStackTrace();
+				if (failCallback != null)
+					failCallback.accept(e);
+			}
+		});
 	}
 
 	public synchronized ResultSet get(Object primaryObject) throws SQLException {

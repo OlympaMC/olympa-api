@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -41,6 +42,7 @@ import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 
 public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
+	
 	@Override
 	public boolean disable(OlympaAPIPlugin plugin) {
 		unload();
@@ -94,7 +96,10 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	private final Field entityType = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("c");
 	private final Field entityID = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
 	private final int armorStandEntityType = IRegistry.ENTITY_TYPE.a(EntityTypes.ARMOR_STAND);
-
+	
+	private HoloAccessControl accessController = (sender, holo, action) -> holo != null && holo.isPersistent();
+	private boolean createDefaultPacketHolo = false;
+	
 	public File getFile() {
 		return hologramsFile;
 	}
@@ -113,10 +118,10 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		//		hologramsFile.createNewFile();
 	}
 
-	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
+	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, boolean onlyPackets, AbstractLine<HologramLine>... lines) {
 		Validate.notNull(location, "Hologram location cannot be null");
 		int id = lastID++;
-		Hologram hologram = new Hologram(id, location, persistent, defaultVisibility, lines);
+		Hologram hologram = new Hologram(id, location, persistent, defaultVisibility, onlyPackets, lines);
 		holograms.put(id, hologram);
 		if (persistent) {
 			Observer update = updateHologram(id, hologram);
@@ -128,6 +133,29 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 			}
 		}
 		return hologram;
+	}
+
+	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
+		return createHologram(location, persistent, defaultVisibility, false, lines);
+	}
+	
+	public boolean registerHologram(int id, Hologram holo) {
+		if (holograms.containsKey(id))
+			return false;
+		
+		holograms.put(id, holo);
+		
+		if (holo.isPersistent()) {
+			Observer update = updateHologram(id, holo);
+			holo.observe("manager_save", update);
+			try {
+				update.changed();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
 	}
 
 	public Hologram getHologram(int id) {
@@ -213,7 +241,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 			if (hologram != null) {
 				HologramLine line = hologram.getFromArmorStand(e.getEntity().getEntityId());
 				if (line != null)
-					Bukkit.getScheduler().runTask(OlympaCore.getInstance(), () -> line.spawnEntity());
+					Bukkit.getScheduler().runTaskLater(OlympaCore.getInstance(), () -> line.spawnEntity(), 2);
 			}
 		}
 	}
@@ -242,6 +270,49 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Permet de définir avec plus de finesse quelles actions les joueurs
+	 * sont autorisés à exécuter sur un hologramme donné
+	 * @param accessControler
+	 */
+	public void setHoloControlSupplier(HoloAccessControl accessControler) {
+		this.accessController = accessControler;
+	}
+	
+	public boolean hasAccessTo(CommandSender sender, Hologram holo, HoloActionType action) {
+		return accessController.apply(sender, holo, action);
+	}
+	
+	/**
+	 * Si vrai, alors tous les holos créés par les commandes seront 
+	 * temporaires et entièrement en packets
+	 * @param b (default false)
+	 */
+	public void setTempHoloCreationMode(boolean b) {
+		this.createDefaultPacketHolo = b;
+	}
+	
+	public boolean hasTempHoloCreationMode() {
+		return createDefaultPacketHolo;
+	}
+	
+	@FunctionalInterface
+	public static interface HoloAccessControl {
+		public boolean apply(CommandSender sender, Hologram holo, HoloActionType action);
+	}
+	
+	public static enum HoloActionType {
+		COMMAND,
+		CREATE_PREPROCESS,
+		CREATED,
+		REMOVE,
+		EDIT_ADDLINE,
+		EDIT_OTHER,
+		MOVE,
+		TELEPORT,
+		VISIBILITY
 	}
 
 }

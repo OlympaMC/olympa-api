@@ -12,7 +12,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class TrackedRegion {
 
-	private final Region region;
+	private Region region;
 	private final String id;
 	private final EventPriority priority;
 	private final List<Flag> flags = new ArrayList<>();
@@ -26,6 +26,11 @@ public class TrackedRegion {
 
 	public Region getRegion() {
 		return region;
+	}
+	
+	public void updateRegion(Region region) {
+		OlympaCore.getInstance().getRegionManager().updateRegion(this, this.region, region);
+		this.region = region;
 	}
 
 	public String getID() {

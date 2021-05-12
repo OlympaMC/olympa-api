@@ -60,11 +60,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 		members.put(p.getInformation(), manager.createClanData(p.getInformation()));
 		memberJoin(p);
 		if (msg) broadcast(String.format(manager.stringPlayerJoin, p.getName()));
-		try {
-			manager.insertPlayerInClan(p, this);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		manager.insertPlayerInClan(p, this);
 		return true;
 	}
 
@@ -168,18 +164,14 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public void removePlayer(OlympaPlayerInformations pinfo, boolean message) {
-		if (message)
-			broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
-		D member = members.remove(pinfo);
-
-		try {
-			manager.removePlayerFromClan(member);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			broadcast("Une erreur est survenue.");
-		}
-		if (member.isConnected())
-			removedOnlinePlayer(member.getConnectedPlayer());
+		D member = members.get(pinfo);
+		manager.removePlayerFromClan(member, () -> {
+			members.remove(pinfo);
+			if (message)
+				broadcast(String.format(manager.stringPlayerLeave, pinfo.getName()));
+			if (member.isConnected())
+				removedOnlinePlayer(member.getConnectedPlayer());
+		}, ex -> broadcast("Une erreur est survenue lors de la suppression d'un joueur."));
 	}
 
 	public void setChief(OlympaPlayerInformations p) {

@@ -115,6 +115,15 @@ public class RegionManager implements Listener {
 		Validate.isTrue(!trackedRegions.containsKey(id), "A region with ID " + id + " already exists");
 		TrackedRegion tracked = new TrackedRegion(region, id, priority, flags);
 		trackedRegions.put(id, tracked);
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (region.isIn(p)) {
+				Set<TrackedRegion> regionsSet = null;
+				for (Flag flag : flags) {
+					if (regionsSet == null) regionsSet = getApplicableRegions(p.getLocation());
+					if (flag.enters(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when new region - ignored.");
+				}
+			}
+		}
 		return tracked;
 	}
 
@@ -178,7 +187,28 @@ public class RegionManager implements Listener {
 	}
 	
 	public <T extends Flag> T getMostImportantFlag(Location location, Class<T> flagClass) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location) && x.getFlag(flagClass) != null).sorted(REGION_COMPARATOR_INVERT).findFirst().map(region -> region.getFlag(flagClass)).orElse(null);
+		return trackedRegions.values().stream().filter(x -> x.getFlag(flagClass) != null && x.getRegion().isIn(location)).sorted(REGION_COMPARATOR_INVERT).findFirst().map(region -> region.getFlag(flagClass)).orElse(null);
+	}
+	
+	protected void updateRegion(TrackedRegion region, Region from, Region to) {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			boolean wasIn = from.isIn(p);
+			boolean isIn = to.isIn(p);
+			if (wasIn == isIn) continue;
+			if (wasIn) {
+				Set<TrackedRegion> regionsSet = getCachedPlayerRegions(p);
+				regionsSet.remove(region);
+				for (Flag flag : region.getFlags()) {
+					if (flag.leaves(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Leave cancelled when region editing - ignored.");
+				}
+			}else { // isIn
+				Set<TrackedRegion> regionsSet = getCachedPlayerRegions(p);
+				regionsSet.add(region);
+				for (Flag flag : region.getFlags()) {
+					if (flag.enters(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when region editing - ignored.");
+				}
+			}
+		}
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)

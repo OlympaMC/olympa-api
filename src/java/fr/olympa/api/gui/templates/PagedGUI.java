@@ -33,6 +33,10 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 	private final String observableCode;
 	
 	protected PagedGUI(String name, DyeColor color, List<T> objects, int rows) {
+		this(name, color, objects, rows, true);
+	}
+	
+	protected PagedGUI(String name, DyeColor color, List<T> objects, int rows, boolean setItems) {
 		super(name, rows);
 		if (rows <= 1) throw new IllegalArgumentException("Rows must be higher than 1");
 		this.rows = rows;
@@ -47,7 +51,7 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 
 		setSeparatorItems(color);
 		
-		setItems();
+		if (setItems) setItems();
 	}
 
 	private void calculateMaxPage() {
@@ -60,16 +64,20 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		setItems();
 	}
 
-	private void setItems(){
+	protected void setItems() {
 		for (int i = 0; i < itemsPerPage; i++) setMainItem(i, null);
 		for (int i = page * itemsPerPage; i < objects.size(); i++) {
 			if (i == (page + 1) * itemsPerPage) break;
 			T obj = objects.get(i);
-			setMainItem(i - page * itemsPerPage, getItemStack(obj));
+			setItem(i - page * itemsPerPage, obj);
 		}
 	}
 	
-	private int setMainItem(int mainSlot, ItemStack is){
+	protected void setItem(int mainSlot, T object) {
+		setMainItem(mainSlot, getItemStack(object));
+	}
+	
+	protected int setMainItem(int mainSlot, ItemStack is) {
 		int line = (int) Math.floor(mainSlot * 1.0 / 7.0);
 		int slot = mainSlot + (2 * line);
 		inv.setItem(slot, is);

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
@@ -293,13 +294,14 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 		}
 	}
 	
-	public void insertPlayerInClan(ClanPlayerInterface<T, D> p, Clan<T, D> clan) throws SQLException {
-		playersTable.deleteSQLObject(p.getId());
-		playersTable.insert(p.getId(), clan.getID());
+	public void insertPlayerInClan(ClanPlayerInterface<T, D> p, Clan<T, D> clan) {
+		playersTable.deleteSQLObjectAsync(p.getId(), () -> {
+			playersTable.insertAsync(null, null, p.getId(), clan.getID());
+		}, null);
 	}
 	
-	public void removePlayerFromClan(D player) throws SQLException {
-		playersTable.delete(player);
+	public void removePlayerFromClan(D player, Runnable success, Consumer<SQLException> fail) {
+		playersTable.deleteAsync(player, success, fail);
 	}
 	
 	public ClanManagementGUI<T, D> provideManagementGUI(ClanPlayerInterface<T, D> player) {
