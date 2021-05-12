@@ -11,6 +11,8 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.chat.TxtComponentBuilder;
@@ -20,6 +22,7 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.api.utils.spigot.TPSUtils;
 import fr.olympa.core.spigot.OlympaCore;
+import net.md_5.bungee.api.plugin.PluginDescription;
 
 public class MachineMessage extends MachineInfo {
 
@@ -73,8 +76,9 @@ public class MachineMessage extends MachineInfo {
 			textBuilder.extra(new TxtComponentBuilder("&3Plugins Olympa: &b"));
 			for (TxtComponentBuilder txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))
 					.map(ff -> {
+						@NotNull PluginDescriptionFile desc = ff.getDescription();
 						String fileInfo = Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).lastModified() / 1000L);
-						return new TxtComponentBuilder("&6%s ", ff.getName().substring(6)).onHoverText("&eDernière MAJ %s", fileInfo).console(isConsole);
+						return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (v%s)", fileInfo, desc.getVersion()).console(isConsole);
 					})
 					.collect(Collectors.toList()))
 				textBuilder.extra(txt);
