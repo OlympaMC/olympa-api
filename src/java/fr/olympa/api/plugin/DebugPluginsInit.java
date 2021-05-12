@@ -29,4 +29,5 @@ public class DebugPluginsInit extends DebugPlugins {
 		}
 		hasConfig = plugin.getConfig() != null;
 	}
+
 }

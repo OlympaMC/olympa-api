@@ -1,4 +1,4 @@
-package fr.olympa.api.utils.machine;
+package fr.olympa.api.machine;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

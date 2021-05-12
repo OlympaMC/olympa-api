@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+import fr.olympa.api.machine.MachineInfo;
 import fr.olympa.api.plugin.DebugPlugins;
 import fr.olympa.api.utils.Utils;
-import fr.olympa.api.utils.machine.MachineInfo;
 
 public class ServerDebug extends MachineInfo {
 
