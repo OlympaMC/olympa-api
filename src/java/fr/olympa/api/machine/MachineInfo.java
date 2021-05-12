@@ -1,6 +1,7 @@
 package fr.olympa.api.machine;
 
 import java.lang.management.ManagementFactory;
+import java.text.DecimalFormat;
 
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.management.ThreadMXBean;
@@ -75,17 +76,20 @@ public class MachineInfo {
 	}
 
 	public String getMemUse() {
-		if (memeTotal > 1024d)
-			return memUsed / 1024d + "/" + memeTotal / 1024d + "Go";
+		if (memeTotal >= 1024L) {
+			DecimalFormat format = new DecimalFormat("0.#");
+			return format.format(memUsed / 1024f) + "/" + format.format(memeTotal / 1024f) + "Go";
+		}
 		return memUsed + "/" + memeTotal + "Mo";
 	}
 
 	public String getCPUProcTime() {
-		if (cpuProcTime < 1000000)
-			return cpuProcTime + "ns";
-		if (cpuProcTime < 1000000000)
-			return cpuProcTime + "ms";
-		return cpuProcTime + "sec";
+		DecimalFormat format = new DecimalFormat("0.#");
+		if (cpuProcTime > 1000000000L)
+			return format.format(cpuProcTime / 1000000000f) + "sec";
+		if (cpuProcTime > 1000000L)
+			return format.format(cpuProcTime / 1000000f) + "ms";
+		return cpuProcTime + "ns";
 	}
 
 	public long getMemUsed() {
