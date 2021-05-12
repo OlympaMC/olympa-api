@@ -49,11 +49,11 @@ public class Hologram extends AbstractObservable {
 	
 	private boolean willSpawn = false;
 	
-	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
+	public Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		this(id, bottom, persistent, defaultVisibility, false, lines);
 	}
 	
-	Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, boolean packetHolo, AbstractLine<HologramLine>... lines) {
+	public Hologram(int id, Location bottom, boolean persistent, boolean defaultVisibility, boolean packetHolo, AbstractLine<HologramLine>... lines) {
 		setBottom(bottom);
 		
 		this.id = id;
@@ -62,15 +62,8 @@ public class Hologram extends AbstractObservable {
 		this.packetHolo = packetHolo;
 		this.defaultVisibility = defaultVisibility;
 
-		for (AbstractLine<HologramLine> line : lines) {
+		for (AbstractLine<HologramLine> line : lines) 
 			addLine(line);
-			if (line instanceof FixedLine)
-				System.out.println(((FixedLine<HologramLine>)line).getValue(null));
-		}
-		
-		/*System.out.println("WILL ATTEMPT TO UPDATE POS");
-		this.lines.forEach(line -> line.updatePosition());
-		System.out.println("END OF UPDATE POS ATTEMPT");*/
 		
 		willSpawn = true;
 		if (Bukkit.isPrimaryThread()) {
@@ -336,6 +329,10 @@ public class Hologram extends AbstractObservable {
 		
 		public EntityArmorStand getNmsEntity() {
 			return entityNms;
+		}
+		
+		public AbstractLine<HologramLine> getLine(){
+			return line;
 		}
 		
 		public Location getPosition() {

@@ -138,6 +138,25 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		return createHologram(location, persistent, defaultVisibility, false, lines);
 	}
+	
+	public boolean registerHologram(int id, Hologram holo) {
+		if (holograms.containsKey(id))
+			return false;
+		
+		holograms.put(id, holo);
+		
+		if (holo.isPersistent()) {
+			Observer update = updateHologram(id, holo);
+			holo.observe("manager_save", update);
+			try {
+				update.changed();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
+	}
 
 	public Hologram getHologram(int id) {
 		return holograms.get(id);
