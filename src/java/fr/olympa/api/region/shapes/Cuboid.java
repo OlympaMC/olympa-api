@@ -3,7 +3,6 @@ package fr.olympa.api.region.shapes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,21 +38,21 @@ public class Cuboid extends AbstractRegion {
 
 	public Cuboid(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
 		this.world = world;
-		this.xMin = Math.min(x1, x2);
-		this.xMax = Math.max(x1, x2);
-		this.yMin = Math.min(y1, y2);
-		this.yMax = Math.max(y1, y2);
-		this.zMin = Math.min(z1, z2);
-		this.zMax = Math.max(z1, z2);
-		this.xMinCentered = this.xMin + 0.5;
-		this.xMaxCentered = this.xMax + 0.5;
-		this.yMinCentered = this.yMin + 0.5;
-		this.yMaxCentered = this.yMax + 0.5;
-		this.zMinCentered = this.zMin + 0.5;
-		this.zMaxCentered = this.zMax + 0.5;
-		this.center = new Location(this.world, (this.xMax - this.xMin) / 2 + this.xMin, (this.yMax - this.yMin) / 2 + this.yMin, (this.zMax - this.zMin) / 2 + this.zMin);
-		this.min = new Location(world, xMin, yMin, zMin);
-		this.max = new Location(world, xMax, yMax, zMax);
+		xMin = Math.min(x1, x2);
+		xMax = Math.max(x1, x2);
+		yMin = Math.min(y1, y2);
+		yMax = Math.max(y1, y2);
+		zMin = Math.min(z1, z2);
+		zMax = Math.max(z1, z2);
+		xMinCentered = xMin + 0.5;
+		xMaxCentered = xMax + 0.5;
+		yMinCentered = yMin + 0.5;
+		yMaxCentered = yMax + 0.5;
+		zMinCentered = zMin + 0.5;
+		zMaxCentered = zMax + 0.5;
+		center = new Location(this.world, (xMax - xMin) / 2 + xMin, (yMax - yMin) / 2 + yMin, (zMax - zMin) / 2 + zMin);
+		min = new Location(world, xMin, yMin, zMin);
+		max = new Location(world, xMax, yMax, zMax);
 	}
 
 	public Location getCenter() {
@@ -84,21 +83,19 @@ public class Cuboid extends AbstractRegion {
 	}
 
 	public int getHeight() {
-		return this.yMax - this.yMin + 1;
+		return yMax - yMin + 1;
 	}
 
-	public Iterator<Location> getPerimeterLocations() {
+	public List<Location> getPerimeterLocations() {
 		final ArrayList<Location> locations = new ArrayList<>();
-		for(int x = this.xMin; x <= this.xMax; ++x) {
-			for(int z = this.zMin; z <= this.zMax; ++z) {
-				locations.add(new Location(this.world, x, this.yMin, z));
-				locations.add(new Location(this.world, x, this.yMax, z));
+		for (int x = xMin; x <= xMax; ++x)
+			for (int z = zMin; z <= zMax; ++z) {
+				locations.add(new Location(world, x, yMin, z));
+				locations.add(new Location(world, x, yMax, z));
 			}
-
-		}
-		return locations.iterator();
+		return locations;
 	}
-	
+
 	@Override
 	public List<Location> getLocations() {
 		return Arrays.asList(min, max);
@@ -107,32 +104,32 @@ public class Cuboid extends AbstractRegion {
 	@Override
 	public Location getRandomLocation() {
 		final Random rand = ThreadLocalRandom.current();
-		final int x = rand.nextInt(getXWidth()) + this.xMin;
-		final int y = rand.nextInt(getHeight()) + this.yMin;
-		final int z = rand.nextInt(getZWidth()) + this.zMin;
-		return new Location(this.world, x, y, z);
+		final int x = rand.nextInt(getXWidth()) + xMin;
+		final int y = rand.nextInt(getHeight()) + yMin;
+		final int z = rand.nextInt(getZWidth()) + zMin;
+		return new Location(world, x, y, z);
 	}
 
 	public int getTotalBlockSize() {
-		return this.getHeight() * this.getXWidth() * this.getZWidth();
+		return getHeight() * getXWidth() * getZWidth();
 	}
 
 	public int getXWidth() {
-		return this.xMax - this.xMin + 1;
+		return xMax - xMin + 1;
 	}
 
 	public int getZWidth() {
-		return this.zMax - this.zMin + 1;
+		return zMax - zMin + 1;
 	}
 
 	@Override
 	public boolean isIn(World world, int x, int y, int z) {
-		return world == this.world && x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax && z >= this.zMin && z <= this.zMax;
+		return world == this.world && x >= xMin && x <= xMax && y >= yMin && y <= yMax && z >= zMin && z <= zMax;
 	}
 
 	public boolean isInWithMarge(final Location loc, final double marge) {
-		return loc.getWorld() == this.world && loc.getX() >= this.xMinCentered - marge && loc.getX() <= this.xMaxCentered + marge && loc.getY() >= this.yMinCentered - marge && loc
-				.getY() <= this.yMaxCentered + marge && loc.getZ() >= this.zMinCentered - marge && loc.getZ() <= this.zMaxCentered + marge;
+		return loc.getWorld() == world && loc.getX() >= xMinCentered - marge && loc.getX() <= xMaxCentered + marge && loc.getY() >= yMinCentered - marge && loc
+				.getY() <= yMaxCentered + marge && loc.getZ() >= zMinCentered - marge && loc.getZ() <= zMaxCentered + marge;
 	}
 
 	@Override
