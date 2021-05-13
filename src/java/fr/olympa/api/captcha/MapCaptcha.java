@@ -24,6 +24,10 @@ public class MapCaptcha {
 	private ItemStack map;
 	private String answer;
 
+	public MapCaptcha() {
+		this(128);
+	}
+
 	/**
 	 * Create a new captcha. Should be called async since some used methods are low-performance
 	 */

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.afk.AfkHandler;
@@ -21,6 +22,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected ServerStatus status;
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();
 	private String serverName;
+	protected Location spawn;
 
 	protected long lastInfo;
 	protected List<MonitorInfo> monitorInfos = new ArrayList<>();
@@ -127,4 +129,11 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		this.status = status;
 	}
 
+	public Location getSpawn() {
+		return spawn;
+	}
+
+	public Location setSpawn(Location spawn) {
+		return this.spawn = spawn;
+	}
 }
