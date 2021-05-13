@@ -27,7 +27,7 @@ public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 	public synchronized void addHolder(T holder) {
 		super.addHolder(holder);
 		if (task == null) {
-			System.out.println("TimerLine.addHolder() add task");
+			//System.out.println("TimerLine.addHolder() add task");
 			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::execute, 1, ticks);
 		}
 	}
@@ -38,7 +38,7 @@ public class TimerLine<T extends LinesHolder<T>> extends DynamicLine<T> {
 		if (getHolders().isEmpty() && task != null) {
 			task.cancel();
 			task = null;
-			System.out.println("TimerLine.removeHolder() cancel task");
+			//System.out.println("TimerLine.removeHolder() cancel task");
 		}
 	}
 	

@@ -91,11 +91,16 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 		return this;
 	}
 
-	public void create(T p) {
-		removePlayerScoreboard(p);
+	private void create(T p) {
 		Scoreboard<T> scoreboard = new Scoreboard<>(p, this);
 		scoreboards.put(p, scoreboard);
 		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread()));
+	}
+	
+	public void refresh(T p) {
+		if (removePlayerScoreboard(p)) {
+			create(p);
+		}
 	}
 
 	public Scoreboard<T> getPlayerScoreboard(T p) {
@@ -113,10 +118,13 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 		removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
 	}
 
-	public void removePlayerScoreboard(T p) {
+	public boolean removePlayerScoreboard(T p) {
 		Scoreboard<T> removed = scoreboards.remove(p);
-		if (removed != null)
+		if (removed != null) {
 			removed.unload();
+			return true;
+		}
+		return false;
 	}
 
 	public void unload() {
