@@ -15,15 +15,13 @@ import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.LinesHolder;
 import fr.olympa.api.player.OlympaPlayer;
 
-// TODO gestion multi scoreboard
-public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesHolder<Scoreboard<T>> {
-
+public class MultiScoreboard<T extends OlympaPlayer> extends Thread implements LinesHolder<MultiScoreboard<T>> {
 	private static final long PAUSE_TIME = 5000;
 	private static final long SCROLL_TIME = 200;
 
 	private final T p;
 
-	private ScoreboardManager<T> manager;
+	private MultiScoreboardManager<T> manager;
 	private FastBoard sb;
 	private LinkedList<Line> lines = new LinkedList<>();
 	private LinkedList<Line> footers = new LinkedList<>();
@@ -40,20 +38,19 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	private int maxLine;
 	private int linesSize;
 
-	Scoreboard(T player, ScoreboardManager<T> manager) {
-		super("Scoreboard " + player.getName());
+	MultiScoreboard(T player, MultiScoreboardManager<T> manager, String sbName) {
+		super("MultiScoreboard " + player.getName() + sbName);
 		p = player;
 		this.manager = manager;
-		for (AbstractLine<Scoreboard<T>> line : manager.lines) {
+		for (AbstractLine<MultiScoreboard<T>> line : manager.lines) {
 			lines.add(new Line(line));
 			line.addHolder(this);
 		}
-		for (AbstractLine<Scoreboard<T>> line : manager.footer) {
+		for (AbstractLine<MultiScoreboard<T>> line : manager.footer) {
 			footers.add(new Line(line));
 			line.addHolder(this);
 		}
 		setPriority(NORM_PRIORITY - 1);
-		initScoreboard();
 	}
 
 	public T getOlympaPlayer() {
@@ -64,8 +61,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		return sb;
 	}
 
-	@Override
-	public void addLine(AbstractLine<Scoreboard<T>> line) {
+	public void addLine(AbstractLine<MultiScoreboard<T>> line) {
 		updateLock.lock();
 		lines.add(new Line(line));
 		line.addHolder(this);
@@ -96,7 +92,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 
 	@Override
-	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
+	public void update(AbstractLine<MultiScoreboard<T>> line, String newValue) {
 		for (Line internalLine : Iterables.concat(lines, footers))
 			if (internalLine.line == line) {
 				internalLine.setLines(newValue);
@@ -143,7 +139,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 					condition.await();
 				updateScoreboard();
 			} catch (InterruptedException e) {
-				//OlympaCore.getInstance().sendMessage("Boucle du scoreboard de " + p.getName() + " interrompue.");
+				//OlympaCore.getInstance().sendMessage("Boucle du MultiScoreboard de " + p.getName() + " interrompue.");
 				return;
 			} finally {
 				lock.unlock();
@@ -151,7 +147,6 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		}
 	}
 
-	@Override
 	public void initScoreboard() {
 		updateScrollState();
 		sb = new FastBoard(p.getPlayer());
@@ -180,13 +175,12 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		return rawLines;
 	}
 
-	@Override
 	public void unload() {
 		interrupt();
 		if (sb != null)
 			sb.delete();
 		manager.getPlugin().sendMessage("Déchargement de §6%d lignes §epour le joueur §6%s", lines.size(), p.getName());
-		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
+		for (Iterator<MultiScoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
 			iterator.next().line.removeHolder(this);
 			iterator.remove();
 		}
@@ -201,15 +195,15 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 
 	class Line {
-		AbstractLine<Scoreboard<T>> line;
+		AbstractLine<MultiScoreboard<T>> line;
 		String[] cachedLines = null;
 
-		public Line(AbstractLine<Scoreboard<T>> line) {
+		public Line(AbstractLine<MultiScoreboard<T>> line) {
 			this.line = line;
 		}
 
 		public void updateLines(T player) {
-			setLines(line.getValue(Scoreboard.this));
+			setLines(line.getValue(MultiScoreboard.this));
 			//return ChatPaginator.wordWrap(text, 48);
 		}
 

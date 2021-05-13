@@ -59,6 +59,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 	}
 
 	OlympaAPIPlugin plugin;
+	boolean isDefaultScoreboard = true;
 	String displayName;
 	List<AbstractLine<Scoreboard<T>>> lines = new ArrayList<>();
 	List<AbstractLine<Scoreboard<T>>> footer = new ArrayList<>();
@@ -104,7 +105,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(OlympaPlayerLoadEvent e) {
-		if (!scoreboards.containsKey(e.getOlympaPlayer()))
+		if (isDefaultScoreboard && !scoreboards.containsKey(e.getOlympaPlayer()))
 			create(e.getOlympaPlayer());
 	}
 
