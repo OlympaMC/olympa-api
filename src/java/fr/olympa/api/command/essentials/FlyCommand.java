@@ -14,7 +14,7 @@ import fr.olympa.api.permission.OlympaAPIPermissions;
 public class FlyCommand extends OlympaCommand {
 
 	public FlyCommand(Plugin plugin) {
-		super(plugin, "fly", "Permet de voler", OlympaAPIPermissions.FLY_COMMAND);
+		super(plugin, "fly", "Permet d'activer/désactiver la possibilité de voler.", OlympaAPIPermissions.FLY_COMMAND);
 		addArgs(false, "JOUEUR");
 	}
 

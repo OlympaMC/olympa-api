@@ -15,7 +15,7 @@ import fr.olympa.api.permission.OlympaAPIPermissions;
 public class ItemCommand extends ComplexCommand {
 	
 	public ItemCommand(Plugin plugin) {
-		super(plugin, "item", "Modifier un item", OlympaAPIPermissions.ITEM_COMMAND);
+		super(plugin, "item", "Modifier un item.", OlympaAPIPermissions.ITEM_COMMAND);
 		setAllowConsole(false);
 		addArgumentParser("FLAGS", ItemFlag.class);
 	}

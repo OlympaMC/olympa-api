@@ -1,10 +1,10 @@
 package fr.olympa.api.machine;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.text.DecimalFormat;
 
 import com.sun.management.OperatingSystemMXBean;
-import com.sun.management.ThreadMXBean;
 
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.TPSUtils;

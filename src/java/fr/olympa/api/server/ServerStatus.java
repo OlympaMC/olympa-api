@@ -14,7 +14,7 @@ public enum ServerStatus {
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "Off"),
 	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
 	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta"),
-	CLOSE_BETA(7, "Bêta Fermer", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermer"),
+	CLOSE_BETA(7, "Bêta Fermée", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermée"),
 	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "On"),
 	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "Dev"),
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null),
@@ -26,7 +26,7 @@ public enum ServerStatus {
 	}
 
 	public static ServerStatus get(String name) {
-		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name)).findFirst().orElse(ServerStatus.UNKNOWN);
+		return Arrays.stream(values()).filter(status -> status.getName().equalsIgnoreCase(name) || status.name().equalsIgnoreCase(name)).findFirst().orElse(ServerStatus.UNKNOWN);
 	}
 
 	public static ServerStatus getByCommandArg(String commandArg) {

@@ -18,7 +18,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ColorCommand extends ComplexCommand {
 
 	public ColorCommand(Plugin plugin) {
-		super(plugin, "color", "Permet de voir toutes les couleurs possibles", null);
+		super(plugin, "color", "Permet de voir toutes les couleurs possibles.", null);
 	}
 
 	@Override

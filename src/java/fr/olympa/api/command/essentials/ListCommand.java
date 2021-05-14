@@ -23,7 +23,7 @@ import fr.olympa.api.provider.AccountProvider;
 public class ListCommand extends OlympaCommand {
 	
 	public ListCommand(Plugin plugin) {
-		super(plugin, "list", "Affiche une liste des joueurs connectés", (OlympaSpigotPermission) null);
+		super(plugin, "list", "Affiche une liste des joueurs connectés.", (OlympaSpigotPermission) null);
 	}
 	
 	@Override

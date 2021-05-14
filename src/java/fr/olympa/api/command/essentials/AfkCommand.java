@@ -15,7 +15,7 @@ import fr.olympa.core.spigot.OlympaCore;
 public class AfkCommand extends OlympaCommand {
 
 	public AfkCommand(Plugin plugin) {
-		super(plugin, "afk", "Permet de se mettre AFK", null, new String[] {});
+		super(plugin, "afk", "Permet de se mettre AFK.", null, new String[] {});
 		allowConsole = false;
 	}
 
@@ -23,7 +23,7 @@ public class AfkCommand extends OlympaCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		AfkHandler afkHandler = OlympaCore.getInstance().getAfkHandler();
 		if (afkHandler == null) {
-			sendMessage(Prefix.DEFAULT_BAD, "Le module de Vanish est désactivé, commande impossible.");
+			sendMessage(Prefix.DEFAULT_BAD, "Le module d'AFK est désactivé, commande impossible.");
 			return false;
 		}
 		AfkPlayer afkPlayer = afkHandler.get(player);

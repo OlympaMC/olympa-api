@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.chat.ColorUtils;
@@ -29,7 +28,7 @@ public class HologramsCommand extends ComplexCommand {
 	private Paginator<Hologram> paginator;
 
 	public HologramsCommand(OlympaAPIPlugin plugin, HologramsManager hologramsManager) {
-		super(plugin, "holograms", "Permet de gérer les hologrammes", OlympaAPIPermissions.COMMAND_HOLOGRAMS_MANAGE, "holo");
+		super(plugin, "holograms", "Permet de gérer les hologrammes.", OlympaAPIPermissions.COMMAND_HOLOGRAMS_MANAGE, "holo");
 		
 		this.holograms = hologramsManager;
 		super.addArgumentParser("PERSHOLOGRAM", (sender, arg) -> hologramsManager.holograms.values().stream()

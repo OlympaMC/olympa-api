@@ -23,7 +23,7 @@ public class EnderChestCommand extends OlympaCommand {
 	private Map<EnderChestPlayerInterface, EnderChestGUI> guis = new HashMap<>();
 	
 	public EnderChestCommand(OlympaAPIPlugin plugin, OlympaSpigotPermission permission, OlympaSpigotPermission permissionOther) {
-		super(plugin, "enderchest", "Ouvre l'enderchest", permission, "ec", "enderc", "echest");
+		super(plugin, "enderchest", "Ouvre l'enderchest.", permission, "ec", "enderc", "echest");
 		this.permissionOther = permissionOther;
 		setAllowConsole(false);
 	}

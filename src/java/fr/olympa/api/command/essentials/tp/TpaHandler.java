@@ -68,7 +68,7 @@ public class TpaHandler implements Listener {
 			if (request.from.isOnline())
 				Prefix.BAD.sendMessage(request.from, "La téléportation vers &4%s&c a expiré.", request.to.getName());
 			if (request.to.isOnline())
-				Prefix.BAD.sendMessage(request.to, "La téléportation de &4%s&c §lVERS§c toi a expiré.", request.from.getName());
+				Prefix.BAD.sendMessage(request.to, "La téléportation de &4%s&c §lvers toi§c a expiré.", request.from.getName());
 		}
 
 	}
