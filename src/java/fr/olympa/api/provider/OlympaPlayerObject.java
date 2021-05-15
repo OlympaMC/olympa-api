@@ -220,6 +220,9 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public void loaded() {}
+	
+	@Override
+	public void unloaded() {}
 
 	//	@Override
 	//	public void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson, int discordOlympaId, int teamspeakId, boolean vanish) {
