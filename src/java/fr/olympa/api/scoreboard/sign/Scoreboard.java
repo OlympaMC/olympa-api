@@ -178,15 +178,17 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	public void unload() {
 		interrupt();
-		if (sb != null) sb.delete();
 		manager.getPlugin().sendMessage("Déchargement de §6%d lignes §epour le joueur §6%s", lines.size(), p.getName());
 		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
 			iterator.next().line.removeHolder(this);
 			iterator.remove();
 		}
+		if (sb != null) sb.delete();
 	}
 	
 	private void updateScoreboard() {
+		if (sb.isDeleted()) return;
+		
 		updateLock.lock();
 		List<String> rawLines = getRawLines();
 		updateLock.unlock();

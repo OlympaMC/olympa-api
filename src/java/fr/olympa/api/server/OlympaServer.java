@@ -11,7 +11,7 @@ public enum OlympaServer {
 	LOBBY("Lobby", true),
 	DEV("Développement", false),
 	BUILDEUR("Buildeur", false),
-	ZTA("Olympa ZTA", false),
+	ZTA("Olympa ZTA", false, true),
 	CREATIF("Créatif", false),
 	LG("Loup-Garou", true),
 	PVPFAC("PvP-Factions", false),
@@ -22,10 +22,16 @@ public enum OlympaServer {
 	private final boolean multi;
 	private OlympaPermission joinPermission;
 	private ServerType type = ServerType.SPIGOT;
+	private boolean hasPack;
 
 	private OlympaServer(String name, boolean multi) {
+		this(name, multi, false);
+	}
+	
+	private OlympaServer(String name, boolean multi, boolean hasPack) {
 		this.name = name;
 		this.multi = multi;
+		this.hasPack = hasPack;
 	}
 
 	private OlympaServer(String name, boolean multi, ServerType type) {
@@ -39,6 +45,10 @@ public enum OlympaServer {
 
 	public boolean hasMultiServers() {
 		return multi;
+	}
+	
+	public boolean hasPack() {
+		return hasPack;
 	}
 
 	public OlympaPermission getJoinPermission() {
