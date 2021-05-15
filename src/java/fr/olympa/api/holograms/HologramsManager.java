@@ -97,7 +97,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	private final Field entityID = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
 	private final int armorStandEntityType = IRegistry.ENTITY_TYPE.a(EntityTypes.ARMOR_STAND);
 	
-	private HoloAccessControl accessController = (sender, holo, action) -> holo != null && holo.isPersistent();
+	private HoloAccessControl accessController = (sender, holo, action) -> true;
 	private boolean createDefaultPacketHolo = false;
 	
 	public File getFile() {
@@ -106,14 +106,14 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 
 	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws NoSuchFieldException {
 		this.hologramsFile = hologramsFile;
-		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> scoreBoardModule = new SpigotModule<>(pl, "holograms_" + pl.getName(), plugin -> this)
+		OlympaModule<HologramsManager, Listener, OlympaAPIPlugin, OlympaCommand> module = new SpigotModule<>(pl, "holograms_" + pl.getName(), plugin -> this)
 				.listener(this.getClass()).cmd(HologramsCommand.class);
 		try {
-			scoreBoardModule.enableModule();
+			module.enableModule();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		scoreBoardModule.registerModule();
+		module.registerModule();
 		//		hologramsFile.getParentFile().mkdirs();
 		//		hologramsFile.createNewFile();
 	}

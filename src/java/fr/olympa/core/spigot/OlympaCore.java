@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
@@ -149,4 +150,7 @@ public class OlympaCore extends OlympaSpigot {
 	public void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback, boolean freshDoubleCallBack) {
 
 	}
+	
+	@Override
+	public void usesPack(Player p) {}
 }
