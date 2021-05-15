@@ -11,4 +11,8 @@ public interface OlympaAccount {
 	//void saveToDb(OlympaPlayer olympaPlayer) throws SQLException;
 
 	void saveToRedis(OlympaPlayer olympaPlayer);
+
+	static PlayerSQL getSQL() {
+		return null;
+	}
 }
