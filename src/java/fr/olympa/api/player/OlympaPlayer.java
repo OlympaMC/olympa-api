@@ -92,6 +92,8 @@ public interface OlympaPlayer {
 
 	void loadSavedDatas(long id, UUID premiumUuid, String groupsString, long firstConnection, long lastConnection, String password, String email, Gender gender, String histNameJson, String histIpJson/*, int discordOlympaId*/, int teamspeakId, boolean vanish);
 
+	void unloaded();
+	
 	void removeGroup(OlympaGroup group);
 
 	void setConnected(boolean connected);

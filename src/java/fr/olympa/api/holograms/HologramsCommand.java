@@ -68,7 +68,7 @@ public class HologramsCommand extends ComplexCommand {
 			return;
 		
 		String[] linesStrings = cmd.getFrom(0).split("\\|");
-		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), holograms.hasTempHoloCreationMode(), true,
+		int id = holograms.createHologram(player.getLocation().add(0, 1, 0), !holograms.hasTempHoloCreationMode(), true,
 				holograms.hasTempHoloCreationMode(), Arrays.stream(linesStrings).map(this::createLine).toArray(AbstractLine[]::new)).getID();
 
 		if (!holograms.hasAccessTo(getSender(), holograms.getHologram(id), HoloActionType.CREATED))

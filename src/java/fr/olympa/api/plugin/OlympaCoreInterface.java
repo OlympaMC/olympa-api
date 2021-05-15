@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.frame.ImageFrameManager;
 import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.region.tracking.RegionManager;
@@ -36,6 +38,8 @@ public interface OlympaCoreInterface {
 
 	Connection getDatabase() throws SQLException;
 
+	void usesPack(Player p);
+	
 	/**
 	 * Execute le @param callback avec les dernières informations des serveurs spigot si possible. Si les données sont plus anciennes de 10 secondes,
 	 * on demande au bungee, et lors qu'un recevera la réponse, @param callback sera exécuté une seconde fois.
