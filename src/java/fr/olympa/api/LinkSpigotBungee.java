@@ -36,7 +36,7 @@ public interface LinkSpigotBungee {
 	void sendMessage(String message, Object... args);
 
 	boolean isSpigot();
-	
+
 	boolean isEnabled();
 
 	ServerStatus getStatus();

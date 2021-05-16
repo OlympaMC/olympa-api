@@ -11,6 +11,7 @@ import fr.olympa.api.player.OlympaAccount;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.player.OlympaPlayerProvider;
+import fr.olympa.api.player.PlayerSQL;
 import fr.olympa.api.sql.SQLColumn;
 import fr.olympa.api.sql.SQLTable;
 
@@ -19,6 +20,10 @@ public class AccountProvider implements OlympaAccount {
 	public static Map<UUID, OlympaPlayer> cache = new HashMap<>();
 	public static Map<Long, OlympaPlayerInformations> cachedInformations = new HashMap<>();
 	private static OlympaPlayerProvider provider = OlympaPlayerObject::new;
+
+	public static PlayerSQL getSQL() {
+		return null;
+	}
 
 	public static <T extends OlympaPlayer> T get(UUID uuid) {
 		return (T) cache.get(uuid);
@@ -97,7 +102,7 @@ public class AccountProvider implements OlympaAccount {
 	/*@Override
 	public void saveToDb(OlympaPlayer olympaPlayer) {
 		// TODO Auto-generated method stub
-
+	
 	}*/
 
 	@Override
