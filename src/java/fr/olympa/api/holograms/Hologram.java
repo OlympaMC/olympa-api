@@ -113,6 +113,11 @@ public class Hologram extends AbstractObservable {
 			lines.forEach(line -> line.showTo(p));
 	}
 	
+	public void forceShow(Player p) {
+		players.add(p);
+		lines.forEach(line -> line.showTo(p));
+	}
+	
 	public void hide(Player p) {
 		/*if (defaultVisibility) {
 			if (!players.add(p)) 
@@ -124,6 +129,11 @@ public class Hologram extends AbstractObservable {
 		
 		if (isNear(p)) 
 			lines.forEach(line -> line.hideTo(p));
+	}
+	
+	public void forceHide(Player p) {
+		players.remove(p);
+		lines.forEach(line -> line.hideTo(p));
 	}
 	
 	public void show() {
