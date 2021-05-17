@@ -139,6 +139,13 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		return createHologram(location, persistent, defaultVisibility, false, lines);
 	}
 	
+	/**
+	 * Only use this if holo has been created with createHologram originally 
+	 * @param id
+	 * @param holo
+	 * @return
+	 */
+	@Deprecated
 	public boolean registerHologram(int id, Hologram holo) {
 		if (holograms.containsKey(id))
 			return false;
