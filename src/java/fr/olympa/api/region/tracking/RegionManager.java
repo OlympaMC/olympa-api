@@ -67,6 +67,9 @@ import fr.olympa.api.customevents.AsyncPlayerMoveRegionsEvent;
 import fr.olympa.api.customevents.WorldTrackingEvent;
 import fr.olympa.api.region.Region;
 import fr.olympa.api.region.shapes.WorldRegion;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.region.tracking.RegionEvent.ExitEvent;
+import fr.olympa.api.region.tracking.RegionEvent.RegionEventReason;
 import fr.olympa.api.region.tracking.flags.DamageFlag;
 import fr.olympa.api.region.tracking.flags.DropFlag;
 import fr.olympa.api.region.tracking.flags.FishFlag;
@@ -118,9 +121,13 @@ public class RegionManager implements Listener {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (region.isIn(p)) {
 				Set<TrackedRegion> regionsSet = null;
+				EntryEvent event = null;
 				for (Flag flag : flags) {
-					if (regionsSet == null) regionsSet = getApplicableRegions(p.getLocation());
-					if (flag.enters(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when new region - ignored.");
+					if (regionsSet == null) {
+						regionsSet = getApplicableRegions(p.getLocation());
+						event = new EntryEvent(p, regionsSet, RegionEventReason.REGION_CREATION);
+					}
+					if (flag.enters(event) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when new region - ignored.");
 				}
 			}
 		}
@@ -198,14 +205,16 @@ public class RegionManager implements Listener {
 			if (wasIn) {
 				Set<TrackedRegion> regionsSet = getCachedPlayerRegions(p);
 				regionsSet.remove(region);
+				ExitEvent event = new ExitEvent(p, regionsSet, RegionEventReason.REGION_UPDATE);
 				for (Flag flag : region.getFlags()) {
-					if (flag.leaves(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Leave cancelled when region editing - ignored.");
+					if (flag.leaves(event) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Leave cancelled when region editing - ignored.");
 				}
 			}else { // isIn
 				Set<TrackedRegion> regionsSet = getCachedPlayerRegions(p);
 				regionsSet.add(region);
+				EntryEvent event = new EntryEvent(p, regionsSet, RegionEventReason.REGION_UPDATE);
 				for (Flag flag : region.getFlags()) {
-					if (flag.enters(p, regionsSet) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when region editing - ignored.");
+					if (flag.enters(event) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when region editing - ignored.");
 				}
 			}
 		}
@@ -223,13 +232,15 @@ public class RegionManager implements Listener {
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		Set<TrackedRegion> regions = getApplicableRegions(e.getPlayer().getLocation());
-		inRegions.put(e.getPlayer(), regions);
-		if (!e.getPlayer().hasPlayedBefore()) {
+		Player p = e.getPlayer();
+		Set<TrackedRegion> regions = getApplicableRegions(p.getLocation());
+		inRegions.put(p, regions);
+		if (!p.hasPlayedBefore()) {
+			EntryEvent event = new EntryEvent(p, regions, RegionEventReason.JOIN);
 			for (TrackedRegion enter : regions) {
 				try {
 					for (Flag flag : enter.getFlags()) {
-						if (flag.enters(e.getPlayer(), regions) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
+						if (flag.enters(event) == ActionResult.DENY) OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
 					}
 				}catch (Exception ex) {
 					ex.printStackTrace();
@@ -258,32 +269,37 @@ public class RegionManager implements Listener {
 			Set<TrackedRegion> entered = Sets.difference(applicable, lastRegions);
 			Set<TrackedRegion> exited = Sets.difference(lastRegions, applicable);
 			
-			ActionResult result = ActionResult.ALLOW;
-			
-			for (TrackedRegion enter : entered) {
-				try {
-					for (Flag flag : enter.getFlags()) {
-						result = result.or(flag.enters(player, applicable));
+			if (!entered.isEmpty() || !exited.isEmpty()) {
+				madeChange = true;
+				
+				ActionResult result = ActionResult.ALLOW;
+				
+				EntryEvent entryEvent = new EntryEvent(player, applicable, RegionEventReason.MOVE);
+				for (TrackedRegion enter : entered) {
+					try {
+						for (Flag flag : enter.getFlags()) {
+							result = result.or(flag.enters(entryEvent));
+						}
+					}catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				}catch (Exception ex) {
-					ex.printStackTrace();
 				}
-			}
-			for (TrackedRegion exit : exited) {
-				try {
-					for (Flag flag : exit.getFlags()) {
-						result = result.or(flag.leaves(player, applicable));
+				ExitEvent exitEvent = new ExitEvent(player, applicable, RegionEventReason.MOVE);
+				for (TrackedRegion exit : exited) {
+					try {
+						for (Flag flag : exit.getFlags()) {
+							result = result.or(flag.leaves(exitEvent));
+						}
+					}catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				}catch (Exception ex) {
-					ex.printStackTrace();
 				}
+				
+				if (result == ActionResult.DENY) break;
+				if (result == ActionResult.TELEPORT_ELSEWHERE) return;
+				
+				lastRegions = applicable;
 			}
-			
-			if (result == ActionResult.DENY) break;
-			if (result == ActionResult.TELEPORT_ELSEWHERE) return;
-			
-			if (!entered.isEmpty() || !exited.isEmpty()) madeChange = true;
-			lastRegions = applicable;
 			old = location;
 		}
 		if (old != e.getFrom() && madeChange) {
