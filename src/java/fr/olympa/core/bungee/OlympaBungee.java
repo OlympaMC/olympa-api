@@ -23,6 +23,9 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	private static OlympaBungee instance;
 
 	public static OlympaBungee getInstance() {
+		if(!instance) {
+			instance = new OlympaBungee();
+		}
 		return instance;
 	}
 
@@ -30,9 +33,8 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	private BungeeTaskManager task;
 	private ServerStatus status;
 
-	public OlympaBungee() {
+	private OlympaBungee() {
 		LinkSpigotBungee.Provider.link = this;
-		instance = this;
 	}
 
 	public void enable() {
