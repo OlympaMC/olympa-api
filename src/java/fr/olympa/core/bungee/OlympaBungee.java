@@ -23,7 +23,7 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	private static OlympaBungee instance;
 
 	public static OlympaBungee getInstance() {
-		if(!instance) {
+		if(instance == null) {
 			instance = new OlympaBungee();
 		}
 		return instance;
