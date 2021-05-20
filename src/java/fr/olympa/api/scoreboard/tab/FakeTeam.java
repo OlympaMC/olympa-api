@@ -32,7 +32,7 @@ public class FakeTeam {
 	}
 
 	public FakeTeam(String prefix, String suffix, int sortPriority) {
-		this("_" + getNameFromInput(sortPriority) + nextId, prefix, suffix);
+		this("-" + getNameFromInput(sortPriority) + nextId, prefix, suffix);
 	}
 
 	//	public FakeTeam(String prefix, String suffix, int sortPriority, int secondPriority) {
