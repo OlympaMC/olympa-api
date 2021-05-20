@@ -35,6 +35,10 @@ import net.minecraft.server.v1_16_R3.PlayerConnection;
 
 public class TabManager implements Listener {
 	
+	public static final int PING_FULL = 0;
+	public static final int PING_ONE_BAR = 1001;
+	public static final int PING_ERROR = -1;
+	
 	private DecimalFormat format = new DecimalFormat("00");
 	
 	private Map<Integer, String> texts = new HashMap<>(20);
@@ -61,7 +65,7 @@ public class TabManager implements Listener {
 		List<String> players = new ArrayList<>(20);
 		for (int i = 0; i < 20; i++) {
 			String playerName = randomized + "é" + format.format(i);
-			fakePlayers.add(createPlayer(playerName, texts.containsKey(i) ? new ChatComponentText(texts.get(i)) : ChatComponentText.d));
+			fakePlayers.add(createPlayer(playerName, texts.containsKey(i) ? new ChatComponentText(texts.get(i)) : ChatComponentText.d, PING_ERROR));
 			players.add(playerName);
 		}
 		createTeam("+00AAA" + randomized, players).forEach(teamPackets::add);
@@ -69,7 +73,7 @@ public class TabManager implements Listener {
 		players = new ArrayList<>(59);
 		for (int i = 20; i < 80; i++) {
 			String playerName = randomized + "é" + format.format(i);
-			fakePlayers.add(createPlayer(playerName, i >= 60 && texts.containsKey(i - 40) ? new ChatComponentText(texts.get(i - 40)) : ChatComponentText.d));
+			fakePlayers.add(createPlayer(playerName, i >= 60 && texts.containsKey(i - 40) ? new ChatComponentText(texts.get(i - 40)) : ChatComponentText.d, i >= 60 ? PING_ERROR : PING_FULL));
 			players.add(playerName);
 		}
 		createTeam("A__ZZA" + randomized, players).forEach(teamPackets::add);
@@ -96,17 +100,17 @@ public class TabManager implements Listener {
 		return Arrays.asList(packetTeam);
 	}
 	
-	private FakePlayer createPlayer(String playerName, IChatBaseComponent component) {
+	private FakePlayer createPlayer(String playerName, IChatBaseComponent component, int ping) {
 		GameProfile gameProfile = new GameProfile(UUID.randomUUID(), playerName);
-		gameProfile.getProperties().put("textures", new Property("textures", "eyJ0aW1lc3RhbXAiOjE1MzgwNTAyNDE2NzEsInByb2ZpbGVJZCI6ImVmYWY1NzU3NzgxZTQ3YWViYzE0Y2Q4MmM5MWM3ZjgyIiwicHJvZmlsZU5hbWUiOiJNaW5lU2tpbiIsInNpZ25hdHVyZVJlcXVpcmVkIjp0cnVlLCJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjJiZTU0ZGNlNWVhODEyNzg4MjM1ZWFkNDE4MGEwNTQ3ZmQ1Yjk4NmZjYjUwZjhkOWUxNDMxZGY2Y2Q0NjJkMCJ9fX0=", "VqaUy1zG0gzt81Hk7ihD1eC7NDaCh0mk0pBOVAEqrtqpg+QozlxFPkE0oHpf4+CIng3NxK7jvYBY3FjvjVxwAy70DYUqZUA3RdC63c/OtWC2qqVE+r65Z/DwpuWfMjxkyUsbKw6WxJXVLfHqir4AfULGDm5/43EPUJb6JAjj+iin5ladMY//kdliI4Tqe5ivDSCrO+4vHEItR0q9nz3djcL8399GaGLXwYe70+Fevw1VfDEGS8ubtN0h7KfXGxBAoMbwS2kY7D71foDU+6Z4QxEcKBkmznUunib+7gYeLJNPWXhxo2fMtDbAi3fH98/YzXIsnA0aOO6WOsme7fJDcU/y+/jsxpDyuhXS4jKsJcYx1oLt14JvmMn3Jt09L8vnEOnM+oVwSaYxTuzNhKlvorI27opACeEuXIIFg4oysuNkw1/KMEku274prIce1HJWwuQdJLvejQFUFYr7JJnEW1y8cT+Z7Q0R2sDCfLlk+vSv9aHoTLYE9IjtJen2yW1z6lRuzl0gJNUjs6T5HjOub2CcI7zHLUNum2kIiYYLLMg8tPU0TIG5WO2RrYWAEJLEOXma+1VcXqygpYBm9R86EBOxoTNN1dZVNKh4/DwY97zUGCcK2sNst5WUTR3Q+nE0C+TD66Qf9RPMG83sAqgNzKGcjIy4nOu4yud5M/0JVmY="));
+		gameProfile.getProperties().put("textures", new Property("textures", "ewogICJ0aW1lc3RhbXAiIDogMTYyMTU0MjYxNTkwMSwKICAicHJvZmlsZUlkIiA6ICI5MWZlMTk2ODdjOTA0NjU2YWExZmMwNTk4NmRkM2ZlNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJoaGphYnJpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mZmNjNTNlMTA2NzhhMGRlM2RjYjFiMDIwZTgyNjg1ZWI1M2FhNTU2YTdkMjMxMGQ5YjYwODIzYWVlYjUyYmIwIgogICAgfQogIH0KfQ==", "XIkfLAB7K4BO8wK685/X8HK5GFYejC/wNMpnjju8R/NK1nQl9nFCD7seLN5z6te26Q66NMxf5dsihgOp2eE6sjW+cfXvfZeGpNP6PI2iU3j4R+jWDcLcByL+ZdO6YAKqA0hIYdi3SapF7QHSbBamUxcZg9X9kLf7/tnL3AAzrYWP2hN6c+yQGo31RIXTEFScvdSahKDF1ifCTomjiFXUWD/3V6s9TiCZnhHGoUzSpjAs4Jr2SvjJk9BOHkSvRdch3vqvna6rs29kEMQSdXZxmYeuzeA5IW1iUFFN4/kG36yLg+01fON8V6HXs8fYVkZUzb5MQfgMTiLyUSpB8EyFred3pKu2qxQVfbAjr/lDz5NneIozYYvX8WxsgK+S+UfM5vZlMzkjWfrtUexaD5cvjZZw8DPPjsGjjpc+onPhk+pY+5b5hQ/4gEvSGNLd0an5J0txh8UZ1Jce0KWkJ7kQpCd0JGKUhy4q2vSpdOmpEP5+utliIivWDwoAHyJ2dO/5DFZ7yMgsETNBAxezxZTjG6qpwWQFpvx4lCz52WutC+ijJgYm9D8TIyXRgCqkcjZBpilK/PsfR9pbJlMN6LdYAh53TzZFT2IOerHEupj8dBhf51hM2ylXFODRozwcsmQ+thnhBOUGmXMJtNBTI/VjcF/jTTmYPztQmfKh4EmiRpw="));
 		
 		PacketPlayOutPlayerInfo packetInfoCreate = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoCreate, "a", EnumPlayerInfoAction.ADD_PLAYER);
-		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(packetInfoCreate.new PlayerInfoData(gameProfile, 0, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(packetInfoCreate.new PlayerInfoData(gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		PacketPlayOutPlayerInfo packetInfoRemove = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoRemove, "a", EnumPlayerInfoAction.REMOVE_PLAYER);
-		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(packetInfoRemove.new PlayerInfoData(gameProfile, 0, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(packetInfoRemove.new PlayerInfoData(gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		return new FakePlayer(gameProfile.getId(), packetInfoCreate, packetInfoRemove);
 	}
