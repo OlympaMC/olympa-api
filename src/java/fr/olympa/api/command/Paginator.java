@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import fr.olympa.api.chat.Chat;
 import fr.olympa.api.command.complex.ArgumentParser;
 import fr.olympa.api.match.RegexMatcher;
 import fr.olympa.api.utils.Prefix;
@@ -54,8 +55,7 @@ public abstract class Paginator<T> {
 				page--;
 				TextComponent compo = new TextComponent();
 				int length = title.length();
-				int bars = 25 - length;
-				bars = Math.min(length, 10);
+				int bars = Math.min(length, 10);
 				String bar = "§e§m" + " ".repeat(bars);
 				compo.addExtra(new TextComponent(bar + "§6 " + title + " " + bar + "§a"));
 				compo.addExtra("\n");
@@ -87,7 +87,9 @@ public abstract class Paginator<T> {
 				pageCompo.addExtra(nextPage);
 				compo.addExtra(pageCompo);
 				compo.addExtra("\n");
-				compo.addExtra(new TextComponent("§e§m" + " ".repeat(length + 2 * bars + 5)));
+				int pxSize = Chat.getPxSize(title, true);
+				int spaces = pxSize / (Chat.SPACE.getLength() + 1) + 2;
+				compo.addExtra(new TextComponent("§e§m" + " ".repeat(2 * bars + spaces)));
 				return compo;
 			}
 		}

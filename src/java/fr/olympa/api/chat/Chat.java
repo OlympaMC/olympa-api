@@ -245,7 +245,7 @@ public enum Chat {
 		return list.stream().map(msg -> getCenteredMessage(msg)).collect(Collectors.joining("\n"));
 	}
 
-	public static String getCenteredMessage(String message) {
+	public static int getPxSize(String message, boolean countSpaces) {
 		message = ChatColor.translateAlternateColorCodes('&', message);
 		int messagePxSize = 0;
 		boolean previousCode = false;
@@ -266,9 +266,10 @@ public enum Chat {
 					continue;
 				} else
 					isBold = false;
-			} else if (c == ' ')
+			}else if (c == ' ') {
 				lastSpaceIndex = charIndex;
-			else {
+				if (countSpaces) messagePxSize += Chat.SPACE.getLength() + 1;
+			}else {
 				Chat dFI = Chat.getDefaultFontInfo(c);
 				messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
 				messagePxSize++;
@@ -280,6 +281,11 @@ public enum Chat {
 			//			}
 			charIndex++;
 		}
+		return messagePxSize;
+	}
+	
+	public static String getCenteredMessage(String message) {
+		int messagePxSize = getPxSize(message, false);
 		int halvedMessageSize = messagePxSize / 2;
 		int toCompensate = CENTER_CHAT_PX - halvedMessageSize;
 		int spaceLength = Chat.SPACE.getLength() + 1;

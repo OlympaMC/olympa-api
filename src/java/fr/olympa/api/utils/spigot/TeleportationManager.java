@@ -35,6 +35,11 @@ public class TeleportationManager implements Listener {
 	}
 	
 	public void teleport(Player p, Location to, String message, Runnable run) {
+		if (!canTeleport(p, to)) {
+			Prefix.BAD.sendMessage(p, "La téléportation ne peut être effectuée.");
+			return;
+		}
+		
 		Runnable teleport = () -> {
 			teleportations.remove(p);
 			p.teleport(to);
@@ -42,7 +47,7 @@ public class TeleportationManager implements Listener {
 			if (run != null) run.run();
 		};
 		
-		if (bypassPermission.hasPermission(p.getUniqueId())) {
+		if (canBypass(p, to)) {
 			teleport.run();
 			return;
 		}
@@ -54,6 +59,14 @@ public class TeleportationManager implements Listener {
 		}
 		teleportations.put(p, Bukkit.getScheduler().runTaskLater(plugin, teleport, TELEPORTATION_TICKS));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
+	}
+	
+	public boolean canTeleport(Player p, Location to) {
+		return true;
+	}
+	
+	public boolean canBypass(Player p, Location to) {
+		return bypassPermission.hasPermission(p.getUniqueId());
 	}
 	
 	@EventHandler
