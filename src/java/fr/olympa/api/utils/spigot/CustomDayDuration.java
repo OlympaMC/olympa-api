@@ -2,10 +2,15 @@ package fr.olympa.api.utils.spigot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.TimeSkipEvent;
+import org.bukkit.event.world.TimeSkipEvent.SkipReason;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-public class CustomDayDuration {
+public class CustomDayDuration implements Listener {
 	
 	public static final int DEFAULT_DAY_DURATION = 12000;
 	public static final int DEFAULT_NIGHT_DURATION = 12000;
@@ -31,6 +36,8 @@ public class CustomDayDuration {
 			}
 			nextTick = time + mult;
 		}, 1, 1);
+		
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
 	public void unload() {
@@ -38,6 +45,12 @@ public class CustomDayDuration {
 			task.cancel();
 			task = null;
 		}
+		HandlerList.unregisterAll(this);
+	}
+	
+	@EventHandler
+	public void onTimeChange(TimeSkipEvent e) {
+		if (e.getSkipReason() != SkipReason.CUSTOM) nextTick = -1;
 	}
 	
 }

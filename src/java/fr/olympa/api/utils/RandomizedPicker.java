@@ -97,5 +97,42 @@ public interface RandomizedPicker<T extends Chanced> {
 		}
 		
 	}
+	
+	/*public class PickerBuilder<T> {
+		public List<AChanced> values = new ArrayList<>();
+		
+		public void add(T value, double chance) {
+			values.add(new AChanced(value, chance));
+		}
+		
+		public RandomizedPicker<T> build(int min, int max, double emptyChance) {
+			new FixedPicker<AChanced>(min, max, emptyChance, values) {
+				pi
+			};
+		}
+		
+		class AChanced implements Chanced {
+			private T value;
+			private double chance;
+			
+			public AChanced(T value, double chance) {
+				this.value = value;
+				this.chance = chance;
+			}
+			
+			@Override
+			public double getChance() {
+				return chance;
+			}
+		}
+		
+		class APicker implements RandomizedPicker<Chanced> {
+			
+			public APicker(int min, int max, double emptyChance, PickerBuilder<T>.AChanced[] objects) {
+				super(min, max, emptyChance, objects);
+			}
+			
+		}
+	}*/
 
 }
