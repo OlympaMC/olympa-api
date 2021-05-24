@@ -175,7 +175,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public void setChief(OlympaPlayerInformations p) {
-		manager.chiefColumn.updateAsync((T) this, chief.getId(), () -> {
+		manager.chiefColumn.updateAsync((T) this, p.getId(), () -> {
 			this.chief = p;
 			broadcast(String.format(manager.stringPlayerChief, p.getName()));
 		}, null);
