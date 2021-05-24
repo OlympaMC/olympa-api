@@ -308,14 +308,21 @@ public class SQLTable<T> {
 		}
 	}
 
-	public synchronized List<T> selectAll() throws SQLException {
+	public synchronized List<T> selectAll(ObjectInitializationHandler exceptionHandler) throws SQLException {
 		if (initializeFromRow == null)
 			throw new IllegalStateException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
 		List<T> objects = new ArrayList<>();
 		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, null);
 		try (PreparedStatement statement = selectStatement.createStatement()) {
 			ResultSet rs = selectStatement.executeQuery(statement);
-			while (rs.next()) objects.add(initializeFromRow.initialize(rs));
+			while (rs.next()) {
+				try {
+					objects.add(initializeFromRow.initialize(rs));
+				}catch (Exception ex) {
+					if (exceptionHandler != null && exceptionHandler.fail(ex, rs)) continue;
+					throw ex;
+				}
+			}
 			rs.close();
 			return objects;
 		}
@@ -323,6 +330,10 @@ public class SQLTable<T> {
 
 	public interface ObjectInitizalizer<T> {
 		public T initialize(ResultSet resultSet) throws SQLException;
+	}
+	
+	public interface ObjectInitializationHandler {
+		public boolean fail(Exception ex, ResultSet resultSet) throws SQLException;
 	}
 	
 }
