@@ -174,7 +174,7 @@ public abstract class OlympaPermission implements IOlympaPermission {
 	 * @param olympaPlayer
 	 * @return
 	 */
-	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) {
+	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) { 
 		boolean b = hasPermission(olympaPlayer);
 		if (!b)
 			if (getMinGroup() != null)
