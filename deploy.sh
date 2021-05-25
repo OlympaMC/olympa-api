@@ -51,7 +51,8 @@ fi
 if [ -n "$DATE" ]; then
 	git checkout 'master@{$DATE}' --force
 elif [ -z "$BRANCH_NAME" ]; then
-	git checkout master --force
+	echo -e "\e[32mIl faut ajouter une branch en argument 1. Souvent dev ou master, marche aussi avec un commit.\e[0m"
+	exit 0
 fi
 if [ -n "$ACTUAL_COMMIT_ID" ]; then
 	if [ "$ACTUAL_COMMIT_ID" = `git rev-parse HEAD` ]; then

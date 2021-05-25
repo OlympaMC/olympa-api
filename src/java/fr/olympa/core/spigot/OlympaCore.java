@@ -22,7 +22,7 @@ import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.api.server.MonitorInfo;
 import fr.olympa.api.server.OlympaServer;
-import fr.olympa.core.spigot.datamanagement.listeners.DataManagmentListener;
+import fr.olympa.core.spigot.datamanagement.DataManagmentListener;
 
 /**
  * Version minimale du Core, faite pour fonctionner sans lien à la BDD sur des

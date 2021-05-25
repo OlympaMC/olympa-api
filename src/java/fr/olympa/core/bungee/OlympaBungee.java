@@ -30,31 +30,21 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	private BungeeTaskManager task;
 	private ServerStatus status;
 
-	public OlympaBungee() {
-		LinkSpigotBungee.Provider.link = this;
-		instance = this;
+	@Override
+	public void onDisable() {
+		sendMessage("&4" + getDescription().getName() + "&c (" + getDescription().getVersion() + ") est désactivé.");
 	}
 
-	public void enable() {
+	@Override
+	public void onEnable() {
+		LinkSpigotBungee.Provider.link = this;
+		instance = this;
 		task = new BungeeTaskManager(this);
 		status = ServerStatus.MAINTENANCE;
 		OlympaPermission.registerPermissions(OlympaAPIPermissions.class);
 
 		PluginManager pluginManager = getProxy().getPluginManager();
 		pluginManager.registerListener(this, new AuthListener());
-	}
-
-	public void disable() {}
-
-	@Override
-	public void onDisable() {
-		disable();
-		sendMessage("&4" + getDescription().getName() + "&c (" + getDescription().getVersion() + ") est désactivé.");
-	}
-
-	@Override
-	public void onEnable() {
-		enable();
 		sendMessage("&2" + getDescription().getName() + "&a (" + getDescription().getVersion() + ") est activé.");
 
 	}
