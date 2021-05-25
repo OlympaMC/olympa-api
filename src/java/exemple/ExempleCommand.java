@@ -1,5 +1,6 @@
 package exemple;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -9,12 +10,20 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
+import fr.olympa.api.command.Paginator;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class ExempleCommand extends OlympaCommand {
+
+	private Paginator<OlympaPlayer> paginator;
 
 	// NOTE: you didn't need to add the command in plugin.yml
 	public ExempleCommand(Plugin plugin) {
@@ -29,7 +38,23 @@ public class ExempleCommand extends OlympaCommand {
 
 		// Allows Console and Command Block to use the command
 		setAllowConsole(true);
+		paginator = new Paginator<>(10, "Exemple système de page") {
 
+			@Override
+			protected List<OlympaPlayer> getObjects() {
+				return new ArrayList<>(AccountProvider.getAll());
+			}
+
+			@Override
+			protected BaseComponent getObjectDescription(OlympaPlayer o) {
+				return TxtComponentBuilder.of(Prefix.NONE, "%s %s", ClickEvent.Action.RUN_COMMAND, "/<une cmd> ", HoverEvent.Action.SHOW_TEXT, new Text("&eText hover"), o.getName(), o.getGroupsToHumainString());
+			}
+
+			@Override
+			protected String getCommand(int page) {
+				return "/cmd " + page;
+			}
+		};
 	}
 
 	@SuppressWarnings("unused")

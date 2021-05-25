@@ -29,7 +29,7 @@ public class ListCommand extends OlympaCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		sendSuccess("Il y a §2%s§a joueurs en ligne:", players.size());
+		sendSuccess("Il y a §2%s§a joueur%s en ligne:", players.size(), players.size() == 1 ? "" : "s");
 		Map<OlympaGroup, List<Player>> groups = new EnumMap<>(OlympaGroup.class);
 		for (Player p : players) {
 			OlympaPlayer player = AccountProvider.get(p.getUniqueId());

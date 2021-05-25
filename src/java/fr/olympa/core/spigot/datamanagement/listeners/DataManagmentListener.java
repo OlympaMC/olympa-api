@@ -14,23 +14,15 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.provider.OlympaPlayerInformationsObject;
+import fr.olympa.core.FakeData;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class DataManagmentListener implements Listener {
 
-	{
-		Bukkit.getOnlinePlayers().forEach(player -> init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
-	}
-
-	private void init(OlympaPlayer olympaPlayer) {
-		olympaPlayer.setGroup(OlympaGroup.DEV);
-		AccountProvider.cache.put(olympaPlayer.getUniqueId(), olympaPlayer);
-		olympaPlayer.setId(AccountProvider.cache.size());
-		AccountProvider.cachedInformations.put(olympaPlayer.getId(), new OlympaPlayerInformationsObject(olympaPlayer.getId(), olympaPlayer.getName(), olympaPlayer.getUniqueId()));
+	static {
+		Bukkit.getOnlinePlayers().forEach(player -> FakeData.init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -57,7 +49,7 @@ public class DataManagmentListener implements Listener {
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
-		init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
+		FakeData.init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

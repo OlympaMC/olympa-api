@@ -21,6 +21,7 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission AFK_SEE_IN_TAB = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 
 	// Don't fogot to change it in ZTA
+	public static final OlympaSpigotPermission SAY_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission GAMEMODE_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission TP_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission GAMEMODE_COMMAND_CREATIVE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);

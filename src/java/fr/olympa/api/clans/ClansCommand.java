@@ -19,9 +19,10 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 
 	protected final ClansManager<T, D> manager;
 
-	public ClansCommand(ClansManager<T, D> manager, String description, OlympaSpigotPermission permission, String... aliases) {
+	public ClansCommand(ClansManager<T, D> manager, String description, OlympaSpigotPermission permission, OlympaSpigotPermission managePermission, String... aliases) {
 		super(manager.plugin, manager.getClansCommand(), description, permission, aliases);
 		this.manager = manager;
+		
 		super.addArgumentParser("CLANPLAYER", (player, arg) -> {
 			ClanPlayerInterface<T, D> p = getOlympaPlayer();
 			T clan = p.getClan();
@@ -33,6 +34,12 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 			if (clan == null) return null;
 			return clan.getMembers().stream().filter(x -> x.getPlayerInformations().getName().equalsIgnoreCase(arg)).findFirst().orElse(null);
 		}, x -> String.format(manager.stringPlayerNotInClan, x));
+		
+		super.addArgumentParser("CLAN", (player, arg) -> manager.getClans().stream().map(e -> e.getValue().getName()).collect(Collectors.toSet()),
+                manager::getByName,
+				x -> String.format(manager.stringClanNotExist, x));
+		
+		super.getCommand("forcechief").perm = managePermission;
 	}
 
 	@Override
@@ -114,7 +121,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		clan.removePlayer(p.getInformation(), true);
 	}
 
-	@Cmd (player = true, min = 1, args = "PLAYERS", syntax = "<nom du joueur>", description = "Permet de transmettre la direction de son clan")
+	@Cmd (player = true, min = 1, args = { "PLAYERS" }, syntax = "<nom du joueur>", description = "Permet de transmettre la direction de son clan", aliases = "leader")
 	public void chief(CommandContext cmd) {
 		T clan = getPlayerClan(false);
 		if (clan == null) return;
@@ -131,6 +138,25 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		}
 
 		clan.setChief(target.getInformation());
+	}
+	
+	@Cmd (player = true, min = 1, args = { "PLAYERS" })
+	public void forcechief(CommandContext cmd) {
+		ClanPlayerInterface<T, D> target = AccountProvider.get(cmd.<Player>getArgument(0).getUniqueId());
+		T clan = target.getClan();
+		
+		if (clan == null) {
+			sendError(manager.stringMustBeInClan);
+			return;
+		}
+		
+		if (clan.getChief().getId() == target.getId()) {
+			sendError("Le joueur %s est déjà chef.", target.getName());
+			return;
+		}
+		
+		clan.setChief(target.getInformation());
+		sendSuccess("Le joueur %s est désormais chef de %s.", target.getName(), clan.getName());
 	}
 
 	@Cmd (player = true, aliases = { "settag" }, min = 1, syntax = "<nouveau tag>")

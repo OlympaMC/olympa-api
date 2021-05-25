@@ -1,12 +1,11 @@
 package fr.olympa.api.region.tracking.flags;
 
-import java.util.Set;
-
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.region.tracking.ActionResult;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.region.tracking.RegionManager;
-import fr.olympa.api.region.tracking.TrackedRegion;
 
 public class TitleOnEntryFlag extends Flag {
 	
@@ -26,15 +25,15 @@ public class TitleOnEntryFlag extends Flag {
 	}
 	
 	@Override
-	public ActionResult enters(Player p, Set<TrackedRegion> to) {
-		send(p);
-		return super.enters(p, to);
+	public ActionResult enters(EntryEvent event) {
+		send(event.getPlayer());
+		return super.enters(event);
 	}
 	
 	@Override
-	public ActionResult leaves(Player p, Set<TrackedRegion> to) {
-		to.stream().sorted(RegionManager.REGION_COMPARATOR).map(x -> x.getFlag(TitleOnEntryFlag.class)).filter(x -> x != null).reduce((x, y) -> y).ifPresent(x -> x.send(p));
-		return super.leaves(p, to);
+	public ActionResult leaves(ExitEvent event) {
+		event.getRegionsTo().stream().sorted(RegionManager.REGION_COMPARATOR).map(x -> x.getFlag(TitleOnEntryFlag.class)).filter(x -> x != null).reduce((x, y) -> y).ifPresent(x -> x.send(event.getPlayer()));
+		return super.leaves(event);
 	}
 	
 }

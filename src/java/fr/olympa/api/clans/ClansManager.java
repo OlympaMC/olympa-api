@@ -61,6 +61,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public String stringCantLeaveChief = "Tu ne peux pas quitter le clan en en étant le chef. Transfère la direction de celui-ci à un autre joueur.";
 	public String stringCantChiefSelf = "Tu ne peux pas te transférer la direction de ton propre clan.";
 	public String stringPlayerNotInClan = "Le joueur %s ne fait pas partie du clan.";
+	public String stringClanNotExist = "§cLe clan §4%s §cn'existe pas.";
 	public String stringMustBeInClan = "Tu dois appartenir à un clan pour faire cette commande.";
 	public String stringMustBeChief = "Tu dois être le chef du clan pour effectuer cette commande.";
 	public String stringClanDisband = "§lLe clan a été dissous. Ceci est le dernier message que vous recevrez.";
@@ -103,36 +104,31 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	public ClansManager(OlympaAPIPlugin plugin, String clansName) throws SQLException, ReflectiveOperationException {
 		this.plugin = plugin;
 		
-		this.clansTable = new SQLTable<T>(clansName, addDBClansCollums(new ArrayList<>())).createOrAlter();
 		this.playersTable = new SQLTable<D>(clansName + "_players", addDBPlayersCollums(new ArrayList<>())).createOrAlter();
-		
-		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + clansTable.getName());
-		while (resultSet.next()) {
-			try {
-				T clan = provideClan(
-						resultSet.getInt("id"),
-						resultSet.getString("name"),
-						resultSet.getString("tag"),
-						AccountProvider.getPlayerInformations(resultSet.getLong("chief")),
-						resultSet.getInt("max_size"),
-						resultSet.getDouble("money"),
-						resultSet.getDate("created").getTime() / 1000L,
-						resultSet);
-				
-				ResultSet playersSet = playersTable.getFromColumn(clanIDColumn, clan.getID());
-				while (playersSet.next()) {
-					D playerData = provideClanData(AccountProvider.getPlayerInformations(playersSet.getLong("player_id")), playersSet);
-					clan.members.put(playerData.getPlayerInformations(), playerData);
-				}
-				playersSet.close();
-				
-				clans.put(clan.getID(), clan);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				plugin.getLogger().severe("Impossible de charger le groupe " + resultSet.getInt("id"));
+		this.clansTable = new SQLTable<T>(clansName, addDBClansCollums(new ArrayList<>()), resultSet -> {
+			T clan = provideClan(
+					resultSet.getInt("id"),
+					resultSet.getString("name"),
+					resultSet.getString("tag"),
+					AccountProvider.getPlayerInformations(resultSet.getLong("chief")),
+					resultSet.getInt("max_size"),
+					resultSet.getDouble("money"),
+					resultSet.getDate("created").getTime() / 1000L,
+					resultSet);
+			
+			ResultSet playersSet = playersTable.getFromColumn(clanIDColumn, clan.getID());
+			while (playersSet.next()) {
+				D playerData = provideClanData(AccountProvider.getPlayerInformations(playersSet.getLong("player_id")), playersSet);
+				clan.members.put(playerData.getPlayerInformations(), playerData);
 			}
-		}
-		resultSet.close();
+			playersSet.close();
+			return clan;
+		}).createOrAlter();
+		
+		clansTable.selectAll((ex, resultSet) -> {
+			plugin.getLogger().severe("Impossible de charger le groupe " + resultSet.getInt("id"));
+			return true;
+		}).forEach(clan -> clans.put(clan.getID(), clan));
 		
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
 		nameTagApi.addNametagHandler(EventPriority.LOWEST, (nametag, player, to) -> {
@@ -169,6 +165,27 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	public int getMinClanNameLength() {
 		return 6;
+	}
+	
+	/* Operations */
+	
+	public T get(final String nameOrTagOrPlayer) throws SQLException {
+		T clan = getByName(nameOrTagOrPlayer);
+		if (clan == null) {
+			clan = getByTag(nameOrTagOrPlayer);
+		}
+		if (clan == null) {
+			clan = AccountProvider.<ClanPlayerInterface<T, D>>get(nameOrTagOrPlayer).getClan();
+		}
+		return clan;
+	}
+	
+	public T getByName(final String name) {
+		return getClans().stream().filter(c -> name.equalsIgnoreCase(c.getValue().getName())).map(Entry<Integer, T>::getValue).findFirst().orElse(null);
+	}
+	
+	public T getByTag(final String tag) {
+		return getClans().stream().filter(c -> tag.equalsIgnoreCase(c.getValue().getTag())).map(Entry<Integer, T>::getValue).findFirst().orElse(null);
 	}
 	
 	/* Abstraction */

@@ -66,6 +66,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	public void addLine(AbstractLine<Scoreboard<T>> line) {
+		if (sb.isDeleted()) return;
 		updateLock.lock();
 		lines.add(new Line(line));
 		line.addHolder(this);
@@ -178,12 +179,14 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	public void unload() {
 		interrupt();
+		if (sb != null) sb.delete();
 		manager.getPlugin().sendMessage("Déchargement de §6%d lignes §epour le joueur §6%s", lines.size(), p.getName());
+		updateLock.lock();
 		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
 			iterator.next().line.removeHolder(this);
 			iterator.remove();
 		}
-		if (sb != null) sb.delete();
+		updateLock.unlock();
 	}
 	
 	private void updateScoreboard() {

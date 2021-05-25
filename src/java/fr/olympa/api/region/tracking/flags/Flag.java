@@ -1,11 +1,8 @@
 package fr.olympa.api.region.tracking.flags;
 
-import java.util.Set;
-
-import org.bukkit.entity.Player;
-
 import fr.olympa.api.region.tracking.ActionResult;
-import fr.olympa.api.region.tracking.TrackedRegion;
+import fr.olympa.api.region.tracking.RegionEvent.EntryEvent;
+import fr.olympa.api.region.tracking.RegionEvent.ExitEvent;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -33,23 +30,21 @@ public class Flag {
 
 	/**
 	 * Appelé quand un joueur entre dans la région
-	 * @param p Joueur qui entre dans la région
-	 * @param to Liste des régions applicables au joueur après son entrée
+	 * @param event
 	 * @return <code>true </code> si le joueur ne peut pas entrer
 	 */
-	public ActionResult enters(Player p, Set<TrackedRegion> to) {
-		if (greeting != null) p.spigot().sendMessage(position, greeting);
+	public ActionResult enters(EntryEvent event) {
+		if (greeting != null) event.getPlayer().spigot().sendMessage(position, greeting);
 		return entry;
 	}
 
 	/**
 	 * Appelé quand un joueur sort d'une région
-	 * @param p Joueur qui sort de la région
-	 * @param to Liste des régions applicables au joueur après sa sortie
+	 * @param event
 	 * @return <code>true </code> si le joueur ne peut pas sortir
 	 */
-	public ActionResult leaves(Player p, Set<TrackedRegion> to) {
-		if (farewell != null) p.spigot().sendMessage(position, farewell);
+	public ActionResult leaves(ExitEvent event) {
+		if (farewell != null) event.getPlayer().spigot().sendMessage(position, farewell);
 		return exit;
 	}
 
