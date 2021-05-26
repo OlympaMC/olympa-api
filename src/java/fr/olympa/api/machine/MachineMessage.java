@@ -17,12 +17,12 @@ import org.jetbrains.annotations.NotNull;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.hook.IProtocolSupport;
+import fr.olympa.api.match.MatcherPattern;
 import fr.olympa.api.utils.SpigotInfo;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.api.utils.spigot.TPS;
 import fr.olympa.api.utils.spigot.TPSUtils;
 import fr.olympa.core.spigot.OlympaCore;
-import net.md_5.bungee.api.plugin.PluginDescription;
 
 public class MachineMessage extends MachineInfo {
 
@@ -76,9 +76,16 @@ public class MachineMessage extends MachineInfo {
 			textBuilder.extra(new TxtComponentBuilder("&3Plugins Olympa: &b"));
 			for (TxtComponentBuilder txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))
 					.map(ff -> {
-						@NotNull PluginDescriptionFile desc = ff.getDescription();
+						@NotNull
+						PluginDescriptionFile desc = ff.getDescription();
 						String fileInfo = Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).lastModified() / 1000L);
-						return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (v%s)", fileInfo, desc.getVersion()).console(isConsole);
+						String website = desc.getWebsite();
+						String gitCommitCompareLastest = null;
+						MatcherPattern<?> regexHexGitCommit = MatcherPattern.of("[a-fA-F0-9]+$");
+						if (website.contains("git") && regexHexGitCommit.contains(desc.getVersion()))
+							gitCommitCompareLastest = (desc.getWebsite().endsWith("/") ? desc.getWebsite() : desc.getWebsite() + "/") + "-/compare/" + regexHexGitCommit.extract(desc.getVersion()) + "...master";
+						return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (v%s)", fileInfo, desc.getVersion())
+								.onClickUrl(gitCommitCompareLastest).console(isConsole);
 					})
 					.collect(Collectors.toList()))
 				textBuilder.extra(txt);

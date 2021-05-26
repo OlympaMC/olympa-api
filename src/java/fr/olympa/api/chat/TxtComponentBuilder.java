@@ -43,7 +43,7 @@ public class TxtComponentBuilder {
 	}
 
 	private static String getStringColored(String s) {
-		return ColorUtils.color(s);
+		return s != null ? ColorUtils.color(s) : null;
 	}
 
 	private static TextComponent getText(String format, Object... args) {
@@ -196,11 +196,13 @@ public class TxtComponentBuilder {
 			if (isConsole) {
 				if (contents != null && contents.length != 0 && contents[0] instanceof Text)
 					text.addExtra(getText(String.format("&r(%s&r) ", ((Text) contents[0]).getValue())));
+				if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
+					text.addExtra(getText(String.format("&r(CLICK %s&r) ", clickActionValue)));
 			} else {
-				if (clickAction != null && clickActionValue != null)
-					text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
-				if (hoverAction != null && contents != null)
+				if (hoverAction != null && contents != null && contents.length > 0)
 					text.setHoverEvent(new HoverEvent(hoverAction, contents));
+				if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
+					text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
 			}
 		} else
 			text = new TextComponent();

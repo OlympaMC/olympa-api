@@ -19,12 +19,14 @@ public class Sorting<T> implements Comparator<T> {
 		this(Map.of(sortArg, downward));
 	}
 
+	@SafeVarargs
 	public Sorting(ToLongFunction<T>... sortingArgs) {
 		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> true, (x, y) -> y)));
 	}
 
-	public Sorting(boolean ascending, ToLongFunction<T>... sortingArgs) {
-		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> ascending, (x, y) -> y)));
+	@SafeVarargs
+	public Sorting(boolean downward, ToLongFunction<T>... sortingArgs) {
+		this(Arrays.stream(sortingArgs).collect(Collectors.toMap(f -> f, f -> downward, (x, y) -> y)));
 	}
 
 	public Sorting(Map<ToLongFunction<T>, Boolean> sortArgs) {

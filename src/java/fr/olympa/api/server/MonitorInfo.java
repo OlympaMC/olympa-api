@@ -88,6 +88,10 @@ public class MonitorInfo {
 		return olympaServer;
 	}
 
+	/**
+	 * usless ? same as getId()
+	 */
+	@Deprecated
 	public int getServerID() {
 		return serverID;
 	}
