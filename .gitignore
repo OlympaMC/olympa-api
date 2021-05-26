@@ -5,3 +5,5 @@ target
 .classpath
 .idea
 *.iml
+/.gradle/
+/build/

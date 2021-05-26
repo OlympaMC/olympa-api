@@ -126,6 +126,17 @@ public class Reflection {
 
 	}
 
+	public static <T> T instantiateNested(Object instance, String subclassName, Object... args) throws ReflectiveOperationException {
+		for (Class<?> clazz : instance.getClass().getDeclaredClasses()) {
+			if (clazz.getSimpleName().equals(subclassName)) {
+				System.arraycopy(args, 0, args, 1, args.length);
+				args[0] = instance;
+				return (T) clazz.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new)).newInstance(args);
+			}
+		}
+		throw new ClassNotFoundException("No subclass " + subclassName + " of " + instance.getClass().getName());
+	}
+	
 	public static Field getField(Class<?> clazz, String fieldName) {
 		Field field = null;
 		try {

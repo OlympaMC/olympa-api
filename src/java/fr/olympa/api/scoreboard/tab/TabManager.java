@@ -59,7 +59,7 @@ public class TabManager implements Listener {
 		return this;
 	}
 	
-	public TabManager build() {
+	public TabManager build() throws ReflectiveOperationException {
 		String randomized = Integer.toString(Math.abs(ThreadLocalRandom.current().nextInt()));
 		
 		List<String> players = new ArrayList<>(20);
@@ -100,17 +100,17 @@ public class TabManager implements Listener {
 		return Arrays.asList(packetTeam);
 	}
 	
-	private FakePlayer createPlayer(String playerName, IChatBaseComponent component, int ping) {
+	private FakePlayer createPlayer(String playerName, IChatBaseComponent component, int ping) throws ReflectiveOperationException {
 		GameProfile gameProfile = new GameProfile(UUID.randomUUID(), playerName);
 		gameProfile.getProperties().put("textures", new Property("textures", "ewogICJ0aW1lc3RhbXAiIDogMTYyMTU0MjYxNTkwMSwKICAicHJvZmlsZUlkIiA6ICI5MWZlMTk2ODdjOTA0NjU2YWExZmMwNTk4NmRkM2ZlNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJoaGphYnJpcyIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mZmNjNTNlMTA2NzhhMGRlM2RjYjFiMDIwZTgyNjg1ZWI1M2FhNTU2YTdkMjMxMGQ5YjYwODIzYWVlYjUyYmIwIgogICAgfQogIH0KfQ==", "XIkfLAB7K4BO8wK685/X8HK5GFYejC/wNMpnjju8R/NK1nQl9nFCD7seLN5z6te26Q66NMxf5dsihgOp2eE6sjW+cfXvfZeGpNP6PI2iU3j4R+jWDcLcByL+ZdO6YAKqA0hIYdi3SapF7QHSbBamUxcZg9X9kLf7/tnL3AAzrYWP2hN6c+yQGo31RIXTEFScvdSahKDF1ifCTomjiFXUWD/3V6s9TiCZnhHGoUzSpjAs4Jr2SvjJk9BOHkSvRdch3vqvna6rs29kEMQSdXZxmYeuzeA5IW1iUFFN4/kG36yLg+01fON8V6HXs8fYVkZUzb5MQfgMTiLyUSpB8EyFred3pKu2qxQVfbAjr/lDz5NneIozYYvX8WxsgK+S+UfM5vZlMzkjWfrtUexaD5cvjZZw8DPPjsGjjpc+onPhk+pY+5b5hQ/4gEvSGNLd0an5J0txh8UZ1Jce0KWkJ7kQpCd0JGKUhy4q2vSpdOmpEP5+utliIivWDwoAHyJ2dO/5DFZ7yMgsETNBAxezxZTjG6qpwWQFpvx4lCz52WutC+ijJgYm9D8TIyXRgCqkcjZBpilK/PsfR9pbJlMN6LdYAh53TzZFT2IOerHEupj8dBhf51hM2ylXFODRozwcsmQ+thnhBOUGmXMJtNBTI/VjcF/jTTmYPztQmfKh4EmiRpw="));
 		
 		PacketPlayOutPlayerInfo packetInfoCreate = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoCreate, "a", EnumPlayerInfoAction.ADD_PLAYER);
-		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(packetInfoCreate.new PlayerInfoData(gameProfile, ping, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(Reflection.instantiateNested(packetInfoCreate, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		PacketPlayOutPlayerInfo packetInfoRemove = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoRemove, "a", EnumPlayerInfoAction.REMOVE_PLAYER);
-		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(packetInfoRemove.new PlayerInfoData(gameProfile, ping, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(Reflection.instantiateNested(packetInfoRemove, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		return new FakePlayer(gameProfile.getId(), packetInfoCreate, packetInfoRemove);
 	}

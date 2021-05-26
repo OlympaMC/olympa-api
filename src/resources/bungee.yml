@@ -1,5 +1,5 @@
 name: OlympaBungee
 main: fr.olympa.core.bungee.OlympaBungee
 author: Tristiisch, SkytAsul
-version: ${project.fullVersion}
+version: @plugin_version@
 website: https://olympa.fr
