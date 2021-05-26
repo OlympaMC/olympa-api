@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
@@ -19,10 +19,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
-    compileOnly 'io.github.waterfallmc:waterfall-protocol:1.16-R0.4-SNAPSHOT'
+    compileOnlyApi 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    compileOnlyApi 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
+    compileOnlyApi 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+    compileOnlyApi 'io.github.waterfallmc:waterfall-protocol:1.16-R0.4-SNAPSHOT'
 }
 
 def getCheckedOutGitCommitHash() {
