@@ -1,4 +1,4 @@
-package fr.olympa.core.spigot.datamanagement.listeners;
+package fr.olympa.core.spigot.datamanagement;
 
 import java.util.UUID;
 
