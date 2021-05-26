@@ -64,7 +64,7 @@ if [ -n "$ACTUAL_COMMIT_ID" ]; then
 fi
 mvn install
 if [ "$?" -ne 0 ]; then
-	echo -e "\e[91m\n\nLe build de l'$PLUGIN_NAME a échoué !. Dernier build avec succès : $ACTUAL_COMMIT_ID\e[0m"&& rm target/commit*; exit 1
+	echo -e "\e[91m\n\nLe build de l'$PLUGIN_NAME a échoué !. Dernier build avec succès : $ACTUAL_COMMIT_ID\e[0m"; exit 1
 else
 	echo `git rev-parse HEAD` > target/commitId
 fi
