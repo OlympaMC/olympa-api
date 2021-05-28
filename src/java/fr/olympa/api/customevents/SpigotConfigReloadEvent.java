@@ -5,6 +5,10 @@ import org.bukkit.event.HandlerList;
 
 import fr.olympa.api.config.CustomConfig;
 
+/**
+ * {@link Deprecated} Use {@link fr.olympa.api.config.CustomConfig#addTask(String, java.util.function.Consumer)} instand
+ */
+@Deprecated(since = "28/05/2020")
 public class SpigotConfigReloadEvent extends Event {
 
 	public static final HandlerList handlers = new HandlerList();

@@ -24,17 +24,17 @@ public enum OlympaServer {
 	private ServerType type = ServerType.SPIGOT;
 	private boolean hasPack;
 
-	private OlympaServer(String name, boolean multi) {
+	OlympaServer(String name, boolean multi) {
 		this(name, multi, false);
 	}
-	
-	private OlympaServer(String name, boolean multi, boolean hasPack) {
+
+	OlympaServer(String name, boolean multi, boolean hasPack) {
 		this.name = name;
 		this.multi = multi;
 		this.hasPack = hasPack;
 	}
 
-	private OlympaServer(String name, boolean multi, ServerType type) {
+	OlympaServer(String name, boolean multi, ServerType type) {
 		this(name, multi);
 		this.type = type;
 	}
@@ -46,7 +46,7 @@ public enum OlympaServer {
 	public boolean hasMultiServers() {
 		return multi;
 	}
-	
+
 	public boolean hasPack() {
 		return hasPack;
 	}
@@ -54,7 +54,7 @@ public enum OlympaServer {
 	public OlympaPermission getJoinPermission() {
 		return joinPermission;
 	}
-	
+
 	public void setJoinPermission(OlympaPermission joinPermission) {
 		this.joinPermission = joinPermission;
 	}
@@ -68,6 +68,6 @@ public enum OlympaServer {
 	}
 
 	public boolean isSame(OlympaServer olympaServer) {
-		return getNameCaps().equals(olympaServer.getNameCaps());
+		return ordinal() == olympaServer.ordinal();
 	}
 }

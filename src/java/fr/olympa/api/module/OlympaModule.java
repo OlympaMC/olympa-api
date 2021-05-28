@@ -69,6 +69,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	List<L> eventsRegistered = new ArrayList<>();
 	Class<? extends C>[] commandsToRegister;
 	List<C> commandsRegistered = new ArrayList<>();
+	boolean commandsPreProcessRegister;
 	Function<P, T> functionInitialize;
 	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] dependances;
 	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] softDependances;
@@ -84,6 +85,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 		this.plugin = plugin;
 		this.name = name;
 		this.functionInitialize = functionInitialize;
+		commandsPreProcessRegister = false;
 	}
 
 	@SafeVarargs
@@ -110,6 +112,11 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 		return this;
 	}
 
+	public final OlympaModule<T, L, P, C> commandPreProcess() {
+		this.commandsPreProcessRegister = true;
+		return this;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -133,6 +140,8 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 			C olympaCommand;
 			if (api.getClass().isAssignableFrom(clazz)) {
 				((IOlympaCommand) api).register();
+				if (commandsPreProcessRegister)
+					((IOlympaCommand) api).registerPreProcess();
 				if (DEBUG || debug)
 					plugin.sendMessage("&eModule &6%s&e : command &6%s&e register et liée à l'Api.", name, clazz.getSimpleName());
 			} else {
@@ -141,6 +150,8 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 					plugin.sendMessage("&cModule &4%s&c : can't register &4%s&c command, constructor was not found.", name, clazz.getSimpleName());
 					return false;
 				}
+				if (commandsPreProcessRegister)
+					olympaCommand.registerPreProcess();
 				olympaCommand.register();
 				commandsRegistered.add(olympaCommand);
 				if (DEBUG || debug)

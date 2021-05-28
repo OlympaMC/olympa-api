@@ -165,12 +165,11 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 		}
 
 		try {
-			internal.method.invoke(internal.commands, new CommandContext(sender, this, argsCmd, command));
+			internal.method.invoke(internal.commands, new CommandContext(sender, this, argsCmd, command, internal.method.getName()));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
 			e.printStackTrace();
 		}
-		return;
 	}
 
 	@Override
@@ -211,8 +210,8 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 						commands.put(argNames, new BungeeInternalCommand(cmd, method, commandsClassInstance));
 						continue;
 					}
-				OlympaCore.getInstance()
-						.sendMessage("Error when loading command annotated method " + method.getName() + " in class " + method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
+				OlympaCore.getInstance().sendMessage("Error when loading command annotated method " + method.getName() + " in class "
+						+ method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
 			}
 	}
 

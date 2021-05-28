@@ -61,11 +61,19 @@ public class MonitorInfo {
 		return serverName.replaceFirst(ID_REGEX, "");
 	}
 
+	public String getIdSymbole() {
+		int id = getId();
+		if (id <= 0 || id > 10)
+			return "";
+		return Utils.intToSymbole(id);
+	}
+
 	public int getId() {
 		java.util.regex.Matcher matcher = ID_PATTERN.matcher(serverName);
-		matcher.find();
-		String id = matcher.group();
-		return Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
+		String id = null;
+		if (matcher.find())
+			id = matcher.group();
+		return id == null ? 0 : Integer.parseInt(id);
 	}
 
 	public String getLastModifiedCore() {

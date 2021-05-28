@@ -29,13 +29,13 @@ else
 fi
 git pull --all
 if [ "$?" -ne 0 ]; then
-	echo -e "\e[91mEchec du git pull pour $PLUGIN_NAME, tentative de git checkout\e[0m"
-	git checkout $BRANCH_NAME --force
+	echo -e "\e[91mEchec du git pull pour $PLUGIN_NAME, tentative de git reset\e[0m"
+	git reset --hard HEAD
 	if [ "$?" -ne 0 ]; then
-		echo -e "\e[91mEchec du git checkout pour $PLUGIN_NAME, tentative de git reset[0m"
-		git reset --hard HEAD
+		echo -e "\e[91mEchec du git reset  pour $PLUGIN_NAME, tentative de git checkout\e[0m"
+		git checkout $BRANCH_NAME --force
 		if [ "$?" -ne 0 ]; then
-			echo -e "\e[91mEchec du git reset pour $PLUGIN_NAME. Dernier build avec succès : $ACTUAL_COMMIT_ID\e[0m"; exit 1
+			echo -e "\e[91mEchec du git checkout pour $PLUGIN_NAME. Dernier build avec succès : $ACTUAL_COMMIT_ID[0m"; exit 1
 		fi
 	fi
 	git pull --all
@@ -61,7 +61,7 @@ if [ -n "$ACTUAL_COMMIT_ID" ]; then
 	fi
 fi
 if [[ ${@:1} == *justGitPull ]]; then
-	echo -e "\e[32mLe $PLUGIN_NAME n'a pas été build, il a juste été git pull.\e[0m"; exit 0
+	echo -e "\e[0;36mLe $PLUGIN_NAME n'a pas été build comme demandé, il a juste été git pull.\e[0m"; exit 0
 else
 	gradle publishToMavenLocal
 fi

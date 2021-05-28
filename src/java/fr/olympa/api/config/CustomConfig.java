@@ -1,13 +1,16 @@
 package fr.olympa.api.config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -63,8 +66,10 @@ public class CustomConfig extends YamlConfiguration {
 
 	private File configFile;
 
+	private boolean isLoaded = false;
 	private String fileName;
 	private Plugin plugin;
+	private Map<String, Consumer<CustomConfig>> tasks = new HashMap<>();
 
 	public String getFileName() {
 		return fileName;
@@ -83,13 +88,23 @@ public class CustomConfig extends YamlConfiguration {
 		configs.add(this);
 	}
 
-	public void eraseFile() {
-		configFile.delete();
+	public boolean addTask(String name, Consumer<CustomConfig> consumer) {
+		if (isLoaded)
+			consumer.accept(this);
+		boolean isTaskDidntExist = tasks.put(name, consumer) == null;
+		if (!isTaskDidntExist)
+			new IllegalAccessError("Config Task " + name + " already exist. It was replaced but this won't be happened").printStackTrace();
+		return isTaskDidntExist;
+	}
+
+	public boolean eraseFile() {
 		try {
-			configFile.createNewFile();
+			Files.delete(configFile.toPath());
+			return configFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	public File getFile() {
@@ -123,12 +138,12 @@ public class CustomConfig extends YamlConfiguration {
 		return null;
 	}
 
-	public void reload() throws FileNotFoundException, IOException, InvalidConfigurationException {
+	public void reload() throws IOException, InvalidConfigurationException {
 		loadUnSafe();
 		((OlympaAPIPlugin) plugin).getTask().runTaskAsynchronously(() -> plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this)));
 	}
 
-	public void loadUnSafe() throws FileNotFoundException, IOException, InvalidConfigurationException {
+	public void loadUnSafe() throws IOException, InvalidConfigurationException {
 		File folder = configFile.getParentFile();
 		if (!folder.exists())
 			folder.mkdirs();
@@ -159,13 +174,15 @@ public class CustomConfig extends YamlConfiguration {
 					}
 			}
 		}
+		isLoaded = true;
+		tasks.values().forEach(task -> task.accept(this));
 	}
 
 	public void load() {
 		try {
 			loadUnSafe();
 		} catch (IOException | InvalidConfigurationException e) {
-			System.err.println("Unable to load config: " + fileName);
+			e.initCause(new Throwable("Unable to load config: " + fileName));
 			e.printStackTrace();
 		}
 	}
@@ -178,7 +195,7 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			saveUnSafe();
 		} catch (IOException e) {
-			System.err.println("Unable to save config: " + fileName);
+			e.initCause(new Throwable("Unable to save config: " + fileName));
 			e.printStackTrace();
 		}
 	}

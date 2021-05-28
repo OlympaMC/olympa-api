@@ -81,10 +81,10 @@ public class MachineMessage extends MachineInfo {
 						String fileInfo = Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).lastModified() / 1000L);
 						String website = desc.getWebsite();
 						String gitCommitCompareLastest = null;
-						MatcherPattern<?> regexHexGitCommit = MatcherPattern.of("[a-fA-F0-9]+$");
-						if (website.contains("git") && regexHexGitCommit.contains(desc.getVersion()))
+						MatcherPattern<?> regexHexGitCommit = MatcherPattern.of("\\b[a-fA-F0-9]{8,40}\\b");
+						if (website != null && website.contains("git") && regexHexGitCommit.contains(desc.getVersion()))
 							gitCommitCompareLastest = (desc.getWebsite().endsWith("/") ? desc.getWebsite() : desc.getWebsite() + "/") + "-/compare/" + regexHexGitCommit.extract(desc.getVersion()) + "...master";
-						return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (v%s)", fileInfo, desc.getVersion())
+						return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (%s)", fileInfo, desc.getVersion())
 								.onClickUrl(gitCommitCompareLastest).console(isConsole);
 					})
 					.collect(Collectors.toList()))
@@ -92,16 +92,17 @@ public class MachineMessage extends MachineInfo {
 			textBuilder.extra("\n");
 		} catch (Exception e) {
 			e.printStackTrace();
+			textBuilder.extra("&cErreur\n");
 		}
-		textBuilder.extra(new TxtComponentBuilder("&3Versions supportées: &b%s&3 ", ((OlympaCore) main).getRangeVersion()));
+		textBuilder.extra("&3Versions supportées: &b%s&3 ", ((OlympaCore) main).getRangeVersion());
 		IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 		if (protocolSupport != null) {
 			String unSupVer = protocolSupport.getVersionUnSupportedInRange();
 			if (!unSupVer.isBlank())
 				textBuilder.extra(new TxtComponentBuilder("&4[&c!&4]&3.").onHoverText("&4Versions non supportées: &c%s&4.", unSupVer));
 		}
-		textBuilder.extra(
-				new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", "")).onHoverText("&eServeur sous &6%s&e.", SpigotInfo.getVersionBukkit()));
+		textBuilder.extra(new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", ""))
+				.onHoverText("&eServeur sous &6%s&e.", SpigotInfo.getVersionBukkit()));
 		textBuilder.extra(" ");
 		for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
 			textBuilder.extra("\n");
@@ -109,8 +110,7 @@ public class MachineMessage extends MachineInfo {
 			List<Entity> entities = world.getEntities();
 			List<LivingEntity> livingEntities = world.getLivingEntities();
 
-			textBuilder.extra(new TxtComponentBuilder("&3Monde &b%s&3: ", world.getName()));
-
+			textBuilder.extra("&3Monde &b%s&3: ", world.getName());
 			textBuilder.extra(new TxtComponentBuilder("&b%d&3 chunks", chunks.length).onHoverText("&eChunks (region de 16x16) chargés dans le monde"));
 			textBuilder.extra(" ");
 			Collection<Chunk> forceChunks = world.getForceLoadedChunks();
@@ -118,7 +118,7 @@ public class MachineMessage extends MachineInfo {
 				textBuilder.extra(new TxtComponentBuilder("(%d forcés)", forceChunks.size()).onHoverText("&eLes chunks forcés sont les chunks du spawn du monde &6ou &edes chunks victime de Chunk Loader."));
 				textBuilder.extra(" ");
 			}
-			textBuilder.extra(new TxtComponentBuilder("&b%d/%d&3 entités", livingEntities.size(), entities.size()).onHoverText("&eEntités vivantes/Toutes Entités."));
+			textBuilder.extra(new TxtComponentBuilder("&b%d&3 entités et &b%d&3 non vivantes", livingEntities.size(), entities.size() - livingEntities.size()).onHoverText("&eEntités chargés dans le monde."));
 		}
 		textBuilder.extra(new TxtComponentBuilder("&3."));
 		return textBuilder;

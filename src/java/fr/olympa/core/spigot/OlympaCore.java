@@ -4,7 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -147,10 +147,8 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public void retreiveMonitorInfos(Consumer<List<MonitorInfo>> callback, boolean freshDoubleCallBack) {
-
-	}
-	
-	@Override
 	public void usesPack(Player p) {}
+
+	@Override
+	public void retreiveMonitorInfos(BiConsumer<List<MonitorInfo>, Boolean> callback, boolean freshDoubleCallBack) {}
 }
