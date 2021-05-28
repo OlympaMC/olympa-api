@@ -70,10 +70,9 @@ public class MonitorInfo {
 
 	public int getId() {
 		java.util.regex.Matcher matcher = ID_PATTERN.matcher(serverName);
-		String id = null;
-		if (matcher.find())
-			id = matcher.group();
-		return id == null ? 0 : Integer.parseInt(id);
+		matcher.find();
+		String id = matcher.group();
+		return id.isBlank() ? 0 : Integer.parseInt(id);
 	}
 
 	public String getLastModifiedCore() {
