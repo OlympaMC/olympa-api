@@ -9,12 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 
 public class FlyCommand extends OlympaCommand {
 
 	public FlyCommand(Plugin plugin) {
-		super(plugin, "fly", "Permet d'activer/désactiver la possibilité de voler.", OlympaAPIPermissions.FLY_COMMAND);
+		super(plugin, "fly", "Permet d'activer/désactiver la possibilité de voler.", OlympaAPIPermissionsSpigot.FLY_COMMAND);
 		addArgs(false, "JOUEUR");
 	}
 

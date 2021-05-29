@@ -1,18 +1,12 @@
-package fr.olympa.api.permission;
+package fr.olympa.api.permission.list;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.server.OlympaServer;
+import fr.olympa.api.permission.OlympaSpigotPermission;
 
-public class OlympaAPIPermissions {
+public class OlympaAPIPermissionsSpigot {
 
-	public static final OlympaSpigotPermission CONNECT_SERVERSTATUS_DEV = new OlympaSpigotPermission(OlympaGroup.MINI_YOUTUBER);
-	public static final OlympaSpigotPermission CONNECT_SERVERSTATUS_MAINTENANCE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEV });
-	public static final OlympaSpigotPermission CONNECT_SERVERSTATUS_BETA = new OlympaSpigotPermission(OlympaGroup.YOUTUBER);
-	public static final OlympaSpigotPermission CONNECT_SERVERSTATUS_SOON = new OlympaSpigotPermission(OlympaGroup.FRIEND);
-
-	public static final OlympaSpigotPermission CONNECT_SERVER_BUILDER = new OlympaSpigotPermission(/*new OlympaGroup[] { OlympaGroup.BUILDER }, OlympaGroup.RESP_TECH*/ OlympaGroup.BUILDER);
-	public static final OlympaSpigotPermission CONNECT_SERVER_DEV = new OlympaSpigotPermission(OlympaGroup.DEV);
-
+	private OlympaAPIPermissionsSpigot() {}
+	
 	public static final OlympaSpigotPermission COMMAND_HOLOGRAMS_MANAGE = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_IMAGEMAP = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_BYPASS_REGIONS = new OlympaSpigotPermission(OlympaGroup.BUILDER); // TODO + haute perm après ouverture
@@ -20,7 +14,6 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission NAMESPACED_COMMANDS = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission AFK_SEE_IN_TAB = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 
-	// Don't fogot to change it in ZTA
 	public static final OlympaSpigotPermission SAY_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission GAMEMODE_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission TP_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
@@ -39,10 +32,5 @@ public class OlympaAPIPermissions {
 	public static final OlympaSpigotPermission TRADE_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 
 	public static final OlympaSpigotPermission ARG_COLOR = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
-
-	{
-		OlympaServer.DEV.setJoinPermission(CONNECT_SERVER_DEV);
-		OlympaServer.BUILDEUR.setJoinPermission(CONNECT_SERVER_BUILDER);
-	}
 
 }

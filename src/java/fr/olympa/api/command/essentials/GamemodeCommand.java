@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.match.RegexMatcher;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.utils.Prefix;
 
 public class GamemodeCommand extends OlympaCommand {
@@ -75,7 +75,7 @@ public class GamemodeCommand extends OlympaCommand {
 	private BiFunction<CommandSender, Player, Boolean> canExecute = (sender, target) -> true;
 
 	public GamemodeCommand(Plugin plugin) {
-		super(plugin, "gm", "Change ton mode de jeu.", OlympaAPIPermissions.GAMEMODE_COMMAND, "gms", "gma", "gmc", "gmsp");
+		super(plugin, "gm", "Change ton mode de jeu.", OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND, "gms", "gma", "gmc", "gmsp");
 		addArgs(false, "adventure", "creative", "survival", "spectator", "JOUEUR");
 		addArgs(false, "JOUEUR");
 		allowConsole = true;
@@ -137,7 +137,7 @@ public class GamemodeCommand extends OlympaCommand {
 		if (!canExecute.apply(sender, target))
 			return false;
 		
-		if (gm == Gm.CREATIVE && !hasPermission(OlympaAPIPermissions.GAMEMODE_COMMAND_CREATIVE)) {
+		if (gm == Gm.CREATIVE && !hasPermission(OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_CREATIVE)) {
 			sendDoNotHavePermission();
 			return false;
 		}

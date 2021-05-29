@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.utils.Prefix;
 import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
@@ -27,7 +27,7 @@ import net.minecraft.server.v1_16_R3.NBTTagList;
 public class InvseeCommand extends OlympaCommand {
 
 	public InvseeCommand(Plugin plugin) {
-		super(plugin, "invsee", "Pour voir l'inventaire d'un joueur.", OlympaAPIPermissions.INVSEE_COMMAND);
+		super(plugin, "invsee", "Pour voir l'inventaire d'un joueur.", OlympaAPIPermissionsSpigot.INVSEE_COMMAND);
 		addArgs(true, "JOUEUR");
 		setAllowConsole(false);
 	}

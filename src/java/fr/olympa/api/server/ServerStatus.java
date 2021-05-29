@@ -4,21 +4,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.OlympaGlobalPermission;
 import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsGlobal;
 import net.md_5.bungee.api.ChatColor;
 
 public enum ServerStatus {
 
 	OPEN(1, "Ouvert", ChatColor.GREEN, null, "Off"),
-	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissions.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
-	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta"),
-	CLOSE_BETA(7, "Bêta Fermée", ChatColor.GOLD, OlympaAPIPermissions.CONNECT_SERVERSTATUS_BETA, "Bêta Fermée"),
-	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, "On"),
-	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, "Dev"),
-	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissions.CONNECT_SERVERSTATUS_DEV, null),
-	STARTING(8, "Démarrage", ChatColor.BLUE, OlympaAPIPermissions.CONNECT_SERVERSTATUS_MAINTENANCE, null),
+	SOON(2, "Bientôt", ChatColor.YELLOW, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_SOON, "Bientôt"),
+	BETA(3, "Bêta", ChatColor.GOLD, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_BETA, "Bêta"),
+	CLOSE_BETA(7, "Bêta Fermée", ChatColor.GOLD, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_BETA, "Bêta Fermée"),
+	MAINTENANCE(4, "Maintenance", ChatColor.RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_MAINTENANCE, "On"),
+	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV, "Dev"),
+	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV, null),
+	STARTING(8, "Démarrage", ChatColor.BLUE, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_MAINTENANCE, null),
 	CLOSE(10, "Fermé", ChatColor.RED, null, null);
 
 	public static ServerStatus get(int id) {
@@ -48,7 +48,7 @@ public enum ServerStatus {
 	private OlympaPermission permission;
 	private String commandArg;
 
-	ServerStatus(int id, String name, ChatColor color, OlympaSpigotPermission permission, String commandArg) {
+	ServerStatus(int id, String name, ChatColor color, OlympaGlobalPermission permission, String commandArg) {
 		this.id = id;
 		this.name = name;
 		this.color = color;

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class BypassCommand extends OlympaCommand {
@@ -16,7 +16,7 @@ public class BypassCommand extends OlympaCommand {
 	public static List<Player> bypasses = new ArrayList<>();
 	
 	public BypassCommand() {
-		super(OlympaCore.getInstance(), "bypassregions", "Permet de ne pas être affecté par les restrictions de régions.", OlympaAPIPermissions.COMMAND_BYPASS_REGIONS, "bypass");
+		super(OlympaCore.getInstance(), "bypassregions", "Permet de ne pas être affecté par les restrictions de régions.", OlympaAPIPermissionsSpigot.COMMAND_BYPASS_REGIONS, "bypass");
 		super.setAllowConsole(false);
 	}
 	

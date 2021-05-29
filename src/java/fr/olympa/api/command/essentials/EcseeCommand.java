@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.utils.Prefix;
 
 public class EcseeCommand extends OlympaCommand {
 
 	public EcseeCommand(Plugin plugin) {
-		super(plugin, "ecvsee", "Pour voir l'enderchest d'un joueur.", OlympaAPIPermissions.ECSEE_COMMAND);
+		super(plugin, "ecvsee", "Pour voir l'enderchest d'un joueur.", OlympaAPIPermissionsSpigot.ECSEE_COMMAND);
 		addArgs(true, "JOUEUR");
 	}
 

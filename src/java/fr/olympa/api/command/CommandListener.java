@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
@@ -42,7 +42,7 @@ public class CommandListener implements Listener {
 		String[] message = fullCommand.split(" ");
 
 		String command = message[0].toLowerCase();
-		if (command.contains(":") && !OlympaAPIPermissions.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
+		if (command.contains(":") && !OlympaAPIPermissionsSpigot.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
 			Prefix.DEFAULT_BAD.sendMessage(sender, "Par mesure de sécurité, les commandes avec namespace sont désactivées.");
 			event.setCancelled(true);
 			return;

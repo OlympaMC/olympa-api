@@ -15,14 +15,14 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.command.OlympaCommand;
 import fr.olympa.api.match.MatcherPattern;
 import fr.olympa.api.match.RegexMatcher;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 
 public class TpCommand extends OlympaCommand {
 
 	public TpCommand(Plugin plugin) {
-		super(plugin, "teleport", "Permet de se téléporter à un joueur ou une position.", OlympaAPIPermissions.TP_COMMAND, "tp");
+		super(plugin, "teleport", "Permet de se téléporter à un joueur ou une position.", OlympaAPIPermissionsSpigot.TP_COMMAND, "tp");
 		addArgs(false, "JOUEUR", "RELATIVE", "NUMBER");
 		addArgs(false, "JOUEUR", "RELATIVE", "NUMBER");
 		addArgs(false, "RELATIVE", "NUMBER");

@@ -3,9 +3,9 @@ package exemple;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 
 public class ExemplePermissions {
 
@@ -22,10 +22,10 @@ public class ExemplePermissions {
 		EXEMPLE = new OlympaSpigotPermission(minGroup, allowedGroups, lockPermission);
 
 		// La permission est accessible
-		OlympaSpigotPermission permission = OlympaAPIPermissions.CONNECT_SERVER_DEV;
+		OlympaSpigotPermission permission = OlympaAPIPermissionsSpigot.ECSEE_COMMAND;
 
 		// ou La permission est dans le core ou autre plugin
-		permission = (OlympaSpigotPermission) OlympaPermission.permissions.get("CONNECT_SERVER_DEV");
+		permission = (OlympaSpigotPermission) OlympaPermission.permissions.get("ECSEE_COMMAND");
 
 		// enlever les groupes qui avait la perms indépendamment + change la permission minimale
 		permission.clearAllowedGroups();

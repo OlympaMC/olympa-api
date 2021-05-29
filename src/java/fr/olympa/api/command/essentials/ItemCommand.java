@@ -10,12 +10,12 @@ import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
 import fr.olympa.api.item.ItemUtils;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 
 public class ItemCommand extends ComplexCommand {
 	
 	public ItemCommand(Plugin plugin) {
-		super(plugin, "item", "Modifier un item.", OlympaAPIPermissions.ITEM_COMMAND);
+		super(plugin, "item", "Modifier un item.", OlympaAPIPermissionsSpigot.ITEM_COMMAND);
 		setAllowConsole(false);
 		addArgumentParser("FLAGS", ItemFlag.class);
 	}

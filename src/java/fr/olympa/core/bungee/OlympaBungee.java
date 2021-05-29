@@ -7,8 +7,8 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.bungee.config.BungeeCustomConfig;
 import fr.olympa.api.bungee.task.BungeeTaskManager;
 import fr.olympa.api.chat.ColorUtils;
-import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.plugin.OlympaPluginInterface;
 import fr.olympa.api.server.OlympaServer;
 import fr.olympa.api.server.ServerStatus;
@@ -41,7 +41,7 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 		instance = this;
 		task = new BungeeTaskManager(this);
 		status = ServerStatus.MAINTENANCE;
-		OlympaPermission.registerPermissions(OlympaAPIPermissions.class);
+		OlympaPermission.registerPermissions(OlympaAPIPermissionsSpigot.class);
 
 		PluginManager pluginManager = getProxy().getPluginManager();
 		pluginManager.registerListener(this, new AuthListener());

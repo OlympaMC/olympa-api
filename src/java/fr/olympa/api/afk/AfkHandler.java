@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.customevents.AsyncOlympaPlayerChangeGroupEvent.ChangeType;
 import fr.olympa.api.module.OlympaModule.ModuleApi;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.scoreboard.tab.INametagApi;
@@ -46,7 +46,7 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 		INametagApi nameTagApi = plugin.getNameTagApi();
 		if (nameTagApi != null) {
 			handler = (nametag, player, to) -> {
-				if (isAfk(player.getPlayer()) && (OlympaAPIPermissions.AFK_SEE_IN_TAB.hasPermission(to) || player.getUniqueId().equals(to.getUniqueId())))
+				if (isAfk(player.getPlayer()) && (OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB.hasPermission(to) || player.getUniqueId().equals(to.getUniqueId())))
 					nametag.appendSuffix(AfkPlayer.AFK_SUFFIX);
 			};
 			nameTagApi.addNametagHandler(EventPriority.HIGH, handler);
@@ -133,9 +133,9 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 		ChangeType changeType = event.getChangeType();
 		OlympaPlayer olympaPlayer = event.getOlympaPlayer();
 		INametagApi nameTagApi = OlympaCore.getInstance().getNameTagApi();
-		if (Arrays.stream(event.getGroupsChanges()).noneMatch(OlympaAPIPermissions.AFK_SEE_IN_TAB::hasPermission))
+		if (Arrays.stream(event.getGroupsChanges()).noneMatch(OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB::hasPermission))
 			return;
-		if ((ChangeType.SET.equals(changeType) || ChangeType.ADD.equals(changeType)) && OlympaAPIPermissions.AFK_SEE_IN_TAB.hasPermission(olympaPlayer) || ChangeType.REMOVE.equals(changeType)) {
+		if ((ChangeType.SET.equals(changeType) || ChangeType.ADD.equals(changeType)) && OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB.hasPermission(olympaPlayer) || ChangeType.REMOVE.equals(changeType)) {
 			List<OlympaPlayer> toPlayer = Arrays.asList(olympaPlayer);
 			get().stream().forEach(entry -> {
 				nameTagApi.callNametagUpdate(AccountProvider.get(entry.getKey()), toPlayer);

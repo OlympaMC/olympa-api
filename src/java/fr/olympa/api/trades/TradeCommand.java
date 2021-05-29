@@ -7,7 +7,7 @@ import com.google.common.collect.HashMultimap;
 import fr.olympa.api.command.complex.Cmd;
 import fr.olympa.api.command.complex.CommandContext;
 import fr.olympa.api.command.complex.ComplexCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
@@ -24,7 +24,7 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 	private HashMultimap<Player, Player> map = HashMultimap.create();
 	
 	public TradeCommand(OlympaAPIPlugin plugin, TradesManager<T> trades) {
-		super(plugin, "trade", "Échange des objets et de l'argent avec un autre joueur.", OlympaAPIPermissions.TRADE_COMMAND);
+		super(plugin, "trade", "Échange des objets et de l'argent avec un autre joueur.", OlympaAPIPermissionsSpigot.TRADE_COMMAND);
 		this.plugin = plugin;
 		this.trades = trades;
 	}

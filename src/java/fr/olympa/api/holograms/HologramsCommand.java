@@ -16,7 +16,7 @@ import fr.olympa.api.holograms.HologramsManager.HoloActionType;
 import fr.olympa.api.lines.AbstractLine;
 import fr.olympa.api.lines.CyclingLine;
 import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.utils.spigot.SpigotUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -28,7 +28,7 @@ public class HologramsCommand extends ComplexCommand {
 	private Paginator<Hologram> paginator;
 
 	public HologramsCommand(OlympaAPIPlugin plugin, HologramsManager hologramsManager) {
-		super(plugin, "holograms", "Permet de gérer les hologrammes.", OlympaAPIPermissions.COMMAND_HOLOGRAMS_MANAGE, "holo");
+		super(plugin, "holograms", "Permet de gérer les hologrammes.", OlympaAPIPermissionsSpigot.COMMAND_HOLOGRAMS_MANAGE, "holo");
 		
 		this.holograms = hologramsManager;
 		super.addArgumentParser("PERSHOLOGRAM", (sender, arg) -> hologramsManager.holograms.values().stream()

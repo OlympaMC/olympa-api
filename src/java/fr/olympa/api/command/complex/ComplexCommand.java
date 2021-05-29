@@ -27,8 +27,8 @@ import com.google.common.collect.Multimap;
 
 import fr.olympa.api.chat.TxtComponentBuilder;
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaSpigotPermission;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.player.OlympaPlayerInformations;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.DivideList;
@@ -200,7 +200,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		int rawArgIndex = cmd.otherArg() ? 0 : 1;
 		Object[] newArgs = new Object[rawArgs.length - rawArgIndex];
 
-		boolean canUseColors = hasPermission(OlympaAPIPermissions.ARG_COLOR);
+		boolean canUseColors = hasPermission(OlympaAPIPermissionsSpigot.ARG_COLOR);
 		for (int newArgIndex = 0; newArgIndex < newArgs.length; newArgIndex++) {
 			String arg;
 			if (canUseColors)

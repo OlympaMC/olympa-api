@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.command.OlympaCommand;
-import fr.olympa.api.permission.OlympaAPIPermissions;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Reflection;
 import fr.olympa.api.utils.spigot.TPSUtils;
@@ -17,7 +17,7 @@ import fr.olympa.api.utils.spigot.TPSUtils;
 public class PingCommand extends OlympaCommand {
 
 	public PingCommand(Plugin plugin) {
-		super(plugin, "ping", "Permet d'obtenir son ping.", OlympaAPIPermissions.PING_COMMAND);
+		super(plugin, "ping", "Permet d'obtenir son ping.", OlympaAPIPermissionsSpigot.PING_COMMAND);
 		addArgs(false, "joueur");
 		minArg = 0;
 	}

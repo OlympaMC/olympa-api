@@ -14,9 +14,7 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.groups.OlympaGroup;
 import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.provider.OlympaPlayerObject;
 import fr.olympa.api.server.ServerType;
-import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaPermission implements IOlympaPermission {
@@ -167,24 +165,6 @@ public abstract class OlympaPermission implements IOlympaPermission {
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && (this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()))
 				|| olympaPlayer.hasCustomPermission(name, LinkSpigotBungee.Provider.link.getOlympaServer()));
-	}
-
-	/**
-	 * Check if the player has the permission, and sends an alert message if not
-	 * @param olympaPlayer
-	 * @return
-	 */
-	public boolean hasPermissionWithMsg(OlympaPlayer olympaPlayer) { 
-		boolean b = hasPermission(olympaPlayer);
-		if (!b)
-			if (getMinGroup() != null)
-				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender())); 
-			else if (getAllowedGroups() != null && getAllowedGroups().length != 0)
-				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.", Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())));
-			else
-				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Tu n'a pas la permission.");
-
-		return b;
 	}
 
 	@Override

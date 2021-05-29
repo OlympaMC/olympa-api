@@ -16,8 +16,8 @@ import fr.olympa.api.frame.ImageFrameManager;
 import fr.olympa.api.gui.Inventories;
 import fr.olympa.api.holograms.HologramsManager;
 import fr.olympa.api.hook.IProtocolSupport;
-import fr.olympa.api.permission.OlympaAPIPermissions;
 import fr.olympa.api.permission.OlympaPermission;
+import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.plugin.OlympaSpigot;
 import fr.olympa.api.region.tracking.RegionManager;
 import fr.olympa.api.server.MonitorInfo;
@@ -104,7 +104,7 @@ public class OlympaCore extends OlympaSpigot {
 	public void onEnable() {
 		instance = this;
 
-		OlympaPermission.registerPermissions(OlympaAPIPermissions.class);
+		OlympaPermission.registerPermissions(OlympaAPIPermissionsSpigot.class);
 
 		PluginManager pluginManager = getServer().getPluginManager();
 		pluginManager.registerEvents(new Inventories(), this);
