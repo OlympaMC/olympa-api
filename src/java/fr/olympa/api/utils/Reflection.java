@@ -134,16 +134,17 @@ public class Reflection {
 		for (Class<?> clazz : instance.getClass().getDeclaredClasses()) {
 			if (clazz.getSimpleName().equals(subclassName)) {
 				constr: for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-					for (int i = 0; i < constructor.getParameters().length; i++) {
+					Parameter[] parameters = constructor.getParameters();
+					if (parameters.length != args.length + 1) continue;
+					for (int i = 0; i < parameters.length; i++) {
 						if (i == 0) continue;
-						if (i >= args.length + 1) continue constr;
 						Parameter parameter = constructor.getParameters()[i];
 						if (!ClassUtils.primitiveToWrapper(parameter.getType()).isInstance(args[i - 1])) continue constr;
 					}
 					List<Object> realArgs = new ArrayList<>(args.length + 1);
 					realArgs.add(instance);
 					for (Object arg : args) realArgs.add(arg);
-					constructor.newInstance(realArgs);
+					return (T) constructor.newInstance(realArgs.toArray(Object[]::new));
 				}
 				throw new NoSuchMethodException("No matching constructor for " + clazz.getName());
 			}

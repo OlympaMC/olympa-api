@@ -106,11 +106,11 @@ public class TabManager implements Listener {
 		
 		PacketPlayOutPlayerInfo packetInfoCreate = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoCreate, "a", EnumPlayerInfoAction.ADD_PLAYER);
-		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(Reflection.instantiateNested(packetInfoCreate, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoCreate, "b", Arrays.asList(Reflection.<Object>instantiateNested(packetInfoCreate, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		PacketPlayOutPlayerInfo packetInfoRemove = new PacketPlayOutPlayerInfo();
 		Reflection.setFieldValue(packetInfoRemove, "a", EnumPlayerInfoAction.REMOVE_PLAYER);
-		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(Reflection.instantiateNested(packetInfoRemove, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
+		Reflection.setFieldValue(packetInfoRemove, "b", Arrays.asList(Reflection.<Object>instantiateNested(packetInfoRemove, "PlayerInfoData", gameProfile, ping, EnumGamemode.ADVENTURE, component)));
 		
 		return new FakePlayer(gameProfile.getId(), packetInfoCreate, packetInfoRemove);
 	}
