@@ -107,6 +107,11 @@ public interface RandomizedPicker<T> {
 	
 	public interface ConditionalPicker<T> extends RandomizedPicker<T>{
 		
+		@Override
+		default T pickOne(Random random) {
+			return pickOne(random, new Object[0]);
+		}
+		
 		public default T pickOne(Random random, Object... args) {
 			return pick(random, getConditionedObjectsList().entrySet().stream().filter(entry -> {
 				Conditioned<T> conditioned = entry.getKey();
@@ -309,8 +314,8 @@ public interface RandomizedPicker<T> {
 		public ConditionalPickerBuilder() {}
 		
 		public ConditionalPickerBuilder(Map<Conditioned<T>, Double> values, List<Conditioned<T>> valuesAlways) {
-			this.values = values;
-			this.valuesAlways = valuesAlways;
+			this.values.putAll(values);
+			this.valuesAlways.addAll(valuesAlways);
 		}
 		
 		@Override

@@ -1,14 +1,18 @@
 package fr.olympa.api.utils;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -129,9 +133,19 @@ public class Reflection {
 	public static <T> T instantiateNested(Object instance, String subclassName, Object... args) throws ReflectiveOperationException {
 		for (Class<?> clazz : instance.getClass().getDeclaredClasses()) {
 			if (clazz.getSimpleName().equals(subclassName)) {
-				System.arraycopy(args, 0, args, 1, args.length);
-				args[0] = instance;
-				return (T) clazz.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new)).newInstance(args);
+				constr: for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+					for (int i = 0; i < constructor.getParameters().length; i++) {
+						if (i == 0) continue;
+						if (i >= args.length + 1) continue constr;
+						Parameter parameter = constructor.getParameters()[i];
+						if (!ClassUtils.primitiveToWrapper(parameter.getType()).isInstance(args[i - 1])) continue constr;
+					}
+					List<Object> realArgs = new ArrayList<>(args.length + 1);
+					realArgs.add(instance);
+					for (Object arg : args) realArgs.add(arg);
+					constructor.newInstance(realArgs);
+				}
+				throw new NoSuchMethodException("No matching constructor for " + clazz.getName());
 			}
 		}
 		throw new ClassNotFoundException("No subclass " + subclassName + " of " + instance.getClass().getName());
