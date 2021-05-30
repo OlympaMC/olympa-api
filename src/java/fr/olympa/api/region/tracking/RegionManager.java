@@ -57,6 +57,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -367,6 +368,11 @@ public class RegionManager implements Listener {
 		}else fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
 	}
 
+	@EventHandler
+	public void onLecternTake(PlayerTakeLecternBookEvent e) {
+		fireEvent(e.getLectern().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getLectern().getBlock()));
+	}
+	
 	@EventHandler
 	public void onEntityInteract(EntityInteractEvent e) {
 		if (e.getBlock().getType() == Material.FARMLAND) {

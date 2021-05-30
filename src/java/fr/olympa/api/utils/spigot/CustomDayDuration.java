@@ -21,7 +21,7 @@ public class CustomDayDuration implements Listener {
 	
 	private double nextTick = -1;
 	
-	public CustomDayDuration(Plugin plugin, World world, int dayDuration, int nightDuration) {
+	public CustomDayDuration(Plugin plugin, World world, int dayDuration, int nightDuration, double tolerance) {
 		
 		double dayMultiplier = (double) DEFAULT_DAY_DURATION / (double) dayDuration;
 		double nightMultiplier = (double) DEFAULT_NIGHT_DURATION / (double) nightDuration;
@@ -30,8 +30,9 @@ public class CustomDayDuration implements Listener {
 		task = Bukkit.getScheduler().runTaskTimer/*Asynchronously*/(plugin, () -> {
 			double time = world.getFullTime();
 			double mult = world.getTime() >= NIGHT_TIME ? nightMultiplier : dayMultiplier;
+			if (mult == 1) return;
 			if (nextTick != -1) {
-				if (Math.floor(time) != Math.floor(nextTick)) world.setFullTime((long) nextTick);
+				if (tolerance == 0 ? (Math.floor(time) != Math.floor(nextTick)) : Math.abs(time - nextTick) >= tolerance) world.setFullTime((long) nextTick);
 				time = nextTick;
 			}
 			nextTick = time + mult;

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.chat.ColorUtils;
@@ -47,7 +48,7 @@ public class HologramsCommand extends ComplexCommand {
 
 			@Override
 			protected List<Hologram> getObjects() {
-				return hologramsManager.holograms.values().stream().filter(holo -> holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND)).collect(Collectors.toList());
+				return hologramsManager.holograms.values().stream().filter(holo -> holo.isPersistent() && holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND)).collect(Collectors.toList());
 			}
 
 			@Override
@@ -80,6 +81,18 @@ public class HologramsCommand extends ComplexCommand {
 	@Cmd(args = "INTEGER", syntax = "[page]", description = "Affiche la liste des hologrammes persistants")
 	public void list(CommandContext cmd) {
 		sendComponents(paginator.getPage(cmd.getArgument(0, 1)));
+	}
+	
+	@Cmd (player = true, args = "INTEGER", syntax = "[distance]", description = "Affiche la liste des hologrammes persistants proches de toi")
+	public void listNear(CommandContext cmd) {
+		int distance = cmd.getArgument(0, 10);
+		int distanceSquared = distance * distance;
+		Location playerLocation = player.getLocation();
+		List<Hologram> near = holograms.holograms.values().stream().filter(holo -> holo.isPersistent() && holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND) && holo.getBottom().distanceSquared(playerLocation) <= distanceSquared).collect(Collectors.toList());
+		sendSuccess("Hologrammes à moins de %d blocs : (%d)", distance, near.size());
+		for (Hologram holo : near) {
+			sendComponents(new TextComponent("§b§l" + holo.getID() + "§3 - §b" + holo.toString() + "§3 - §b" + SpigotUtils.convertLocationToHumanString(holo.getBottom())));
+		}
 	}
 
 	@Cmd(player = true, min = 1, args = "PERSHOLOGRAM", syntax = "<id de l'hologramme>")

@@ -9,7 +9,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -141,10 +140,12 @@ public class Reflection {
 						Parameter parameter = constructor.getParameters()[i];
 						if (!ClassUtils.primitiveToWrapper(parameter.getType()).isInstance(args[i - 1])) continue constr;
 					}
-					List<Object> realArgs = new ArrayList<>(args.length + 1);
-					realArgs.add(instance);
-					for (Object arg : args) realArgs.add(arg);
-					return (T) constructor.newInstance(realArgs.toArray(Object[]::new));
+					Object[] realArgs = new Object[args.length + 1];
+					realArgs[0] = instance;
+					for (int j = 0; j < args.length; j++) {
+						realArgs[j + 1] = args[j];
+					}
+					return (T) constructor.newInstance(realArgs);
 				}
 				throw new NoSuchMethodException("No matching constructor for " + clazz.getName());
 			}
