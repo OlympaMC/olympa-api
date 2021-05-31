@@ -22,6 +22,10 @@ public class TxtComponentBuilder {
 		return new TxtComponentBuilder(prefix, message, args).onClick(clickAction, clickActionValue).onHover(hoverAction, new Content[] { content }).build();
 	}
 
+	public static TextComponent of(Prefix prefix, String message, String runCommandValue, String hoverText, Object... args) {
+		return new TxtComponentBuilder(prefix, message, args).onClick(ClickEvent.Action.RUN_COMMAND, runCommandValue).onHover(HoverEvent.Action.SHOW_TEXT, new Text(getStringColored(hoverText))).build();
+	}
+
 	public static TextComponent of(Prefix prefix, String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
 		return new TxtComponentBuilder(prefix, message).onClick(clickAction, clickActionValue).onHover(hoverAction, contents).build();
 	}

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import fr.olympa.api.permission.OlympaGlobalPermission;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.list.OlympaAPIPermissionsGlobal;
+import fr.olympa.api.player.OlympaPlayer;
 import net.md_5.bungee.api.ChatColor;
 
 public enum ServerStatus {
@@ -78,6 +79,10 @@ public enum ServerStatus {
 
 	public OlympaPermission getPermission() {
 		return permission;
+	}
+
+	public boolean hasPermission(OlympaPlayer olympaPlayer) {
+		return permission.hasPermission(olympaPlayer);
 	}
 
 	public boolean canConnect() {

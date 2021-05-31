@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import com.google.gson.annotations.Expose;
 
+import fr.olympa.api.player.OlympaPlayer;
 import fr.olympa.api.utils.Utils;
 
 public class MonitorInfo {
@@ -53,12 +54,38 @@ public class MonitorInfo {
 	@Expose
 	protected String lastModifiedCore;
 
+	public boolean canConnect(OlympaPlayer olympaPlayer) {
+		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
+	}
+
 	public static Pattern getIdPattern() {
 		return ID_PATTERN;
 	}
 
+	/**
+	 * @return name in lowercase without number like creatif for creatif1
+	 */
 	public String getClearName() {
 		return serverName.replaceFirst(ID_REGEX, "");
+	}
+
+	/**
+	 * @return officiel bungee name
+	 */
+	public String getName() {
+		return serverName;
+	}
+
+	/**
+	 * @return officiel bungee name like Créatif ➊
+	 */
+	public String getHumanName() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.getOlympaServer().getNameCaps());
+		String symbole = getIdSymbole();
+		if (!symbole.isBlank())
+			sb.append(" " + symbole);
+		return sb.toString();
 	}
 
 	public String getIdSymbole() {
@@ -73,6 +100,12 @@ public class MonitorInfo {
 		matcher.find();
 		String id = matcher.group();
 		return id.isBlank() ? 0 : Integer.parseInt(id);
+	}
+
+	public String getRangeVersion() {
+		if (firstVersion.equals(lastVersion))
+			return firstVersion;
+		return firstVersion + " à " + lastVersion;
 	}
 
 	public String getLastModifiedCore() {
@@ -123,10 +156,6 @@ public class MonitorInfo {
 		return maxPlayers;
 	}
 
-	public String getName() {
-		return serverName;
-	}
-
 	public Integer getOnlinePlayers() {
 		return onlinePlayers;
 	}
@@ -137,10 +166,6 @@ public class MonitorInfo {
 
 	public ServerStatus getStatus() {
 		return status;
-	}
-
-	public void setStatus(ServerStatus status) {
-		this.status = status;
 	}
 
 	public Float getTps() {
@@ -159,10 +184,8 @@ public class MonitorInfo {
 		return firstVersion;
 	}
 
-	public String getRangeVersion() {
-		if (firstVersion.equals(lastVersion))
-			return firstVersion;
-		return firstVersion + " à " + lastVersion;
+	public void setStatus(ServerStatus status) {
+		this.status = status;
 	}
 
 }

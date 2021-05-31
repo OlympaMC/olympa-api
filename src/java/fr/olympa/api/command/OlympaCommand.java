@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -24,6 +26,7 @@ import fr.olympa.api.chat.ColorUtils;
 import fr.olympa.api.permission.OlympaPermission;
 import fr.olympa.api.permission.OlympaSpigotPermission;
 import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.plugin.OlympaAPIPlugin;
 import fr.olympa.api.provider.AccountProvider;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Reflection;
@@ -241,6 +244,13 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		Prefix.DEFAULT.sendMessage(sender, "&eCommande &6%s", command + (aliases == null || aliases.isEmpty() ? "" : " &e(" + ColorUtils.joinGoldEt(aliases) + ")"));
 		if (description != null)
 			Prefix.DEFAULT.sendMessage(sender, "&e%s", description);
+	}
+
+	public static void unRegisterCommands(OlympaAPIPlugin plugin) {
+		commands.removeIf(oc -> oc.plugin.equals(plugin));
+		Set<Entry<List<String>, OlympaCommand>> cmdPluginProcess = commandPreProcess.entrySet().stream().filter(oc -> oc.getValue().plugin.equals(plugin)).collect(Collectors.toSet());
+		cmdPluginProcess.forEach(oc -> commandPreProcess.remove(oc.getKey()));
+
 	}
 
 	public static void unRegisterCommand(PluginCommand... cmds) {
