@@ -9,11 +9,18 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 public class DebugPluginsInit extends DebugPlugins {
+
 	public DebugPluginsInit(Plugin plugin) {
 		PluginDescriptionFile desc = plugin.getDescription();
 		name = plugin.getName();
 		version = desc.getVersion();
+		SuperVersion supVersion = new SuperVersion(desc.getVersion());
+		superVersion = supVersion;
 		authors = desc.getAuthors();
+		description = desc.getDescription();
+		apiVersion = desc.getAPIVersion();
+		provides = desc.getProvides();
+		contributors = desc.getContributors();
 		website = desc.getWebsite();
 		enabled = plugin.isEnabled();
 		if (!enabled) {

@@ -1,5 +1,7 @@
 package fr.olympa.api.match;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -8,15 +10,33 @@ import java.util.UUID;
 public class RegexMatcher {
 
 	public static final MatcherPattern<String> NOT_LETTER = new MatcherPattern<>("[^\\w]");
+	public static final MatcherPattern<Long> BUILD_TIME = new MatcherPattern<>("\\W*([0-9]{6,14})\\b", x -> {
+		Long timestampSecond = null;
+		try {
+			if (x.length() == 6)
+				timestampSecond = new SimpleDateFormat("yyMMdd").parse(x).getTime() / 1000L;
+			else if (x.length() == 8)
+				timestampSecond = new SimpleDateFormat("yyyyMMdd").parse(x).getTime() / 1000L;
+			else if (x.length() == 10)
+				timestampSecond = new SimpleDateFormat("yyMMddHHmm").parse(x).getTime() / 1000L;
+			else if (x.length() == 12)
+				timestampSecond = new SimpleDateFormat("yyyyMMddHHmm").parse(x).getTime() / 1000L;
+			else if (x.length() == 14)
+				timestampSecond = new SimpleDateFormat("yyyyMMddHHmmss").parse(x).getTime() / 1000L;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return timestampSecond;
+	}, Long.class);
 	public static final MatcherPattern<String> USERNAME = new MatcherPattern<>("[\\w_]{3,16}");
 	public static final MatcherPattern<String> IP = new MatcherPattern<>("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}");
 
 	public static final MatcherPattern<String> FAKE_IP = new MatcherPattern<>("\\d{1,3}(\\.\\d{1,3}){3}");
-	public static final MatcherPattern<String> FAKE_UUID = new MatcherPattern<>("[0-9a-z]{8}-([0-9a-z]{4}-){3}[0-9a-z]{12}");
+	public static final MatcherPattern<String> FAKE_UUID = new MatcherPattern<>("[0-9a-zA-Z]{8}-([0-9a-zA-Z]{4}-){3}[0-9a-zA-Z]{12}");
 	public static final MatcherPattern<String> EMAIL = new MatcherPattern<>("(.+)@(.+)\\.(.+)");
 	public static final MatcherPattern<String> DISCORD_TAG = new MatcherPattern<>(".{2,32}#[0-9]{4}");
 
-	public static final MatcherPattern<UUID> UUID = new MatcherPattern<>("[0-9a-f]{8}-?([0-9a-f]{4}-?){3}[0-9a-f]{12}", x -> {
+	public static final MatcherPattern<UUID> UUID = new MatcherPattern<>("[0-9a-f]{8}-?([0-9a-fA-F]{4}-?){3}[0-9a-fA-F]{12}", x -> {
 		try {
 			return java.util.UUID.fromString(x.contains("-") ? x : x.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
 		} catch (IllegalArgumentException e) {
@@ -24,7 +44,7 @@ public class RegexMatcher {
 		}
 	}, UUID.class);
 
-	public static final MatcherPattern<LocalDate> DATE = new MatcherPattern<>("[0-9]{1,4}/[0-9]{1,2}/[0-9]{1,2}", x -> {
+	public static final MatcherPattern<LocalDate> DATE = new MatcherPattern<>("[0-9]{2}/[0-9]{2}/[0-9]{4}", x -> {
 		try {
 			return LocalDate.parse(x, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		} catch (DateTimeParseException e2) {

@@ -1,7 +1,9 @@
 package fr.olympa.api.match;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -112,6 +114,20 @@ public class MatcherPattern<T> {
 		if (matcher.find())
 			return matcher.group();
 		return null;
+	}
+
+	/**
+	 * Extract first occurances & Parse object
+	 * @throws IndexOutOfBoundsException
+	 */
+	public Entry<String, T> extractAndParseGroupOne(String text) {
+		String regex = wholeWord(false);
+		Matcher matcher = getPattern(regex).matcher(text);
+		String newText = text.replaceFirst(regex, "");
+		T matcherText = null;
+		if (matcher.find())
+			matcherText = parse(matcher.group(1));
+		return new AbstractMap.SimpleEntry<>(newText, matcherText);
 	}
 
 	/**

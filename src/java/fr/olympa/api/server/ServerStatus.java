@@ -82,7 +82,7 @@ public enum ServerStatus {
 	}
 
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
-		return permission.hasPermission(olympaPlayer);
+		return permission == null || permission.hasPermission(olympaPlayer);
 	}
 
 	public boolean canConnect() {
