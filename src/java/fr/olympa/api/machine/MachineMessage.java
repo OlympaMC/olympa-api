@@ -49,7 +49,7 @@ public class MachineMessage extends MachineInfo {
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3Threads: &b%d&3.", getThreads()).onHoverText("&eNombre de 'sous-processus'."));
 		textBuilder.extra("\n");
-		textBuilder.extra(new TxtComponentBuilder("&3CPU: &b%s&3 (%s)", getCPUUsage().replace("%", "%%"), getCPUProcTime()).onHoverText("&eUtilisation du processeur par le serveur."));
+		textBuilder.extra(new TxtComponentBuilder("&3CPU: &b%s&3", getCPUUsage().replace("%", "%%")).onHoverText("&eUtilisation du processeur par le serveur."));
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3CPU Système: &b%s&3 (%d cores).", getCPUSysUsage().replace("%", "%%"), getCPUSysCore()).onHoverText("&eUtilisation globale du processeur."));
 		if (main.isSpigot())
