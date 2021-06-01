@@ -16,8 +16,6 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class TxtComponentBuilder {
 
-	//	private static boolean DEBUG = true; // need to test if cache is usefull
-
 	public static TextComponent of(Prefix prefix, String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content content, Object... args) {
 		return new TxtComponentBuilder(prefix, message, args).onClick(clickAction, clickActionValue).onHover(hoverAction, new Content[] { content }).build();
 	}
@@ -50,8 +48,8 @@ public class TxtComponentBuilder {
 		return s != null ? ColorUtils.color(s) : null;
 	}
 
-	private static TextComponent getText(String format, Object... args) {
-		return new TextComponent(TextComponent.fromLegacyText(format(format, args)));
+	private static TextComponent getText(String format) {
+		return new TextComponent(TextComponent.fromLegacyText(getStringColored(format)));
 	}
 
 	private static String format(String format, Object... args) {
@@ -93,7 +91,6 @@ public class TxtComponentBuilder {
 	}
 
 	public TxtComponentBuilder onHover(HoverEvent.Action hoverAction, Content... contents) {
-		clearCache();
 		this.hoverAction = hoverAction;
 		this.contents = contents;
 		return this;
@@ -104,13 +101,11 @@ public class TxtComponentBuilder {
 	}
 
 	public TxtComponentBuilder console() {
-		clearCache();
 		isConsole = true;
 		return this;
 	}
 
 	public TxtComponentBuilder console(boolean isConsole) {
-		clearCache();
 		this.isConsole = isConsole;
 		return this;
 	}
@@ -119,12 +114,15 @@ public class TxtComponentBuilder {
 		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(format(contents, args)));
 	}
 
+	public TxtComponentBuilder onHoverText(String contents) {
+		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(getStringColored(contents)));
+	}
+
 	public TxtComponentBuilder onHoverText(BaseComponent... contents) {
 		return onHover(HoverEvent.Action.SHOW_TEXT, new Text(contents));
 	}
 
 	public TxtComponentBuilder onClick(ClickEvent.Action clickAction, String clickActionValue) {
-		clearCache();
 		this.clickAction = clickAction;
 		this.clickActionValue = getStringColored(clickActionValue);
 		return this;
@@ -147,7 +145,6 @@ public class TxtComponentBuilder {
 	}
 
 	public TxtComponentBuilder extra(TxtComponentBuilder extra) {
-		clearCache();
 		if (extras == null)
 			extras = new ArrayList<>();
 		extras.add(extra);
@@ -155,7 +152,6 @@ public class TxtComponentBuilder {
 	}
 
 	public TxtComponentBuilder extra(String text, Object... args) {
-		clearCache();
 		if (extras == null)
 			extras = new ArrayList<>();
 		extras.add(new TxtComponentBuilder(text, args));
@@ -163,28 +159,16 @@ public class TxtComponentBuilder {
 	}
 
 	public TxtComponentBuilder extraSpliter(String text, Object... args) {
-		clearCache();
 		extrasSeparator = new TxtComponentBuilder(text, args);
 		return this;
 	}
 
 	public TxtComponentBuilder extraSpliterBN() {
-		clearCache();
 		extrasSeparator = new TxtComponentBuilder("\n");
 		return this;
 	}
 
-	private TextComponent clearCache() {
-		//		return cache = null;
-		return null;
-	}
-
 	public TextComponent build() {
-		//		if (cache != null) {
-		//			if (DEBUG)
-		//				LinkSpigotBungee.Provider.link.sendMessage("§dTxtComponentBuilder builder CACHE took %s ms.", (System.nanoTime() - timeInit) / 1000000L);
-		//			return cache;
-		//		}
 		TextComponent text;
 		boolean isNotEmpty = !isEmpty();
 		if (isNotEmpty) {
@@ -197,17 +181,6 @@ public class TxtComponentBuilder {
 				text = getText(txtBuilder.toString());
 			else
 				text = new TextComponent();
-			if (isConsole) {
-				if (contents != null && contents.length != 0 && contents[0] instanceof Text)
-					text.addExtra(getText(String.format("&r(%s&r) ", ((Text) contents[0]).getValue())));
-				if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
-					text.addExtra(getText(String.format("&r(CLICK %s&r) ", clickActionValue)));
-			} else {
-				if (hoverAction != null && contents != null && contents.length > 0)
-					text.setHoverEvent(new HoverEvent(hoverAction, contents));
-				if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
-					text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
-			}
 		} else
 			text = new TextComponent();
 		TextComponent extrasSeparatorBuild = null;
@@ -217,17 +190,23 @@ public class TxtComponentBuilder {
 				if (isNotEmpty)
 					text.addExtra(extrasSeparatorBuild);
 			}
-			/*if (isNotEmpty && extrasSeparatorBuild != null)
-				text.addExtra(extrasSeparatorBuild);*/ // pourquoi mettre le séparateur ici ? le but d'un séparateur c'est d'être entre, pas avant
 			for (int i = 0; i < extras.size(); i++) {
 				text.addExtra(extras.get(i).build());
 				if (extrasSeparatorBuild != null && i < extras.size() - 1)
 					text.addExtra(extrasSeparatorBuild);
 			}
 		}
-		//		if (DEBUG)
-		//			LinkSpigotBungee.Provider.link.sendMessage("§dTxtComponentBuilder builder took %s ms.", (System.nanoTime() - timeInit) / 1000000L);
-		//		return cache = text;
+		if (isConsole) {
+			if (contents != null && contents.length != 0 && contents[0] instanceof Text)
+				text.addExtra(getText(String.format("&r(%s&r) ", ((Text) contents[0]).getValue())));
+			if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
+				text.addExtra(getText(String.format("&r(CLICK %s&r) ", clickActionValue)));
+		} else {
+			if (hoverAction != null && contents != null && contents.length > 0)
+				text.setHoverEvent(new HoverEvent(hoverAction, contents));
+			if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
+				text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
+		}
 		return text;
 	}
 }
