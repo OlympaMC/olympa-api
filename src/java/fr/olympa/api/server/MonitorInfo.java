@@ -52,7 +52,7 @@ public class MonitorInfo {
 	@Expose
 	protected String lastVersion = "unknown";
 	@Expose
-	protected String lastModifiedCore;
+	protected long lastModifiedCore;
 
 	public boolean canConnect(OlympaPlayer olympaPlayer) {
 		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
@@ -109,7 +109,7 @@ public class MonitorInfo {
 	}
 
 	public String getLastModifiedCore() {
-		return lastModifiedCore;
+		return Utils.tsToShortDur(lastModifiedCore);
 	}
 
 	public MonitorInfo() {

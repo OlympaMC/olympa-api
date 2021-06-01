@@ -45,19 +45,22 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 		return "&f[&6" + getDescription().getName() + "&f] &e";
 	}
 
-	public String getLastModifiedTime() {
+	public long getLastModifiedLong() {
 		if (lastModifiedTime != null)
-			return Utils.tsToShortDur(lastModifiedTime);
+			return lastModifiedTime;
 		try {
 			File file = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 			BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 			lastModifiedTime = attr.lastModifiedTime().toMillis() / 1000L;
+			return lastModifiedTime;
 		} catch (Exception | NoClassDefFoundError e) {
 			e.printStackTrace();
 		}
-		if (lastModifiedTime == null)
-			return null;
-		return Utils.tsToShortDur(lastModifiedTime);
+		return 0;
+	}
+
+	public String getLastModifiedTime() {
+		return Utils.tsToShortDur(getLastModifiedLong());
 	}
 
 	@Override

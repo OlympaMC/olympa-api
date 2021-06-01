@@ -34,7 +34,7 @@ public class MachineInfo {
 		cpuProcUsage = osMXBean.getProcessCpuLoad() * 100;
 		cpuSysUsage = osMXBean.getSystemCpuLoad() * 100;
 
-		ThreadMXBean threadMXBean = (ThreadMXBean) ManagementFactory.getThreadMXBean();
+		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		threads = threadMXBean.getThreadCount();
 		allThreadsCreated = threadMXBean.getTotalStartedThreadCount();
 	}

@@ -102,12 +102,9 @@ public class AccountProvider implements OlympaAccount {
 	/*@Override
 	public void saveToDb(OlympaPlayer olympaPlayer) {
 		// TODO Auto-generated method stub
-	
+
 	}*/
 
 	@Override
-	public void saveToRedis(OlympaPlayer olympaPlayer) {
-		// TODO Auto-generated method stub
-
-	}
+	public void saveToRedis(OlympaPlayer olympaPlayer) {}
 }
