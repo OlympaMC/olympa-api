@@ -45,7 +45,7 @@ public class MachineMessage extends MachineInfo {
 		if (main.isSpigot())
 			textBuilder.extra(getSpigotTPSInfo());
 		textBuilder.extra("\n");
-		textBuilder.extra(new TxtComponentBuilder("&3RAM: &b%s&3 (%s)", getMemUse()).onHoverText("&eRAM utilisée/RAM maximum du serveur Minecraft."));
+		textBuilder.extra(new TxtComponentBuilder("&3RAM: &b%s&3 (%s)", getMemUsage(), getMemUse()).onHoverText("&eRAM utilisée/RAM maximum du serveur Minecraft."));
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3Threads: &b%d&3.", getThreads()).onHoverText("&eNombre de 'sous-processus'."));
 		textBuilder.extra("\n");

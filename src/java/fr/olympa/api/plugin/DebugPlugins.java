@@ -42,7 +42,7 @@ public class DebugPlugins {
 				buildTime = (long) entry.getValue();
 				i++;
 			}
-			regexMatcher = MatcherPattern.of("\\W*(\\d+\\.\\d(\\.\\d)?(-SNAPSHOT)?)\\b");
+			regexMatcher = MatcherPattern.of("\\W*(\\d+\\.\\d+(\\.\\d+)?(-SNAPSHOT)?)\\b");
 			entry = regexMatcher.extractAndParseGroupOne(s);
 			if (entry.getValue() != null) {
 				s = entry.getKey();
