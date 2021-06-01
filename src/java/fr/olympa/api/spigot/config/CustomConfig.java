@@ -68,11 +68,15 @@ public class CustomConfig extends YamlConfiguration {
 
 	private boolean isLoaded = false;
 	private String fileName;
-	private Plugin plugin;
+	private OlympaAPIPlugin plugin;
 	private Map<String, Consumer<CustomConfig>> tasks = new HashMap<>();
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	public OlympaAPIPlugin getPlugin() {
+		return plugin;
 	}
 
 	public CustomConfig() {
@@ -80,12 +84,20 @@ public class CustomConfig extends YamlConfiguration {
 	}
 
 	public CustomConfig(Plugin plugin, String filename) {
+		this((OlympaAPIPlugin) plugin, filename);
+	}
+
+	public CustomConfig(OlympaAPIPlugin plugin, String filename) {
 		this.plugin = plugin;
 		if (!filename.toLowerCase().endsWith(".yml"))
 			filename += ".yml";
 		fileName = filename;
 		configFile = new File(plugin.getDataFolder(), fileName);
 		configs.add(this);
+	}
+
+	public boolean removeTask(String name) {
+		return tasks.remove(name) != null;
 	}
 
 	public boolean addTask(String name, Consumer<CustomConfig> consumer) {
@@ -140,7 +152,7 @@ public class CustomConfig extends YamlConfiguration {
 
 	public void reload() throws IOException, InvalidConfigurationException {
 		loadUnSafe();
-		((OlympaAPIPlugin) plugin).getTask().runTaskAsynchronously(() -> plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this)));
+		plugin.getTask().runTaskAsynchronously(() -> plugin.getServer().getPluginManager().callEvent(new SpigotConfigReloadEvent(this)));
 	}
 
 	public void loadUnSafe() throws IOException, InvalidConfigurationException {
@@ -182,7 +194,7 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			loadUnSafe();
 		} catch (IOException | InvalidConfigurationException e) {
-			e.initCause(new Throwable("Unable to load config: " + fileName));
+			e.initCause(new IllegalAccessError("Unable to load config: " + fileName));
 			e.printStackTrace();
 		}
 	}
@@ -195,7 +207,7 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			saveUnSafe();
 		} catch (IOException e) {
-			e.initCause(new Throwable("Unable to save config: " + fileName));
+			e.initCause(new IllegalAccessError("Unable to save config: " + fileName));
 			e.printStackTrace();
 		}
 	}

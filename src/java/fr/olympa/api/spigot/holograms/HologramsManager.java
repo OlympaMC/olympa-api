@@ -25,8 +25,8 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 
 import fr.olympa.api.common.module.OlympaModule;
-import fr.olympa.api.common.module.SpigotModule;
 import fr.olympa.api.common.module.OlympaModule.ModuleApi;
+import fr.olympa.api.common.module.SpigotModule;
 import fr.olympa.api.common.observable.Observable.Observer;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.spigot.command.OlympaCommand;
@@ -42,7 +42,7 @@ import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 
 public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
-	
+
 	@Override
 	public boolean disable(OlympaAPIPlugin plugin) {
 		unload();
@@ -50,27 +50,20 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		return true;
 	}
 
+	public boolean reload(CustomConfig config) {
+		if (!isEnabled())
+			return false;
+		unload();
+		load(config);
+		return true;
+	}
+
 	@Override
 	public boolean enable(OlympaAPIPlugin plugin) {
-		Map<Integer, Map<String, Object>> toDeserialize = new HashMap<>();
-		hologramsYaml = new CustomConfig(OlympaCore.getInstance(), hologramsFile.getName());
+		hologramsYaml = new CustomConfig(plugin, hologramsFile.getName());
+		hologramsYaml.addTask("module_holo", customConfig -> reload(customConfig));
 		hologramsYaml.load();
-		for (String key : hologramsYaml.getKeys(false)) {
-			int id = Integer.parseInt(key);
-			lastID = Math.max(id + 1, lastID);
-			toDeserialize.put(id, hologramsYaml.getConfigurationSection(key).getValues(false));
-		}
-		plugin.getTask().runTask(() -> {
-			toDeserialize.forEach((id, map) -> {
-				Hologram hologram = Hologram.deserialize(map, id, true);
-				holograms.put(id, hologram);
-				Observer update = updateHologram(id, hologram);
-				hologram.observe("manager_save", update);
-			});
-		});
-
-		entityType.setAccessible(true);
-		entityID.setAccessible(true);
+		load(hologramsYaml);
 		return true;
 	}
 
@@ -85,6 +78,31 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 		return true;
 	}
 
+	public void unload() {
+		holograms.values().forEach(Hologram::destroy);
+		holograms.clear();
+	}
+
+	public void load(CustomConfig config) {
+		OlympaAPIPlugin plugin = config.getPlugin();
+		Map<Integer, Map<String, Object>> toDeserialize = new HashMap<>();
+		for (String key : hologramsYaml.getKeys(false)) {
+			int id = Integer.parseInt(key);
+			lastID = Math.max(id + 1, lastID);
+			toDeserialize.put(id, hologramsYaml.getConfigurationSection(key).getValues(false));
+		}
+		plugin.getTask().runTask(() -> {
+			toDeserialize.forEach((id, map) -> {
+				Hologram hologram = Hologram.deserialize(map, id, true);
+				holograms.put(id, hologram);
+				Observer update = updateHologram(id, hologram);
+				hologram.observe("manager_save", update);
+			});
+		});
+		entityType.setAccessible(true);
+		entityID.setAccessible(true);
+	}
+
 	private final Map<Point2D, List<Integer>> chunksUnloaded = new HashMap<>();
 
 	Map<Integer, Hologram> holograms = new ConcurrentHashMap<>();
@@ -96,13 +114,9 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	private final Field entityType = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("c");
 	private final Field entityID = PacketPlayOutSpawnEntityLiving.class.getDeclaredField("a");
 	private final int armorStandEntityType = IRegistry.ENTITY_TYPE.a(EntityTypes.ARMOR_STAND);
-	
+
 	private HoloAccessControl accessController = (sender, holo, action) -> true;
 	private boolean createDefaultPacketHolo = false;
-	
-	public File getFile() {
-		return hologramsFile;
-	}
 
 	public HologramsManager(OlympaAPIPlugin pl, File hologramsFile) throws NoSuchFieldException {
 		this.hologramsFile = hologramsFile;
@@ -138,9 +152,9 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	public Hologram createHologram(Location location, boolean persistent, boolean defaultVisibility, AbstractLine<HologramLine>... lines) {
 		return createHologram(location, persistent, defaultVisibility, false, lines);
 	}
-	
+
 	/**
-	 * Only use this if holo has been created with createHologram originally 
+	 * Only use this if holo has been created with createHologram originally
 	 * @param id
 	 * @param holo
 	 * @return
@@ -149,9 +163,9 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	public boolean registerHologram(int id, Hologram holo) {
 		if (holograms.containsKey(id))
 			return false;
-		
+
 		holograms.put(id, holo);
-		
+
 		if (holo.isPersistent()) {
 			Observer update = updateHologram(id, holo);
 			holo.observe("manager_save", update);
@@ -161,7 +175,7 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -205,10 +219,6 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 				e.printStackTrace();
 			}
 		return true;
-	}
-
-	public void unload() {
-		holograms.values().forEach(Hologram::destroy);
 	}
 
 	@EventHandler
@@ -285,32 +295,32 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 	 * @param accessControler
 	 */
 	public void setHoloControlSupplier(HoloAccessControl accessControler) {
-		this.accessController = accessControler;
+		accessController = accessControler;
 	}
-	
+
 	public boolean hasAccessTo(CommandSender sender, Hologram holo, HoloActionType action) {
 		return accessController.apply(sender, holo, action);
 	}
-	
+
 	/**
-	 * Si vrai, alors tous les holos créés par les commandes seront 
+	 * Si vrai, alors tous les holos créés par les commandes seront
 	 * temporaires et entièrement en packets
 	 * @param b (default false)
 	 */
 	public void setTempHoloCreationMode(boolean b) {
-		this.createDefaultPacketHolo = b;
+		createDefaultPacketHolo = b;
 	}
-	
+
 	public boolean hasTempHoloCreationMode() {
 		return createDefaultPacketHolo;
 	}
-	
+
 	@FunctionalInterface
-	public static interface HoloAccessControl {
-		public boolean apply(CommandSender sender, Hologram holo, HoloActionType action);
+	public interface HoloAccessControl {
+		boolean apply(CommandSender sender, Hologram holo, HoloActionType action);
 	}
-	
-	public static enum HoloActionType {
+
+	public enum HoloActionType {
 		COMMAND,
 		CREATE_PREPROCESS,
 		CREATED,
