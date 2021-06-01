@@ -46,7 +46,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import fr.olympa.api.match.MatcherPattern;
+import fr.olympa.api.common.match.MatcherPattern;
 
 public class Utils {
 

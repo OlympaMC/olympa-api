@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.command.CommandSender;
 
-import fr.olympa.api.chat.ColorUtils;
+import fr.olympa.api.common.chat.ColorUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,15 +28,15 @@ public enum Prefix {
 	ChatColor color;
 	ChatColor color2;
 
-	private Prefix(String prefix) {
+	Prefix(String prefix) {
 		this(prefix, null, null);
 	}
 
-	private Prefix(String prefix, ChatColor color) {
+	Prefix(String prefix, ChatColor color) {
 		this(prefix, color, null);
 	}
 
-	private Prefix(String prefix, ChatColor color, ChatColor color2) {
+	Prefix(String prefix, ChatColor color, ChatColor color2) {
 		this.prefix = ColorUtils.color(prefix.replace("%serverName", "Olympa").replace("%symbole", "➤"));
 		this.color = color;
 		this.color2 = color2;
@@ -71,5 +71,5 @@ public enum Prefix {
 	public String toString() {
 		return prefix;
 	}
-	
+
 }

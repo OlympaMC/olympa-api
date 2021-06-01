@@ -1,6 +1,6 @@
 package exemple;
 
-import fr.olympa.api.report.ReportReason;
+import fr.olympa.api.common.report.ReportReason;
 
 public class ExempleReportReasonCustom {
 

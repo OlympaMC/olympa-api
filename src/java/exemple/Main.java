@@ -4,15 +4,15 @@ import org.bukkit.Location;
 import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.PluginManager;
 
-import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.lines.FixedLine;
-import fr.olympa.api.lines.TimerLine;
-import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.plugin.OlympaAPIPlugin;
-import fr.olympa.api.report.ReportReason;
-import fr.olympa.api.scoreboard.sign.Scoreboard;
-import fr.olympa.api.scoreboard.sign.ScoreboardManager;
+import fr.olympa.api.common.permission.OlympaPermission;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.plugin.OlympaAPIPlugin;
+import fr.olympa.api.common.report.ReportReason;
+import fr.olympa.api.spigot.gui.Inventories;
+import fr.olympa.api.spigot.lines.FixedLine;
+import fr.olympa.api.spigot.lines.TimerLine;
+import fr.olympa.api.spigot.scoreboard.sign.Scoreboard;
+import fr.olympa.api.spigot.scoreboard.sign.ScoreboardManager;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class Main extends OlympaAPIPlugin {

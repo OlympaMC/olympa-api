@@ -11,12 +11,12 @@ import com.google.common.cache.Cache;
 import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.chat.TableGenerator;
-import fr.olympa.api.chat.TableGenerator.Alignment;
-import fr.olympa.api.chat.TableGenerator.Receiver;
-import fr.olympa.api.chat.TxtComponentBuilder;
-import fr.olympa.api.command.IOlympaCommand;
-import fr.olympa.api.command.complex.CommandContext;
+import fr.olympa.api.common.chat.TableGenerator;
+import fr.olympa.api.common.chat.TxtComponentBuilder;
+import fr.olympa.api.common.chat.TableGenerator.Alignment;
+import fr.olympa.api.common.chat.TableGenerator.Receiver;
+import fr.olympa.api.common.command.IOlympaCommand;
+import fr.olympa.api.common.command.complex.CommandContext;
 
 public class CacheStats {
 

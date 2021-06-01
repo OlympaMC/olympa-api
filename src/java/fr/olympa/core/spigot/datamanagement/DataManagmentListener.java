@@ -12,10 +12,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.PermissionAttachment;
 
-import fr.olympa.api.chat.ColorUtils;
-import fr.olympa.api.customevents.OlympaPlayerLoadEvent;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.chat.ColorUtils;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.core.FakeData;
 import fr.olympa.core.spigot.OlympaCore;
 

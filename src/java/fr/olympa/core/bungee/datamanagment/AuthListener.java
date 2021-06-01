@@ -1,8 +1,8 @@
 package fr.olympa.core.bungee.datamanagment;
 
 import fr.olympa.api.bungee.customevent.OlympaPlayerLoginEvent;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.core.FakeData;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

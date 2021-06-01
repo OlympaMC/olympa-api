@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 import fr.olympa.api.bungee.config.BungeeCustomConfig;
 import fr.olympa.api.bungee.permission.OlympaBungeePermission;
-import fr.olympa.api.chat.TxtComponentBuilder;
-import fr.olympa.api.command.complex.ArgumentParser;
-import fr.olympa.api.command.complex.Cmd;
-import fr.olympa.api.command.complex.CommandContext;
-import fr.olympa.api.command.complex.IComplexCommand;
-import fr.olympa.api.command.complex.InternalCommand;
-import fr.olympa.api.provider.AccountProvider;
+import fr.olympa.api.common.chat.TxtComponentBuilder;
+import fr.olympa.api.common.command.complex.ArgumentParser;
+import fr.olympa.api.common.command.complex.Cmd;
+import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.api.common.command.complex.IComplexCommand;
+import fr.olympa.api.common.command.complex.InternalCommand;
+import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -62,12 +62,12 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 				return null;
 			return result;
 		}, x -> String.format("La commande &4%s&c n'existe pas", x));
-		addArgumentParser("CONFIGS", (sender, arg) -> BungeeCustomConfig.getConfigs().stream().map(BungeeCustomConfig::getName).collect(Collectors.toList()), x -> {
-			return BungeeCustomConfig.getConfig(x);
-		}, x -> String.format("La config &4%s&c n'existe pas", x));
-		addArgumentParser("SERVERS", (sender, arg) -> plugin.getProxy().getServersCopy().keySet(), x -> {
-			return plugin.getProxy().getServersCopy().get(x);
-		}, x -> String.format("Le serveur &4%s&c n'existe pas", x));
+		addArgumentParser("CONFIGS", (sender, arg) -> BungeeCustomConfig.getConfigs().stream().map(BungeeCustomConfig::getName).collect(Collectors.toList()),
+				x -> BungeeCustomConfig.getConfig(x),
+				x -> String.format("La config &4%s&c n'existe pas", x));
+		addArgumentParser("SERVERS", (sender, arg) -> plugin.getProxy().getServersCopy().keySet(),
+				x -> plugin.getProxy().getServersCopy().get(x),
+				x -> String.format("Le serveur &4%s&c n'existe pas", x));
 		registerCommandsClass(this);
 	}
 
@@ -211,7 +211,7 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 						continue;
 					}
 				OlympaCore.getInstance().sendMessage("Error when loading command annotated method " + method.getName() + " in class "
-						+ method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.command.complex.CommandContext");
+						+ method.getDeclaringClass().getName() + ". Required argument: fr.olympa.api.common.command.complex.CommandContext");
 			}
 	}
 

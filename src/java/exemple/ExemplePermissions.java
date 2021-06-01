@@ -2,10 +2,10 @@ package exemple;
 
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.permission.OlympaSpigotPermission;
-import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.permission.OlympaPermission;
+import fr.olympa.api.common.permission.OlympaSpigotPermission;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 
 public class ExemplePermissions {
 

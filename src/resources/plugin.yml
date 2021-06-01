@@ -1,7 +1,8 @@
 name: OlympaAPI
 website: https://olympa.fr
 main: fr.olympa.core.spigot.OlympaCore
-author: Tristiisch, SkytAsul
+authors: [Tristiisch, SkytAsul]
+contributors: [Bullobily]
 version: @plugin_version@
 softdepend: [ProtocolSupport, ViaVersion]
 api-version: 1.16

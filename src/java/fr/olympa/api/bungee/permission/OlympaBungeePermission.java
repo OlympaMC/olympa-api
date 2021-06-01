@@ -5,11 +5,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import fr.olympa.api.chat.ColorUtils;
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.server.ServerType;
+import fr.olympa.api.common.chat.ColorUtils;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.permission.OlympaPermission;
+import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.server.ServerFrameworkType;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -43,8 +43,8 @@ public class OlympaBungeePermission extends OlympaPermission {
 	}
 
 	@Override
-	public ServerType getServerType() {
-		return ServerType.BUNGEE;
+	public ServerFrameworkType getServerType() {
+		return ServerFrameworkType.BUNGEE;
 	}
 
 	public void getPlayersBungee(Consumer<? super Set<ProxiedPlayer>> success) {

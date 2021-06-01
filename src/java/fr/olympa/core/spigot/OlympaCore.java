@@ -10,18 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
-import fr.olympa.api.bpmc.SpigotBPMCEvent;
-import fr.olympa.api.command.CommandListener;
-import fr.olympa.api.frame.ImageFrameManager;
-import fr.olympa.api.gui.Inventories;
-import fr.olympa.api.holograms.HologramsManager;
-import fr.olympa.api.hook.IProtocolSupport;
-import fr.olympa.api.permission.OlympaPermission;
-import fr.olympa.api.permission.list.OlympaAPIPermissionsSpigot;
-import fr.olympa.api.plugin.OlympaSpigot;
-import fr.olympa.api.region.tracking.RegionManager;
-import fr.olympa.api.server.MonitorInfo;
-import fr.olympa.api.server.OlympaServer;
+import fr.olympa.api.common.bpmc.SpigotBPMCEvent;
+import fr.olympa.api.common.permission.OlympaPermission;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
+import fr.olympa.api.common.plugin.OlympaSpigot;
+import fr.olympa.api.common.server.OlympaServer;
+import fr.olympa.api.common.server.ServerInfoBasic;
+import fr.olympa.api.spigot.command.CommandListener;
+import fr.olympa.api.spigot.frame.ImageFrameManager;
+import fr.olympa.api.spigot.gui.Inventories;
+import fr.olympa.api.spigot.holograms.HologramsManager;
+import fr.olympa.api.spigot.hook.IProtocolSupport;
+import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.DataManagmentListener;
 
 /**
@@ -150,5 +150,5 @@ public class OlympaCore extends OlympaSpigot {
 	public void usesPack(Player p) {}
 
 	@Override
-	public void retreiveMonitorInfos(BiConsumer<List<MonitorInfo>, Boolean> callback, boolean freshDoubleCallBack) {}
+	public void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack) {}
 }

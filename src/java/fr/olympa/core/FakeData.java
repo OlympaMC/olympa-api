@@ -1,9 +1,9 @@
 package fr.olympa.core;
 
-import fr.olympa.api.groups.OlympaGroup;
-import fr.olympa.api.player.OlympaPlayer;
-import fr.olympa.api.provider.AccountProvider;
-import fr.olympa.api.provider.OlympaPlayerInformationsObject;
+import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.OlympaPlayerInformationsObject;
 
 public class FakeData {
 

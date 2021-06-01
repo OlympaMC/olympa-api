@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.server.OlympaServer;
-import fr.olympa.api.server.ServerStatus;
-import fr.olympa.api.task.OlympaTask;
+import fr.olympa.api.common.server.OlympaServer;
+import fr.olympa.api.common.server.ServerStatus;
+import fr.olympa.api.common.task.OlympaTask;
 import fr.olympa.api.utils.Utils;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

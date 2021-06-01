@@ -1,7 +1,7 @@
 package fr.olympa.api.bungee.customevent;
 
-import fr.olympa.api.chat.ColorUtils;
-import fr.olympa.api.player.OlympaPlayer;
+import fr.olympa.api.common.chat.ColorUtils;
+import fr.olympa.api.common.player.OlympaPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Event;
