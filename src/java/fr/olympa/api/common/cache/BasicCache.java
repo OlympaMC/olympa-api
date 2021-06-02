@@ -5,13 +5,13 @@ import java.util.function.Function;
 
 import fr.olympa.api.common.task.NativeTask;
 
-/**
- * Use to hide 'put' in other type of Cache
- */
 public class BasicCache<K, T> extends AbstractCache<K, T> {
 
 	protected static final NativeTask task = NativeTask.getInstance();
 
+	/**
+	 * Create a map with cached objects and key and and a way to recover them through @asyncGetObjectFunction if they not in cache.
+	 */
 	public BasicCache(Function<K, T> asyncGetObjectFunction, int timeBeforeRemove, TimeUnit unit) {
 		super(asyncGetObjectFunction, timeBeforeRemove, unit);
 	}

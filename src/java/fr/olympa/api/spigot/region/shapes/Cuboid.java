@@ -98,12 +98,12 @@ public class Cuboid extends AbstractRegion {
 
 	public List<Location> getCubeLocations() {
 		final ArrayList<Location> locations = new ArrayList<>();
-		for (int x = xMin; x <= xMax; ++x)
-			for (int z = zMin; z <= zMax; ++z) {
+		for (int x = xMin; x <= xMax; x++)
+			for (int z = zMin; z <= zMax; z++) {
 				locations.add(new Location(world, x, yMin, z));
 				locations.add(new Location(world, x, yMax, z));
-				if (z == zMin || x == xMin)
-					for (int y = yMin + 1; y < yMax; ++y)
+				if (z == zMin || x == xMin || z == zMax || x == xMax)
+					for (int y = yMin + 1; y < yMax; y++)
 						locations.add(new Location(world, x, y, z));
 			}
 		return locations;

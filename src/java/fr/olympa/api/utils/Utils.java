@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.Collator;
+import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.text.NumberFormat;
@@ -54,6 +55,22 @@ public class Utils {
 		Collections.shuffle(list);
 		return list;
 	});
+
+	public static String nanoSecondesToHumain(long nanoseconds) {
+		double number;
+		String unit;
+		if (nanoseconds > 1000000000) {
+			number = nanoseconds / 1000000000d;
+			unit = "sec";
+		} else if (nanoseconds > 1000000) {
+			number = nanoseconds / 1000000d;
+			unit = "ms";
+		} else {
+			number = nanoseconds;
+			unit = "ns";
+		}
+		return new DecimalFormat("0.#").format(number) + unit;
+	}
 
 	public static boolean isAllUpperCase(String s) {
 		for (int i = 0; i < s.length(); i++)

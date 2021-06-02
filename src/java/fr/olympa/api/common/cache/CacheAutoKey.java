@@ -17,6 +17,12 @@ public class CacheAutoKey<T, K> extends CacheMultiKeys<T, K> {
 
 	private Map<Class<?>, Entry<Function<T, Object>, Function<Object, T>>> getObjectByOtherFieldFunctions = new HashMap<>();
 
+	/**
+	 * Create a map with cached objects and a way to retrieve the object via any field of that object when they are registered in {@link #registerOtherFieldFunction(Class, Function, Function)}
+	 * or a way to recover them through @asyncGetObjectFunction if they not in cache
+	 *
+	 * It can't allowed to retrive field by same type.
+	 */
 	public CacheAutoKey(Function<K, T> asyncGetObjectFunction, Function<T, K> asyncGetKeyFunction, int timeBeforeRemove, TimeUnit unit) {
 		super(asyncGetObjectFunction, asyncGetKeyFunction, timeBeforeRemove, unit);
 	}

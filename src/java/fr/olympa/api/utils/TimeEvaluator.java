@@ -25,7 +25,7 @@ public class TimeEvaluator {
 		long timeTaken2 = getTimeDiff();
 		if (timeTaken == 0)
 			timeTaken2 = stop();
-		LinkSpigotBungee.Provider.link.sendMessage("&6[TIME EVALUATOR] &e%s took %d nanoseconds (or %s miliseconds)", name, timeTaken2, timeTaken2 / 1000000D);
+		LinkSpigotBungee.Provider.link.sendMessage("&6[TIME EVALUATOR] &e%s took %s", name, Utils.nanoSecondesToHumain(timeTaken2));
 	}
 
 	public long getTimeDiff() {

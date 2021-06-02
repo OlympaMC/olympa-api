@@ -1,5 +1,7 @@
 package fr.olympa.api.common.server;
 
+import javax.annotation.Nullable;
+
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
 
@@ -39,6 +41,7 @@ public enum OlympaServer {
 		this.type = type;
 	}
 
+	@Nullable
 	public String getNameCaps() {
 		return name;
 	}

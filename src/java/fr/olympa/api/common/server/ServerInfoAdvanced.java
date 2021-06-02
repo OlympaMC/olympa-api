@@ -2,12 +2,14 @@ package fr.olympa.api.common.server;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
+import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.plugin.PluginInfoAdvanced;
 import fr.olympa.api.utils.Utils;
 
@@ -71,6 +73,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	protected String name;
 	protected ServerStatus status;
+	protected OlympaServer olympaServer;
 	protected long uptime;
 	protected float tps;
 	protected List<PluginInfoAdvanced> plugins;
@@ -78,7 +81,13 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	protected String lastVersionMinecraft;
 	protected String bukkitVersion;
 	protected boolean databaseConnected;
-	Boolean redisConnected;
+
+	protected Boolean redisConnected;
+	protected int serverId;
+	protected int ping;
+	protected int onlinePlayers;
+	protected int maxPlayers;
+	protected List<OlympaPlayerInformations> players;
 
 	public ServerInfoAdvanced() {
 		super();
@@ -86,6 +95,15 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getHumainName() {
+		if (olympaServer.getNameCaps() == null)
+			return Utils.capitalize(name);
+		StringJoiner sj = new StringJoiner(" ");
+		sj.add(olympaServer.getNameCaps());
+		sj.add(" " + Utils.intToSymbole(getCPUSysCore()));
+		return sj.toString();
 	}
 
 	public ServerStatus getStatus() {
@@ -126,6 +144,10 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public Boolean isRedisConnected() {
 		return redisConnected;
+	}
+
+	public OlympaServer getOlympaServer() {
+		return olympaServer;
 	}
 
 }

@@ -3,6 +3,8 @@ package fr.olympa.api.common.cache;
 import java.lang.reflect.Field;
 
 /**
+ * Non implémanter
+ *
  * Ici c'est pour essayer de lier l'api SQL & Cache au maximum
  * Le but est de résoudre le problème suivant : Si deux field sont du même type, il faut réussir à les différencier pour automatiser le get/set de ce même field
  * La solution serait d'utiliser l'ordre des fields dans la class ou des annotations

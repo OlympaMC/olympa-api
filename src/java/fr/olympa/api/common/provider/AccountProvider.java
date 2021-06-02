@@ -2,6 +2,7 @@ package fr.olympa.api.common.provider;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +64,15 @@ public class AccountProvider implements OlympaAccount {
 
 	public static Collection<OlympaPlayer> getAll() {
 		return cache.values();
+	}
+
+	public static List<OlympaPlayerInformations> getAllConnectedPlayersInformations() {
+		List<OlympaPlayerInformations> list = new ArrayList<>();
+		cache.forEach((uuid, olympaPlayer) -> {
+			if (olympaPlayer.isConnected())
+				list.add(getPlayerInformations(olympaPlayer.getId()));
+		});
+		return list;
 	}
 
 	public static Collection<OlympaPlayerInformations> getAllPlayersInformations() {
