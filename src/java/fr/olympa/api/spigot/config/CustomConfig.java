@@ -53,9 +53,11 @@ public class CustomConfig extends YamlConfiguration {
 
 	{
 		ConfigurationSerialization.registerClass(Cuboid.class);
+		ConfigurationSerialization.registerClass(Cuboid.class, "fr.olympa.api.region.shapes.Cuboid");
 		ConfigurationSerialization.registerClass(ExpandedCuboid.class);
 		ConfigurationSerialization.registerClass(ChunkCuboid.class);
 		ConfigurationSerialization.registerClass(Polygon.class);
+		ConfigurationSerialization.registerClass(Polygon.class, "fr.olympa.api.region.shapes.Polygon");
 		ConfigurationSerialization.registerClass(ChunkPolygon.class);
 		ConfigurationSerialization.registerClass(Cylinder.class);
 		ConfigurationSerialization.registerClass(WorldRegion.class);

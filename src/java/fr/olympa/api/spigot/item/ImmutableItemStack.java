@@ -55,5 +55,11 @@ public class ImmutableItemStack extends ItemStack {
 	public ItemStack toMutableStack() {
 		return new ItemStack(this);
 	}
+	
+	public ItemStack toMutableStack(int amount) {
+		ItemStack item = new ItemStack(this);
+		item.setAmount(amount);
+		return item;
+	}
 
 }
