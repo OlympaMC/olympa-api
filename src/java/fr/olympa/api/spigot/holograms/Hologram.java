@@ -304,7 +304,7 @@ public class Hologram extends AbstractObservable {
 				
 			}else if (!isPacketHolo() && entity == null) {
 				
-				if (!willSpawn || !bottom.getChunk().isLoaded()) 
+				if (!willSpawn || !bottom.isChunkLoaded())
 					return;
 				entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class, entity -> {
 					entity.setGravity(false);

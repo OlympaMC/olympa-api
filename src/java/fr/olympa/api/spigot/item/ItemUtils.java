@@ -54,10 +54,23 @@ public class ItemUtils {
 	 * @return the ItemStack instance
 	 */
 	public static ItemStack item(Material type, String name, String... lore) {
+		return item(type, null, name, lore);
+	}
+	
+	/**
+	 * Create an ItemStack instance
+	 * @param type material type
+	 * @param customModelData custom model data, or <code>null</code>
+	 * @param name name of the item
+	 * @param lore lore of the item, formatted as a String array
+	 * @return the ItemStack instance
+	 */
+	public static ItemStack item(Material type, Integer customModelData, String name, String... lore) {
 		ItemStack is = new ItemStack(type);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(name);
 		im.addItemFlags(ItemFlag.values());
+		if (customModelData != null) im.setCustomModelData(customModelData);
 		is.setItemMeta(im);
 		if (lore != null && lore.length != 0)
 			lore(is, lore);

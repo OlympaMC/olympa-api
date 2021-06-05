@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -120,13 +121,22 @@ public interface RandomizedPickerBase<T> {
 				return true;
 			}
 			
+			@Override
+			public int hashCode() {
+				return object.hashCode();
+			}
+			
+			@Override
+			public boolean equals(Object o) {
+				if (!(o instanceof EmptyConditioned)) return false;
+				return Objects.equals(object, ((EmptyConditioned<T, C>) o).object);
+			}
+			
 		}
 		
 	}
 	
-	public class ConditionalContext {
-		
-	}
+	public class ConditionalContext {}
 	
 	public interface ConditionalPickerBase<T, C extends ConditionalContext> extends RandomizedPickerBase<T> {
 		
@@ -152,7 +162,11 @@ public interface RandomizedPickerBase<T> {
 		
 		public abstract Map<Conditioned<T, C>, Double> getConditionedObjectsList();
 		
+		/**
+		 * @deprecated {@link #getConditionedObjectsList()}
+		 */
 		@Override
+		@Deprecated (forRemoval = false)
 		default Map<T, Double> getObjectList() {
 			return getConditionedObjectsList().entrySet().stream().collect(Collectors.toMap(x -> x.getKey().getObject(), x -> x.getValue()));
 		}
@@ -529,15 +543,15 @@ public interface RandomizedPickerBase<T> {
 		
 		protected Map<Conditioned<T, C>, Double> values = new HashMap<>();
 		
-		public ConditionalPickerBuilderBase() {}
+		protected ConditionalPickerBuilderBase() {}
 		
-		public ConditionalPickerBuilderBase(Map<Conditioned<T, C>, Double> values) {
+		protected ConditionalPickerBuilderBase(Map<Conditioned<T, C>, Double> values) {
 			this.values.putAll(values);
 		}
 		
 		@Override
 		public IConditionalBuilderBase<T, C> add(double chance, T object) {
-			values.put(new Conditioned.EmptyConditioned<>(object), chance);
+			add(chance, new Conditioned.EmptyConditioned<>(object));
 			return this;
 		}
 		

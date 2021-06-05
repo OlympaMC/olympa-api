@@ -29,6 +29,7 @@ public class TrackedRegion {
 	}
 	
 	public void updateRegion(Region region) {
+		if (this.region.equals(region)) return;
 		OlympaCore.getInstance().getRegionManager().updateRegion(this, this.region, region);
 		this.region = region;
 	}
