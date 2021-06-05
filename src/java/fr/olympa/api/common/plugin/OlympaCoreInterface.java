@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.bukkit.entity.Player;
-
+import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
@@ -38,13 +37,13 @@ public interface OlympaCoreInterface {
 
 	Connection getDatabase() throws SQLException;
 
-	void usesPack(Player p);
-
 	/**
 	 * Execute le @param callback avec les dernières informations des serveurs spigot si possible. Si les données sont plus anciennes de 10 secondes,
 	 * on demande au bungee, et lors qu'un recevera la réponse, @param callback sera exécuté une seconde fois.
 	 * Tous les callback dans {@link fr.olympa.core.spigot.redis.receiver#BungeeServerInfoReceiver callbacksRegister} sont aussi executés.
 	 */
 	void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack);
+	
+	void registerPackListener(ResourcePackHandler packHandler);
 
 }

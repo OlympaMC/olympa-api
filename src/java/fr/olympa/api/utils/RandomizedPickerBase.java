@@ -157,7 +157,7 @@ public interface RandomizedPickerBase<T> {
 				Conditioned<T, C> conditioned = entry.getKey();
 				
 				return context == null ? conditioned.isValidWithNoContext() : conditioned.isValid(context);
-			}).collect(Collectors.toMap(x -> x.getKey().getObject(), x -> x.getValue())), getEmptyChance());
+			}).collect(Collectors.toMap(x -> x.getKey().getObject(), x -> x.getValue(), Double::sum)), getEmptyChance());
 		}
 		
 		public abstract Map<Conditioned<T, C>, Double> getConditionedObjectsList();

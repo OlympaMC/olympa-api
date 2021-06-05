@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
@@ -14,6 +13,7 @@ import fr.olympa.api.common.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.plugin.OlympaSpigot;
+import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.spigot.command.CommandListener;
@@ -147,8 +147,9 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public void usesPack(Player p) {}
-
-	@Override
 	public void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack) {}
+	
+	@Override
+	public void registerPackListener(ResourcePackHandler packHandler) {}
+	
 }
