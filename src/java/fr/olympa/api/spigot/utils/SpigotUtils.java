@@ -521,4 +521,11 @@ public class SpigotUtils {
 		return "§e" + bar + "§e[ §6§l" + inside + "§e ]" + bar + "§r";
 	}
 	
+	public static int broadcastMessage(String message) {
+		List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+		players.forEach(x -> x.sendMessage(message));
+		Bukkit.getConsoleSender().sendMessage(message);
+		return players.size() + 1;
+	}
+	
 }

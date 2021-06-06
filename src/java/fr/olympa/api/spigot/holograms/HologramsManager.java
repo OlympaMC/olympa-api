@@ -97,6 +97,13 @@ public class HologramsManager implements Listener, ModuleApi<OlympaAPIPlugin> {
 				holograms.put(id, hologram);
 				Observer update = updateHologram(id, hologram);
 				hologram.observe("manager_save", update);
+				if (!hologram.getBottom().isChunkLoaded()) {
+					chunksUnloaded.compute(Point2D.chunkPointFromLocation(hologram.getBottom()), (point, list) -> {
+						if (list == null) list = new ArrayList<>();
+						list.add(id);
+						return list;
+					});
+				}
 			});
 		});
 		entityType.setAccessible(true);
