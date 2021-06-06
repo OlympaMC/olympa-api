@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
@@ -68,7 +67,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public static ServerInfoAdvanced fromJson(String string) {
-		return new Gson().fromJson(string, ServerInfoAdvanced.class);
+		return LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvanced.class);
 	}
 
 	protected String name;
@@ -128,7 +127,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	@Override
 	public String toString() {
-		return new Gson().toJson(this);
+		return LinkSpigotBungee.getInstance().getGson().toJson(this);
 	}
 
 	public String getUptime() {

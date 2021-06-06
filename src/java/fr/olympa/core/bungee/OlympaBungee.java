@@ -2,6 +2,9 @@ package fr.olympa.core.bungee;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+
+import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.bungee.config.BungeeCustomConfig;
@@ -102,5 +105,15 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public List<String> getPlayersNames() {
+		return null;
+	}
 
+	@Override
+	public Gson getGson() {
+		return new Gson();
+	}
+	
 }
