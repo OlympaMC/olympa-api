@@ -176,4 +176,8 @@ public class MatcherPattern<T> {
 	public boolean is(String text) {
 		return getPattern(wholeWord(true)).matcher(text).find();
 	}
+
+	public String getRegex() {
+		return regex;
+	}
 }

@@ -134,8 +134,11 @@ public class PluginInfoAdvanced {
 	public String getGitCompareUrl() {
 		if (superVersion != null) {
 			String commitId = superVersion.getGitCommit();
+			String branch = superVersion.getGitBranch();
+			if (branch == null || branch.isBlank())
+				branch = "master";
 			if (commitId != null && website != null && website.contains("git"))
-				return website + (website.endsWith("/") ? "" : "/") + "-/compare/" + commitId + "...master";
+				return website + (website.endsWith("/") ? "" : "/") + "-/compare/" + commitId + "..." + branch;
 		}
 		return null;
 

@@ -122,6 +122,7 @@ public class RegexMatcher {
 	public static final MatcherPattern<String> HEX_COLOR_CHAT = new MatcherPattern<>("&#([A-Fa-f0-9]{6})", x -> {
 		return x.substring(1);
 	}, String.class);
+	public static final MatcherPattern<String> ALL_CHAT_INVISIBLE_CHARS = new MatcherPattern<>("[&§](#([A-Fa-f0-9]{6})|[0-9a-fA-Fk-oK-OrR])");
 	public static final MatcherPattern<String> HOUR = new MatcherPattern<>("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}");
 
 	private RegexMatcher() {

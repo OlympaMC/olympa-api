@@ -7,14 +7,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
+
 import com.google.common.cache.Cache;
 import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TableGenerator;
-import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.chat.TableGenerator.Alignment;
 import fr.olympa.api.common.chat.TableGenerator.Receiver;
+import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.command.IOlympaCommand;
 import fr.olympa.api.common.command.complex.CommandContext;
 
@@ -71,9 +73,14 @@ public class CacheStats {
 		}
 		Entry<String, Cache<?, ?>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
+		@Nullable
 		Cache<?, ?> cache = entry.getValue();
+		if (cache == null) {
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache %s est null.\n%s", cacheName);
+			return;
+		}
 		if (cmd.getArgumentsLength() == 1) {
-			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a contient &2%s&a entrées.\n%s", cacheName, cache.size(), getCacheStats(cacheName, cache, cmd.getSenderType()));
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a contient &2%s&a entrées.", cacheName, cache.size());
 			return;
 		}
 		String action = cmd.getArgument(1);
@@ -84,7 +91,10 @@ public class CacheStats {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache &2%s&a a été clear (de %d éléments).", cacheName, size);
 			break;
 		case "print":
-			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données de %s :\n", cacheName).extra(getContent(cache.asMap().entrySet(), cmd.getSenderType())).build());
+			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les données du cache %s :\n", cacheName).extra(getContent((Map<Object, Object>) cache.asMap(), cmd.getSenderType())).build());
+			break;
+		case "stats":
+			commandClass.sendComponents(new TxtComponentBuilder(Prefix.DEFAULT_GOOD, "Voici les stats de %s :\n", cacheName).extra(getCacheStats(cacheName, cache, cmd.getSenderType())).build());
 			break;
 		}
 	}
@@ -97,6 +107,10 @@ public class CacheStats {
 		Entry<String, Collection<?>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
 		Collection<?> list = entry.getValue();
+		if (list == null) {
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La list %s est null.\n%s", cacheName);
+			return;
+		}
 		if (cmd.getArgumentsLength() == 1) {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La list &2%s&a contient &2%s&a objets.", cacheName, list.size());
 			return;
@@ -122,6 +136,10 @@ public class CacheStats {
 		Entry<String, Map<Object, Object>> entry = cmd.getArgument(0);
 		String cacheName = entry.getKey();
 		Map<Object, Object> map = entry.getValue();
+		if (map == null) {
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La map %s est null.\n%s", cacheName);
+			return;
+		}
 		if (cmd.getArgumentsLength() == 1) {
 			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "La map &2%s&a contient &2%s&a entrées.", cacheName, map.size());
 			return;
@@ -152,91 +170,85 @@ public class CacheStats {
 	}
 
 	private static TxtComponentBuilder getAllDebugCaches(Receiver receiver) {
-		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID       &bSize")).extraSpliter("\n");
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliterBN();
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
+		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Cache<?, ?>> entry : caches.entrySet())
-			builder.extra(new TxtComponentBuilder("&6%s &e%d", entry.getKey(), entry.getValue().size()).onHoverText(getCacheStats(entry.getKey(), entry.getValue(), receiver)));
+			table.addRowTxtBuilder(new TxtComponentBuilder(entry.getKey())
+					.onHoverText(getCacheStats(entry.getKey(), entry.getValue(), receiver).toLegacyText())
+					.onClickCommand(getCommandToPrint("cache", entry.getKey())), new TxtComponentBuilder(entry.getValue().size()));
+		builder.extra(table.toTxtComponentBuilder());
 		return builder;
 	}
 
 	public static TxtComponentBuilder getAllDebugList(Receiver receiver) {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "List en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID          &bSize")).extraSpliter("\n");
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
+		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Collection<?>> entry : debugList.entrySet())
-			builder.extra(getContent(entry.getValue(), receiver));
+			table.addRowTxtBuilder(new TxtComponentBuilder("&6%s &e%d", entry.getKey(), entry.getValue().size())
+					.onHoverText(getContent(entry.getValue(), receiver).toLegacyText())
+					.onClickCommand(getCommandToPrint("list", entry.getKey())));
+		builder.extra(table.toTxtComponentBuilder());
 		return builder;
 	}
 
 	public static TxtComponentBuilder getAllDebugMap(Receiver receiver) {
 		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Map en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
-		builder.extra(new TxtComponentBuilder("&3ID          &bSize"));
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
+		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Map<Object, Object>> entry : debugMap.entrySet())
-			builder.extra(new TxtComponentBuilder(entry.getKey() + " " + entry.getValue().size()).onHoverText(getContent(entry.getValue(), receiver)));
+			table.addRowTxtBuilder(new TxtComponentBuilder(entry.getKey()).onHoverText(getContent(entry.getValue(), receiver).toLegacyText())
+					.onClickCommand(getCommandToPrint("map", entry.getKey())), new TxtComponentBuilder(entry.getValue().size()));
+		builder.extra(table.toTxtComponentBuilder());
 		return builder;
 	}
 
-	private static String getCacheStats(String name, Cache<?, ?> cache, Receiver receiver) {
+	private static TxtComponentBuilder getCacheStats(String name, Cache<?, ?> cache, Receiver receiver) {
+		TxtComponentBuilder out = new TxtComponentBuilder("&cStats de performances de &4%s&r\n&7Si toutes les valeurs sont à 0, il est possible que les stats du cache n'ont pas activés\n", name);
 		Map<String, String> stats = Utils.jsonToHumainReadable(new Gson().toJson(cache.stats()));
-		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
 		Iterator<Entry<String, String>> it = stats.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<String, String> entry = it.next();
-			String info1 = objectToString(entry.getKey());
-			String info2 = objectToString(entry.getValue());
-			String info3 = null;
-			String info4 = null;
-			if (it.hasNext()) {
-				Entry<String, String> entry2 = it.next();
-				info3 = objectToString(entry2.getKey());
-				info4 = objectToString(entry2.getValue());
-			}
-			table.addRow(info1, info2, "|", info3, info4);
+			table.addRowTxtBuilder(objectToTxtBuilder(entry.getKey(), receiver), objectToTxtBuilder(entry.getValue(), receiver));
 		}
-		return "&cStats de performances de &4" + name + "&r\n" + table.toString(receiver);
+		out.extra(table.toTxtComponentBuilder());
+		return out;
 	}
 
-	private static String getContent(Collection<?> info, Receiver receiver) {
-		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.LEFT, Alignment.LEFT);
+	private static TxtComponentBuilder getContent(Collection<?> info, Receiver receiver) {
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
+		table.addRowTxtBuilder("Valeur de l'objet");
 		Iterator<?> it = info.iterator();
-		while (it.hasNext()) {
-			String info1 = objectToString(it.next());
-			String info2 = null;
-			String info3 = null;
-			String info4 = null;
-			if (it.hasNext()) {
-				info2 = objectToString(it.next());
-				if (it.hasNext()) {
-					info3 = objectToString(it.next());
-					if (it.hasNext())
-						info4 = objectToString(it.next());
-				}
-			}
-			table.addRow(info1, info2, info3, info4);
-		}
-		return "&cContenu de la list\n" + table.toString(receiver);
+		while (it.hasNext())
+			table.addRowTxtBuilder(objectToTxtBuilder(it.next(), receiver));
+		return table.toTxtComponentBuilder();
 	}
 
-	public static String getContent(Map<Object, Object> info, Receiver receiver) {
-		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT);
-		table.addRow("Clef", "Valeur", "|", "Clef", "Valeur");
+	public static TxtComponentBuilder getContent(Map<Object, Object> info, Receiver receiver) {
+		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
+		table.addRowTxtBuilder("Clef", "Valeur");
 		Iterator<Entry<Object, Object>> it = info.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<Object, Object> entry = it.next();
-			String info1 = objectToString(entry.getKey());
-			String info2 = objectToString(entry.getValue());
-			String info3 = null;
-			String info4 = null;
-			if (it.hasNext()) {
-				Entry<Object, Object> entry2 = it.next();
-				info3 = objectToString(entry2.getKey());
-				info4 = objectToString(entry2.getValue());
-			}
-			table.addRow(info1, info2, "|", info3, info4);
+			table.addRowTxtBuilder(objectToTxtBuilder(entry.getKey(), receiver), objectToTxtBuilder(entry.getValue(), receiver));
 		}
-		return table.toString(receiver);
+		return table.toTxtComponentBuilder();
+	}
+
+	private static String getCommandToPrint(String listOrMapOrCache, String name) {
+		String commandName;
+		if (LinkSpigotBungee.Provider.link.isSpigot())
+			commandName = "spig";
+		else
+			commandName = "bung";
+		return String.format("/%s %s %s print", commandName, listOrMapOrCache, name);
 	}
 
 	private static String objectToString(Object o) {
+		if (o instanceof String)
+			return (String) o;
 		String key = o.toString();
 		if (key.startsWith(o.getClass().getName() + "@"))
 			try {
@@ -246,6 +258,30 @@ public class CacheStats {
 				LinkSpigotBungee.Provider.link.sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
 			}
 		return key;
+	}
+
+	private static TxtComponentBuilder objectToTxtBuilder(Object o, Receiver receiver) {
+		if (o instanceof String)
+			return new TxtComponentBuilder((String) o);
+		TxtComponentBuilder out = new TxtComponentBuilder();
+		String key = o.toString();
+		if (key.startsWith(o.getClass().getName() + "@"))
+			try {
+				String tmp = new Gson().toJson(o);
+				if (receiver == Receiver.CONSOLE || tmp.length() < 50)
+					out.extra(tmp);
+				else {
+					out.extra(o.getClass().getSimpleName());
+					out.onHoverText(tmp);
+				}
+			} catch (Exception e) {
+				out.extra(key);
+				out.onHoverText("&cImpossible de serialize en json la class &4%s&c.", o.getClass().getSimpleName());
+				LinkSpigotBungee.Provider.link.sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
+			}
+		else
+			out.extra(key);
+		return out;
 	}
 
 }

@@ -14,8 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.olympa.api.common.module.OlympaModule;
-import fr.olympa.api.common.module.SpigotModule;
 import fr.olympa.api.common.module.OlympaModule.ModuleApi;
+import fr.olympa.api.common.module.SpigotModule;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.common.provider.AccountProvider;
@@ -23,6 +23,7 @@ import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
 import fr.olympa.api.spigot.lines.AbstractLine;
+import fr.olympa.api.utils.CacheStats;
 
 public class ScoreboardManager<T extends OlympaPlayer> implements Listener, ModuleApi<OlympaAPIPlugin> {
 
@@ -45,6 +46,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 			scoreboards.forEach((op, scoreboard) -> scoreboard.unload());
 			scoreboards.clear();
 		}
+		CacheStats.addDebugMap("scoreboardSign", scoreboards);
 		return isEnabled();
 	}
 
@@ -96,11 +98,10 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 		scoreboards.put(p, scoreboard);
 		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread()));
 	}
-	
+
 	public void refresh(T p) {
-		if (removePlayerScoreboard(p)) {
+		if (removePlayerScoreboard(p))
 			create(p);
-		}
 	}
 
 	public Scoreboard<T> getPlayerScoreboard(T p) {

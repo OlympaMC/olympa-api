@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fr.olympa.api.common.match.RegexMatcher;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -68,7 +69,7 @@ public class TxtComponentBuilder {
 	Content[] contents;
 	TxtComponentBuilder extrasSeparator;
 	List<TxtComponentBuilder> extras;
-	//	TextComponent cache;
+	ChatColor color = null;
 	boolean isConsole = false;
 	long timeInit = System.nanoTime();
 
@@ -86,6 +87,14 @@ public class TxtComponentBuilder {
 
 	public TxtComponentBuilder(String msg) {
 		this.msg = getStringColored(getStringColored(msg));
+	}
+
+	public TxtComponentBuilder(long l) {
+		msg = String.valueOf(l);
+	}
+
+	public TxtComponentBuilder(int i) {
+		msg = String.valueOf(i);
 	}
 
 	public TxtComponentBuilder(Prefix prefix, Map<String, ChatColor> msg) {
@@ -159,6 +168,32 @@ public class TxtComponentBuilder {
 		return this;
 	}
 
+	public TxtComponentBuilder addToMsg(String msg) {
+		if (msg == null)
+			this.msg = msg;
+		else
+			this.msg += msg;
+		return this;
+	}
+
+	public TxtComponentBuilder addToMsgAtBegin(String msg) {
+		if (msg == null)
+			this.msg = msg;
+		else
+			this.msg = msg + this.msg;
+		return this;
+	}
+
+	public TxtComponentBuilder color(ChatColor color) {
+		this.color = color;
+		return this;
+	}
+
+	public TxtComponentBuilder color(String color) {
+		this.color = ColorUtils.colorOf(color);
+		return this;
+	}
+
 	public TxtComponentBuilder extra(String text, Object... args) {
 		if (extras == null)
 			extras = new ArrayList<>();
@@ -178,24 +213,24 @@ public class TxtComponentBuilder {
 
 	public TextComponent build() {
 		TextComponent text;
-		boolean isNotEmpty = !isEmpty();
-		if (isNotEmpty) {
-			StringBuilder txtBuilder = new StringBuilder();
-			if (prefix != null)
-				txtBuilder.append(prefix);
-			if (msg != null)
-				txtBuilder.append(msg);
-			if (!txtBuilder.toString().isEmpty())
-				text = getText(txtBuilder.toString());
-			else
-				text = new TextComponent();
-		} else
+		StringBuilder txtBuilder = new StringBuilder();
+		if (prefix != null)
+			txtBuilder.append(prefix);
+		if (msg != null && !msg.isEmpty()) {
+			if (color != null)
+				txtBuilder.append(color);
+			txtBuilder.append(msg);
+		}
+		String s = txtBuilder.toString();
+		if (!s.isEmpty())
+			text = getText(s);
+		else
 			text = new TextComponent();
 		TextComponent extrasSeparatorBuild = null;
 		if (extras != null) {
 			if (extrasSeparator != null && !extrasSeparator.isEmpty()) {
 				extrasSeparatorBuild = extrasSeparator.build();
-				if (isNotEmpty)
+				if (msg != null && !msg.isEmpty())
 					text.addExtra(extrasSeparatorBuild);
 			}
 			for (int i = 0; i < extras.size(); i++) {
@@ -224,5 +259,35 @@ public class TxtComponentBuilder {
 				text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
 		}
 		return text;
+	}
+
+	public String toLegacyText() {
+		TextComponent text = build();
+		return text.toLegacyText();
+	}
+
+	/**
+	 * @return the length of chars without colors
+	 */
+	public int getSizeOfLetters() {
+		String regex = RegexMatcher.ALL_CHAT_INVISIBLE_CHARS.getRegex();
+		int size = 0;
+		if (prefix != null)
+			size += prefix.toString().replaceAll(regex, "").length();
+		if (msg != null && !msg.isEmpty())
+			size += msg.replaceAll(regex, "").length();
+		if (extras != null) {
+			int extrasSeparatorSize = 0;
+			if (extrasSeparator != null && !extrasSeparator.isEmpty()) {
+				extrasSeparatorSize += extrasSeparator.getSizeOfLetters();
+				size += extrasSeparatorSize;
+			}
+			for (TxtComponentBuilder element : extras) {
+				size += element.getSizeOfLetters();
+				if (extrasSeparatorSize != 0)
+					size += extrasSeparatorSize;
+			}
+		}
+		return size;
 	}
 }

@@ -204,4 +204,14 @@ public class ColorUtils {
 		throw new IllegalAccessError("Unknown Type for String.join() in ColorUtils.joinTry().");
 	}
 
+	public static ChatColor colorOf(String color) {
+		if (color.length() == 1)
+			return ChatColor.getByChar(color.charAt(0));
+		else if (color.length() == 2 && (color.charAt(0) == '&' || color.charAt(0) == ChatColor.COLOR_CHAR))
+			return ChatColor.getByChar(color.charAt(1));
+		else if (RegexMatcher.HEX_COLOR_CHAT.is(color))
+			return ChatColor.of(RegexMatcher.HEX_COLOR_CHAT.parse(color));
+		throw new IllegalAccessError(color + " is not a color in format #FFFFFF or &f or §f or f.");
+	}
+
 }
