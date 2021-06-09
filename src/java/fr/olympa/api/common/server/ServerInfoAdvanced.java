@@ -89,6 +89,8 @@ public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public static ServerInfoAdvanced fromJson(String string) {
+		if (string != null && string.length() == 2 && string.equals("{}"))
+			return null;
 		return LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvanced.class);
 	}
 
