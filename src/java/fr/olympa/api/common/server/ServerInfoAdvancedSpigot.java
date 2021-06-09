@@ -13,9 +13,13 @@ import fr.olympa.api.common.provider.AccountProvider;
 import fr.olympa.api.spigot.utils.TPS;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class DebugServerSpigot extends ServerInfoAdvanced {
+public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 
-	public DebugServerSpigot(OlympaCore core) {
+	public ServerInfoAdvancedSpigot() {
+		super();
+	}
+
+	public ServerInfoAdvancedSpigot(OlympaCore core) {
 		super();
 		Server server = core.getServer();
 		maxPlayers = server.getMaxPlayers();
