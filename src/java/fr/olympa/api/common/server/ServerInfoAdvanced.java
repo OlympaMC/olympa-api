@@ -10,40 +10,60 @@ import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.plugin.PluginInfoAdvanced;
+import fr.olympa.api.common.plugin.PluginInfoBungee;
+import fr.olympa.api.common.plugin.PluginInfoSpigot;
+import fr.olympa.api.common.sort.Sorting;
 import fr.olympa.api.utils.Utils;
+import fr.olympa.core.bungee.OlympaBungee;
+import fr.olympa.core.spigot.OlympaCore;
 
-public class ServerInfoAdvanced extends JavaInstanceInfo {
+public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	private static List<String> principalAuthors = Arrays.asList("SkytAsul", "Tristiisch", "Bullobily");
 	private static String prefixOwnPlugins = "Olympa";
-	protected static List<PluginInfoAdvanced> ownPlugins = null;
+	protected static List<PluginInfoAdvanced> pluginsOfInstance;
+
+	public static void setPlugins() {
+		if (LinkSpigotBungee.Provider.link.isSpigot())
+			pluginsOfInstance = Arrays.stream(OlympaCore.getInstance().getServer().getPluginManager().getPlugins()).map(PluginInfoSpigot::new)
+					.sorted(new Sorting<>(dp -> dp.getName().startsWith("Olympa") ? 0l : 1l,
+							dp -> dp.getAuthors().stream().anyMatch(author -> author.equals("SkytAsul") || author.equals("Tristiisch") || author.equals("Bullobily")) ? 0l : 1l))
+					.collect(Collectors.toList());
+		else
+			pluginsOfInstance = OlympaBungee.getInstance().getProxy().getPluginManager().getPlugins().stream().map(PluginInfoBungee::new)
+					.sorted(new Sorting<>(dp -> dp.getName().startsWith("Olympa") ? 0l : 1l,
+							dp -> dp.getAuthors().stream().anyMatch(author -> author.equals("SkytAsul") || author.equals("Tristiisch") || author.equals("Bullobily")) ? 0l : 1l))
+					.collect(Collectors.toList());
+	}
 
 	/**
 	 * @return a list with all plugins register on this server
 	 */
 	public static List<PluginInfoAdvanced> getCachePlugins() {
-		return ownPlugins;
+		if (pluginsOfInstance == null)
+			setPlugins();
+		return pluginsOfInstance;
 	}
 
 	/**
 	 * @return a list with all plugins with prefix Olympa
 	 */
 	public static List<PluginInfoAdvanced> getOwnOlympaPlugins() {
-		return ownPlugins.stream().filter(dp -> dp.getName().startsWith(prefixOwnPlugins)).collect(Collectors.toList());
+		return getCachePlugins().stream().filter(dp -> dp.getName().startsWith(prefixOwnPlugins)).collect(Collectors.toList());
 	}
 
 	/**
 	 * @return a list with all plugins without prefix Olympa but created by one of principal authors
 	 */
 	public static List<PluginInfoAdvanced> getHomeMadePlugins() {
-		return ownPlugins.stream().filter(dp -> !dp.getName().startsWith(prefixOwnPlugins) && dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author))).collect(Collectors.toList());
+		return getCachePlugins().stream().filter(dp -> !dp.getName().startsWith(prefixOwnPlugins) && dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author))).collect(Collectors.toList());
 	}
 
 	/**
 	 * @return a list with all plugins with prefix Olympa or created by one of principal authors
 	 */
 	public static List<PluginInfoAdvanced> getAllHomeMadePlugins() {
-		return ownPlugins.stream().filter(dp -> dp.getName().startsWith(prefixOwnPlugins) ||
+		return getCachePlugins().stream().filter(dp -> dp.getName().startsWith(prefixOwnPlugins) ||
 				dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author))).collect(Collectors.toList());
 	}
 
@@ -51,7 +71,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	 * @return a list with all plugins without prefix Olympa and didn't created by one of principal authors
 	 */
 	public static List<PluginInfoAdvanced> getExternalPlugins() {
-		return ownPlugins.stream().filter(dp -> !dp.getName().startsWith(prefixOwnPlugins)
+		return getCachePlugins().stream().filter(dp -> !dp.getName().startsWith(prefixOwnPlugins)
 				&& dp.getAuthors().stream().noneMatch(author -> principalAuthors.contains(author)))
 				.collect(Collectors.toList());
 	}
