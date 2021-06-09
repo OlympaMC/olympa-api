@@ -46,6 +46,7 @@ public class TableGenerator {
 	private List<RowEntry> table2;
 	private int columns;
 	private boolean ignoreColors = true;
+	private boolean coloredDistances = true;
 	private Receiver receiver = Receiver.CLIENT;
 	private List<ChatColor> colors = Arrays.asList(ChatColor.YELLOW, ChatColor.GOLD);
 
@@ -64,6 +65,11 @@ public class TableGenerator {
 
 	public TableGenerator dontIgnoreColorsForSize() {
 		ignoreColors = false;
+		return this;
+	}
+
+	public TableGenerator dontColoredDistances() {
+		coloredDistances = false;
 		return this;
 	}
 
@@ -92,7 +98,7 @@ public class TableGenerator {
 
 	public TxtComponentBuilder toTxtComponentBuilder() {
 		TxtComponentBuilder out = new TxtComponentBuilder().extraSpliterBN();
-		generateTxtComponent(true).forEach(s -> out.extra(s));
+		generateTxtComponent().forEach(s -> out.extra(s));
 		return out;
 	}
 
@@ -234,7 +240,7 @@ public class TableGenerator {
 		return lines;
 	}
 
-	public List<TxtComponentBuilder> generateTxtComponent(boolean coloredDistances) {
+	public List<TxtComponentBuilder> generateTxtComponent() {
 		if (table != null)
 			throw new IllegalArgumentException("You can't add generate String table if you add row with addRow().");
 		if (table2 == null)
@@ -273,7 +279,8 @@ public class TableGenerator {
 			}
 			int i1 = 0;
 			for (Entry<TxtComponentBuilder, TextComponent> entry : r.texts.entrySet()) {
-				TxtComponentBuilder text = entry.getKey();
+				out.extra(getText(entry.getKey(), alignments[i1], iColor, i1));
+				/*TxtComponentBuilder text = entry.getKey();
 				Alignment agn = alignments[i1];
 				int length;
 				if (receiver == Receiver.CONSOLE)
@@ -284,7 +291,7 @@ public class TableGenerator {
 					length = getCustomLength(text.toLegacyText().replaceAll(colorsRegex, ""), receiver);
 				else
 					length = getCustomLength(text.toLegacyText(), receiver);
-
+				
 				int empty = columWidths[i1] - length;
 				int spacesAmount = empty;
 				if (receiver == Receiver.CLIENT)
@@ -292,13 +299,13 @@ public class TableGenerator {
 				int char1Amount = 0;
 				if (receiver == Receiver.CLIENT)
 					char1Amount = empty - 4 * spacesAmount;
-
+				
 				String spaces = concatChars(' ', spacesAmount);
 				String char1s = concatChars(char1, char1Amount);
-
+				
 				if (coloredDistances)
 					char1s = "§r§8" + char1s + "§r";
-
+				
 				if (agn == Alignment.LEFT) {
 					out.extra(text);
 					if (i1 < columns - 1) {
@@ -312,31 +319,31 @@ public class TableGenerator {
 				} else if (agn == Alignment.CENTER) {
 					int leftAmount = empty / 2;
 					int rightAmount = empty - leftAmount;
-
+				
 					int spacesLeftAmount = leftAmount;
 					int spacesRightAmount = rightAmount;
 					if (receiver == Receiver.CLIENT) {
 						spacesLeftAmount = (int) Math.floor(spacesLeftAmount / 4d);
 						spacesRightAmount = (int) Math.floor(spacesRightAmount / 4d);
 					}
-
+				
 					int char1LeftAmount = 0;
 					int char1RightAmount = 0;
 					if (receiver == Receiver.CLIENT) {
 						char1LeftAmount = leftAmount - 4 * spacesLeftAmount;
 						char1RightAmount = rightAmount - 4 * spacesRightAmount;
 					}
-
+				
 					String spacesLeft = concatChars(' ', spacesLeftAmount);
 					String spacesRight = concatChars(' ', spacesRightAmount);
 					String char1Left = concatChars(char1, char1LeftAmount);
 					String char1Right = concatChars(char1, char1RightAmount);
-
+				
 					if (coloredDistances) {
 						char1Left = "§r§8" + char1Left + "§r";
 						char1Right = "§r§8" + char1Right + "§r";
 					}
-
+				
 					out.extra(spacesLeft);
 					out.extra(char1Left);
 					out.extra(text);
@@ -346,7 +353,7 @@ public class TableGenerator {
 					}
 				}
 				if (i1 < columns - 1)
-					out.extra("§r" + delimiter);
+					out.extra("§r" + delimiter);*/
 				i1++;
 			}
 
@@ -362,6 +369,79 @@ public class TableGenerator {
 				iColor = 0;
 		}
 		return lines;
+	}
+
+	private TxtComponentBuilder getText(TxtComponentBuilder text, Alignment agn, int columWidths, int i1) {
+		int length;
+		if (ignoreColors)
+			length = getCustomLength(text.toLegacyText().replaceAll(colorsRegex, ""), receiver);
+		else
+			length = getCustomLength(text.toLegacyText(), receiver);
+
+		int empty = columWidths - length;
+		int spacesAmount = empty;
+		if (receiver == Receiver.CLIENT)
+			spacesAmount = (int) Math.floor(empty / 4d);
+		int char1Amount = 0;
+		if (receiver == Receiver.CLIENT)
+			char1Amount = empty - 4 * spacesAmount;
+
+		String spaces = concatChars(' ', spacesAmount);
+		String char1s = concatChars(char1, char1Amount);
+
+		if (coloredDistances)
+			char1s = "§r§8" + char1s + "§r";
+
+		TxtComponentBuilder out = new TxtComponentBuilder();
+		if (agn == Alignment.LEFT) {
+			out.extra(text);
+			if (i1 < columns - 1) {
+				out.extra(char1s);
+				out.extra(spaces);
+			}
+		} else if (agn == Alignment.RIGHT) {
+			out.extra(spaces);
+			out.extra(char1s);
+			out.extra(text);
+		} else if (agn == Alignment.CENTER) {
+			int leftAmount = empty / 2;
+			int rightAmount = empty - leftAmount;
+
+			int spacesLeftAmount = leftAmount;
+			int spacesRightAmount = rightAmount;
+			if (receiver == Receiver.CLIENT) {
+				spacesLeftAmount = (int) Math.floor(spacesLeftAmount / 4d);
+				spacesRightAmount = (int) Math.floor(spacesRightAmount / 4d);
+			}
+
+			int char1LeftAmount = 0;
+			int char1RightAmount = 0;
+			if (receiver == Receiver.CLIENT) {
+				char1LeftAmount = leftAmount - 4 * spacesLeftAmount;
+				char1RightAmount = rightAmount - 4 * spacesRightAmount;
+			}
+
+			String spacesLeft = concatChars(' ', spacesLeftAmount);
+			String spacesRight = concatChars(' ', spacesRightAmount);
+			String char1Left = concatChars(char1, char1LeftAmount);
+			String char1Right = concatChars(char1, char1RightAmount);
+
+			if (coloredDistances) {
+				char1Left = "§r§8" + char1Left + "§r";
+				char1Right = "§r§8" + char1Right + "§r";
+			}
+
+			out.extra(spacesLeft);
+			out.extra(char1Left);
+			out.extra(text);
+			if (i1 < columns - 1) {
+				out.extra(char1Right);
+				out.extra(spacesRight);
+			}
+		}
+		if (i1 < columns - 1)
+			out.extra("§r" + delimiter);
+		return out;
 	}
 
 	protected static int getCustomLength(String text, Receiver receiver) {
