@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.google.gson.annotations.Expose;
+
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
@@ -90,22 +92,37 @@ public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
 		return LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvanced.class);
 	}
 
+	@Expose
 	protected String name;
+	@Expose
 	protected ServerStatus status;
+	@Expose
 	protected OlympaServer olympaServer;
+	@Expose
 	protected long uptime;
+	@Expose
 	protected float tps;
+	@Expose
 	protected List<PluginInfoAdvanced> plugins;
+	@Expose
 	protected String firstVersionMinecraft;
+	@Expose
 	protected String lastVersionMinecraft;
+	@Expose
 	protected String bukkitVersion;
+	@Expose
 	protected boolean databaseConnected;
 
 	protected Boolean redisConnected;
+	@Expose
 	protected int serverId;
+	@Expose
 	protected int ping;
+	@Expose
 	protected int onlinePlayers;
+	@Expose
 	protected int maxPlayers;
+	@Expose
 	protected List<OlympaPlayerInformations> players;
 
 	public ServerInfoAdvanced() {
