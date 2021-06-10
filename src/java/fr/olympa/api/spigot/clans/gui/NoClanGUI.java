@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.clans.Clan;
 import fr.olympa.api.spigot.clans.ClanPlayerData;
 import fr.olympa.api.spigot.clans.ClansManager;
@@ -40,13 +40,13 @@ public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> ext
 					return;
 				}
 				try {
-					manager.createClan(AccountProvider.get(p.getUniqueId()), msg, manager.generateTag(msg));
+					manager.createClan(AccountProviderAPI.getter().get(p.getUniqueId()), msg, manager.generateTag(msg));
 				}catch (SQLException e) {
 					e.printStackTrace();
 					Inventories.closeAndExit(p);
 					Prefix.ERROR.sendMessage(p, "Une erreur est survenue.");
 				}
-				manager.provideManagementGUI(AccountProvider.get(p.getUniqueId())).create(p);
+				manager.provideManagementGUI(AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 			}, () -> {}, false, (player, msg) -> {
 				if (!manager.checkName(p, msg)) return null;
 				return msg;

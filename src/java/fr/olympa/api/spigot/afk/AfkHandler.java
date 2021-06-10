@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import fr.olympa.api.common.module.OlympaModule.ModuleApi;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.customevents.AsyncOlympaPlayerChangeGroupEvent;
 import fr.olympa.api.spigot.customevents.AsyncOlympaPlayerChangeGroupEvent.ChangeType;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
@@ -138,7 +138,7 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 		if ((ChangeType.SET.equals(changeType) || ChangeType.ADD.equals(changeType)) && OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB.hasPermission(olympaPlayer) || ChangeType.REMOVE.equals(changeType)) {
 			List<OlympaPlayer> toPlayer = Arrays.asList(olympaPlayer);
 			get().stream().forEach(entry -> {
-				nameTagApi.callNametagUpdate(AccountProvider.get(entry.getKey()), toPlayer);
+				nameTagApi.callNametagUpdate(AccountProviderAPI.getter().get(entry.getKey()), toPlayer);
 			});
 		}
 	}

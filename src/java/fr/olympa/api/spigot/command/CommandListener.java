@@ -14,7 +14,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -22,7 +22,7 @@ public class CommandListener implements Listener {
 
 	@EventHandler
 	public void onCommandSend(PlayerCommandSendEvent e) {
-		OlympaPlayer player = AccountProvider.get(e.getPlayer().getUniqueId());
+		OlympaPlayer player = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		OlympaCommand.commands.stream().filter(cmd -> !cmd.hasPermission(player)).forEach(cmd -> e.getCommands().removeAll(cmd.getAllCommands()));
 	}
 

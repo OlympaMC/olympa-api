@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.item.ItemUtils;
@@ -52,7 +52,7 @@ public class Auction {
 
 	public synchronized void buy(Player p) {
 		if (bought) throw new IllegalStateException("Auction already bought");
-		MoneyPlayerInterface buyer = AccountProvider.get(p.getUniqueId());
+		MoneyPlayerInterface buyer = AccountProviderAPI.getter().get(p.getUniqueId());
 		if (buyer.getGameMoney().withdraw(price)) {
 			SpigotUtils.giveItems(p, item);
 			Prefix.DEFAULT_GOOD.sendMessage(p, "L'achat s'est effectué. %s ont été retirés de ton compte !", OlympaMoney.format(price));

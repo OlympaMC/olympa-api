@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.command.Paginator;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.ChatColor;
@@ -42,7 +42,7 @@ public class ExempleCommand extends OlympaCommand {
 
 			@Override
 			protected List<OlympaPlayer> getObjects() {
-				return new ArrayList<>(AccountProvider.getAll());
+				return new ArrayList<>(AccountProviderAPI.getter().getAll());
 			}
 
 			@Override
@@ -63,7 +63,7 @@ public class ExempleCommand extends OlympaCommand {
 		// null if sender = Console or Command Block
 		Player player = this.player;
 
-		// == AccountProvider.get(player)
+		// == AccountProviderAPI.getter().get(player)
 		// null if sender = Console or Command Block
 		OlympaPlayer olympaPlayer = this.getOlympaPlayer();
 

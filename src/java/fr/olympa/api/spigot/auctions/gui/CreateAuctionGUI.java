@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
 import fr.olympa.api.spigot.economy.OlympaMoney;
 import fr.olympa.api.spigot.editor.TextEditor;
@@ -91,7 +91,7 @@ public class CreateAuctionGUI extends OlympaGUI {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu dois déposer l'item que tu veux vendre !");
 			}else {
 				try {
-					manager.createAuction(AccountProvider.get(p.getUniqueId()).getInformation(), inv.getItem(10), price, System.currentTimeMillis() + duration * 12 * 3600 * 1000);
+					manager.createAuction(AccountProviderAPI.getter().get(p.getUniqueId()).getInformation(), inv.getItem(10), price, System.currentTimeMillis() + duration * 12 * 3600 * 1000);
 					finished = true;
 					Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as mis ton item en vente !");
 				}catch (SQLException | IOException e) {

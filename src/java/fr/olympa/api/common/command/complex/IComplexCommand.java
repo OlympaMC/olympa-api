@@ -110,11 +110,6 @@ public interface IComplexCommand<C> {
 		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction, hasCache));
 	}
 
-	@Deprecated(forRemoval = true)
-	default void addArgumentParser(String name, Function<C, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> errorMessageArgumentFunction) {
-		addArgumentParser(name, new ArgumentParser<>(tabArgumentsFunction, supplyArgumentFunction, errorMessageArgumentFunction));
-	}
-
 	default InternalCommand getCommand(String argName) {
 		return getCommands().entrySet().stream().filter(entry -> entry.getKey().contains(argName.toLowerCase())).findFirst().map(Entry::getValue)
 				.orElse(getCommands().entrySet().stream().filter(entry -> entry.getValue().cmd.otherArg()).map(Entry::getValue).findFirst().orElse(null));

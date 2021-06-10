@@ -97,4 +97,6 @@ public interface PlayerSQL {
 
 	boolean playerExist(UUID playerUUID) throws SQLException;
 
+	String getTableCleanName();
+
 }

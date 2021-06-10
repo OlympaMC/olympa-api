@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.core.bungee.OlympaBungee;
 import net.md_5.bungee.api.ProxyServer;
@@ -26,7 +26,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 
 		players = new ArrayList<>();
 		server.getPlayers().forEach(player -> {
-			players.add(AccountProvider.getPlayerInformations(player.getUniqueId()));
+			players.add(AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()));
 		});
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();

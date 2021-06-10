@@ -21,7 +21,7 @@ import fr.olympa.api.common.command.CommandArgument;
 import fr.olympa.api.common.command.IOlympaCommand;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import net.md_5.bungee.api.CommandSender;
@@ -123,7 +123,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 			if (sender instanceof ProxiedPlayer) {
 				proxiedPlayer = (ProxiedPlayer) sender;
 				try {
-					olympaPlayer = new AccountProvider(proxiedPlayer.getUniqueId()).get();
+					olympaPlayer = new AccountProviderAPI(proxiedPlayer.getUniqueId()).get();
 				} catch (SQLException e) {
 					e.printStackTrace();
 					sendError("Impossible de récupérer tes données.");

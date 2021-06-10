@@ -142,7 +142,7 @@ public class OlympaPlayerObject implements OlympaPlayer {
 
 	@Override
 	public OlympaPlayerInformations getInformation() {
-		return cachedInfos == null ? cachedInfos = AccountProvider.getPlayerInformations(id) : cachedInfos;
+		return cachedInfos == null ? cachedInfos = AccountProviderAPI.getter().getPlayerInformations(id) : cachedInfos;
 	}
 
 	@Override

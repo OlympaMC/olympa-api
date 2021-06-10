@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.auctions.Auction;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
@@ -52,7 +52,7 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 
 	@Override
 	public void click(Auction existing, Player p, ClickType click) {
-		if (existing.player.equals(AccountProvider.get(p.getUniqueId()).getInformation())) {
+		if (existing.player.equals(AccountProviderAPI.getter().get(p.getUniqueId()).getInformation())) {
 			Prefix.DEFAULT_BAD.sendMessage(p, "Tu ne peux pas acheter ton propre objet...");
 		}else {
 			new ConfirmGUI(() -> {

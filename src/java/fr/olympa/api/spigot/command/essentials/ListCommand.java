@@ -17,7 +17,7 @@ import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 
 public class ListCommand extends OlympaCommand {
@@ -32,7 +32,7 @@ public class ListCommand extends OlympaCommand {
 		sendSuccess("Il y a §2%s§a joueur%s en ligne:", players.size(), players.size() == 1 ? "" : "s");
 		Map<OlympaGroup, List<Player>> groups = new EnumMap<>(OlympaGroup.class);
 		for (Player p : players) {
-			OlympaPlayer player = AccountProvider.get(p.getUniqueId());
+			OlympaPlayer player = AccountProviderAPI.getter().get(p.getUniqueId());
 			List<Player> groupPlayers = groups.computeIfAbsent(player.getGroup(), group -> new ArrayList<>());
 			groupPlayers.add(p);
 		}

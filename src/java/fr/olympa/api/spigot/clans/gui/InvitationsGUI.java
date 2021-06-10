@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.clans.Clan;
 import fr.olympa.api.spigot.clans.ClanPlayerData;
 import fr.olympa.api.spigot.clans.ClansManager;
@@ -29,7 +29,7 @@ public class InvitationsGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>
 	}
 
 	public void click(T existing, Player p, ClickType click) {
-		if (existing.addPlayer(AccountProvider.get(p.getUniqueId()), true)) {
+		if (existing.addPlayer(AccountProviderAPI.getter().get(p.getUniqueId()), true)) {
 			Inventories.closeAndExit(p);
 			manager.clearPlayerInvitations(p);
 		}else {

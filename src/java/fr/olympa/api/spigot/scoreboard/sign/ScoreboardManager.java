@@ -18,7 +18,7 @@ import fr.olympa.api.common.module.OlympaModule.ModuleApi;
 import fr.olympa.api.common.module.SpigotModule;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
@@ -116,7 +116,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e) {
-		removePlayerScoreboard(AccountProvider.get(e.getPlayer().getUniqueId()));
+		removePlayerScoreboard(AccountProviderAPI.getter().get(e.getPlayer().getUniqueId()));
 	}
 
 	public boolean removePlayerScoreboard(T p) {

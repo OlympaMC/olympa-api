@@ -29,7 +29,7 @@ import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.utils.Reflection;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -100,7 +100,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	@Override
 	public <T extends OlympaPlayer> T getOlympaPlayer() {
-		return AccountProvider.get(player.getUniqueId());
+		return AccountProviderAPI.getter().get(player.getUniqueId());
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	public boolean hasPermission(CommandSender sender) {
 		if (sender instanceof Player)
-			return hasPermission(AccountProvider.<OlympaPlayer>get(((Player) sender).getUniqueId()));
+			return hasPermission(AccountProviderAPI.getter().<OlympaPlayer>get(((Player) sender).getUniqueId()));
 		else
 			return isConsoleAllowed();
 	}

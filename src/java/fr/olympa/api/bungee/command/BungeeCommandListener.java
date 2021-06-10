@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -42,7 +42,7 @@ public class BungeeCommandListener implements Listener {
 		BungeeCommand cmd = BungeeCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(Entry::getValue).findFirst().orElse(null);
 		if (cmd == null)
 			return;
-		if (cmd.hasPermission(AccountProvider.<OlympaPlayer>get(((ProxiedPlayer) event.getSender()).getUniqueId()))) {
+		if (cmd.hasPermission(AccountProviderAPI.getter().<OlympaPlayer>get(((ProxiedPlayer) event.getSender()).getUniqueId()))) {
 			//CommandSender sender = (CommandSender) event.getSender();
 			//		sugg.remove(0);
 			List<String> suggestion = (List<String>) cmd.onTabComplete((CommandSender) event.getSender(), sugg.toArray(String[]::new));

@@ -24,18 +24,15 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	private static List<String> principalAuthors = Arrays.asList("SkytAsul", "Tristiisch", "Bullobily");
 	private static String prefixOwnPlugins = "Olympa";
 	private static List<PluginInfoAdvanced> pluginsOfInstance;
+	private static Sorting<PluginInfoAdvanced> sortingPlugins = new Sorting<>(dp -> dp.getName().startsWith(prefixOwnPlugins) ? 0l : 1l,
+			dp -> dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author)) ? 0l : 1l);
 
 	public static void setPlugins() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
-			pluginsOfInstance = Arrays.stream(OlympaCore.getInstance().getServer().getPluginManager().getPlugins()).map(PluginInfoSpigot::new)
-					.sorted(new Sorting<>(dp -> dp.getName().startsWith("Olympa") ? 0l : 1l,
-							dp -> dp.getAuthors().stream().anyMatch(author -> author.equals("SkytAsul") || author.equals("Tristiisch") || author.equals("Bullobily")) ? 0l : 1l))
-					.collect(Collectors.toList());
+		LinkSpigotBungee link = LinkSpigotBungee.Provider.link;
+		if (link.isSpigot())
+			pluginsOfInstance = Arrays.stream(((OlympaCore) link).getServer().getPluginManager().getPlugins()).map(PluginInfoSpigot::new).sorted(sortingPlugins).collect(Collectors.toList());
 		else
-			pluginsOfInstance = OlympaBungee.getInstance().getProxy().getPluginManager().getPlugins().stream().map(PluginInfoBungee::new)
-					.sorted(new Sorting<>(dp -> dp.getName().startsWith("Olympa") ? 0l : 1l,
-							dp -> dp.getAuthors().stream().anyMatch(author -> author.equals("SkytAsul") || author.equals("Tristiisch") || author.equals("Bullobily")) ? 0l : 1l))
-					.collect(Collectors.toList());
+			pluginsOfInstance = ((OlympaBungee) link).getProxy().getPluginManager().getPlugins().stream().map(PluginInfoBungee::new).sorted(sortingPlugins).collect(Collectors.toList());
 	}
 
 	/**

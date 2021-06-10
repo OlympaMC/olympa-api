@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Location;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 
 public abstract class AbstractSQLRank extends AbstractRank {
@@ -17,7 +17,7 @@ public abstract class AbstractSQLRank extends AbstractRank {
 	
 	@Override
 	protected void fillUpScores(ScoreEntry[] scores) throws SQLException {
-		String db = AccountProvider.getPluginPlayerTable().getName();
+		String db = AccountProviderAPI.getter().getPluginPlayerTable().getName();
 		String column = getColumn();
 		OlympaStatement topStatement =
 				new OlympaStatement("SELECT pseudo, " + db + "." + column

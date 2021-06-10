@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.common.chat.TxtComponentBuilder;
+import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.bungee.OlympaBungee;
 import net.md_5.bungee.api.plugin.PluginDescription;
@@ -19,8 +20,11 @@ public class TpsMessageBungee extends TpsMessage {
 		if (main.isSpigot())
 			throw new UnsupportedOperationException("Unable to get Bungee Info on not Bungee Environment");
 		TxtComponentBuilder textBuilder = super.getInfoMessage();
+		textBuilder.extra(new TxtComponentBuilder("\n&3Plugins Olympa: &b"));
 		try {
-			textBuilder.extra(new TxtComponentBuilder("\n&3Plugins Olympa: &b"));
+			textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole));
+		} catch (Exception e) {
+			e.printStackTrace();
 			for (TxtComponentBuilder txt : ((OlympaBungee) main).getProxy().getPluginManager().getPlugins().stream().filter(f -> f.getDescription().getName().startsWith("Olympa"))
 					.map(ff -> {
 						PluginDescription desc = ff.getDescription();
@@ -29,8 +33,6 @@ public class TpsMessageBungee extends TpsMessage {
 					})
 					.collect(Collectors.toList()))
 				textBuilder.extra(txt);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return textBuilder;
 	}

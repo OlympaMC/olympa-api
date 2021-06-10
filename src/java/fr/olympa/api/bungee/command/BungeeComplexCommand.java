@@ -19,7 +19,7 @@ import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.common.command.complex.IComplexCommand;
 import fr.olympa.api.common.command.complex.InternalCommand;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.core.spigot.OlympaCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -48,14 +48,15 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 		addArgumentParser("PLAYERS", (sender, arg) -> plugin.getProxy().getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), x -> {
 			return plugin.getProxy().getPlayer(x);
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
-		addArgumentParser("OLYMPA_PLAYERS", (sender, arg) -> arg.length() > 2 ? AccountProvider.getSQL().getNamesBySimilarName(arg) : plugin.getProxy().getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), x -> {
-			try {
-				return AccountProvider.get(x);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}, x -> String.format("Le joueur &4%s&c ne s'est jamais connecté", x));
+		addArgumentParser("OLYMPA_PLAYERS",
+				(sender, arg) -> arg.length() > 2 ? AccountProviderAPI.getter().getSQL().getNamesBySimilarName(arg) : plugin.getProxy().getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), x -> {
+					try {
+						return AccountProviderAPI.getter().get(x);
+					} catch (SQLException e) {
+						e.printStackTrace();
+						return null;
+					}
+				}, x -> String.format("Le joueur &4%s&c ne s'est jamais connecté", x));
 		addArgumentParser("SUBCOMMAND", (sender, arg) -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			InternalCommand result = getCommand(x);
 			if (result != null && result.cmd.otherArg())

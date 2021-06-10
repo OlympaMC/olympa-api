@@ -37,7 +37,7 @@ import fr.olympa.api.common.command.complex.Parser;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.DivideList;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
@@ -58,7 +58,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		}
 
 		boolean canRun(CommandSender sender) {
-			return sender instanceof Player ? hasPermission(perm, AccountProvider.get(((Player) sender).getUniqueId())) : !cmd.player();
+			return sender instanceof Player ? hasPermission(perm, AccountProviderAPI.getter().get(((Player) sender).getUniqueId())) : !cmd.player();
 		}
 	}
 
@@ -77,19 +77,19 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 
 		BiFunction<CommandSender, String, Collection<String>> offlinePlayers = (sender, arg) -> arg.length() > 1
 				? Stream.concat(Arrays.stream(plugin.getServer().getOfflinePlayers()).map(OfflinePlayer::getName),
-						AccountProvider.getAllPlayersInformations().stream().map(OlympaPlayerInformations::getName)).collect(Collectors.toList())
+						AccountProviderAPI.getter().getAllPlayersInformations().stream().map(OlympaPlayerInformations::getName)).collect(Collectors.toList())
 				: Collections.emptyList();
 		Server server = plugin.getServer();
 		addArgumentParser("OLYMPA_PLAYERS", offlinePlayers, x -> {
 			try {
-				return AccountProvider.get(x);
+				return AccountProviderAPI.getter().get(x);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return null;
 			}
 		}, x -> String.format("Le joueur &4%s&c est introuvable.", x));
 		addArgumentParser("OLYMPA_PLAYERS_INFO", offlinePlayers, x -> {
-			return AccountProvider.getPlayerInformations(x);
+			return AccountProviderAPI.getter().getPlayerInformations(x);
 		}, x -> String.format("Le joueur &4%s&c est introuvable.", x));
 		addArgumentParser("OFFLINE_PLAYERS", offlinePlayers, x -> {
 			OfflinePlayer p = server.getOfflinePlayer(x);

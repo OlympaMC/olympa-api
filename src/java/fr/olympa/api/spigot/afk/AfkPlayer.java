@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.customevents.AsyncPlayerAfkEvent;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
 import fr.olympa.api.utils.Prefix;
@@ -85,7 +85,7 @@ public class AfkPlayer {
 		Prefix.DEFAULT_BAD.sendMessage(p, "Tu es désormais &4AFK&c.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
-			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
+			api.callNametagUpdate(AccountProviderAPI.getter().get(p.getUniqueId()));
 
 		OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> Bukkit.getServer().getPluginManager().callEvent(new AsyncPlayerAfkEvent(p, isAfk)));
 	}
@@ -97,7 +97,7 @@ public class AfkPlayer {
 		Prefix.DEFAULT_GOOD.sendMessage(p, "Tu n'es plus &2AFK&a.");
 		INametagApi api = OlympaCore.getInstance().getNameTagApi();
 		if (api != null)
-			api.callNametagUpdate(AccountProvider.get(p.getUniqueId()));
+			api.callNametagUpdate(AccountProviderAPI.getter().get(p.getUniqueId()));
 		
 		OlympaCore.getInstance().getTask().runTaskAsynchronously(() -> Bukkit.getServer().getPluginManager().callEvent(new AsyncPlayerAfkEvent(p, isAfk)));
 	}

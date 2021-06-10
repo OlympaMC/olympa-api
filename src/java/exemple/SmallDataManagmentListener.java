@@ -14,24 +14,24 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 
 public class SmallDataManagmentListener implements Listener {
 
 	{
-		Bukkit.getOnlinePlayers().forEach(player -> init(new AccountProvider(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
+		Bukkit.getOnlinePlayers().forEach(player -> init(new AccountProviderAPI(player.getUniqueId()).createOlympaPlayer(player.getName(), player.getAddress().getAddress().getHostAddress())));
 	}
 
 	private void init(OlympaPlayer olympaPlayer) {
 		olympaPlayer.setGroup(OlympaGroup.DEV);
-		AccountProvider.cache.put(olympaPlayer.getUniqueId(), olympaPlayer);
+		AccountProviderAPI.cache.put(olympaPlayer.getUniqueId(), olympaPlayer);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
+		OlympaPlayer olympaPlayer = AccountProviderAPI.getter().get(player.getUniqueId());
 
 		if (olympaPlayer == null) {
 			player.kickPlayer("§cUne erreur de données est survenu, merci de réessayer.");
@@ -47,19 +47,19 @@ public class SmallDataManagmentListener implements Listener {
 	@EventHandler
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		UUID uuid = event.getUniqueId();
-		init(new AccountProvider(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
+		init(new AccountProviderAPI(uuid).createOlympaPlayer(event.getName(), event.getAddress().getHostAddress()));
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerQuitHighest(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		AccountProvider.cache.remove(player.getUniqueId());
+		AccountProviderAPI.cache.remove(player.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuitLow(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
+		OlympaPlayer olympaPlayer = AccountProviderAPI.getter().get(player.getUniqueId());
 		if (olympaPlayer != null) {
 			event.setQuitMessage(ColorUtils.color("&7[&c-&7] %prefix%name".replaceAll("%group", olympaPlayer.getGroupName()).replaceAll("%prefix", olympaPlayer.getGroupPrefix()).replaceAll("%name", player.getDisplayName())));
 		} else {

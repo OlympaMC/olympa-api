@@ -26,7 +26,7 @@ import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.SQLColumn;
 import fr.olympa.api.common.sql.SQLTable;
 import fr.olympa.api.spigot.clans.gui.ClanManagementGUI;
@@ -110,7 +110,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 					resultSet.getInt("id"),
 					resultSet.getString("name"),
 					resultSet.getString("tag"),
-					AccountProvider.getPlayerInformations(resultSet.getLong("chief")),
+					AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("chief")),
 					resultSet.getInt("max_size"),
 					resultSet.getDouble("money"),
 					resultSet.getDate("created").getTime() / 1000L,
@@ -118,7 +118,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			
 			ResultSet playersSet = playersTable.getFromColumn(clanIDColumn, clan.getID());
 			while (playersSet.next()) {
-				D playerData = provideClanData(AccountProvider.getPlayerInformations(playersSet.getLong("player_id")), playersSet);
+				D playerData = provideClanData(AccountProviderAPI.getter().getPlayerInformations(playersSet.getLong("player_id")), playersSet);
 				clan.members.put(playerData.getPlayerInformations(), playerData);
 			}
 			playersSet.close();
@@ -175,7 +175,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			clan = getByTag(nameOrTagOrPlayer);
 		}
 		if (clan == null) {
-			clan = AccountProvider.<ClanPlayerInterface<T, D>>get(nameOrTagOrPlayer).getClan();
+			clan = AccountProviderAPI.getter().<ClanPlayerInterface<T, D>>get(nameOrTagOrPlayer).getClan();
 		}
 		return clan;
 	}
@@ -337,7 +337,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	}
 	
 	public void invite(T clan, Player inviter, Player targetPlayer) {
-		ClanPlayerInterface<T, D> target = AccountProvider.get(targetPlayer.getUniqueId());
+		ClanPlayerInterface<T, D> target = AccountProviderAPI.getter().get(targetPlayer.getUniqueId());
 		if (target.getClan() != null) {
 			Prefix.DEFAULT_BAD.sendMessage(inviter, stringAlreadyInClan);
 			return;
@@ -381,7 +381,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		ClanPlayerInterface<T, D> oplayer = AccountProvider.get(e.getPlayer().getUniqueId());
+		ClanPlayerInterface<T, D> oplayer = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		if (oplayer == null)
 			return;
 		T clan = oplayer.getClan();
@@ -391,7 +391,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 	
 	@EventHandler (priority = EventPriority.HIGH)
 	public void onChat(AsyncPlayerChatEvent e) {
-		ClanPlayerInterface<T, D> target = AccountProvider.get(e.getPlayer().getUniqueId());
+		ClanPlayerInterface<T, D> target = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		if (target.getClan() == null) return;
 		e.setFormat("§8[" + target.getClan().getTag() + "] " + target.getGroupPrefix() + "%s " + target.getGroup().getChatSuffix() + " %s");
 	}

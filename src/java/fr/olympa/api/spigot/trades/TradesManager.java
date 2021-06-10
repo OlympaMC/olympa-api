@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 
@@ -54,7 +54,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (e.getClickedInventory() == null || !(e.getWhoClicked() instanceof Player))
 			return;
 		
-		T p = AccountProvider.get(e.getWhoClicked().getUniqueId());
+		T p = AccountProviderAPI.getter().get(e.getWhoClicked().getUniqueId());
 		trades.forEach(trade -> trade.click(e, p));
 	}
 	 
@@ -63,7 +63,7 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (e.getPlayer().getType() != EntityType.PLAYER)
 			return;
 		
-		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		T p = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		trades.forEach(trade -> trade.hasClosedInventory(p));
 	}
 	
@@ -72,19 +72,19 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 		if (SpigotUtils.isSameLocation(e.getFrom(), e.getTo()))
 			return;
 		
-		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		T p = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);});
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onTeleport(PlayerTeleportEvent e) {
-		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		T p = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);});
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		T p = AccountProvider.get(e.getPlayer().getUniqueId());
+		T p = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		trades.forEach(trade -> {if (trade.containsPlayer(p)) trade.endTrade(false);}); 
 	}
 	

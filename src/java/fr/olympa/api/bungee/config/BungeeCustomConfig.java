@@ -5,7 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import com.google.common.io.ByteStreams;
@@ -35,6 +38,8 @@ public class BungeeCustomConfig {
 	private Plugin plugin;
 	private String fileName;
 	private Configuration configuration;
+	private boolean isLoaded = false;
+	private Map<String, Consumer<BungeeCustomConfig>> tasks = new HashMap<>();
 
 	public BungeeCustomConfig(Plugin plugin, String fileName) {
 		this.plugin = plugin;
@@ -42,6 +47,15 @@ public class BungeeCustomConfig {
 			fileName += fileExtension;
 		this.fileName = fileName;
 		configs.add(this);
+	}
+
+	public boolean addTask(String name, Consumer<BungeeCustomConfig> consumer) {
+		if (isLoaded)
+			consumer.accept(this);
+		boolean isTaskDidntExist = tasks.put(name, consumer) == null;
+		if (!isTaskDidntExist)
+			new IllegalAccessError("Config Task " + name + " already exist. It was replaced but this won't be happened").printStackTrace();
+		return isTaskDidntExist;
 	}
 
 	public Double getVersion() {
@@ -105,6 +119,7 @@ public class BungeeCustomConfig {
 					}
 			}
 		}
+		isLoaded = true;
 	}
 
 	public String getFileName() {

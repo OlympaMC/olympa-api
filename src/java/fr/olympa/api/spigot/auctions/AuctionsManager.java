@@ -15,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
 import fr.olympa.api.spigot.auctions.gui.AuctionsGUI;
 import fr.olympa.api.spigot.auctions.gui.CreateAuctionGUI;
@@ -54,7 +54,7 @@ public class AuctionsManager {
 		
 		ResultSet resultSet = OlympaCore.getInstance().getDatabase().createStatement().executeQuery("SELECT * FROM " + tableName + " WHERE (`terminated` = 0)");
 		while (resultSet.next()) {
-			addAuction(new Auction(this, resultSet.getInt("id"), AccountProvider.getPlayerInformations(resultSet.getLong("player_id")), SpigotUtils.<ItemStack>deserialize(resultSet.getBytes("item")), resultSet.getDouble("price"), resultSet.getLong("expiration"), resultSet.getBoolean("bought")));
+			addAuction(new Auction(this, resultSet.getInt("id"), AccountProviderAPI.getter().getPlayerInformations(resultSet.getLong("player_id")), SpigotUtils.<ItemStack>deserialize(resultSet.getBytes("item")), resultSet.getDouble("price"), resultSet.getLong("expiration"), resultSet.getBoolean("bought")));
 		}
 		
 		createAuctionStatement = new OlympaStatement("INSERT INTO " + tableName + " (`player_id`, `item`, `price`, `expiration`) VALUES (?, ?, ?, ?)", true);
@@ -136,7 +136,7 @@ public class AuctionsManager {
 	}
 	
 	public <T extends MoneyPlayerInterface> void openAuctionsGUI(Player p) {
-		new AuctionsGUI<T>(this, AccountProvider.get(p.getUniqueId())).create(p);
+		new AuctionsGUI<T>(this, AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 	}
 	
 	public void openAuctionCreationGUI(Player p) {
@@ -144,7 +144,7 @@ public class AuctionsManager {
 	}
 	
 	public void openMyAuctionsGUI(Player p) {
-		new MyAuctionsGUI(this, AccountProvider.get(p.getUniqueId())).create(p);
+		new MyAuctionsGUI(this, AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
 	}
 	
 }

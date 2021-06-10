@@ -8,6 +8,7 @@ public class OlympaAPIPermissionsBungee {
 	private OlympaAPIPermissionsBungee() {}
 
 	public static final OlympaBungeePermission BYPASS_PERM_NOT_EXIST = new OlympaBungeePermission(OlympaGroup.RESP_TECH);
+	public static final OlympaBungeePermission STATS_EXEMPT = new OlympaBungeePermission();
 	public static final OlympaBungeePermission COMMAND_STATS_INFO = new OlympaBungeePermission(OlympaGroup.YOUTUBER);
 	public static final OlympaBungeePermission COMMAND_STATS_SETTINGS = new OlympaBungeePermission(OlympaGroup.MODP, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV });
 	public static final OlympaBungeePermission COMMAND_BUNGEE_SEND = new OlympaBungeePermission(OlympaGroup.DEV);

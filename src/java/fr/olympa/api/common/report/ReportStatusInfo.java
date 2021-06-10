@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Utils;
 
 public class ReportStatusInfo {
@@ -44,7 +44,7 @@ public class ReportStatusInfo {
 	public List<String> getLore() {
 		List<String> lore = new ArrayList<>();
 		if (idAuthor != null)
-			lore.add(String.format("&aChangement de &2%s", AccountProvider.getPlayerInformations(idAuthor).getName()));
+			lore.add(String.format("&aChangement de &2%s", AccountProviderAPI.getter().getPlayerInformations(idAuthor).getName()));
 		lore.add(String.format("&aStatus %s", status.getNameColored()));
 		if (note != null && !note.isBlank())
 			lore.add(String.format("&aNote &2%s", note));

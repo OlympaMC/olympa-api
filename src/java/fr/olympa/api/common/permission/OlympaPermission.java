@@ -10,10 +10,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.ServerFrameworkType;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -47,12 +49,16 @@ public abstract class OlympaPermission implements IOlympaPermission {
 	}
 
 	String permissionIfBukkit = null;
+	@Nullable
 	OlympaGroup minGroup = null;
+	@Nullable
 	OlympaGroup[] allowedGroups = null;
 	boolean disabled = false;
 	UUID[] allowedBypass = null;
 	boolean lockPermission = false;
 	private String name;
+
+	public OlympaPermission() {}
 
 	public OlympaPermission(OlympaGroup minGroup) {
 		this.minGroup = minGroup;
@@ -158,7 +164,7 @@ public abstract class OlympaPermission implements IOlympaPermission {
 
 	@Override
 	public boolean hasPermission(UUID uniqueId) {
-		return this.hasPermission(AccountProvider.<OlympaPlayer>get(uniqueId));
+		return this.hasPermission(AccountProviderAPI.getter().<OlympaPlayer>get(uniqueId));
 	}
 
 	@Override

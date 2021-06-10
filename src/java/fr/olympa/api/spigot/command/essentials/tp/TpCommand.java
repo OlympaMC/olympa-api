@@ -15,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.match.RegexMatcher;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.utils.Prefix;
 
@@ -57,7 +57,7 @@ public class TpCommand extends OlympaCommand {
 			if (location == null)
 				return false;
 			player.teleport(location);
-			String turne = AccountProvider.get(source.getUniqueId()).getGender().getTurne();
+			String turne = AccountProviderAPI.getter().get(source.getUniqueId()).getGender().getTurne();
 			DecimalFormat formatter = new DecimalFormat("0.#");
 			Prefix.DEFAULT_GOOD.sendMessage(source, "&aTu as été téléporté%s en &2%s %s %s&a.", turne, formatter.format(location.getX()), formatter.format(location.getY()), formatter.format(location.getZ()));
 			return true;
@@ -69,10 +69,10 @@ public class TpCommand extends OlympaCommand {
 		sources.forEach(s -> {
 			s.teleport(target);
 			if (s instanceof Player) {
-				String turneS = AccountProvider.get(s.getUniqueId()).getGender().getTurne();
+				String turneS = AccountProviderAPI.getter().get(s.getUniqueId()).getGender().getTurne();
 				if (s != player)
 					if (target.getUniqueId().equals(player.getUniqueId())) {
-						String turneT = AccountProvider.get(s.getUniqueId()).getGender().getTurne();
+						String turneT = AccountProviderAPI.getter().get(s.getUniqueId()).getGender().getTurne();
 						sendMessage(Prefix.DEFAULT_GOOD, "&2Tu as téléporté%s &2%s&a &nICI&a.", turneT, s.getName(), target.getName());
 					} else
 						sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a a été téléporté%s à &2%s&a.", s.getName(), turneS, target.getName());

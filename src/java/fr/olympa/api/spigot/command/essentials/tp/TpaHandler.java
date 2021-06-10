@@ -23,7 +23,7 @@ import com.google.common.cache.RemovalNotification;
 
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.CacheStats;
 import fr.olympa.api.utils.Prefix;
@@ -175,20 +175,20 @@ public class TpaHandler implements Listener {
 		
 		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			if (request.from.isOnline() && request.to.isOnline()) {
-				String tune = AccountProvider.get(request.from.getUniqueId()).getGender().getTurne();
+				String tune = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender().getTurne();
 				Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
 				Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
 				request.from.teleport(request.to.getLocation());
 				requests.invalidate(request);
 			} else if (!request.from.isOnline() && request.to.isOnline())
 				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProvider(request.from.getUniqueId()).get().getGender().getTurne());
+					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProviderAPI(request.from.getUniqueId()).get().getGender().getTurne());
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			else if (!request.to.isOnline() && request.from.isOnline())
 				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProvider(request.to.getUniqueId()).get().getGender().getTurne());
+					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProviderAPI(request.to.getUniqueId()).get().getGender().getTurne());
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -219,7 +219,7 @@ public class TpaHandler implements Listener {
 		if (SpigotUtils.isSameLocationXZ(e.getFrom(), e.getTo()) || TELEPORTATION_SECONDS == 0)
 			return;
 		Player player = e.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProvider.get(player.getUniqueId());
+		OlympaPlayer olympaPlayer = AccountProviderAPI.getter().get(player.getUniqueId());
 		List<Request> requestsTarget = getRequestsByPlayerTeleported(player);
 		requestsTarget.forEach(r -> {
 			if (r != null && r.task != null) {

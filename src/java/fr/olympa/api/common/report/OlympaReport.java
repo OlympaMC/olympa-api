@@ -14,7 +14,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 
 import fr.olympa.api.common.player.OlympaPlayerInformations;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Utils;
 
 public class OlympaReport {
@@ -77,12 +77,12 @@ public class OlympaReport {
 
 	public void resolveAuthorName() {
 		if (authorName == null || authorName.isBlank())
-			authorName = AccountProvider.getPlayerInformations(authorId).getName();
+			authorName = AccountProviderAPI.getter().getPlayerInformations(authorId).getName();
 	}
 
 	public void resolveTargetName() {
 		if (targetName == null || targetName.isBlank())
-			targetName = AccountProvider.getPlayerInformations(targetId).getName();
+			targetName = AccountProviderAPI.getter().getPlayerInformations(targetId).getName();
 	}
 
 	/**
@@ -193,8 +193,8 @@ public class OlympaReport {
 	public List<String> getLore() {
 		List<String> lore = new ArrayList<>();
 		lore.add(String.format("&aN°&2%s", String.valueOf(id)));
-		OlympaPlayerInformations opTarget = AccountProvider.getPlayerInformations(targetId);
-		OlympaPlayerInformations opAuthor = AccountProvider.getPlayerInformations(authorId);
+		OlympaPlayerInformations opTarget = AccountProviderAPI.getter().getPlayerInformations(targetId);
+		OlympaPlayerInformations opAuthor = AccountProviderAPI.getter().getPlayerInformations(authorId);
 		lore.add(String.format("&2%s &a->&2 %s", opAuthor.getName(), opTarget.getName()));
 		lore.add(String.format("&aServeur %s", serverName));
 		lore.add(String.format("&aStatus %s", getStatus().getNameColored()));

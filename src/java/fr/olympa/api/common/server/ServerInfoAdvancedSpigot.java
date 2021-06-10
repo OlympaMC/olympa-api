@@ -9,7 +9,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.utils.TPS;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -27,7 +27,7 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 
 		players = new ArrayList<>();
 		server.getOnlinePlayers().forEach(player -> {
-			players.add(AccountProvider.getPlayerInformations(player.getUniqueId()));
+			players.add(AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()));
 		});
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.utils.Prefix;
 
 public class OlympaPlayerParser<T extends OlympaPlayer> implements TextParser<T> {
@@ -19,7 +19,7 @@ public class OlympaPlayerParser<T extends OlympaPlayer> implements TextParser<T>
 			Prefix.BAD.sendMessage(p, "Ce joueur n'est pas connecté.");
 			return null;
 		}
-		return AccountProvider.get(target.getUniqueId());
+		return AccountProviderAPI.getter().get(target.getUniqueId());
 	}
 
 	public static <T extends OlympaPlayer> OlympaPlayerParser<T> parser() {

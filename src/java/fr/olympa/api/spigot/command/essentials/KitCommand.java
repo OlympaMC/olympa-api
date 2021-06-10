@@ -21,7 +21,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
@@ -83,7 +83,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		T player = sender instanceof Player ? AccountProvider.get((((Player) sender).getUniqueId())) : null;
+		T player = sender instanceof Player ? AccountProviderAPI.getter().get((((Player) sender).getUniqueId())) : null;
 		return kitsStreamSupplier.get().filter(kit -> player == null || kit.canTake(player)).map(IKit::getId).collect(Collectors.toList());
 	}
 	

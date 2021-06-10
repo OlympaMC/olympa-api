@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.ServerFrameworkType;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -88,7 +88,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 
 	public void getPlayers(Consumer<? super Set<Player>> success) {
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProvider.<OlympaPlayer>get(player.getUniqueId()))).collect(Collectors.toSet());
+		Set<Player> playerswithPerm = players.stream().filter(player -> this.hasPermission(AccountProviderAPI.getter().<OlympaPlayer>get(player.getUniqueId()))).collect(Collectors.toSet());
 		if (!playerswithPerm.isEmpty())
 			success.accept(playerswithPerm);
 	}
@@ -98,7 +98,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		Set<Player> playersWithNoPerm = new HashSet<>();
 		Set<Player> playersWithPerm = new HashSet<>();
 		players.forEach(player -> {
-			if (this.hasPermission(AccountProvider.<OlympaPlayer>get(player.getUniqueId())))
+			if (this.hasPermission(AccountProviderAPI.getter().<OlympaPlayer>get(player.getUniqueId())))
 				playersWithPerm.add(player);
 			else
 				playersWithNoPerm.add(player);
@@ -114,7 +114,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		Set<OlympaPlayer> playersWithNoPerm = new HashSet<>();
 		Set<OlympaPlayer> playersWithPerm = new HashSet<>();
 		players.forEach(player -> {
-			OlympaPlayer op = AccountProvider.<OlympaPlayer>get(player.getUniqueId());
+			OlympaPlayer op = AccountProviderAPI.getter().<OlympaPlayer>get(player.getUniqueId());
 			if (this.hasPermission(op))
 				playersWithPerm.add(op);
 			else
@@ -135,15 +135,15 @@ public class OlympaSpigotPermission extends OlympaPermission {
 		boolean b = hasPermission(olympaPlayer);
 		if (!b)
 			if (getMinGroup() != null)
-			Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Le grade %s est requis pour exécuter cette action.", getMinGroup().getName(olympaPlayer.getGender()));
 			else if (getAllowedGroups() != null && getAllowedGroups().length != 0)
-			Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.", Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())));
+				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.", Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())));
 			else
 				Prefix.DEFAULT_BAD.sendMessage(olympaPlayer.getPlayer(), "Tu n'a pas la permission.");
-			
+
 		return b;
 	}
-	
+
 	@Override
 	public void sendMessage(BaseComponent... baseComponents) {
 		this.getPlayers(players -> players.forEach(player -> player.spigot().sendMessage(baseComponents)), null);

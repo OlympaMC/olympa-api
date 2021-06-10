@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
@@ -49,7 +50,7 @@ public class PluginInfoAdvanced {
 		return version;
 	}
 
-	public List<String> getAuthors() {
+	public @Nonnull List<String> getAuthors() {
 		return authors;
 	}
 
@@ -61,18 +62,15 @@ public class PluginInfoAdvanced {
 		return website != null;
 	}
 
-	@Nullable
-	public String getWebsite() {
+	public @Nullable String getWebsite() {
 		return website;
 	}
 
-	@Nullable
-	public Boolean getDependNotFound() {
+	public @Nullable Boolean getDependNotFound() {
 		return dependNotFound;
 	}
 
-	@Nullable
-	public Boolean getSoftDependNotFound() {
+	public @Nullable Boolean getSoftDependNotFound() {
 		return softDependNotFound;
 	}
 
@@ -84,17 +82,15 @@ public class PluginInfoAdvanced {
 		return lastModifiedTime;
 	}
 
-	@Nullable
-	public SuperVersion getSuperVersion() {
+	public @Nullable SuperVersion getSuperVersion() {
 		return superVersion;
 	}
 
-	public List<String> getContributors() {
+	public @Nonnull List<String> getContributors() {
 		return contributors;
 	}
 
-	@Nullable
-	public String getDescription() {
+	public @Nullable String getDescription() {
 		return description;
 	}
 
@@ -102,12 +98,11 @@ public class PluginInfoAdvanced {
 		return hasConfig;
 	}
 
-	@Nullable
-	public String getApiVersion() {
+	public @Nullable String getApiVersion() {
 		return apiVersion;
 	}
 
-	public List<String> getProvides() {
+	public @Nonnull List<String> getProvides() {
 		return provides;
 	}
 
@@ -152,10 +147,10 @@ public class PluginInfoAdvanced {
 		sj.add("Version &2" + getVersion());
 		sj.add("MAJ du fichier &e" + getLastModifiedTime());
 		List<String> authors = getAuthors();
-		if (authors != null && !authors.isEmpty())
+		if (!authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));
 		List<String> contributors = getContributors();
-		if (contributors != null && !contributors.isEmpty())
+		if (!contributors.isEmpty())
 			sj.add("Contributeur" + Utils.withOrWithoutS(contributors.size()) + " &a" + String.join("&7, &a", contributors));
 		if (getDescription() != null)
 			sj.add("Description " + getDescription());

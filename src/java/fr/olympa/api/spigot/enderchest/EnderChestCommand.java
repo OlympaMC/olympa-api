@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 
 public class EnderChestCommand extends OlympaCommand {
@@ -32,7 +32,7 @@ public class EnderChestCommand extends OlympaCommand {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		EnderChestPlayerInterface target;
 		if (args.length == 1 && hasPermission(permissionOther)) {
-			target = AccountProvider.get(Bukkit.getPlayer(args[0]).getUniqueId());
+			target = AccountProviderAPI.getter().get(Bukkit.getPlayer(args[0]).getUniqueId());
 		}else target = getOlympaPlayer();
 		getEnderChestGUI(target).create(getPlayer());
 		return true;

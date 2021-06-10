@@ -34,7 +34,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.region.Region;
 import fr.olympa.api.spigot.region.shapes.Cuboid;
 import fr.olympa.api.utils.Prefix;
@@ -177,7 +177,7 @@ public class SpigotUtils {
 		if (player != null)
 			return player.getName();
 		try {
-			OlympaPlayer olympaPlayer = new AccountProvider(playerUniqueId).get();
+			OlympaPlayer olympaPlayer = new AccountProviderAPI(playerUniqueId).get();
 			if (olympaPlayer != null)
 				return olympaPlayer.getName();
 		} catch (SQLException e) {

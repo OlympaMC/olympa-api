@@ -8,7 +8,7 @@ import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.ComplexCommand;
 import fr.olympa.api.utils.Prefix;
 
@@ -45,7 +45,7 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu as déjà envoyé une demande à %s, patientes un peu avant d'en renvoyer une !", ((Player)partner).getName());
 		
 		else if (map.remove(partner, getPlayer()))
-			trades.startTrade(getOlympaPlayer(), AccountProvider.get(partner.getUniqueId()));
+			trades.startTrade(getOlympaPlayer(), AccountProviderAPI.getter().get(partner.getUniqueId()));
 		
 		else {
 			map.put(getPlayer(), partner);

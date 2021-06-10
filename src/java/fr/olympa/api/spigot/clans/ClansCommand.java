@@ -11,7 +11,7 @@ import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.clans.gui.NoClanGUI;
 import fr.olympa.api.spigot.command.ComplexCommand;
 
@@ -46,7 +46,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 	public boolean noArguments(CommandSender sender) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			ClanPlayerInterface<T, D> olp = AccountProvider.get(p.getUniqueId());
+			ClanPlayerInterface<T, D> olp = AccountProviderAPI.getter().get(p.getUniqueId());
 			T clan = olp.getClan();
 			if (clan == null) {
 				new NoClanGUI<>(p, manager).create(p);
@@ -131,7 +131,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 			return;
 		}
 
-		OlympaPlayer target = AccountProvider.get(cmd.<Player>getArgument(0).getUniqueId());
+		OlympaPlayer target = AccountProviderAPI.getter().get(cmd.<Player>getArgument(0).getUniqueId());
 		if (!clan.contains(target.getInformation())) {
 			sendError(manager.stringPlayerNotInClan, target.getName());
 			return;
@@ -142,7 +142,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 	
 	@Cmd (player = true, min = 1, args = { "PLAYERS" })
 	public void forcechief(CommandContext cmd) {
-		ClanPlayerInterface<T, D> target = AccountProvider.get(cmd.<Player>getArgument(0).getUniqueId());
+		ClanPlayerInterface<T, D> target = AccountProviderAPI.getter().get(cmd.<Player>getArgument(0).getUniqueId());
 		T clan = target.getClan();
 		
 		if (clan == null) {

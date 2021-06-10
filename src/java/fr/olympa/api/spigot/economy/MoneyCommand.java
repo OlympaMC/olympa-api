@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
-import fr.olympa.api.common.provider.AccountProvider;
+import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.ComplexCommand;
 
 public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand {
@@ -65,7 +65,7 @@ public class MoneyCommand<T extends MoneyPlayerInterface> extends ComplexCommand
 	}
 
 	private OlympaMoney getGameMoney(Player p) {
-		return AccountProvider.<T>get(p.getUniqueId()).getGameMoney();
+		return AccountProviderAPI.getter().<T>get(p.getUniqueId()).getGameMoney();
 	}
 
 }
