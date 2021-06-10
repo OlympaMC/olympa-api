@@ -82,7 +82,13 @@ public class OlympaBungeePermission extends OlympaPermission {
 
 	public boolean hasSenderPermissionBungee(CommandSender sender) {
 		if (sender instanceof ProxiedPlayer)
-			return this.hasPermission(((ProxiedPlayer) sender).getUniqueId());
+			try {
+				return this.hasPermission(new AccountProvider(((ProxiedPlayer) sender).getUniqueId()).get());
+			} catch (SQLException e) {
+				e.addSuppressed(new IllegalAccessError(String.format("Can't allow %s to use olympa permission %s cause of SQLException.", sender.getName(), getName())));
+				e.printStackTrace();
+				return false;
+			}
 		return true;
 	}
 }

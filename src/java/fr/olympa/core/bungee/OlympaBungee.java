@@ -11,7 +11,8 @@ import fr.olympa.api.bungee.config.BungeeCustomConfig;
 import fr.olympa.api.bungee.task.BungeeTaskManager;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.permission.OlympaPermission;
-import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsBungee;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
 import fr.olympa.api.common.plugin.OlympaPluginInterface;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerStatus;
@@ -44,7 +45,8 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 		instance = this;
 		task = new BungeeTaskManager(this);
 		status = ServerStatus.MAINTENANCE;
-		OlympaPermission.registerPermissions(OlympaAPIPermissionsSpigot.class);
+		OlympaPermission.registerPermissions(OlympaAPIPermissionsGlobal.class);
+		OlympaPermission.registerPermissions(OlympaAPIPermissionsBungee.class);
 
 		PluginManager pluginManager = getProxy().getPluginManager();
 		pluginManager.registerListener(this, new AuthListener());
@@ -105,7 +107,7 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public List<String> getPlayersNames() {
 		return null;
@@ -115,5 +117,5 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	public Gson getGson() {
 		return new Gson();
 	}
-	
+
 }
