@@ -6,6 +6,8 @@ import java.util.StringJoiner;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.annotations.Expose;
+
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.match.RegexMatcher;
@@ -14,20 +16,20 @@ import net.md_5.bungee.api.ChatColor;
 
 public class PluginInfoAdvanced {
 
-	protected String name;
-	protected String version;
-	protected @Nullable SuperVersion superVersion;
-	protected List<String> authors;
-	protected List<String> contributors;
-	protected boolean enabled;
-	protected @Nullable String website;
-	protected @Nullable Boolean dependNotFound;
-	protected @Nullable Boolean softDependNotFound;
-	protected @Nullable String description;
-	protected long lastModifiedTime;
-	protected boolean hasConfig;
-	protected @Nullable String apiVersion;
-	protected List<String> provides;
+	protected @Expose String name;
+	protected @Expose String version;
+	protected @Expose @Nullable SuperVersion superVersion;
+	protected @Expose List<String> authors;
+	protected @Expose List<String> contributors;
+	protected @Expose boolean enabled;
+	protected @Expose @Nullable String website;
+	protected @Expose @Nullable Boolean dependNotFound;
+	protected @Expose @Nullable Boolean softDependNotFound;
+	protected @Expose @Nullable String description;
+	protected @Expose long lastModifiedTime;
+	protected @Expose boolean hasConfig;
+	protected @Expose @Nullable String apiVersion;
+	protected @Expose List<String> provides;
 
 	public PluginInfoAdvanced() {
 		super();

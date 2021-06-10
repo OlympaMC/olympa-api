@@ -1,8 +1,10 @@
 package fr.olympa.api.spigot.utils;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -155,6 +157,18 @@ public enum ProtocolAPI {
 		if (version == null)
 			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
 		return version;
+	}
+
+	/**
+	 * Return all versions names natively supported by Bungeecord.
+	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
+	 * @throw IllegalAccessError when spigot instance call this method
+	 */
+	@Nullable
+	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
+	public static Entry<String, String> getVersionsRangeBungee() {
+		List<String> versions = getBungeeVersion();
+		return new SimpleEntry<>(versions.get(0), versions.get(versions.size() - 1));
 	}
 
 	/**

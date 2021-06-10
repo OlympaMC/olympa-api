@@ -20,7 +20,6 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 	}
 
 	public ServerInfoAdvancedSpigot(OlympaCore core) {
-		super();
 		Server server = core.getServer();
 		maxPlayers = server.getMaxPlayers();
 		Collection<? extends Player> playersSpigot = server.getOnlinePlayers();
@@ -28,13 +27,13 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 
 		players = new ArrayList<>();
 		server.getOnlinePlayers().forEach(player -> {
-			players.add(AccountProvider.getPlayerInformations(player.getName()));
+			players.add(AccountProvider.getPlayerInformations(player.getUniqueId()));
 		});
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();
 		status = core.getStatus();
 		uptime = LinkSpigotBungee.Provider.link.getUptimeLong();
-		bukkitVersion = Bukkit.getBukkitVersion().replace("-SNAPSHOT", "");
+		serverFrameworkVersion = Bukkit.getBukkitVersion().replace("-SNAPSHOT", "");
 		tps = TPS.getTPS();
 		firstVersionMinecraft = core.getFirstVersion();
 		lastVersionMinecraft = core.getLastVersion();
@@ -43,6 +42,6 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		plugins = pluginsOfInstance;
+		plugins = getCachePlugins();
 	}
 }

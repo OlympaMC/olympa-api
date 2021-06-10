@@ -19,11 +19,11 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.core.bungee.OlympaBungee;
 import fr.olympa.core.spigot.OlympaCore;
 
-public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
+public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	private static List<String> principalAuthors = Arrays.asList("SkytAsul", "Tristiisch", "Bullobily");
 	private static String prefixOwnPlugins = "Olympa";
-	protected static List<PluginInfoAdvanced> pluginsOfInstance;
+	private static List<PluginInfoAdvanced> pluginsOfInstance;
 
 	public static void setPlugins() {
 		if (LinkSpigotBungee.Provider.link.isSpigot())
@@ -111,7 +111,7 @@ public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected String lastVersionMinecraft;
 	@Expose
-	protected String bukkitVersion;
+	protected String serverFrameworkVersion;
 	@Expose
 	protected boolean databaseConnected;
 
@@ -173,8 +173,8 @@ public abstract class ServerInfoAdvanced extends JavaInstanceInfo {
 		return Utils.tsToShortDur(uptime);
 	}
 
-	public String getBukkitVersion() {
-		return bukkitVersion;
+	public String getServerFrameworkVersion() {
+		return serverFrameworkVersion;
 	}
 	//	public boolean isDatabaseConnected() {
 	//		return databaseConnected;
