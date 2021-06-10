@@ -13,6 +13,7 @@ import fr.olympa.api.common.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.plugin.OlympaSpigot;
+import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
@@ -23,6 +24,8 @@ import fr.olympa.api.spigot.holograms.HologramsManager;
 import fr.olympa.api.spigot.hook.IProtocolSupport;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.DataManagmentListener;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 
 /**
  * Version minimale du Core, faite pour fonctionner sans lien à la BDD sur des
@@ -148,8 +151,19 @@ public class OlympaCore extends OlympaSpigot {
 
 	@Override
 	public void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack) {}
-	
+
 	@Override
 	public void registerPackListener(ResourcePackHandler packHandler) {}
-	
+
+	@Override
+	public void registerRedisSub(JedisPubSub sub, String channel) {}
+
+	@Override
+	public void registerRedisSub(Jedis jedis, JedisPubSub sub, String channel) {}
+
+	@Override
+	public RedisConnection getRedisAccess() {
+		return null;
+	}
+
 }
