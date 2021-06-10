@@ -29,5 +29,8 @@ public interface OlympaAccount {
 
 	void removeFromCache();
 
+	//	OlympaPlayer getFromRedis();
+
 	OlympaPlayer getFromRedis();
+
 }

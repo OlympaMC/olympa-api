@@ -42,5 +42,6 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 			e.printStackTrace();
 		}
 		plugins = getCachePlugins();
+
 	}
 }

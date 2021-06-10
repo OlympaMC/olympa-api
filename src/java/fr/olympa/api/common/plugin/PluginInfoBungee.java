@@ -29,6 +29,7 @@ public class PluginInfoBungee extends PluginInfoAdvanced {
 		//		contributors = desc.getContributors();
 		contributors = new ArrayList<>();
 		//		website = desc.getWebsite();
+		enabled = true;
 		//		enabled = plugin.isEnabled();
 		//		if (!enabled) {
 		//			dependNotFound = Arrays.stream(plugin.getServer().getPluginManager().getPlugins()).noneMatch(p -> desc.getDepend().stream().anyMatch(s2 -> p.getName().equalsIgnoreCase(s2)));
