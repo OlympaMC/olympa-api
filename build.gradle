@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+	api 'redis.clients:jedis:3.6.0'
     compileOnlyApi 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnlyApi 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
     compileOnlyApi 'io.github.waterfallmc:waterfall-api:1.17-R0.1-SNAPSHOT'
@@ -70,6 +71,17 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/java']
+        }
+        resources {
+            srcDirs = ['src/resources']
+        }
+    }
+    forcore {
+        java {
+            srcDirs = ['src/java']
+            exclude 'src/java/fr/olympa/api/common/provider/OlympaPlayerInformationsObject'
+            exclude 'src/java/fr/olympa/api/common/provider/OlympaPlayerObject'
+            exclude 'src/java/fr/olympa/api/common/provider/AccountProvider'
         }
         resources {
             srcDirs = ['src/resources']

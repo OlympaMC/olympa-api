@@ -13,6 +13,7 @@ import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsBungee;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
+import fr.olympa.api.common.plugin.OlympaBungeeInterface;
 import fr.olympa.api.common.plugin.OlympaPluginInterface;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerStatus;
@@ -21,8 +22,11 @@ import fr.olympa.core.bungee.datamanagment.AuthListener;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+import net.md_5.bungee.config.Configuration;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 
-public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPluginInterface {
+public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPluginInterface, OlympaBungeeInterface {
 
 	private static OlympaBungee instance;
 
@@ -116,6 +120,22 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	@Override
 	public Gson getGson() {
 		return new Gson();
+	}
+
+	@Override
+	public Configuration getConfig() {
+		return null;
+	}
+
+	@Override
+	public void registerRedisSub(Jedis jedis, JedisPubSub sub, String channel) {
+
+	}
+
+	@Override
+	public BungeeCustomConfig getDefaultConfig() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

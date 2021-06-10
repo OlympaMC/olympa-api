@@ -88,7 +88,7 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 
 	@Override
 	public void sendMessage(String message, Object... args) {
-		getServer().getConsoleSender().sendMessage(ColorUtils.color(String.format(getPrefixConsole() + message, args)));
+		getServer().getConsoleSender().sendMessage(ColorUtils.format(getPrefixConsole() + message, args));
 	}
 
 }
