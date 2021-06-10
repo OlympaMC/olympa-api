@@ -111,6 +111,7 @@ public class RegionManager implements Listener {
 		});
 		
 		new BypassCommand().register();
+		new BypassFluidsCommand().register();
 	}
 
 	public TrackedRegion registerRegion(Region region, String id, EventPriority priority, Flag... flags) {
@@ -433,6 +434,7 @@ public class RegionManager implements Listener {
 
 	@EventHandler
 	public void onFluidChanges(FluidLevelChangeEvent e) {
+		if (BypassFluidsCommand.doBypassFluids(e.getBlock().getWorld())) return;
 		fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
 	}
 

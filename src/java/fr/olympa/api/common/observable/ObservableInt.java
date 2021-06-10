@@ -1,6 +1,6 @@
 package fr.olympa.api.common.observable;
 
-public class ObservableInt extends AbstractObservable {
+public class ObservableInt extends AbstractObservable implements Comparable<ObservableInt> {
 	
 	private int value;
 	
@@ -39,6 +39,15 @@ public class ObservableInt extends AbstractObservable {
 	
 	public double getAsDouble() {
 		return (double) value;
+	}
+	
+	@Override
+	public int compareTo(ObservableInt o) {
+		return compareTo(o.value);
+	}
+	
+	public int compareTo(int o) {
+		return Integer.compare(value, o);
 	}
 	
 }
