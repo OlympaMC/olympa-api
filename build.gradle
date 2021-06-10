@@ -18,8 +18,8 @@ dependencies {
 	api 'redis.clients:jedis:3.6.0'
     compileOnlyApi 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnlyApi 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
-    compileOnlyApi 'io.github.waterfallmc:waterfall-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnlyApi 'io.github.waterfallmc:waterfall-protocol:1.16.5-R0.1-SNAPSHOT'
+    compileOnlyApi 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+    compileOnlyApi 'io.github.waterfallmc:waterfall-protocol:1.16-R0.4-SNAPSHOT'
     api group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 }
 
