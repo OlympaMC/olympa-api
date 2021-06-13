@@ -45,7 +45,7 @@ public class AccountProviderAPI implements OlympaAccount {
 
 	@Override
 	public OlympaPlayer createOlympaPlayer(String name, String ip) {
-		OlympaPlayer newOlympaPlayer = pluginPlayerProvider.create(uuid, name, ip);
+		OlympaPlayer newOlympaPlayer = getter.getOlympaPlayerProvider().create(uuid, name, ip);
 		newOlympaPlayer.setGroup(OlympaGroup.PLAYER);
 		return newOlympaPlayer;
 	}

@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.olympa.api.common.provider.OlympaPlayerObject;
-
 public interface OlympaAccount {
 
 	String REDIS_KEY = "player:";
 	int DELAY_FOR_CACHE_PLAYER = 60;
 
 	Map<UUID, OlympaPlayer> cache = new HashMap<>();
-	OlympaPlayerProvider pluginPlayerProvider = OlympaPlayerObject::new;
 
 	static Map<UUID, OlympaPlayer> getCache() {
 		return cache;

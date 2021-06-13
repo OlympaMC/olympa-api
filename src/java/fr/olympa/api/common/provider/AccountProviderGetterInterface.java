@@ -56,4 +56,7 @@ public interface AccountProviderGetterInterface {
 	PlayerSQL getSQL();
 
 	Class<? extends OlympaPlayer> getPlayerClass();
+	
+	OlympaPlayerProvider getOlympaPlayerProvider();
+	
 }
