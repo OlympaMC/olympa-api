@@ -27,7 +27,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  */
 public enum ProtocolAPI {
 
-	V1_17(755, false, true),
+	V1_17(755, true, true),
 	V1_16_5(754),
 	V1_16_4(754),
 	V1_16_3(753),
