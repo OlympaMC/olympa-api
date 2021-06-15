@@ -2,6 +2,7 @@ package fr.olympa.core.bungee;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -17,6 +18,7 @@ import fr.olympa.api.common.plugin.OlympaBungeeInterface;
 import fr.olympa.api.common.plugin.OlympaPluginInterface;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.server.OlympaServer;
+import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.task.OlympaTask;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
@@ -157,6 +159,11 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 
 	@Override
 	public RedisConnection getRedisAccess() {
+		return null;
+	}
+
+	@Override
+	public Collection<ServerInfoBasic> getMonitorServers() {
 		return null;
 	}
 

@@ -38,4 +38,8 @@ public class RedisSubChannel extends JedisPubSub {
 		t.setUncaughtExceptionHandler(h);
 		t.start();
 	}
+
+	public String getChannelName() {
+		return channel.name();
+	}
 }

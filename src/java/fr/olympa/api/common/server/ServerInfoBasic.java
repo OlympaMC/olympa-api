@@ -95,6 +95,10 @@ public class ServerInfoBasic {
 		return Utils.intToSymbole(id);
 	}
 
+	/**
+	 * usless ? same as getServerID()
+	 */
+	@Deprecated
 	public int getId() {
 		java.util.regex.Matcher matcher = ID_PATTERN.matcher(serverName);
 		matcher.find();
@@ -130,10 +134,6 @@ public class ServerInfoBasic {
 		return olympaServer;
 	}
 
-	/**
-	 * usless ? same as getId()
-	 */
-	@Deprecated
 	public int getServerID() {
 		return serverID;
 	}

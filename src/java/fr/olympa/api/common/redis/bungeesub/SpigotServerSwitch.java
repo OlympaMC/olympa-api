@@ -1,8 +1,11 @@
 package fr.olympa.api.common.redis.bungeesub;
 
+import org.bukkit.entity.Player;
+
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.redis.RedisChannel;
+import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.RedisSubChannel;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.utils.Prefix;
@@ -11,16 +14,28 @@ import fr.olympa.core.bungee.OlympaBungee;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import redis.clients.jedis.Jedis;
 
-/**
- * TODO finish
- * @author Tristiisch
- *
- */
-public class SpigotServerSwitchReceiver extends RedisSubChannel {
+public class SpigotServerSwitch extends RedisSubChannel {
 
-	public SpigotServerSwitchReceiver(LinkSpigotBungee core) {
-		super(core, RedisChannel.SPIGOT_PLAYER_SWITCH_SERVER);
+	public SpigotServerSwitch(LinkSpigotBungee core, RedisChannel channel) {
+		super(core, channel);
+	}
+
+	public void sendServerSwitch(Player p, OlympaServer server) {
+		RedisConnection redis = getRedisAccess();
+		try (Jedis jedis = redis.connect()) {
+			jedis.publish(getChannelName(), p.getName() + ":" + server.name());
+		}
+		redis.disconnect();
+	}
+
+	public void sendServerSwitch(Player p, String serverName) {
+		RedisConnection redis = getRedisAccess();
+		try (Jedis jedis = redis.connect()) {
+			jedis.publish(RedisChannel.SPIGOT_PLAYER_SWITCH_SERVER2.name(), p.getName() + ":" + serverName);
+		}
+		redis.disconnect();
 	}
 
 	@Override
