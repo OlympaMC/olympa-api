@@ -196,7 +196,7 @@ public class PluginInfoAdvanced {
 				versionNumber = (String) entry.getValue();
 				i++;
 			}
-			regexMatcher = MatcherPattern.of("\\W*(test|dev|master)\\b");
+			regexMatcher = MatcherPattern.of("\\W*(test|dev|master|HEAD)\\b");
 			entry = regexMatcher.extractAndParseGroupOne(s);
 			if (entry.getValue() != null) {
 				s = entry.getKey();

@@ -20,10 +20,10 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 /**
  * Lors d'une nouvelle versionn de protocol, récupérer le numéro via ce lien: https://wiki.vg/Protocol_version_numbers
  * - Ajouter dans l'eum
- * - Mettre à jour le repo maven de protocolLib
- * - Mettre a jour le .jar ProtocolLib
- * - Mettre a jour le .jar Cs Stats sur le bungee
- * - Ajouter ViaVersion si la version serveur sur olympa n'est pas la dernière disponible
+ * - Mettre à jour le repo maven de protocolLib (pour les dépandances du core)
+ * - Mettre a jour le .jar ProtocolLib https://www.spigotmc.org/resources/protocolsupport.7201/
+ * - Mettre a jour le .jar ClientStats sur le bungee https://www.spigotmc.org/resources/clientstats-bungee.27919/
+ * - Ajouter ViaVersion si la version serveur sur olympa n'est pas la dernière disponible https://www.spigotmc.org/resources/viaversion.19254
  */
 public enum ProtocolAPI {
 

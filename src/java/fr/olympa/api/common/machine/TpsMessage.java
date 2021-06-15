@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -102,6 +104,7 @@ public class TpsMessage extends JavaInstanceInfo {
 			textBuilder.extra("&cErreur\n");
 		}
 		textBuilder.extra("&3Versions supportées: &b%s&3 ", ((OlympaCore) main).getRangeVersion());
+		@Nullable
 		IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
 		if (protocolSupport != null) {
 			String unSupVer = protocolSupport.getVersionUnSupportedInRange();

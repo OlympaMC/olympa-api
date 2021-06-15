@@ -77,6 +77,30 @@ public class MatcherPattern<T> {
 		return tmp;
 	}
 
+	private String startingWord(boolean startingWord) {
+		String tmp = regex;
+		if (startingWord) {
+			if (tmp.indexOf(0) != '^')
+				tmp = "^" + tmp;
+		} else if (tmp.indexOf(0) == '^')
+			tmp = tmp.substring(1);
+		if (tmp.indexOf(tmp.length() - 1) == '$')
+			tmp = tmp.substring(0, regex.length() - 2);
+		return tmp;
+	}
+
+	private String endingWord(boolean endingWord) {
+		String tmp = regex;
+		if (endingWord) {
+			if (regex.indexOf(tmp.length() - 1) != '$')
+				tmp = tmp + "$";
+		} else if (tmp.indexOf(tmp.length() - 1) == '$')
+			tmp = tmp.substring(0, regex.length() - 2);
+		if (tmp.indexOf(0) == '^')
+			tmp = tmp.substring(1);
+		return tmp;
+	}
+
 	public List<T> extractsAndParse(String text) throws IllegalArgumentException {
 		Matcher matcher = getPattern(wholeWord(false)).matcher(text);
 		List<T> list = new ArrayList<>();
@@ -160,6 +184,20 @@ public class MatcherPattern<T> {
 	 */
 	public boolean contains(String text) {
 		return getPattern(wholeWord(false)).matcher(text).find();
+	}
+
+	/**
+	 * Starting with
+	 */
+	public boolean startWith(String text) {
+		return getPattern(startingWord(true)).matcher(text).find();
+	}
+
+	/**
+	 * end with
+	 */
+	public boolean endWith(String text) {
+		return getPattern(endingWord(true)).matcher(text).find();
 	}
 
 	public boolean contains(String text, int min) {

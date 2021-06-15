@@ -13,7 +13,7 @@ public class SpigotInfoFork {
 	private static boolean isTunity() {
 		if (isTunity == null)
 			try {
-				isTunity = Class.forName("com.tuinity.tuinity.util$TickThread") != null;
+				isTunity = Class.forName("com.tuinity.tuinity.util.TickThread") != null;
 			} catch (ClassNotFoundException e) {
 				isTunity = false;
 			}
@@ -33,7 +33,7 @@ public class SpigotInfoFork {
 	private static boolean isPurpur() {
 		if (isPurpur == null)
 			try {
-				isPurpur = Class.forName("net.pl3x.purpur.event$PlayerAFKEvent") != null;
+				isPurpur = Class.forName("net.pl3x.purpur.event.PlayerAFKEvent") != null;
 			} catch (ClassNotFoundException e) {
 				isPurpur = false;
 			}
