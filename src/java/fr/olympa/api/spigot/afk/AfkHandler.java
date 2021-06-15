@@ -25,7 +25,6 @@ import fr.olympa.api.spigot.customevents.AsyncOlympaPlayerChangeGroupEvent.Chang
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi.NametagHandler;
 import fr.olympa.core.spigot.OlympaCore;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -89,19 +88,21 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
-		unhandlePlayerPacket(e.getPlayer());
+		//unhandlePlayerPacket(e.getPlayer()); pas besoin, à la déconnexion le channel se vide tout seul
 
 		afkPlayers.remove(e.getPlayer().getUniqueId()).cancelTask();
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		afkPlayers.put(e.getPlayer().getUniqueId(), new AfkPlayer(e.getPlayer()));
-
-		handlePlayerPackets(e.getPlayer());
+		if (!e.getPlayer().isOnline()) {
+			OlympaCore.getInstance().sendMessage("§4%s §ca quitté avant de pouvoir setup son AFK handler.", e.getPlayer().getName());
+			return;
+		}
+		if (handlePlayerPackets(e.getPlayer())) afkPlayers.put(e.getPlayer().getUniqueId(), new AfkPlayer(e.getPlayer()));
 	}
 
-	private void handlePlayerPackets(Player p) {
+	private boolean handlePlayerPackets(Player p) {
 		ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
 			@Override
 			public void channelRead(ChannelHandlerContext channelHandlerContext, Object handledPacket) throws Exception {
@@ -109,23 +110,15 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 				if (afkPlayers.containsKey(p.getUniqueId()))
 					afkPlayers.get(p.getUniqueId()).addToLog(handledPacket);
 			}
-
-			//			@Override
-			//			public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise) throws Exception {
-			//				super.write(channelHandlerContext, packet, channelPromise);
-			//			}
 		};
 
 		ChannelPipeline pipeline = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel.pipeline();
+		if (pipeline.get("packet_handler") == null) {
+			OlympaCore.getInstance().sendMessage("§cImpossible de trouver le packet_handler pour le joueur §4%s§c. Sa détection d'AFK est désactivée.", p.getName());
+			return false;
+		}
 		pipeline.addBefore("packet_handler", p.getName() + "_AfkHandler", channelDuplexHandler);
-	}
-
-	private void unhandlePlayerPacket(Player p) {
-		Channel channel = ((CraftPlayer) p).getHandle().playerConnection.networkManager.channel;
-		channel.eventLoop().submit(() -> {
-			channel.pipeline().remove(p.getName());
-			return null;
-		});
+		return true;
 	}
 
 	@EventHandler
