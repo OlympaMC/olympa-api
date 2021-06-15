@@ -1,7 +1,7 @@
 package fr.olympa.api.common.redis.bungeesub;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
-import fr.olympa.api.common.plugin.OlympaCoreInterface;
 import fr.olympa.api.common.redis.RedisChannel;
 import fr.olympa.api.common.redis.RedisSubChannel;
 import fr.olympa.api.common.server.OlympaServer;
@@ -19,7 +19,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class SpigotServerSwitchReceiver extends RedisSubChannel {
 
-	public SpigotServerSwitchReceiver(OlympaCoreInterface core) {
+	public SpigotServerSwitchReceiver(LinkSpigotBungee core) {
 		super(core, RedisChannel.SPIGOT_PLAYER_SWITCH_SERVER);
 	}
 

@@ -9,6 +9,8 @@ import java.util.function.BiConsumer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
+import com.google.gson.Gson;
+
 import fr.olympa.api.common.bpmc.SpigotBPMCEvent;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
@@ -70,6 +72,8 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	public String getRangeVersion() {
+		if (firstVersion.equals(lastVersion))
+			return firstVersion;
 		return firstVersion + " à " + lastVersion;
 	}
 
@@ -163,6 +167,24 @@ public class OlympaCore extends OlympaSpigot {
 
 	@Override
 	public RedisConnection getRedisAccess() {
+		return null;
+	}
+
+	@Override
+	public void launchAsync(Runnable run) {}
+
+	@Override
+	public boolean isSpigot() {
+		return true;
+	}
+
+	@Override
+	public Gson getGson() {
+		return null;
+	}
+
+	@Override
+	public List<String> getPlayersNames() {
 		return null;
 	}
 

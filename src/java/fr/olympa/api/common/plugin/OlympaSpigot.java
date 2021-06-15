@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
@@ -17,7 +18,7 @@ import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
 import fr.olympa.api.spigot.vanish.IVanishApi;
 
-public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreInterface {
+public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreInterface, LinkSpigotBungee {
 
 	protected ServerStatus status;
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();

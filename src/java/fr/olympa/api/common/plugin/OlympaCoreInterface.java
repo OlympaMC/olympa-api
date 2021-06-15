@@ -1,20 +1,14 @@
 package fr.olympa.api.common.plugin;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
-import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.holograms.HologramsManager;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPubSub;
 
 public interface OlympaCoreInterface {
 
@@ -24,21 +18,7 @@ public interface OlympaCoreInterface {
 
 	ImageFrameManager getImageFrameManager();
 
-	String getServerName();
-
-	boolean isServerName(String serverName);
-
-	ServerStatus getStatus();
-
-	void setServerName(String serverName);
-
-	void setStatus(ServerStatus status);
-
-	OlympaServer getOlympaServer();
-
-	void setOlympaServer(OlympaServer olympaServer);
-
-	Connection getDatabase() throws SQLException;
+	void registerPackListener(ResourcePackHandler packHandler);
 
 	/**
 	 * Execute le @param callback avec les dernières informations des serveurs spigot si possible. Si les données sont plus anciennes de 10 secondes,
@@ -47,12 +27,5 @@ public interface OlympaCoreInterface {
 	 */
 	void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack);
 
-	void registerPackListener(ResourcePackHandler packHandler);
-
-	void registerRedisSub(JedisPubSub sub, String channel);
-
-	void registerRedisSub(Jedis jedis, JedisPubSub sub, String channel);
-
-	RedisConnection getRedisAccess();
-
+	void setOlympaServer(OlympaServer olympaServer);
 }

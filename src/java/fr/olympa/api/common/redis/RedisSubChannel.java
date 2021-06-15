@@ -1,6 +1,6 @@
 package fr.olympa.api.common.redis;
 
-import fr.olympa.api.common.plugin.OlympaCoreInterface;
+import fr.olympa.api.LinkSpigotBungee;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
@@ -13,7 +13,7 @@ public class RedisSubChannel extends JedisPubSub {
 	protected boolean canReceiveOnBungee;
 	private RedisConnection redisAccess;
 
-	public RedisSubChannel(OlympaCoreInterface core, RedisChannel channel) {
+	public RedisSubChannel(LinkSpigotBungee core, RedisChannel channel) {
 		this.channel = channel;
 		redisAccess = core.getRedisAccess();
 	}

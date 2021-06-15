@@ -15,6 +15,7 @@ import fr.olympa.api.common.permission.list.OlympaAPIPermissionsBungee;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
 import fr.olympa.api.common.plugin.OlympaBungeeInterface;
 import fr.olympa.api.common.plugin.OlympaPluginInterface;
+import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.task.OlympaTask;
@@ -108,7 +109,6 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 
 	@Override
 	public OlympaServer getOlympaServer() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -134,7 +134,29 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 
 	@Override
 	public BungeeCustomConfig getDefaultConfig() {
-		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isServerName(String serverName) {
+		return false;
+	}
+
+	@Override
+	public void setServerName(String serverName) {
+
+	}
+
+	@Override
+	public void setStatus(ServerStatus status) {
+
+	}
+
+	@Override
+	public void registerRedisSub(JedisPubSub sub, String channel) {}
+
+	@Override
+	public RedisConnection getRedisAccess() {
 		return null;
 	}
 
