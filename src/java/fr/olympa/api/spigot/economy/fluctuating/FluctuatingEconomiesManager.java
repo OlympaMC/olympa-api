@@ -26,15 +26,17 @@ public class FluctuatingEconomiesManager {
 		table.createOrAlter();
 	}
 	
-	public void register(FluctuatingEconomy eco) throws SQLException {
-		ResultSet resultSet = table.get(eco);
-		if (resultSet.next()) {
-			eco.value.set(resultSet.getDouble("value"));
-			eco.nextUp.set(resultSet.getLong("next_update"));
+	public void register(FluctuatingEconomy... economies) throws SQLException {
+		for (FluctuatingEconomy eco : economies) {
+			ResultSet resultSet = table.get(eco);
+			if (resultSet.next()) {
+				eco.value.set(resultSet.getDouble("value"));
+				eco.nextUp.set(resultSet.getLong("next_update"));
+			}
+			eco.value.observe("sql", () -> COLUMN_VALUE.updateAsync(eco, eco.value.get(), null, null));
+			eco.nextUp.observe("sql", () -> COLUMN_NEXT_UPDATE.updateAsync(eco, eco.nextUp.get(), null, null));
+			eco.start(plugin);
 		}
-		eco.value.observe("sql", () -> COLUMN_VALUE.updateAsync(eco, eco.value.get(), null, null));
-		eco.nextUp.observe("sql", () -> COLUMN_NEXT_UPDATE.updateAsync(eco, eco.nextUp.get(), null, null));
-		eco.start(plugin);
 	}
 	
 }
