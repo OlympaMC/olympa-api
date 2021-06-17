@@ -214,4 +214,8 @@ public class ColorUtils {
 		throw new IllegalAccessError(color + " is not a color in format #FFFFFF or &f or §f or f.");
 	}
 
+	public static String stripColor(String string) {
+		return RegexMatcher.ALL_CHAT_INVISIBLE_CHARS.replace(string, "");
+	}
+
 }

@@ -21,11 +21,19 @@ public class TimeEvaluator {
 		return timeTaken = getNanoTime() - time;
 	}
 
-	public void print() {
+	public void print(String data) {
+		if (data != null && data.isBlank())
+			data = " (" + data + ")";
+		else
+			data = "";
 		long timeTaken2 = getTimeDiff();
 		if (timeTaken == 0)
 			timeTaken2 = stop();
-		LinkSpigotBungee.Provider.link.sendMessage("&6[TIME EVALUATOR] &e%s took %s", name, Utils.nanoSecondesToHumain(timeTaken2));
+		LinkSpigotBungee.Provider.link.sendMessage("&6[TIME EVALUATOR] &e%s took %s%s", name, Utils.nanoSecondesToHumain(timeTaken2), data);
+	}
+
+	public void print() {
+		print(null);
 	}
 
 	public long getTimeDiff() {
