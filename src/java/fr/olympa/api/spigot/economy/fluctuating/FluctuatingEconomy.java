@@ -64,6 +64,10 @@ public abstract class FluctuatingEconomy {
 		return value.get();
 	}
 	
+	public void setValue(double value) {
+		this.value.set(value);
+	}
+	
 	public synchronized void use(double amount) {
 		if (value.get() <= getMin()) return;
 		value.set(Math.max(getMin(), processNewValue(amount)));
