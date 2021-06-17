@@ -16,6 +16,7 @@ public abstract class FluctuatingEconomy {
 	protected final ObservableLong nextUp;
 	
 	private BukkitTask task;
+	private Plugin plugin;
 	
 	protected FluctuatingEconomy(String id, double base) {
 		this.id = id;
@@ -26,20 +27,26 @@ public abstract class FluctuatingEconomy {
 	}
 	
 	protected void start(Plugin plugin) {
+		this.plugin = plugin;
+		
 		long timeLeft = nextUp.get() - System.currentTimeMillis();
 		long delay = timeLeft < 0 ? 0 : timeLeft / 50;
-		start(plugin, delay);
+		run(delay);
 	}
 	
-	private void start(Plugin plugin, long delay) {
+	private void run() {
+		long delayMillis = nextUpdateDelayMillis();
+		nextUp.set(System.currentTimeMillis() + delayMillis);
+		run(delayMillis / 50);
+	}
+	
+	private void run(long delay) {
 		Runnable runnable = () -> {
 			task = null;
 			if (value.get() < base) {
 				value.set(processUpValue());
 				if (value.get() < base) {
-					long delayMillis = nextUpdateDelayMillis();
-					nextUp.set(System.currentTimeMillis() + delayMillis);
-					start(plugin, delayMillis / 50);
+					run();
 				}else nextUp.set(0);
 			}
 		};
@@ -68,9 +75,10 @@ public abstract class FluctuatingEconomy {
 		this.value.set(value);
 	}
 	
-	public synchronized void use(double amount) {
+	public final synchronized void use(double amount) {
 		if (value.get() <= getMin()) return;
 		value.set(Math.max(getMin(), processNewValue(amount)));
+		if (task == null) run();
 	}
 	
 	public abstract double getMin();
