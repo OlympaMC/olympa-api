@@ -37,9 +37,4 @@ public class FixedFluctuatingEconomy extends FluctuatingEconomy {
 		return value.get() - used * downFactor;
 	}
 	
-	public void use(double amount) {
-		if (value.get() == min) return;
-		value.set(Math.max(min, value.get() - amount * downFactor));
-	}
-	
 }
