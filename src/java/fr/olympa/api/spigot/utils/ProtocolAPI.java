@@ -3,6 +3,7 @@ package fr.olympa.api.spigot.utils;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.chat.ColorUtils;
+import fr.olympa.api.utils.Utils;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
 /**
@@ -28,9 +30,30 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 public enum ProtocolAPI {
 
 	V1_17(755, true, true),
+	SNAPSHOT_1_17$RC2(1073741859, false, true, true),
+	SNAPSHOT_1_17$RC1(1073741858, false, true, true),
+	SNAPSHOT_1_17$PRE5(1073741857, false, true, true),
+	SNAPSHOT_1_17$PRE4(1073741856, false, true, true),
+	SNAPSHOT_1_17$PRE3(1073741855, false, true, true),
+	SNAPSHOT_1_17$PRE2(1073741854, false, true, true),
+	SNAPSHOT_1_17$PRE1(1073741853, false, true, true),
+	SNAPSHOT_1_17$21W20A(1073741852, false, true, true),
+	SNAPSHOT_1_17$21W19A(1073741851, false, true, true),
+	SNAPSHOT_1_17$21W18A(1073741850, false, true, true),
+	SNAPSHOT_1_17$21W17A(1073741849, false, true, true),
+	SNAPSHOT_1_17$21W16A(1073741847, false, true, true),
+	SNAPSHOT_1_17$21W15A(1073741846, false, true, true),
+	SNAPSHOT_1_17$21W14A(1073741845, false, true, true),
+	SNAPSHOT_1_17$21W13A(1073741844, false, true, true),
+	SNAPSHOT_1_17$21W11A(1073741843, false, true, true),
+	SNAPSHOT_1_17$21W10A(1073741842, false, true, true),
+	SNAPSHOT_1_17$21W08A(1073741841, false, true, true),
+	SNAPSHOT_1_17$21W07A(1073741840, false, true, true),
+	SNAPSHOT_1_17$21W06A(1073741839, false, true, true),
 	V1_16_5(754),
 	V1_16_4(754),
 	V1_16_3(753),
+	//	V1_16_3$RC1(752, false, true, true),
 	V1_16_2(751),
 	V1_16_1(736),
 	V1_16(735),
@@ -88,6 +111,22 @@ public enum ProtocolAPI {
 
 	private static String version = null;
 	private static ProtocolAPI defaultProtocol = null;
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static String getName(int protocolNumber) {
+		List<ProtocolAPI> protocols = Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
+		if (protocols.isEmpty())
+			return "unknown (" + protocolNumber + ")";
+		String lastVersion = protocols.iterator().next().getName();
+		if (protocols.size() == 1)
+			return lastVersion;
+		Iterator<ProtocolAPI> it = protocols.iterator();
+		ProtocolAPI next = null;
+		while (it.hasNext())
+			next = it.next();
+		String firstVersion = next.getName();
+		return firstVersion + "-" + lastVersion;
+	}
 
 	/**
 	 * Get the big version of protocol @param protocolNumber
@@ -229,6 +268,7 @@ public enum ProtocolAPI {
 	private final int protocolNumber;
 	private boolean allow = true;
 	private boolean notRecommended = false;
+	private boolean snapshot = false;
 
 	ProtocolAPI(int protocolNumber) {
 		this.protocolNumber = protocolNumber;
@@ -244,8 +284,17 @@ public enum ProtocolAPI {
 		notRecommended = notRecommanded;
 	}
 
+	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommended, boolean snapshot) {
+		this.protocolNumber = protocolNumber;
+		this.allow = allow;
+		this.notRecommended = notRecommended;
+		this.snapshot = snapshot;
+	}
+
 	public String getName() {
-		return name().replace("_", ".").substring(1);
+		if (!name().startsWith("SNAPSHOT"))
+			return name().replace("_", ".").substring(1);
+		return Utils.capitalize(name().replaceFirst("_", " ").replace("_", ".").replace("$", "-"));
 	}
 
 	public int getProtocolNumber() {
@@ -257,10 +306,12 @@ public enum ProtocolAPI {
 	}
 
 	public boolean isNotRecommended() {
-		return notRecommended;
+		return snapshot || notRecommended;
 	}
 
 	public boolean isSupported() {
+		if (snapshot)
+			return false;
 		ProtocolAPI defaultProto = getDefaultSpigotProtocol();
 		return defaultProto != null && getProtocolNumber() <= defaultProto.getProtocolNumber();
 	}

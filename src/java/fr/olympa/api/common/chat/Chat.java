@@ -58,7 +58,7 @@ public enum Chat {
 	S('S', 5),
 	LOWER_S('s', 5),
 	T('T', 5),
-	LOWER_T('t', 4),
+	LOWER_T('t', 3),
 	U('U', 5),
 	LOWER_U('u', 5),
 	V('V', 5),
@@ -114,7 +114,8 @@ public enum Chat {
 	PERIOD('.', 1),
 	COMMA(',', 1),
 	SPACE(' ', 3),
-	HEXA('⬣', 8),
+	HEXA('⬣', 11),
+	WARNING('⚠', 11),
 	CROSS('✖', 6),
 	DEFAULT('a', 4);
 
@@ -266,10 +267,11 @@ public enum Chat {
 					continue;
 				} else
 					isBold = false;
-			}else if (c == ' ') {
+			} else if (c == ' ') {
 				lastSpaceIndex = charIndex;
-				if (countSpaces) messagePxSize += Chat.SPACE.getLength() + 1;
-			}else {
+				if (countSpaces)
+					messagePxSize += Chat.SPACE.getLength() + 1;
+			} else {
 				Chat dFI = Chat.getDefaultFontInfo(c);
 				messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
 				messagePxSize++;
@@ -283,7 +285,7 @@ public enum Chat {
 		}
 		return messagePxSize;
 	}
-	
+
 	public static String getCenteredMessage(String message) {
 		int messagePxSize = getPxSize(message, false);
 		int halvedMessageSize = messagePxSize / 2;

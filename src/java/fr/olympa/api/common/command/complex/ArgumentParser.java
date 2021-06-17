@@ -1,21 +1,16 @@
 package fr.olympa.api.common.command.complex;
 
 import java.util.Collection;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 public class ArgumentParser<T> {
 
 	private BiFunction<T, String, Collection<String>> tabArgumentsFunction;
 	public Function<String, Object> supplyArgumentFunction;
 	public UnaryOperator<String> wrongArgTypeMessageFunction;
-	Cache<Entry<T, String>, Collection<String>> cache;
+	//	Cache<Entry<T, String>, Collection<String>> cache;
 
 	/**
 	 *
@@ -28,8 +23,8 @@ public class ArgumentParser<T> {
 		this.tabArgumentsFunction = tabArgumentsFunction;
 		this.supplyArgumentFunction = supplyArgumentFunction;
 		this.wrongArgTypeMessageFunction = wrongArgTypeMessageFunction;
-		if (hasCache)
-			cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+		//		if (hasCache)
+		//			cache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
 	}
 
 	public ArgumentParser(BiFunction<T, String, Collection<String>> tabArgumentsFunction, Function<String, Object> supplyArgumentFunction, UnaryOperator<String> wrongArgTypeMessageFunction) {
