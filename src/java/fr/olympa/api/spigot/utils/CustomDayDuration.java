@@ -21,6 +21,9 @@ public class CustomDayDuration implements Listener {
 	
 	private double nextTick = -1;
 	
+	private Runnable day;
+	private Runnable night;
+	
 	public CustomDayDuration(Plugin plugin, World world, int dayDuration, int nightDuration, double tolerance) {
 		
 		double dayMultiplier = (double) DEFAULT_DAY_DURATION / (double) dayDuration;
@@ -28,14 +31,26 @@ public class CustomDayDuration implements Listener {
 		
 		//world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
 		task = Bukkit.getScheduler().runTaskTimer/*Asynchronously*/(plugin, () -> {
+			boolean isNight = world.getTime() >= NIGHT_TIME;
 			double time = world.getFullTime();
-			double mult = world.getTime() >= NIGHT_TIME ? nightMultiplier : dayMultiplier;
+			double mult = isNight ? nightMultiplier : dayMultiplier;
 			if (mult == 1) return;
 			if (nextTick != -1) {
 				if (tolerance == 0 ? (Math.floor(time) != Math.floor(nextTick)) : Math.abs(time - nextTick) >= tolerance) world.setFullTime((long) nextTick);
 				time = nextTick;
 			}
 			nextTick = time + mult;
+			
+			if (day != null && night != null) {
+				boolean nextNight = nextTick % 24000L >= NIGHT_TIME;
+				if (isNight != nextNight) {
+					if (nextNight) {
+						if (night != null) night.run();
+					}else {
+						if (day != null) day.run();
+					}
+				}
+			}
 		}, 1, 1);
 		
 		Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -47,6 +62,16 @@ public class CustomDayDuration implements Listener {
 			task = null;
 		}
 		HandlerList.unregisterAll(this);
+	}
+	
+	public CustomDayDuration setDayRunnable(Runnable day) {
+		this.day = day;
+		return this;
+	}
+	
+	public CustomDayDuration setNightRunnable(Runnable night) {
+		this.night = night;
+		return this;
 	}
 	
 	@EventHandler

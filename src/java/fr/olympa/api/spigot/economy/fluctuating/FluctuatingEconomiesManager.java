@@ -3,9 +3,9 @@ package fr.olympa.api.spigot.economy.fluctuating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.bukkit.plugin.Plugin;
 
@@ -22,7 +22,7 @@ public class FluctuatingEconomiesManager {
 	protected final SQLTable<FluctuatingEconomy> table;
 	private final Plugin plugin;
 	
-	private final Map<String, FluctuatingEconomy> economies = new HashMap<>();
+	private final List<FluctuatingEconomy> economies = new ArrayList<>();
 	
 	public FluctuatingEconomiesManager(Plugin plugin, String id, OlympaSpigotPermission commandPermission) throws SQLException {
 		this.plugin = plugin;
@@ -37,8 +37,12 @@ public class FluctuatingEconomiesManager {
 		return plugin;
 	}
 	
-	public Map<String, FluctuatingEconomy> getEconomies() {
+	public List<FluctuatingEconomy> getEconomies() {
 		return economies;
+	}
+	
+	public FluctuatingEconomy getEconomy(String id) {
+		return economies.stream().filter(x -> x.getId().equals(id)).findAny().orElse(null);
 	}
 	
 	public void register(FluctuatingEconomy... economies) throws SQLException {
@@ -53,7 +57,7 @@ public class FluctuatingEconomiesManager {
 			eco.value.observe("sql", () -> COLUMN_VALUE.updateAsync(eco, eco.value.get(), null, null));
 			eco.nextUp.observe("sql", () -> COLUMN_NEXT_UPDATE.updateAsync(eco, eco.nextUp.get(), null, null));
 			eco.start(plugin);
-			this.economies.put(eco.getId(), eco);
+			this.economies.add(eco);
 		}
 	}
 	
