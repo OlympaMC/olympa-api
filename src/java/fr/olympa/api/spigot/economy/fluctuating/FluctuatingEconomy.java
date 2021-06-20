@@ -1,7 +1,5 @@
 package fr.olympa.api.spigot.economy.fluctuating;
 
-import java.util.concurrent.TimeUnit;
-
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,42 +11,48 @@ public abstract class FluctuatingEconomy {
 	
 	private final String id;
 	private final double base;
-	private final double min;
-	private final long timeBetween;
-	private final TimeUnit timeUnit;
-	private final double downFactor;
-	private final double upValue;
 	
 	protected final ObservableDouble value;
 	protected final ObservableLong nextUp;
 	
 	private BukkitTask task;
+	private Plugin plugin;
 	
-	protected FluctuatingEconomy(String id, double base, double min, long timeBetween, TimeUnit timeUnit, double downFactor, double upValue) {
+	protected FluctuatingEconomy(String id, double base) {
 		this.id = id;
 		this.base = base;
-		this.min = min;
-		this.timeBetween = timeBetween;
-		this.timeUnit = timeUnit;
-		this.downFactor = downFactor;
-		this.upValue = upValue;
 		
 		value = new ObservableDouble(base);
 		nextUp = new ObservableLong(0);
 	}
 	
 	protected void start(Plugin plugin) {
+		this.plugin = plugin;
+		
 		long timeLeft = nextUp.get() - System.currentTimeMillis();
-		long period = timeUnit.toMillis(timeBetween) / 50L;
 		long delay = timeLeft < 0 ? 0 : timeLeft / 50;
-		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+		run(delay);
+	}
+	
+	private void run() {
+		long delayMillis = nextUpdateDelayMillis();
+		nextUp.set(System.currentTimeMillis() + delayMillis);
+		run(delayMillis / 50);
+	}
+	
+	private void run(long delay) {
+		Runnable runnable = () -> {
+			task = null;
 			if (value.get() < base) {
-				value.set(Math.min(base, value.get() + upValue));
+				value.set(processUpValue());
 				if (value.get() < base) {
-					nextUp.set(System.currentTimeMillis() + timeUnit.toMillis(timeBetween));
+					run();
 				}else nextUp.set(0);
 			}
-		}, delay, period);
+		};
+		if (delay == 0) {
+			runnable.run();
+		}else task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, delay);
 	}
 	
 	public void stop() {
@@ -67,12 +71,25 @@ public abstract class FluctuatingEconomy {
 		return value.get();
 	}
 	
-	public void use(double amount) {
-		if (value.get() == min) return;
-		value.set(Math.max(min, value.get() - amount * downFactor));
+	public void setValue(double value) {
+		this.value.set(value);
 	}
 	
-	protected abstract long processNextUpdate();
+	public long getNextUpdate() {
+		return nextUp.get();
+	}
+	
+	public final synchronized void use(double amount) {
+		if (value.get() <= getMin()) return;
+		value.set(Math.max(getMin(), processNewValue(amount)));
+		if (task == null) run();
+	}
+	
+	public abstract double getMin();
+	
+	protected abstract long nextUpdateDelayMillis();
+	
+	protected abstract double processUpValue();
 	
 	protected abstract double processNewValue(double used);
 	
