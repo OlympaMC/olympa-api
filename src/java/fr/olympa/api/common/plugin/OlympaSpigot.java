@@ -13,7 +13,7 @@ import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.spigot.afk.AfkHandler;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
-import fr.olympa.api.spigot.hook.IProtocolSupport;
+import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
 import fr.olympa.api.spigot.vanish.IVanishApi;
@@ -70,7 +70,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		this.olympaServer = olympaServer;
 	}
 
-	public abstract IProtocolSupport getProtocolSupport();
+	public abstract VersionByPluginApi getProtocolSupport();
 
 	@Override
 	public String getServerName() {

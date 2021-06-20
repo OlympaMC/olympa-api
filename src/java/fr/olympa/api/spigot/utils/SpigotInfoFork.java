@@ -20,7 +20,7 @@ public class SpigotInfoFork {
 		return isTunity;
 	}
 
-	private static boolean isPaper() {
+	public static boolean isPaper() {
 		if (isPapermc == null)
 			try {
 				isPapermc = Class.forName("com.destroystokyo.paper.VersionHistoryManager$VersionData") != null;

@@ -20,7 +20,7 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
-import fr.olympa.api.spigot.hook.IProtocolSupport;
+import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.utils.SpigotInfoFork;
 import fr.olympa.api.spigot.utils.TPS;
 import fr.olympa.api.spigot.utils.TPSUtils;
@@ -105,9 +105,9 @@ public class TpsMessage extends JavaInstanceInfo {
 		}
 		textBuilder.extra("&3Versions supportées: &b%s&3 ", ((OlympaCore) main).getRangeVersion());
 		@Nullable
-		IProtocolSupport protocolSupport = ((OlympaCore) main).getProtocolSupport();
+		VersionByPluginApi protocolSupport = ((OlympaCore) main).getProtocolSupport();
 		if (protocolSupport != null) {
-			String unSupVer = protocolSupport.getVersionUnSupportedInRange();
+			String unSupVer = protocolSupport.getVersionsUnSupported();
 			if (!unSupVer.isBlank())
 				textBuilder.extra(new TxtComponentBuilder("&4[&c!&4]&3.").onHoverText("&4Versions non supportées: &c%s&4.", unSupVer));
 		}

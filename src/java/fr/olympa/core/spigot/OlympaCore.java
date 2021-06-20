@@ -23,7 +23,7 @@ import fr.olympa.api.spigot.command.CommandListener;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.gui.Inventories;
 import fr.olympa.api.spigot.holograms.HologramsManager;
-import fr.olympa.api.spigot.hook.IProtocolSupport;
+import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.DataManagmentListener;
 import redis.clients.jedis.Jedis;
@@ -82,7 +82,7 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public IProtocolSupport getProtocolSupport() {
+	public VersionByPluginApi getProtocolSupport() {
 		return null;
 	}
 

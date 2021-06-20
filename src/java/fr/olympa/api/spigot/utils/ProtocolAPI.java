@@ -143,6 +143,26 @@ public enum ProtocolAPI {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
 	}
 
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static List<ProtocolAPI> getAllUnderI(int protocolNumber) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() <= protocolNumber).collect(Collectors.toList());
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static List<ProtocolAPI> getAllUnderE(int protocolNumber) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() < protocolNumber).collect(Collectors.toList());
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static List<ProtocolAPI> getAllUpperI(int protocolNumber) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() >= protocolNumber).collect(Collectors.toList());
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static List<ProtocolAPI> getAllUpperE(int protocolNumber) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() > protocolNumber).collect(Collectors.toList());
+	}
+
 	@Nullable
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static ProtocolAPI get(String version) {
@@ -156,7 +176,7 @@ public enum ProtocolAPI {
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
 	public static ProtocolAPI getDefaultSpigotProtocol() {
 		if (defaultProtocol == null)
-			defaultProtocol = get(getSpigotVersion());
+			defaultProtocol = get(getNativeSpigotVersion());
 		return defaultProtocol;
 	}
 
@@ -190,7 +210,31 @@ public enum ProtocolAPI {
 	 * @throw IllegalAccessError when bungee instance call this method
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static String getSpigotVersion() {
+	public static String getNativeSpigotVersion() {
+		if (!LinkSpigotBungee.Provider.link.isSpigot())
+			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
+		if (version == null)
+			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
+		return version;
+	}
+
+	/**
+	 * @throw IllegalAccessError when bungee instance call this method
+	 */
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
+	public static String getSpigotVersions() {
+		if (!LinkSpigotBungee.Provider.link.isSpigot())
+			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
+		if (version == null)
+			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
+		return version;
+	}
+
+	/**
+	 * @throw IllegalAccessError when bungee instance call this method
+	 */
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
+	public static String getSpigotVersionRange() {
 		if (!LinkSpigotBungee.Provider.link.isSpigot())
 			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
 		if (version == null)
@@ -297,8 +341,36 @@ public enum ProtocolAPI {
 		return Utils.capitalize(name().replaceFirst("_", " ").replace("_", ".").replace("$", "-"));
 	}
 
+	public String getCompleteName() {
+		List<ProtocolAPI> all = getAll(getProtocolNumber());
+		int size = all.size();
+		ProtocolAPI latest = all.get(0);
+		if (size == 1)
+			return latest.getName();
+		ProtocolAPI oldest = all.get(size - 1);
+		return latest.getName() + "-" + oldest.getName();
+	}
+
 	public int getProtocolNumber() {
 		return protocolNumber;
+	}
+
+	@Nullable
+	public ProtocolAPI getUpperProtocol() {
+		int ordinal = ordinal();
+		ProtocolAPI[] values = ProtocolAPI.values();
+		if (ordinal - 1 < 0)
+			return null;
+		return values[ordinal() - 1];
+	}
+
+	@Nullable
+	public ProtocolAPI getLowerProtocol() {
+		int ordinal = ordinal();
+		ProtocolAPI[] values = ProtocolAPI.values();
+		if (ordinal + 1 > values.length - 1)
+			return null;
+		return ProtocolAPI.values()[ordinal() + 1];
 	}
 
 	public boolean isAllowed() {

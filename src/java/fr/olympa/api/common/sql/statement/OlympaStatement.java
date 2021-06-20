@@ -3,11 +3,13 @@ package fr.olympa.api.common.sql.statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.utils.Utils;
 
 public class OlympaStatement {
 
@@ -121,18 +123,18 @@ public class OlympaStatement {
 	}
 
 	public OlympaStatement(String statement, boolean returnGeneratedKeys) {
-		this.statementCommand = statement;
+		statementCommand = statement;
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 
 	public OlympaStatement(String statement, String tableName, boolean returnGeneratedKeys) {
-		this.statementCommand = String.format(statement, tableName);
+		statementCommand = String.format(statement, tableName);
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 
 	/*private PreparedStatement prepared;
 	private ReentrantLock lock = new ReentrantLock();*/
-	
+
 	public PreparedStatement createStatement() throws SQLException {
 		/*if (!lock.tryLock(10, TimeUnit.SECONDS)) throw new SQLException("Le thread n'a pas été acquis au bout de 10 secondes");
 		if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0))
@@ -155,23 +157,38 @@ public class OlympaStatement {
 		returnGeneratedKeys = true;
 		return this;
 	}
-	
+
+	private void sendError(Exception e) throws SQLException {
+		throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+	}
+
 	public int executeUpdate(PreparedStatement statement) throws SQLException {
 		try {
 			return statement.executeUpdate();
-		}catch (Exception e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+		} catch (Exception e) {
+			sendError(e);
+			return -42;
 		}
 	}
-	
+
+	public static long time = 0;
+
 	public ResultSet executeQuery(PreparedStatement statement) throws SQLException {
 		try {
 			return statement.executeQuery();
-		}catch (Exception e) {
-			throw new SQLException("OlympaStatement " + (type != null ? "Type " + type.getTypeName() : "") + ": " + statementCommand, e);
+		} catch (SQLNonTransientConnectionException e) {
+			if (time == 0) {
+				time = Utils.getCurrentTimeInSeconds();
+				return executeQuery(statement);
+			}
+			sendError(e);
+			return null;
+		} catch (Exception e) {
+			sendError(e);
+			return null;
 		}
 	}
-	
+
 	/*public int executeUpdate(StatementProvider statementProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -183,7 +200,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	public int executeUpdate(StatementProvider statementProvider, ResultSetProvider generatedKeysProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -199,7 +216,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	public void executeQuery(StatementProvider statementProvider, ResultSetProvider queryProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -213,15 +230,15 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	@FunctionalInterface
 	public interface StatementProvider {
 		public void call(PreparedStatement statement) throws Exception;
 	}
-	
+
 	@FunctionalInterface
 	public interface ResultSetProvider {
 		public void call(ResultSet resultSet) throws Exception;
 	}*/
-	
+
 }
