@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -16,6 +17,7 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.chat.ColorUtils;
+import fr.olympa.api.common.sort.Sorting;
 import fr.olympa.api.utils.Utils;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
@@ -111,6 +113,16 @@ public enum ProtocolAPI {
 
 	private static String version = null;
 	private static ProtocolAPI defaultProtocol = null;
+
+	/**
+	 * TODO range like 1.8 à 1.9, 1.12 à 1.17
+	 */
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static String getRange(List<ProtocolAPI> protocols) {
+		List<ProtocolAPI> sorted = protocols.stream().filter(pApi -> !pApi.isSnapshot()).sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
+		StringJoiner sj = new StringJoiner(", ");
+		return null;
+	}
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static String getName(int protocolNumber) {
@@ -379,6 +391,10 @@ public enum ProtocolAPI {
 
 	public boolean isNotRecommended() {
 		return snapshot || notRecommended;
+	}
+
+	public boolean isSnapshot() {
+		return snapshot;
 	}
 
 	public boolean isSupported() {

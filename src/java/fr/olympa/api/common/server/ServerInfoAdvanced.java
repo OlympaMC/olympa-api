@@ -150,7 +150,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return name;
 	}
 
-	public String getHumainName() {
+	public String getHumanName() {
 		if (olympaServer.getNameCaps() == null)
 			return Utils.capitalize(name);
 		StringJoiner sj = new StringJoiner(" ");

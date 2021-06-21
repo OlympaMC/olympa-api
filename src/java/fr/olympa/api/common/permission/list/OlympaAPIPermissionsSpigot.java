@@ -6,7 +6,7 @@ import fr.olympa.api.common.permission.OlympaSpigotPermission;
 public class OlympaAPIPermissionsSpigot {
 
 	private OlympaAPIPermissionsSpigot() {}
-	
+
 	public static final OlympaSpigotPermission COMMAND_HOLOGRAMS_MANAGE = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_IMAGEMAP = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_BYPASS_REGIONS = new OlympaSpigotPermission(OlympaGroup.BUILDER); // TODO + haute perm après ouverture
@@ -32,5 +32,6 @@ public class OlympaAPIPermissionsSpigot {
 	public static final OlympaSpigotPermission TRADE_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 
 	public static final OlympaSpigotPermission ARG_COLOR = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission CHATCATCHER_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 
 }

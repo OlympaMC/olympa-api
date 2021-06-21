@@ -42,7 +42,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	}
 
 	public static void sendErrorModule(OlympaModule<?, ?, ?, ?> module, Exception e, String whileDoing) {
-		new Exception(String.format("§cError in Module§4 %s §cwhile do§4 %s§c.", module.getName(), whileDoing)).initCause(e).printStackTrace();
+		new Exception(String.format("§cError in Module§4 %s §cwhile doing§4 %s§c.", module.getName(), whileDoing)).initCause(e).printStackTrace();
 	}
 
 	public interface ModuleApi<P> {

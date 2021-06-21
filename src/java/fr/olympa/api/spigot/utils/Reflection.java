@@ -1,5 +1,6 @@
 package fr.olympa.api.spigot.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.bukkit.Bukkit;
@@ -132,29 +134,30 @@ public class Reflection {
 	}
 
 	public static <T> T instantiateNested(Object instance, String subclassName, Object... args) throws ReflectiveOperationException {
-		for (Class<?> clazz : instance.getClass().getDeclaredClasses()) {
+		for (Class<?> clazz : instance.getClass().getDeclaredClasses())
 			if (clazz.getSimpleName().equals(subclassName)) {
 				constr: for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
 					Parameter[] parameters = constructor.getParameters();
-					if (parameters.length != args.length + 1) continue;
+					if (parameters.length != args.length + 1)
+						continue;
 					for (int i = 0; i < parameters.length; i++) {
-						if (i == 0) continue;
+						if (i == 0)
+							continue;
 						Parameter parameter = constructor.getParameters()[i];
-						if (!ClassUtils.primitiveToWrapper(parameter.getType()).isInstance(args[i - 1])) continue constr;
+						if (!ClassUtils.primitiveToWrapper(parameter.getType()).isInstance(args[i - 1]))
+							continue constr;
 					}
 					Object[] realArgs = new Object[args.length + 1];
 					realArgs[0] = instance;
-					for (int j = 0; j < args.length; j++) {
+					for (int j = 0; j < args.length; j++)
 						realArgs[j + 1] = args[j];
-					}
 					return (T) constructor.newInstance(realArgs);
 				}
 				throw new NoSuchMethodException("No matching constructor for " + clazz.getName());
 			}
-		}
 		throw new ClassNotFoundException("No subclass " + subclassName + " of " + instance.getClass().getName());
 	}
-	
+
 	public static Field getField(Class<?> clazz, String fieldName) {
 		Field field = null;
 		try {
@@ -348,5 +351,48 @@ public class Reflection {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
+	}
+
+	public static void printClass(Class<?> clazz) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(clazz.getName());
+		if (clazz.getGenericSuperclass() != null)
+			sb.append(" extends " + clazz.getGenericSuperclass().getTypeName());
+		if (clazz.getGenericInterfaces() != null && clazz.getGenericInterfaces().length != 0)
+			sb.append(" implements " + Arrays.stream(clazz.getGenericInterfaces()).map(at -> at.getTypeName()).collect(Collectors.joining(", ")));
+		sb.append("\n");
+		sb.append(Arrays.stream(clazz.getFields()).map(field -> {
+			StringBuilder sb2 = new StringBuilder();
+			if (field.getAnnotations() != null && field.getAnnotations().length != 0)
+				for (Annotation annotation : field.getAnnotations()) {
+					sb2.append("@" + annotation.getClass().getTypeName());
+					sb2.append("(" + Arrays.stream(annotation.getClass().getDeclaredMethods())
+							.map(m -> m.getReturnType().getTypeName() + " = " + m.getName()).collect(Collectors.joining(", ")) + ") ");
+				}
+			sb2.append(field.getType().getSimpleName());
+			if (!field.getGenericType().equals(field.getType()))
+				sb2.append("(generic " + field.getGenericType().getTypeName() + ")");
+			sb2.append(" " + field.getName());
+			return sb2.toString();
+		}).collect(Collectors.joining("\n")));
+		sb.append(Arrays.stream(clazz.getMethods()).map(method -> {
+			StringBuilder sb2 = new StringBuilder();
+			if (method.getAnnotations() != null && method.getAnnotations().length != 0)
+				for (Annotation annotation : method.getAnnotations()) {
+					sb2.append("@" + annotation.getClass().getTypeName());
+					sb2.append("(" + Arrays.stream(annotation.getClass().getMethods())
+							.map(m -> m.getReturnType().getTypeName() + " = " + m.getName()).collect(Collectors.joining(", ")) + ") ");
+				}
+			if (method.isAccessible())
+				sb2.append("public ");
+			sb2.append(method.getReturnType().getSimpleName());
+			sb2.append(" ");
+			sb2.append(method.getName());
+			sb2.append("(");
+			sb2.append(Arrays.stream(method.getParameters()).map(parameter -> parameter.getType().getName() + " " + parameter.getName()).collect(Collectors.joining(", ")));
+			sb2.append(") ");
+			return sb2.toString();
+		}).collect(Collectors.joining("\n\n")));
+
 	}
 }
