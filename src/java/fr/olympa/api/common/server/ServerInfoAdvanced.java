@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 
 import fr.olympa.api.LinkSpigotBungee;
@@ -75,10 +77,10 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 				.collect(Collectors.toList());
 	}
 
-	public static TxtComponentBuilder getPluginsToString(List<PluginInfoAdvanced> plugins, boolean isConsole) {
+	public static TxtComponentBuilder getPluginsToString(List<PluginInfoAdvanced> plugins, boolean isConsole, boolean withVersion) {
 		TxtComponentBuilder txt = new TxtComponentBuilder().console(isConsole).extraSpliter("&7, ");
 		plugins.forEach(debugPlugin -> {
-			TxtComponentBuilder txt2 = debugPlugin.getToTxtComponent();
+			TxtComponentBuilder txt2 = debugPlugin.getToTxtComponent(withVersion);
 			txt2.console(isConsole);
 			txt.extra(txt2);
 		});
@@ -94,15 +96,13 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected String name;
 	@Expose
-	protected ServerStatus status;
+	protected OlympaServer olympaServer = OlympaServer.ALL;
 	@Expose
-	protected OlympaServer olympaServer;
+	protected int serverId;
+	@Expose
+	protected ServerStatus status = ServerStatus.UNKNOWN;
 	@Expose
 	protected long uptime;
-	@Expose
-	protected float tps;
-	@Expose
-	protected List<PluginInfoAdvanced> plugins;
 	@Expose
 	protected String firstVersionMinecraft;
 	@Expose
@@ -110,22 +110,40 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected String serverFrameworkVersion;
 	@Expose
+	protected Integer onlinePlayers;
+	@Expose
+	protected Integer maxPlayers;
+	@Expose
+	@Nullable
+	protected Integer ping;
+	@Expose
+	@Nullable
+	protected String error;
+	@Expose
+	@Nullable
+	protected Float tps;
+	@Expose
 	protected boolean databaseConnected;
-
-	protected Boolean redisConnected;
 	@Expose
-	protected int serverId;
-	@Expose
-	protected int ping;
-	@Expose
-	protected int onlinePlayers;
-	@Expose
-	protected int maxPlayers;
+	protected boolean redisConnected;
 	@Expose
 	protected List<OlympaPlayerInformations> players;
+	@Expose
+	protected List<PluginInfoAdvanced> plugins;
 
-	public ServerInfoAdvanced() {
+	public ServerInfoAdvanced() {}
+
+	public ServerInfoAdvanced(LinkSpigotBungee core) {
 		super();
+		name = core.getServerName();
+		olympaServer = core.getOlympaServer();
+		status = core.getStatus();
+		firstVersionMinecraft = core.getFirstVersion();
+		lastVersionMinecraft = core.getLastVersion();
+		databaseConnected = core.isDatabaseConnected();
+		redisConnected = core.isRedisConnected();
+		uptime = core.getUptimeLong();
+		plugins = getCachePlugins();
 	}
 
 	public String getName() {
@@ -145,10 +163,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return status;
 	}
 
-	public float getTps() {
-		return tps;
-	}
-
 	public List<PluginInfoAdvanced> getPlugins() {
 		return plugins;
 	}
@@ -159,6 +173,12 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public String getLastVersionMinecraft() {
 		return lastVersionMinecraft;
+	}
+
+	public String getRangeVersionMinecraft() {
+		if (lastVersionMinecraft.equals(firstVersionMinecraft))
+			return firstVersionMinecraft;
+		return firstVersionMinecraft + " à " + lastVersionMinecraft;
 	}
 
 	@Override
@@ -173,11 +193,12 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	public String getServerFrameworkVersion() {
 		return serverFrameworkVersion;
 	}
-	//	public boolean isDatabaseConnected() {
-	//		return databaseConnected;
-	//	}
 
-	public Boolean isRedisConnected() {
+	public boolean isDatabaseConnected() {
+		return databaseConnected;
+	}
+
+	public boolean isRedisConnected() {
 		return redisConnected;
 	}
 
@@ -185,4 +206,48 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return olympaServer;
 	}
 
+	public int getServerId() {
+		return serverId;
+	}
+
+	public List<OlympaPlayerInformations> getPlayers() {
+		return players;
+	}
+
+	@Nullable
+	public Integer getOnlinePlayers() {
+		return onlinePlayers;
+	}
+
+	@Nullable
+	public Integer getMaxPlayers() {
+		return maxPlayers;
+	}
+
+	@Nullable
+	public Float getTps() {
+		return tps;
+	}
+
+	@Nullable
+	public Integer getPing() {
+		return ping;
+	}
+
+	@Nullable
+	public String getError() {
+		return error;
+	}
+
+	public boolean isUsualError() {
+		return status == ServerStatus.CLOSE && (error == null || error.isEmpty());
+	}
+
+	public boolean isDefaultError() {
+		return status == ServerStatus.CLOSE && error != null && error.isEmpty();
+	}
+
+	public boolean isOpen() {
+		return status != ServerStatus.CLOSE;
+	}
 }

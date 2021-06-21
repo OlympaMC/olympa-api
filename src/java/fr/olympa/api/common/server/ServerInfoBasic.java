@@ -1,27 +1,14 @@
 package fr.olympa.api.common.server;
 
-import java.util.AbstractMap;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
 import com.google.gson.annotations.Expose;
 
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.utils.Utils;
 
+@Deprecated
 public class ServerInfoBasic {
 
 	private static final String ID_REGEX = "\\d*$";
-	private static final Pattern ID_PATTERN = Pattern.compile(ID_REGEX);
-
-	public static Entry<OlympaServer, Integer> getOlympaServer(String serverName) {
-		java.util.regex.Matcher matcher = ID_PATTERN.matcher(serverName);
-		matcher.find();
-		String id = matcher.group();
-		int serverID = Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
-		OlympaServer olympaServer = OlympaServer.valueOf(matcher.replaceAll("").toUpperCase());
-		return new AbstractMap.SimpleEntry<>(olympaServer, serverID);
-	}
 
 	@Expose
 	protected String serverName;
@@ -54,12 +41,12 @@ public class ServerInfoBasic {
 	@Expose
 	protected long lastModifiedCore;
 
-	public boolean canConnect(OlympaPlayer olympaPlayer) {
-		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
+	public ServerInfoBasic() {
+		super();
 	}
 
-	public static Pattern getIdPattern() {
-		return ID_PATTERN;
+	public boolean canConnect(OlympaPlayer olympaPlayer) {
+		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
 	}
 
 	/**
@@ -81,7 +68,7 @@ public class ServerInfoBasic {
 	 */
 	public String getHumanName() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.getOlympaServer().getNameCaps());
+		sb.append(getOlympaServer().getNameCaps());
 		String symbole = getIdSymbole();
 		if (!symbole.isBlank())
 			sb.append(" " + symbole);
@@ -89,21 +76,10 @@ public class ServerInfoBasic {
 	}
 
 	public String getIdSymbole() {
-		int id = getId();
+		int id = getServerID();
 		if (id <= 0 || id > 10)
 			return "";
 		return Utils.intToSymbole(id);
-	}
-
-	/**
-	 * usless ? same as getServerID()
-	 */
-	@Deprecated
-	public int getId() {
-		java.util.regex.Matcher matcher = ID_PATTERN.matcher(serverName);
-		matcher.find();
-		String id = matcher.group();
-		return id.isBlank() ? 0 : Integer.parseInt(id);
 	}
 
 	public String getRangeVersion() {
@@ -116,10 +92,6 @@ public class ServerInfoBasic {
 		if (lastModifiedCore == 0)
 			return null;
 		return Utils.tsToShortDur(lastModifiedCore);
-	}
-
-	public ServerInfoBasic() {
-		super();
 	}
 
 	public Integer getRamUsage() {

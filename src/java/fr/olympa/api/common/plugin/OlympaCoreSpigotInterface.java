@@ -10,7 +10,7 @@ import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.holograms.HologramsManager;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 
-public interface OlympaCoreInterface {
+public interface OlympaCoreSpigotInterface {
 
 	RegionManager getRegionManager();
 

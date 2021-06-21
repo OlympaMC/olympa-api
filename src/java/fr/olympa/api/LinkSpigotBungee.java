@@ -67,4 +67,12 @@ public interface LinkSpigotBungee {
 	void registerRedisSub(Jedis jedis, JedisPubSub sub, String channel);
 
 	RedisConnection getRedisAccess();
+
+	boolean isRedisConnected();
+
+	boolean isDatabaseConnected();
+
+	String getFirstVersion();
+
+	String getLastVersion();
 }

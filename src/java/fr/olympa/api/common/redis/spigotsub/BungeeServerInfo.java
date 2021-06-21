@@ -55,6 +55,7 @@ public class BungeeServerInfo extends RedisSubChannel {
 		return true;
 	}
 
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
 	@Override
 	public void onMessage(String channel, String message) {
 		super.onMessage(channel, message);

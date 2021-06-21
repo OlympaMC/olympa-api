@@ -21,6 +21,7 @@ import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.task.OlympaTask;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -167,4 +168,23 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 		return null;
 	}
 
+	@Override
+	public boolean isRedisConnected() {
+		return false;
+	}
+
+	@Override
+	public boolean isDatabaseConnected() {
+		return false;
+	}
+
+	@Override
+	public String getFirstVersion() {
+		return ProtocolAPI.getVersionsRangeBungee().getKey();
+	}
+
+	@Override
+	public String getLastVersion() {
+		return ProtocolAPI.getVersionsRangeBungee().getValue();
+	}
 }

@@ -188,4 +188,14 @@ public class OlympaCore extends OlympaSpigot {
 		return null;
 	}
 
+	@Override
+	public boolean isRedisConnected() {
+		return false;
+	}
+
+	@Override
+	public boolean isDatabaseConnected() {
+		return false;
+	}
+
 }

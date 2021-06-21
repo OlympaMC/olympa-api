@@ -79,7 +79,7 @@ public class TpsMessage extends JavaInstanceInfo {
 			textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
 
 			try {
-				textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole));
+				textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole, true));
 			} catch (Exception e) {
 				e.printStackTrace();
 				for (TxtComponentBuilder txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))

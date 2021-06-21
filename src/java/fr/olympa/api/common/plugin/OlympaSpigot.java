@@ -18,7 +18,7 @@ import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
 import fr.olympa.api.spigot.vanish.IVanishApi;
 
-public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreInterface, LinkSpigotBungee {
+public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreSpigotInterface, LinkSpigotBungee {
 
 	protected ServerStatus status;
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();

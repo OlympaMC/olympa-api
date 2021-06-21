@@ -107,9 +107,15 @@ public class PluginInfoAdvanced {
 	}
 
 	public TxtComponentBuilder getToTxtComponent() {
+		return getToTxtComponent(true);
+	}
+
+	public TxtComponentBuilder getToTxtComponent(boolean withVersion) {
 		TxtComponentBuilder txt = new TxtComponentBuilder(getNameWithBuildTime());
-		String hoverText = getToStringHumain();
-		String url = getGitCompareUrl();
+		String hoverText = getToStringHumain(withVersion);
+		String url = null;
+		if (withVersion)
+			url = getGitCompareUrl();
 		if (url != null) {
 			hoverText += "\n\n&7[&2CLIQUE&7] pour git compare cette version avec la dernière push";
 			txt.onClickUrl(url);
@@ -142,10 +148,16 @@ public class PluginInfoAdvanced {
 	}
 
 	public String getToStringHumain() {
+		return getToStringHumain(true);
+	}
+
+	public String getToStringHumain(boolean withVersion) {
 		StringJoiner sj = new StringJoiner("\n&7", "&7", "");
 		sj.add(getNameColored());
-		sj.add("Version &2" + getVersion());
-		sj.add("MAJ du fichier &e" + getLastModifiedTime());
+		if (withVersion) {
+			sj.add("Version &2" + getVersion());
+			sj.add("MAJ du fichier &e" + getLastModifiedTime());
+		}
 		List<String> authors = getAuthors();
 		if (!authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));

@@ -22,7 +22,7 @@ public class TpsMessageBungee extends TpsMessage {
 		TxtComponentBuilder textBuilder = super.getInfoMessage();
 		textBuilder.extra(new TxtComponentBuilder("\n&3Plugins Olympa: &b"));
 		try {
-			textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole));
+			textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole, true));
 		} catch (Exception e) {
 			e.printStackTrace();
 			for (TxtComponentBuilder txt : ((OlympaBungee) main).getProxy().getPluginManager().getPlugins().stream().filter(f -> f.getDescription().getName().startsWith("Olympa"))

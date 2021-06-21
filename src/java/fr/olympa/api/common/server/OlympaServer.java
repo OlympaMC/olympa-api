@@ -1,9 +1,14 @@
 package fr.olympa.api.common.server;
 
+import java.util.AbstractMap;
+import java.util.Map.Entry;
+
 import javax.annotation.Nullable;
 
+import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.utils.Utils;
 
 public enum OlympaServer {
 
@@ -72,5 +77,14 @@ public enum OlympaServer {
 
 	public boolean isSame(OlympaServer olympaServer) {
 		return ordinal() == olympaServer.ordinal();
+	}
+
+	public static Entry<OlympaServer, Integer> getOlympaServerWithId(String serverName) {
+		java.util.regex.Matcher matcher = MatcherPattern.of("\\d*$").getPattern().matcher(serverName);
+		matcher.find();
+		String id = matcher.group();
+		int serverID = Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
+		OlympaServer olympaServer = OlympaServer.valueOf(matcher.replaceAll("").toUpperCase());
+		return new AbstractMap.SimpleEntry<>(olympaServer, serverID);
 	}
 }
