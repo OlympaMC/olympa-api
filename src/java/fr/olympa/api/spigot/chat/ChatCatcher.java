@@ -1,11 +1,8 @@
 package fr.olympa.api.spigot.chat;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +11,7 @@ import java.util.UUID;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,8 +26,6 @@ import fr.olympa.api.common.machine.TpsMessage;
 import fr.olympa.api.common.module.OlympaModule.ModuleApi;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.spigot.command.OlympaCommand;
-import fr.olympa.api.spigot.utils.Reflection;
-import fr.olympa.api.spigot.utils.Reflection.ClassEnum;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import io.netty.channel.Channel;
@@ -39,6 +35,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.PacketPlayOutChat;
 
 public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<OlympaCore> {
@@ -47,9 +44,12 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 
 	private boolean isEnabled = false;
 	private boolean isDebugEnable = true;
+	
+	private Field packetComponent;
+	private Field packetUUID;
 
 	public ChatCatcher(OlympaCore plugin) {
-		super(plugin, "chatcatcher", "Affiche des informations sur l'état du serveur.", OlympaAPIPermissionsSpigot.CHATCATCHER_COMMAND);
+		super(plugin, "chatcatcher", "Affiche les messages reçus par les joueurs.", OlympaAPIPermissionsSpigot.CHATCATCHER_COMMAND);
 		addArgs(false, "debug");
 	}
 
@@ -208,136 +208,38 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 
 	private void injectPlayer(Player player, List<TextComponent> messages) {
 		ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
-			private Field iChatBaseComponent;
-			private Field components;
-			private Field chatMessageType;
-			private Field uuidField;
-
-			public boolean needToBeFill() {
-				return iChatBaseComponent == null || components == null || chatMessageType == null || uuidField == null;
-			}
 
 			@Override
-			public void channelRead(ChannelHandlerContext channelHandlerContext, Object packet) throws Exception {
-				String name = packet.getClass().getSimpleName();
-				Class<?> type = packet.getClass();
-				super.channelRead(channelHandlerContext, packet);
-			}
-
-			@Override
-			public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
-				String name = packet.getClass().getSimpleName();
-				Class<?> type = packet.getClass();
-				if (name.contains("PacketPlayOutChat"))
+			public void write(ChannelHandlerContext ctx, Object object, ChannelPromise promise) throws Exception {
+				if (object instanceof PacketPlayOutChat) {
+					PacketPlayOutChat packet = (PacketPlayOutChat) object;
 					try {
-						Class<?> icbc = Reflection.getClass(ClassEnum.NMS, "IChatBaseComponent");
-						Class<?> cmt = Reflection.getClass(ClassEnum.NMS, "ChatMessageType");
-						if (needToBeFill()) {
-							List<Field> fields = new ArrayList<>();
-							fields.addAll(Arrays.asList(type.getFields()));
-							fields.addAll(Arrays.asList(type.getDeclaredFields()));
-							fields = new ArrayList<>(new HashSet<>(fields));
-							for (Field field : fields) {
-								if (!field.isAccessible())
-									field.setAccessible(true);
-								if (iChatBaseComponent == null)
-									if (field.getType().getName().equalsIgnoreCase(icbc.getName())) {
-										iChatBaseComponent = field;
-										if (!field.isAccessible())
-											field.setAccessible(true);
-									}
-								if (components == null)
-									if (field.getType().getSimpleName().equalsIgnoreCase("BaseComponent[]")) {
-										components = field;
-										if (!field.isAccessible())
-											field.setAccessible(true);
-									}
-								if (chatMessageType == null)
-									if (field.getType().getSimpleName().equalsIgnoreCase("ChatMessageType")) {
-										chatMessageType = field;
-										if (!field.isAccessible())
-											field.setAccessible(true);
-									}
-								if (uuidField == null)
-									if (field.getType().getSimpleName().equalsIgnoreCase("UUID")) {
-										uuidField = field;
-										if (!field.isAccessible())
-											field.setAccessible(true);
-									}
-							}
+						if (packetComponent == null) {
+							packetComponent = packet.getClass().getDeclaredField("a");
+							packetComponent.setAccessible(true);
 						}
-						if (iChatBaseComponent == null && components == null && chatMessageType == null && uuidField == null) {
-							super.write(ctx, packet, promise);
-							return;
+						if (packetUUID == null) {
+							packetUUID = packet.getClass().getDeclaredField("c");
+							packetUUID.setAccessible(true);
 						}
-						boolean accessible = iChatBaseComponent != null ? iChatBaseComponent.isAccessible() : false;
-						boolean accessible2 = components != null ? components.isAccessible() : false;
-						boolean accessible3 = chatMessageType != null ? chatMessageType.isAccessible() : false;
-						boolean accessible4 = uuidField != null ? uuidField.isAccessible() : false;
-						if (iChatBaseComponent != null)
-							iChatBaseComponent.setAccessible(true);
-						if (components != null)
-							components.setAccessible(true);
-						if (chatMessageType != null)
-							chatMessageType.setAccessible(true);
-						if (uuidField != null)
-							uuidField.setAccessible(true);
-						String msg = iChatBaseComponent == null ? ""
-								: "" + Reflection.getClass(ClassEnum.CB, "util.CraftChatMessage")
-										.getMethod("fromComponent", icbc).invoke(null, icbc.cast(iChatBaseComponent.get(packet)));
-						String typeString = "";
-						if (chatMessageType != null)
-							typeString = chatMessageType.get(packet).toString();
-						UUID uuid = null;
-						if (uuidField != null) {
-							Object obj = uuidField.get(packet);
-							if (obj != null)
-								uuid = (UUID) uuidField.get(packet);
-						}
-						if (components != null && components.get(packet) != null) {
-							BaseComponent[] baseComponentMsg = (BaseComponent[]) components.get(packet);
+						String msg = CraftChatMessage.fromComponent((IChatBaseComponent) packetComponent.get(packet));
+						String typeString = packet.d().name();
+						UUID uuid = (UUID) packetUUID.get(packet);
+						if (packet.components != null) {
+							BaseComponent[] baseComponentMsg = packet.components;
 							msg = BaseComponent.toLegacyText(baseComponentMsg);
 							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s BaseComponent envoyé à §e%s %s&7>&r", typeString, player.getName(), uuid != null ? uuid.toString() : "");
 							OlympaCore.getInstance().getServer().getConsoleSender().sendMessage(baseComponentMsg);
 						} else
 							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s envoyé à §e%s %s&7 > &r%s", typeString, player.getName(), uuid != null ? uuid.toString() : "", msg);
-						if (iChatBaseComponent != null)
-							iChatBaseComponent.setAccessible(accessible);
-						if (components != null)
-							components.setAccessible(accessible2);
-						if (chatMessageType != null)
-							chatMessageType.setAccessible(accessible3);
-						if (uuidField != null)
-							uuidField.setAccessible(accessible4);
 					} catch (Exception e) {
 						e.printStackTrace();
 						disable(OlympaCore.getInstance());
 					}
-				super.write(ctx, packet, promise);
+				}
+				super.write(ctx, object, promise);
 			}
 		};
-		getChannel(player).pipeline().addBefore("packet_handler", player.getName() + "_ChatReader", channelDuplexHandler);
-	}
-
-	Channel getChannel(Player player) {
-		Channel channel = null;
-		try {
-			Class<?> cp = player.getClass();
-			Method handle = cp.getMethod("getHandle");
-			Object ep = handle.invoke(cp.cast(player));
-
-			Field f = ep.getClass().getField("playerConnection");
-			Field n = f.get(ep).getClass().getField("networkManager");
-			Object x = null;
-			x = n.get(f.get(ep));
-			Field c = x.getClass().getField("channel");
-			x = c.get(n.get(f.get(ep)));
-			channel = (Channel) x;
-		} catch (Exception e) {
-			e.printStackTrace();
-			disable(OlympaCore.getInstance());
-			return null;
-		}
-		return channel;
+		((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", player.getName() + "_ChatReader", channelDuplexHandler);
 	}
 }

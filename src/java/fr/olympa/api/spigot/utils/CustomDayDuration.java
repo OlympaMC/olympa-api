@@ -41,7 +41,7 @@ public class CustomDayDuration implements Listener {
 			}
 			nextTick = time + mult;
 			
-			if (day != null && night != null) {
+			if (day != null || night != null) {
 				boolean nextNight = nextTick % 24000L >= NIGHT_TIME;
 				if (isNight != nextNight) {
 					if (nextNight) {
