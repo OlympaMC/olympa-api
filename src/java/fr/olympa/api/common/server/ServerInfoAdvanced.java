@@ -79,11 +79,11 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public static TxtComponentBuilder getPluginsToString(List<PluginInfoAdvanced> plugins, boolean isConsole, boolean withVersion) {
 		TxtComponentBuilder txt = new TxtComponentBuilder().console(isConsole).extraSpliter("&7, ");
-		plugins.forEach(debugPlugin -> {
+		for (PluginInfoAdvanced debugPlugin : plugins) {
 			TxtComponentBuilder txt2 = debugPlugin.getToTxtComponent(withVersion);
 			txt2.console(isConsole);
 			txt.extra(txt2);
-		});
+		}
 		return txt;
 	}
 

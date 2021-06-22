@@ -22,7 +22,7 @@ public class TimeEvaluator {
 	}
 
 	public void print(String data) {
-		if (data != null && data.isBlank())
+		if (data != null && !data.isBlank())
 			data = " (" + data + ")";
 		else
 			data = "";

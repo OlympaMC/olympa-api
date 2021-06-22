@@ -90,7 +90,9 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		//unhandlePlayerPacket(e.getPlayer()); pas besoin, à la déconnexion le channel se vide tout seul
 
-		afkPlayers.remove(e.getPlayer().getUniqueId()).cancelTask();
+		AfkPlayer data = afkPlayers.remove(e.getPlayer().getUniqueId());
+		if (data != null)
+			data.cancelTask();
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -99,7 +101,8 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 			OlympaCore.getInstance().sendMessage("§4%s §ca quitté avant de pouvoir setup son AFK handler.", e.getPlayer().getName());
 			return;
 		}
-		if (handlePlayerPackets(e.getPlayer())) afkPlayers.put(e.getPlayer().getUniqueId(), new AfkPlayer(e.getPlayer()));
+		if (handlePlayerPackets(e.getPlayer()))
+			afkPlayers.put(e.getPlayer().getUniqueId(), new AfkPlayer(e.getPlayer()));
 	}
 
 	private boolean handlePlayerPackets(Player p) {
