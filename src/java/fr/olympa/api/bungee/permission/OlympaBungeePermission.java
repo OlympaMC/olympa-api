@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.permission.OlympaPermission;
-import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.ServerFrameworkType;
 import net.md_5.bungee.api.CommandSender;
@@ -53,16 +52,13 @@ public class OlympaBungeePermission extends OlympaPermission {
 	public void getPlayersBungee(Consumer<? super Set<ProxiedPlayer>> success) {
 		Set<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers().stream().filter(p -> {
 			try {
-				return this.hasPermission((OlympaPlayer) new AccountProviderAPI(p.getUniqueId()).get());
+				return this.hasPermission(new AccountProviderAPI(p.getUniqueId()).get());
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}).collect(Collectors.toSet());
-		if (!players.isEmpty())
-			success.accept(players);
-		else
-			success.accept(null);
+		success.accept(players);
 	}
 
 	@Override
@@ -86,7 +82,7 @@ public class OlympaBungeePermission extends OlympaPermission {
 	public boolean hasSenderPermissionBungee(CommandSender sender) {
 		if (sender instanceof ProxiedPlayer)
 			try {
-				return this.hasPermission((OlympaPlayer) new AccountProviderAPI(((ProxiedPlayer) sender).getUniqueId()).get());
+				return this.hasPermission(new AccountProviderAPI(((ProxiedPlayer) sender).getUniqueId()).get());
 			} catch (SQLException e) {
 				e.addSuppressed(new IllegalAccessError(String.format("Can't allow %s to use olympa permission %s cause of SQLException.", sender.getName(), getName())));
 				e.printStackTrace();
