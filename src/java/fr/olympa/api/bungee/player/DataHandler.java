@@ -19,7 +19,7 @@ public class DataHandler {
 			removePlayer(cache);
 	}
 
-	public static CachePlayer get(String name) {
+	public synchronized static CachePlayer get(String name) {
 		return players.stream().filter(p -> p.getName() != null && name.equals(p.getName())).findFirst().orElse(null);
 	}
 
