@@ -49,7 +49,7 @@ public class TpsMessage extends JavaInstanceInfo {
 		textBuilder.extra(new TxtComponentBuilder("&3CPU: &b%s&3", getCPUUsage()).onHoverText("&eUtilisation du processeur par le serveur."));
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3CPU Système: &b%s&3 (%d cores).", getCPUSysUsage(), getCPUSysCore()).onHoverText("&eUtilisation globale du processeur."));
-		boolean showValueOfVersions = OlympaAPIPermissionsGlobal.PLUGINS_SEE_VALUE_VERSION.hasPermission(olympaPlayer);
+		boolean showValueOfVersions = olympaPlayer != null ? OlympaAPIPermissionsGlobal.PLUGINS_SEE_VALUE_VERSION.hasPermission(olympaPlayer) : true;
 		textBuilder.extra("\n");
 		textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
 		textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), olympaPlayer == null, showValueOfVersions));
