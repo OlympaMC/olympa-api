@@ -180,11 +180,11 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 
 	@Override
 	public String getFirstVersion() {
-		return ProtocolAPI.getVersionsRangeBungee().getKey();
+		return ProtocolAPI.getBungeeVersionsNames().get(ProtocolAPI.getBungeeVersionsNames().size() - 1);
 	}
 
 	@Override
 	public String getLastVersion() {
-		return ProtocolAPI.getVersionsRangeBungee().getValue();
+		return ProtocolAPI.getBungeeVersionsNames().get(0);
 	}
 }

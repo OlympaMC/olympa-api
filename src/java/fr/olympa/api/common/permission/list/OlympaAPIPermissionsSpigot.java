@@ -33,5 +33,7 @@ public class OlympaAPIPermissionsSpigot {
 
 	public static final OlympaSpigotPermission ARG_COLOR = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission CHATCATCHER_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
+	public static final OlympaSpigotPermission BYPASS_PERM_NOT_EXIST = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV, OlympaGroup.GAMEMASTER });
+	public static final OlympaSpigotPermission VERVERSION_ADMIN = new OlympaSpigotPermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV });
 
 }

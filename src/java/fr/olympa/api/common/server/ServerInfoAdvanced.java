@@ -1,6 +1,7 @@
 package fr.olympa.api.common.server;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -12,11 +13,13 @@ import com.google.gson.annotations.Expose;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
+import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.plugin.PluginInfoAdvanced;
 import fr.olympa.api.common.plugin.PluginInfoBungee;
 import fr.olympa.api.common.plugin.PluginInfoSpigot;
 import fr.olympa.api.common.sort.Sorting;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.bungee.OlympaBungee;
 import fr.olympa.core.spigot.OlympaCore;
@@ -77,9 +80,11 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 				.collect(Collectors.toList());
 	}
 
-	public static TxtComponentBuilder getPluginsToString(List<PluginInfoAdvanced> plugins, boolean isConsole, boolean withVersion) {
+	public static TxtComponentBuilder getPluginsToString(Iterable<PluginInfoAdvanced> plugins, boolean isConsole, boolean withVersion) {
 		TxtComponentBuilder txt = new TxtComponentBuilder().console(isConsole).extraSpliter("&7, ");
-		for (PluginInfoAdvanced debugPlugin : plugins) {
+		Iterator<PluginInfoAdvanced> it = plugins.iterator();
+		while (it.hasNext()) {
+			PluginInfoAdvanced debugPlugin = it.next();
 			TxtComponentBuilder txt2 = debugPlugin.getToTxtComponent(withVersion);
 			txt2.console(isConsole);
 			txt.extra(txt2);
@@ -104,8 +109,10 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected long uptime;
 	@Expose
+	@Nullable
 	protected String firstVersionMinecraft;
 	@Expose
+	@Nullable
 	protected String lastVersionMinecraft;
 	@Expose
 	protected String serverFrameworkVersion;
@@ -130,6 +137,8 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	protected List<OlympaPlayerInformations> players;
 	@Expose
 	protected List<PluginInfoAdvanced> plugins;
+	@Expose
+	protected List<ProtocolAPI> versions;
 
 	public ServerInfoAdvanced() {}
 
@@ -212,6 +221,11 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public List<OlympaPlayerInformations> getPlayers() {
 		return players;
+	}
+
+	public boolean canConnect(OlympaPlayer olympaPlayer, ProtocolAPI protocol) {
+		status.hasPermission(olympaPlayer);
+		return status != ServerStatus.CLOSE;
 	}
 
 	@Nullable

@@ -13,10 +13,11 @@ import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.spigot.afk.AfkHandler;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
-import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.api.spigot.vanish.IVanishApi;
+import fr.olympa.api.spigot.version.VersionHandler;
 
 public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreSpigotInterface, LinkSpigotBungee {
 
@@ -24,6 +25,9 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();
 	private String serverName;
 	protected Location spawn;
+
+	private List<ProtocolAPI> protocols = new ArrayList<>();
+	private String version = "unknown";
 
 	protected long lastInfo;
 	protected List<ServerInfoBasic> monitorInfos = new ArrayList<>();
@@ -33,6 +37,31 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected AfkHandler afkHandler;
 	protected INametagApi nameTagApi;
 	protected IVanishApi vanishApi;
+	protected VersionHandler versionHandler;
+
+	public VersionHandler getVersionHandler() {
+		return versionHandler;
+	}
+
+	public void setVersionHandler(VersionHandler versionHandler) {
+		this.versionHandler = versionHandler;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public List<ProtocolAPI> getProtocols() {
+		return protocols;
+	}
+
+	public void setProtocols(List<ProtocolAPI> protocols) {
+		this.protocols = protocols;
+	}
 
 	public void setAfkApi(AfkHandler afkHandler) {
 		this.afkHandler = afkHandler;
@@ -69,8 +98,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public void setOlympaServer(OlympaServer olympaServer) {
 		this.olympaServer = olympaServer;
 	}
-
-	public abstract VersionByPluginApi getProtocolSupport();
 
 	@Override
 	public String getServerName() {

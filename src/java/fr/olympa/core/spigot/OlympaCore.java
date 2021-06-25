@@ -23,7 +23,6 @@ import fr.olympa.api.spigot.command.CommandListener;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.gui.Inventories;
 import fr.olympa.api.spigot.holograms.HologramsManager;
-import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.core.spigot.datamanagement.DataManagmentListener;
 import redis.clients.jedis.Jedis;
@@ -59,6 +58,7 @@ public class OlympaCore extends OlympaSpigot {
 		this.olympaServer = olympaServer;
 	}
 
+	@Override
 	public String getLastVersion() {
 		return lastVersion;
 	}
@@ -67,6 +67,7 @@ public class OlympaCore extends OlympaSpigot {
 		this.lastVersion = lastVersion;
 	}
 
+	@Override
 	public String getFirstVersion() {
 		return firstVersion;
 	}
@@ -79,11 +80,6 @@ public class OlympaCore extends OlympaSpigot {
 
 	public void setFirstVersion(String firstVersion) {
 		this.firstVersion = firstVersion;
-	}
-
-	@Override
-	public VersionByPluginApi getProtocolSupport() {
-		return null;
 	}
 
 	@Override

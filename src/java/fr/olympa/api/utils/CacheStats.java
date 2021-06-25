@@ -76,7 +76,7 @@ public class CacheStats {
 		@Nullable
 		Cache<?, ?> cache = entry.getValue();
 		if (cache == null) {
-			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache %s est null.\n%s", cacheName);
+			commandClass.sendMessage(Prefix.DEFAULT_GOOD, "Le cache %s est null.\n", cacheName);
 			return;
 		}
 		if (cmd.getArgumentsLength() == 1) {

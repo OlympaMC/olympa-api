@@ -22,5 +22,6 @@ public class OlympaAPIPermissionsBungee {
 	public static final OlympaBungeePermission COMMAND_REDISBUNGEE_ALERT = new OlympaBungeePermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaBungeePermission COMMAND_REDISBUNGEE_SENDTOALL = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV });
 	public static final OlympaBungeePermission COMMAND_REDISBUNGEE_INFODIV = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV });
+	public static final OlympaBungeePermission COMMAND_DEFAULT_NO_PERM_NEEDED = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV, OlympaGroup.GAMEMASTER });
 
 }

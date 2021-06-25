@@ -14,8 +14,9 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
-import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
+import fr.olympa.api.spigot.version.PluginHandleVersion;
+import fr.olympa.api.spigot.version.VersionHandler;
 import fr.olympa.core.spigot.OlympaCore;
 import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.IScoreboardCriteria;
@@ -57,8 +58,7 @@ public class FastBoard {
 
 		id = "fb-" + Double.toString(Math.random()).substring(2, 10);
 
-		VersionByPluginApi protocolSupport = OlympaCore.getInstance().getProtocolSupport();
-		below13 = (protocolSupport == null ? ProtocolAPI.getDefaultSpigotProtocol() : protocolSupport.getPlayerVersion(player)).ordinal() > ProtocolAPI.V1_13.ordinal();
+		below13 = OlympaCore.getInstance().getVersionHandler().isPlayerVersionUnder(player, ProtocolAPI.V1_13);
 
 		try {
 			sendObjectivePacket(ObjectiveMode.CREATE);

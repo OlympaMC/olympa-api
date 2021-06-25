@@ -1,39 +1,33 @@
 package fr.olympa.api.common.machine;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
-import fr.olympa.api.common.match.MatcherPattern;
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
+import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
-import fr.olympa.api.spigot.hook.VersionByPluginApi;
 import fr.olympa.api.spigot.utils.SpigotInfoFork;
 import fr.olympa.api.spigot.utils.TPS;
 import fr.olympa.api.spigot.utils.TPSUtils;
+import fr.olympa.api.spigot.version.VersionHandler;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class TpsMessage extends JavaInstanceInfo {
 
-	public boolean isConsole;
 	public LinkSpigotBungee main;
+	protected OlympaPlayer olympaPlayer;
 
-	public TpsMessage(boolean isConsole) {
-		this.isConsole = isConsole;
+	public TpsMessage(OlympaPlayer olympaPlayer) {
+		this.olympaPlayer = olympaPlayer;
 		main = LinkSpigotBungee.Provider.link;
 	}
 
@@ -55,6 +49,10 @@ public class TpsMessage extends JavaInstanceInfo {
 		textBuilder.extra(new TxtComponentBuilder("&3CPU: &b%s&3", getCPUUsage()).onHoverText("&eUtilisation du processeur par le serveur."));
 		textBuilder.extra(" ");
 		textBuilder.extra(new TxtComponentBuilder("&3CPU Système: &b%s&3 (%d cores).", getCPUSysUsage(), getCPUSysCore()).onHoverText("&eUtilisation globale du processeur."));
+		boolean showValueOfVersions = OlympaAPIPermissionsGlobal.PLUGINS_SEE_VALUE_VERSION.hasPermission(olympaPlayer);
+		textBuilder.extra("\n");
+		textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
+		textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), olympaPlayer == null, showValueOfVersions));
 		if (main.isSpigot())
 			textBuilder.extra(getOtherSpigotInfo());
 		return textBuilder;
@@ -74,47 +72,20 @@ public class TpsMessage extends JavaInstanceInfo {
 	private TxtComponentBuilder getOtherSpigotInfo() {
 		if (!main.isSpigot())
 			throw new UnsupportedOperationException("Unable to get Spigot Info on not Spigot Environment");
+		OlympaCore core = (OlympaCore) main;
 		TxtComponentBuilder textBuilder = new TxtComponentBuilder("\n");
-		try {
-			textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
-
-			try {
-				textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), isConsole, true));
-			} catch (Exception e) {
-				e.printStackTrace();
-				for (TxtComponentBuilder txt : Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(f -> f.getName().startsWith("Olympa"))
-						.map(ff -> {
-							@NotNull
-							PluginDescriptionFile desc = ff.getDescription();
-							String fileInfo = Utils.tsToShortDur(new File(ff.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).lastModified() / 1000L);
-							String website = desc.getWebsite();
-							String gitCommitCompareLastest = null;
-							MatcherPattern<?> regexHexGitCommit = MatcherPattern.of("\\b[a-fA-F0-9]{8,40}\\b");
-							if (website != null && website.contains("git") && regexHexGitCommit.contains(desc.getVersion()))
-								gitCommitCompareLastest = (desc.getWebsite().endsWith("/") ? desc.getWebsite() : desc.getWebsite() + "/") + "-/compare/" + regexHexGitCommit.extract(desc.getVersion()) + "...master";
-							return new TxtComponentBuilder("&6%s ", desc.getName().substring(6)).onHoverText("&eDernière MAJ %s (%s)", fileInfo, desc.getVersion())
-									.onClickUrl(gitCommitCompareLastest).console(isConsole);
-						})
-						.collect(Collectors.toList()))
-					textBuilder.extra(txt);
-			}
-			textBuilder.extra("\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-			textBuilder.extra("&cErreur\n");
-		}
-		textBuilder.extra("&3Versions supportées: &b%s&3 ", ((OlympaCore) main).getRangeVersion());
-		@Nullable
-		VersionByPluginApi protocolSupport = ((OlympaCore) main).getProtocolSupport();
-		if (protocolSupport != null) {
-			String unSupVer = protocolSupport.getVersionsUnSupported();
+		VersionHandler versionHandler = core.getVersionHandler();
+		if (versionHandler != null) {
+			TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", versionHandler.getVersions());
+			String unSupVer = versionHandler.getVersionsDisabled();
 			if (!unSupVer.isBlank())
-				textBuilder.extra(new TxtComponentBuilder("&4[&c!&4]&3.").onHoverText("&4Versions non supportées: &c%s&4.", unSupVer));
+				textBuilder2.onHoverText("&e[&6!&e] &cVersions désactivées &4%s&c.", unSupVer);
+			textBuilder.extra(textBuilder2);
 		}
 		textBuilder.extra(new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", ""))
 				.onHoverText("&eServeur sous &6%s&e.", SpigotInfoFork.getVersionBukkit()));
 		textBuilder.extra(" ");
-		for (World world : OlympaCore.getInstance().getServer().getWorlds()) {
+		for (World world : core.getServer().getWorlds()) {
 			textBuilder.extra("\n");
 			Chunk[] chunks = world.getLoadedChunks();
 			List<Entity> entities = world.getEntities();

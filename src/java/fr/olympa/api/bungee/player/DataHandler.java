@@ -2,7 +2,10 @@ package fr.olympa.api.bungee.player;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import fr.olympa.api.bungee.utils.BungeeUtils;
+import fr.olympa.core.bungee.OlympaBungee;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class DataHandler {
@@ -13,13 +16,19 @@ public class DataHandler {
 		CachePlayer cache = get(player.getName());
 		boolean isCacheNull = cache == null;
 		boolean isNotSameObject = !isCacheNull && !cache.equals(player);
-		if (isCacheNull || isNotSameObject)
-			DataHandler.players.add(player);
 		if (isNotSameObject)
 			removePlayer(cache);
+		if (isCacheNull || isNotSameObject)
+			DataHandler.players.add(player);
+		OlympaBungee bungee = OlympaBungee.getInstance();
+		bungee.getTask().runTaskLater("login_" + player.getName(), () -> {
+			ProxiedPlayer pd = bungee.getProxy().getPlayer(player.getName());
+			if (pd != null)
+				pd.disconnect(BungeeUtils.connectScreen("Tu as mis trop de temps a entrer ton mot de passe."));
+		}, 60, TimeUnit.SECONDS);
 	}
 
-	public synchronized static CachePlayer get(String name) {
+	public static synchronized CachePlayer get(String name) {
 		return players.stream().filter(p -> p.getName() != null && name.equals(p.getName())).findFirst().orElse(null);
 	}
 
@@ -36,8 +45,11 @@ public class DataHandler {
 	}
 
 	public static void removePlayer(CachePlayer player) {
-		if (player != null)
-			DataHandler.players.remove(player);
+		if (player == null)
+			return;
+		OlympaBungee bungee = OlympaBungee.getInstance();
+		bungee.getTask().cancelTaskByName("login_" + player.getName());
+		DataHandler.players.remove(player);
 	}
 
 	public static void removePlayer(String name) {

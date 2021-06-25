@@ -35,6 +35,8 @@ public class BungeeCommandListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onTabComplete(TabCompleteEvent event) {
+		if (!(event.getReceiver() instanceof ProxiedPlayer))
+			return;
 		List<String> sugg = event.getSuggestions();
 		if (sugg.isEmpty())
 			return;

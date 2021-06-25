@@ -22,7 +22,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.common.machine.TpsMessage;
 import fr.olympa.api.common.module.OlympaModule.ModuleApi;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.spigot.command.OlympaCommand;
@@ -44,7 +43,7 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 
 	private boolean isEnabled = false;
 	private boolean isDebugEnable = true;
-	
+
 	private Field packetComponent;
 	private Field packetUUID;
 
@@ -89,7 +88,6 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 
 	@Override
 	public boolean setToPlugin(OlympaCore plugin) {
-		//		plugin.setAfkApi(this);
 		return true;
 	}
 
@@ -108,7 +106,7 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 			else
 				sendMessage(Prefix.DEFAULT_BAD, "Le chat catcher a été désactivée.");
 		} else
-			sendComponents(new TpsMessage(player == null).getInfoMessage().build());
+			sendError();
 		return false;
 	}
 

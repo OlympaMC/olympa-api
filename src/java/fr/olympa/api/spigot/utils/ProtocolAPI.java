@@ -1,12 +1,11 @@
 package fr.olympa.api.spigot.utils;
 
-import java.util.AbstractMap.SimpleEntry;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -32,26 +31,26 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 public enum ProtocolAPI {
 
 	V1_17(755, true, true),
-	SNAPSHOT_1_17$RC2(1073741859, false, true, true),
-	SNAPSHOT_1_17$RC1(1073741858, false, true, true),
-	SNAPSHOT_1_17$PRE5(1073741857, false, true, true),
-	SNAPSHOT_1_17$PRE4(1073741856, false, true, true),
-	SNAPSHOT_1_17$PRE3(1073741855, false, true, true),
-	SNAPSHOT_1_17$PRE2(1073741854, false, true, true),
-	SNAPSHOT_1_17$PRE1(1073741853, false, true, true),
-	SNAPSHOT_1_17$21W20A(1073741852, false, true, true),
-	SNAPSHOT_1_17$21W19A(1073741851, false, true, true),
-	SNAPSHOT_1_17$21W18A(1073741850, false, true, true),
-	SNAPSHOT_1_17$21W17A(1073741849, false, true, true),
-	SNAPSHOT_1_17$21W16A(1073741847, false, true, true),
-	SNAPSHOT_1_17$21W15A(1073741846, false, true, true),
-	SNAPSHOT_1_17$21W14A(1073741845, false, true, true),
-	SNAPSHOT_1_17$21W13A(1073741844, false, true, true),
-	SNAPSHOT_1_17$21W11A(1073741843, false, true, true),
-	SNAPSHOT_1_17$21W10A(1073741842, false, true, true),
-	SNAPSHOT_1_17$21W08A(1073741841, false, true, true),
-	SNAPSHOT_1_17$21W07A(1073741840, false, true, true),
-	SNAPSHOT_1_17$21W06A(1073741839, false, true, true),
+	//	SNAPSHOT_1_17$RC2(1073741859, false, true, true),
+	//	SNAPSHOT_1_17$RC1(1073741858, false, true, true),
+	//	SNAPSHOT_1_17$PRE5(1073741857, false, true, true),
+	//	SNAPSHOT_1_17$PRE4(1073741856, false, true, true),
+	//	SNAPSHOT_1_17$PRE3(1073741855, false, true, true),
+	//	SNAPSHOT_1_17$PRE2(1073741854, false, true, true),
+	//	SNAPSHOT_1_17$PRE1(1073741853, false, true, true),
+	//	SNAPSHOT_1_17$21W20A(1073741852, false, true, true),
+	//	SNAPSHOT_1_17$21W19A(1073741851, false, true, true),
+	//	SNAPSHOT_1_17$21W18A(1073741850, false, true, true),
+	//	SNAPSHOT_1_17$21W17A(1073741849, false, true, true),
+	//	SNAPSHOT_1_17$21W16A(1073741847, false, true, true),
+	//	SNAPSHOT_1_17$21W15A(1073741846, false, true, true),
+	//	SNAPSHOT_1_17$21W14A(1073741845, false, true, true),
+	//	SNAPSHOT_1_17$21W13A(1073741844, false, true, true),
+	//	SNAPSHOT_1_17$21W11A(1073741843, false, true, true),
+	//	SNAPSHOT_1_17$21W10A(1073741842, false, true, true),
+	//	SNAPSHOT_1_17$21W08A(1073741841, false, true, true),
+	//	SNAPSHOT_1_17$21W07A(1073741840, false, true, true),
+	//	SNAPSHOT_1_17$21W06A(1073741839, false, true, true),
 	V1_16_5(754),
 	V1_16_4(754),
 	V1_16_3(753),
@@ -112,16 +111,16 @@ public enum ProtocolAPI {
 	;
 
 	private static String version = null;
-	private static ProtocolAPI defaultProtocol = null;
+	private static ProtocolAPI defaultVersion = null;
 
-	/**
-	 * TODO range like 1.8 à 1.9, 1.12 à 1.17
-	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static String getRange(List<ProtocolAPI> protocols) {
-		List<ProtocolAPI> sorted = protocols.stream().filter(pApi -> !pApi.isSnapshot()).sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
-		StringJoiner sj = new StringJoiner(", ");
-		return null;
+		List<ProtocolAPI> sorted = protocols.stream().sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
+		if (sorted.isEmpty())
+			return "unknown";
+		else if (sorted.size() == 1)
+			return sorted.get(0).getCompleteName();
+		return sorted.get(sorted.size() - 1).getName() + " à " + sorted.get(0).getName();
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
@@ -146,13 +145,39 @@ public enum ProtocolAPI {
 	 */
 	@Nullable
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
-	public static ProtocolAPI get(int protocolNumber) {
+	public static ProtocolAPI getHighestVersion(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).findFirst().orElse(null);
+	}
+
+	@Nullable
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static ProtocolAPI getLowerVersion(int protocolNumber) {
+		Iterator<ProtocolAPI> it = Arrays.stream(ProtocolAPI.values()).iterator();
+		ProtocolAPI protocolApi = null;
+		while (it.hasNext()) {
+			ProtocolAPI maybeProtocolApi = it.next();
+			if (maybeProtocolApi.getProtocolNumber() == protocolNumber && (protocolApi == null || protocolApi.ordinal() > maybeProtocolApi.ordinal()))
+				protocolApi = maybeProtocolApi;
+		}
+		return protocolApi;
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static String getVersion(int protocolNumber) {
+		ProtocolAPI protocolAPI = Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).findFirst().orElse(null);
+		if (protocolAPI == null)
+			return "unknown (" + protocolNumber + ")";
+		return protocolAPI.getCompleteName();
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static List<ProtocolAPI> getAll(int protocolNumber) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getProtocolNumber() == protocolNumber).collect(Collectors.toList());
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static List<ProtocolAPI> getAll(List<Integer> protocolsNumbers) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> protocolsNumbers.contains(p.getProtocolNumber())).collect(Collectors.toList());
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
@@ -186,10 +211,22 @@ public enum ProtocolAPI {
 	 * @throw IllegalAccessError when bungee instance call this method
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static ProtocolAPI getDefaultSpigotProtocol() {
-		if (defaultProtocol == null)
-			defaultProtocol = get(getNativeSpigotVersion());
-		return defaultProtocol;
+	public static ProtocolAPI getNativeSpigotProtocolAPI() {
+		if (defaultVersion == null)
+			defaultVersion = get(getNativeSpigotVersion());
+		return defaultVersion;
+	}
+
+	/**
+	 * @throw IllegalAccessError when bungee instance call this method
+	 */
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
+	public static String getNativeSpigotVersion() {
+		if (!LinkSpigotBungee.Provider.link.isSpigot())
+			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
+		if (version == null)
+			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
+		return version;
 	}
 
 	/**
@@ -218,40 +255,25 @@ public enum ProtocolAPI {
 		return null;
 	}
 
-	/**
-	 * @throw IllegalAccessError when bungee instance call this method
-	 */
-	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static String getNativeSpigotVersion() {
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
-		if (version == null)
-			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
-		return version;
-	}
-
-	/**
-	 * @throw IllegalAccessError when bungee instance call this method
-	 */
-	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static String getSpigotVersions() {
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
-		if (version == null)
-			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
-		return version;
-	}
-
-	/**
-	 * @throw IllegalAccessError when bungee instance call this method
-	 */
-	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static String getSpigotVersionRange() {
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
-		if (version == null)
-			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
-		return version;
+	public static Entry<String, String> getRangeEntry(List<ProtocolAPI> protocols) {
+		String first = "unknown";
+		String last = "unknown";
+		if (protocols.size() == 1) {
+			ProtocolAPI firstUniqueObject = protocols.get(0);
+			List<ProtocolAPI> same = firstUniqueObject.getSameProtocol();
+			if (same.size() == 1)
+				return new AbstractMap.SimpleEntry<>(firstUniqueObject.getName(), firstUniqueObject.getName());
+			else
+				return getRangeEntry(same);
+		}
+		Iterator<ProtocolAPI> it = protocols.stream().sorted(new Sorting<>(ProtocolAPI::ordinal)).iterator();
+		if (it.hasNext())
+			last = it.next().getName();
+		while (it.hasNext())
+			first = it.next().getName();
+		if (first.equals("unknown"))
+			first = last;
+		return new AbstractMap.SimpleEntry<>(first, last);
 	}
 
 	/**
@@ -261,19 +283,7 @@ public enum ProtocolAPI {
 	 */
 	@Nullable
 	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public static Entry<String, String> getVersionsRangeBungee() {
-		List<String> versions = getBungeeVersion();
-		return new SimpleEntry<>(versions.get(0), versions.get(versions.size() - 1));
-	}
-
-	/**
-	 * Return all versions names natively supported by Bungeecord.
-	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
-	 * @throw IllegalAccessError when spigot instance call this method
-	 */
-	@Nullable
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public static List<String> getBungeeVersion() {
+	public static List<String> getBungeeVersionsNames() {
 		if (LinkSpigotBungee.Provider.link.isSpigot())
 			throw new IllegalAccessError("Can't get BungeeVersion on Spigot instance.");
 		return ProtocolConstants.SUPPORTED_VERSIONS;
@@ -293,11 +303,26 @@ public enum ProtocolAPI {
 	}
 
 	/**
+	 * Return all versions id natively supported by Bungeecord.
+	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
+	 * @throw IllegalAccessError when spigot instance call this method
+	 */
+	@Nullable
+	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
+	public static List<ProtocolAPI> getBungeeVersions() {
+		if (LinkSpigotBungee.Provider.link.isSpigot())
+			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
+		List<ProtocolAPI> versions = new ArrayList<>();
+		ProtocolConstants.SUPPORTED_VERSION_IDS.forEach(protocolNb -> versions.addAll(getAll(protocolNb)));
+		return versions;
+	}
+
+	/**
 	 * @throw IllegalAccessError when bungee instance call this method
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
 	public static String getVersionSupportedToString() {
-		List<String> vers = getVersionSupported();
+		List<String> vers = getNativeVersionsSupported();
 		return vers.isEmpty() ? null : ColorUtils.join(vers);
 	}
 
@@ -306,7 +331,7 @@ public enum ProtocolAPI {
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
 	public static String[] getVersionSupportedArray() {
-		List<String> vers = getVersionSupported();
+		List<String> vers = getNativeVersionsSupported();
 		return new String[] { vers.get(vers.size() - 1), vers.get(0) };
 	}
 
@@ -314,8 +339,8 @@ public enum ProtocolAPI {
 	 * @throw IllegalAccessError when bungee instance call this method
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static List<String> getVersionSupported() {
-		ProtocolAPI defaultProto = getDefaultSpigotProtocol();
+	public static List<String> getNativeVersionsSupported() {
+		ProtocolAPI defaultProto = getNativeSpigotProtocolAPI();
 		if (defaultProto != null)
 			return getAll(defaultProto.getProtocolNumber()).stream().map(ProtocolAPI::getName).collect(Collectors.toList());
 		return new ArrayList<>();
@@ -368,6 +393,11 @@ public enum ProtocolAPI {
 	}
 
 	@Nullable
+	public List<ProtocolAPI> getSameProtocol() {
+		return getAll(protocolNumber);
+	}
+
+	@Nullable
 	public ProtocolAPI getUpperProtocol() {
 		int ordinal = ordinal();
 		ProtocolAPI[] values = ProtocolAPI.values();
@@ -397,10 +427,4 @@ public enum ProtocolAPI {
 		return snapshot;
 	}
 
-	public boolean isSupported() {
-		if (snapshot)
-			return false;
-		ProtocolAPI defaultProto = getDefaultSpigotProtocol();
-		return defaultProto != null && getProtocolNumber() <= defaultProto.getProtocolNumber();
-	}
 }

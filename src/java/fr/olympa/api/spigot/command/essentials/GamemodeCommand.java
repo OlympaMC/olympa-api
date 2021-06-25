@@ -26,10 +26,10 @@ public class GamemodeCommand extends OlympaCommand {
 
 		private String name;
 		private GameMode gamemode;
-		
-		private Gm(String name) {
+
+		Gm(String name) {
 			this.name = name;
-			this.gamemode = GameMode.valueOf(name());
+			gamemode = GameMode.valueOf(name());
 		}
 
 		public String getName() {
@@ -66,7 +66,7 @@ public class GamemodeCommand extends OlympaCommand {
 			return gameMode.name().equals(name());
 		}
 
-		@SuppressWarnings ("deprecation")
+		@SuppressWarnings("deprecation")
 		public static Gm get(GameMode gameMode) {
 			return Gm.values()[gameMode.getValue()];
 		}
@@ -75,12 +75,12 @@ public class GamemodeCommand extends OlympaCommand {
 	private BiFunction<CommandSender, Player, Boolean> canExecute = (sender, target) -> true;
 
 	public GamemodeCommand(Plugin plugin) {
-		super(plugin, "gm", "Change ton mode de jeu.", OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND, "gms", "gma", "gmc", "gmsp");
+		super(plugin, "gm", "Change ton mode de jeu.", OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND, "gms", "gma", "gmc", "gmsp", "gamemode");
 		addArgs(false, "adventure", "creative", "survival", "spectator", "JOUEUR");
 		addArgs(false, "JOUEUR");
 		allowConsole = true;
 	}
-	
+
 	public void setCanExecuteFunction(BiFunction<CommandSender, Player, Boolean> function) {
 		canExecute = function;
 	}
@@ -90,14 +90,13 @@ public class GamemodeCommand extends OlympaCommand {
 		Player target = null;
 		Gm gm = null;
 		boolean shortCommand = !label.equals("gm") && label.startsWith("gm");
-		if (shortCommand) {
+		if (shortCommand)
 			gm = Gm.getByStartWith(label.substring(2));
-		}else {
-			if (args.length == 0) {
-				sendIncorrectSyntax();
-			}else gm = Gm.get(args[0]);
-		}
-		
+		else if (args.length == 0)
+			sendIncorrectSyntax();
+		else
+			gm = Gm.get(args[0]);
+
 		if (args.length == 0) {
 			if (gm == null) {
 				sendIncorrectSyntax();
@@ -108,21 +107,21 @@ public class GamemodeCommand extends OlympaCommand {
 				return false;
 			}
 			target = player;
-		}else if (args.length == 1) {
+		} else if (args.length == 1) {
 			if (shortCommand || gm == null) {
 				target = Bukkit.getPlayer(args[0]);
 				if (target == null) {
 					sendUnknownPlayer(args[0]);
 					return false;
 				}
-			}else {
+			} else {
 				if (player == null) {
 					sendImpossibleWithConsole();
 					return false;
 				}
 				target = player;
 			}
-		}else {
+		} else {
 			if (gm == null) {
 				sendError("Gamemode %s inconnu.", args[0]);
 				return false;
@@ -133,25 +132,25 @@ public class GamemodeCommand extends OlympaCommand {
 				return false;
 			}
 		}
-		
+
 		if (!canExecute.apply(sender, target))
 			return false;
-		
+
 		if (gm == Gm.CREATIVE && !hasPermission(OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_CREATIVE)) {
 			sendDoNotHavePermission();
 			return false;
 		}
-		
-		if (gm == null) {
+
+		if (gm == null)
 			sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a est en gamemode &2%s&a.", target.getName(), Gm.get(target.getGameMode()).getName());
-		}else {
+		else {
 			Gm oldMode = Gm.get(target.getGameMode());
 			if (gm == oldMode) {
 				if (target != player)
 					sendError("&4%s&c est déjà en gamemode &4%s&c.", target.getName(), gm.getName());
 				else
 					sendError("&cTu es déjà en gamemode &4%s&c.", gm.getName());
-			}else {
+			} else {
 				target.setGameMode(gm.getGameMode());
 				if (target != player)
 					sendSuccess("&2%s&a est désormais en gamemode &2%s&a (avant &2%s&a).", target.getName(), gm.getName(), oldMode.getName());
@@ -160,7 +159,7 @@ public class GamemodeCommand extends OlympaCommand {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		return null;

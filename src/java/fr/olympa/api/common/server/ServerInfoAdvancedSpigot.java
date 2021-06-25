@@ -24,6 +24,7 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 		Collection<? extends Player> playersSpigot = server.getOnlinePlayers();
 		onlinePlayers = playersSpigot.size();
 		players = new ArrayList<>();
+		versions = core.getProtocols();
 		server.getOnlinePlayers().forEach(player -> {
 			players.add(AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()));
 		});

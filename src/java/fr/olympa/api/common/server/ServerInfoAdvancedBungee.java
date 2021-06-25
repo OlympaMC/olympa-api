@@ -7,6 +7,7 @@ import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.core.bungee.OlympaBungee;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -24,6 +25,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		Collection<ProxiedPlayer> playersSpigot = server.getPlayers();
 		onlinePlayers = playersSpigot.size();
 		players = new ArrayList<>();
+		versions = ProtocolAPI.getBungeeVersions();
 		server.getPlayers().forEach(player -> {
 			players.add(AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()));
 		});

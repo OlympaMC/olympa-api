@@ -37,7 +37,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 
 	static Map<List<String>, BungeeCommand> commandPreProcess = new HashMap<>();
 
-	public List<String> onTabComplete(CommandSender sender, BungeeCommand command, String[] args) {
+	public Iterable<String> onTabComplete(CommandSender sender, BungeeCommand command, String[] args) {
 		return new ArrayList<>();
 	}
 
@@ -157,7 +157,11 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 				sendUsage(getName());
 				return;
 			}
-			onCommand(sender, args);
+			try {
+				onCommand(sender, args);
+			} catch (Error | Exception e) {
+				sendError(e);
+			}
 		});
 
 	}
@@ -176,7 +180,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 				return new ArrayList<>();
 			}
 		}
-		List<String> customResponse = onTabComplete(this.sender, this, args);
+		Iterable<String> customResponse = onTabComplete(this.sender, this, args);
 		if (customResponse != null)
 			return customResponse;
 		Set<List<CommandArgument>> defaultArgs = this.args.keySet();
