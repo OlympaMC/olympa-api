@@ -22,6 +22,7 @@ import fr.olympa.api.common.server.ServerInfoBasic;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.task.OlympaTask;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
+import fr.olympa.api.spigot.version.VersionHandler;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -179,12 +180,12 @@ public class OlympaBungee extends Plugin implements LinkSpigotBungee, OlympaPlug
 	}
 
 	@Override
-	public String getFirstVersion() {
-		return ProtocolAPI.getBungeeVersionsNames().get(ProtocolAPI.getBungeeVersionsNames().size() - 1);
+	public VersionHandler<?> getVersionHandler() {
+		return null;
 	}
 
 	@Override
-	public String getLastVersion() {
-		return ProtocolAPI.getBungeeVersionsNames().get(0);
+	public List<ProtocolAPI> getProtocols() {
+		return null;
 	}
 }

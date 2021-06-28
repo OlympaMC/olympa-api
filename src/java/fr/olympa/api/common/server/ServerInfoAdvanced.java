@@ -109,12 +109,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected long uptime;
 	@Expose
-	@Nullable
-	protected String firstVersionMinecraft;
-	@Expose
-	@Nullable
-	protected String lastVersionMinecraft;
-	@Expose
 	protected String serverFrameworkVersion;
 	@Expose
 	protected Integer onlinePlayers;
@@ -147,12 +141,11 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();
 		status = core.getStatus();
-		firstVersionMinecraft = core.getFirstVersion();
-		lastVersionMinecraft = core.getLastVersion();
 		databaseConnected = core.isDatabaseConnected();
 		redisConnected = core.isRedisConnected();
 		uptime = core.getUptimeLong();
 		plugins = getCachePlugins();
+		versions = core.getProtocols();
 	}
 
 	public String getName() {
@@ -177,17 +170,15 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public String getFirstVersionMinecraft() {
-		return firstVersionMinecraft;
+		return versions.get(versions.size() - 1).getName();
 	}
 
 	public String getLastVersionMinecraft() {
-		return lastVersionMinecraft;
+		return versions.get(0).getName();
 	}
 
 	public String getRangeVersionMinecraft() {
-		if (lastVersionMinecraft.equals(firstVersionMinecraft))
-			return firstVersionMinecraft;
-		return firstVersionMinecraft + " à " + lastVersionMinecraft;
+		return ProtocolAPI.getRange(versions);
 	}
 
 	@Override

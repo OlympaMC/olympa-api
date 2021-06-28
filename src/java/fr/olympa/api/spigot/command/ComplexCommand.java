@@ -282,7 +282,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 		if (sel.isBlank())
 			return find;
 		for (String arg : find)
-			if (arg.toLowerCase().startsWith(sel.toLowerCase()))
+			if (arg != null && arg.toLowerCase().startsWith(sel.toLowerCase()))
 				tmp.add(arg);
 		return tmp;
 	}

@@ -37,13 +37,14 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected AfkHandler afkHandler;
 	protected INametagApi nameTagApi;
 	protected IVanishApi vanishApi;
-	protected VersionHandler versionHandler;
+	protected VersionHandler<Player> versionHandler;
 
-	public VersionHandler getVersionHandler() {
+	@Override
+	public VersionHandler<Player> getVersionHandler() {
 		return versionHandler;
 	}
 
-	public void setVersionHandler(VersionHandler versionHandler) {
+	public void setVersionHandler(VersionHandler<Player> versionHandler) {
 		this.versionHandler = versionHandler;
 	}
 
@@ -55,6 +56,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		this.version = version;
 	}
 
+	@Override
 	public List<ProtocolAPI> getProtocols() {
 		return protocols;
 	}

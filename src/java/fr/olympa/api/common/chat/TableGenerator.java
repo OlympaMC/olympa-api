@@ -25,6 +25,8 @@ import net.md_5.bungee.api.connection.Connection;
 // Edited by Olympa Dev Team
 public class TableGenerator {
 
+	// ☻
+
 	private static int chatMaxSizeOneLine = 50;
 	private static int chatMaxSizeOneLineConsole = 200;
 
@@ -40,6 +42,10 @@ public class TableGenerator {
 			+ "(?:§r§8)?" + char1 + "(?:§r)?(\\s*)"
 			+ "(?:§r§8)?" + char1);
 	private static String colorsRegex = RegexMatcher.ALL_CHAT_INVISIBLE_CHARS.getRegex();
+
+	static {
+		LinkSpigotBungee.Provider.link.sendMessage("DEBUG TableGenerator REGEX '%s'", regex.pattern());
+	}
 
 	private Alignment[] alignments;
 	private List<Row> table;
@@ -291,7 +297,7 @@ public class TableGenerator {
 					length = getCustomLength(text.toLegacyText().replaceAll(colorsRegex, ""), receiver);
 				else
 					length = getCustomLength(text.toLegacyText(), receiver);
-				
+
 				int empty = columWidths[i1] - length;
 				int spacesAmount = empty;
 				if (receiver == Receiver.CLIENT)
@@ -299,13 +305,13 @@ public class TableGenerator {
 				int char1Amount = 0;
 				if (receiver == Receiver.CLIENT)
 					char1Amount = empty - 4 * spacesAmount;
-				
+
 				String spaces = concatChars(' ', spacesAmount);
 				String char1s = concatChars(char1, char1Amount);
-				
+
 				if (coloredDistances)
 					char1s = "§r§8" + char1s + "§r";
-				
+
 				if (agn == Alignment.LEFT) {
 					out.extra(text);
 					if (i1 < columns - 1) {
@@ -319,31 +325,31 @@ public class TableGenerator {
 				} else if (agn == Alignment.CENTER) {
 					int leftAmount = empty / 2;
 					int rightAmount = empty - leftAmount;
-				
+
 					int spacesLeftAmount = leftAmount;
 					int spacesRightAmount = rightAmount;
 					if (receiver == Receiver.CLIENT) {
 						spacesLeftAmount = (int) Math.floor(spacesLeftAmount / 4d);
 						spacesRightAmount = (int) Math.floor(spacesRightAmount / 4d);
 					}
-				
+
 					int char1LeftAmount = 0;
 					int char1RightAmount = 0;
 					if (receiver == Receiver.CLIENT) {
 						char1LeftAmount = leftAmount - 4 * spacesLeftAmount;
 						char1RightAmount = rightAmount - 4 * spacesRightAmount;
 					}
-				
+
 					String spacesLeft = concatChars(' ', spacesLeftAmount);
 					String spacesRight = concatChars(' ', spacesRightAmount);
 					String char1Left = concatChars(char1, char1LeftAmount);
 					String char1Right = concatChars(char1, char1RightAmount);
-				
+
 					if (coloredDistances) {
 						char1Left = "§r§8" + char1Left + "§r";
 						char1Right = "§r§8" + char1Right + "§r";
 					}
-				
+
 					out.extra(spacesLeft);
 					out.extra(char1Left);
 					out.extra(text);
@@ -377,7 +383,6 @@ public class TableGenerator {
 			length = getCustomLength(text.toLegacyText().replaceAll(colorsRegex, ""), receiver);
 		else
 			length = getCustomLength(text.toLegacyText(), receiver);
-
 		int empty = columWidths - length;
 		int spacesAmount = empty;
 		if (receiver == Receiver.CLIENT)
@@ -385,13 +390,10 @@ public class TableGenerator {
 		int char1Amount = 0;
 		if (receiver == Receiver.CLIENT)
 			char1Amount = empty - 4 * spacesAmount;
-
 		String spaces = concatChars(' ', spacesAmount);
 		String char1s = concatChars(char1, char1Amount);
-
 		if (coloredDistances)
 			char1s = "§r§8" + char1s + "§r";
-
 		TxtComponentBuilder out = new TxtComponentBuilder();
 		if (agn == Alignment.LEFT) {
 			out.extra(text);
@@ -406,31 +408,26 @@ public class TableGenerator {
 		} else if (agn == Alignment.CENTER) {
 			int leftAmount = empty / 2;
 			int rightAmount = empty - leftAmount;
-
 			int spacesLeftAmount = leftAmount;
 			int spacesRightAmount = rightAmount;
 			if (receiver == Receiver.CLIENT) {
 				spacesLeftAmount = (int) Math.floor(spacesLeftAmount / 4d);
 				spacesRightAmount = (int) Math.floor(spacesRightAmount / 4d);
 			}
-
 			int char1LeftAmount = 0;
 			int char1RightAmount = 0;
 			if (receiver == Receiver.CLIENT) {
 				char1LeftAmount = leftAmount - 4 * spacesLeftAmount;
 				char1RightAmount = rightAmount - 4 * spacesRightAmount;
 			}
-
 			String spacesLeft = concatChars(' ', spacesLeftAmount);
 			String spacesRight = concatChars(' ', spacesRightAmount);
 			String char1Left = concatChars(char1, char1LeftAmount);
 			String char1Right = concatChars(char1, char1RightAmount);
-
 			if (coloredDistances) {
 				char1Left = "§r§8" + char1Left + "§r";
 				char1Right = "§r§8" + char1Right + "§r";
 			}
-
 			out.extra(spacesLeft);
 			out.extra(char1Left);
 			out.extra(text);
@@ -451,11 +448,9 @@ public class TableGenerator {
 			throw new IllegalArgumentException("Receiver must not be null.");
 		if (receiver == Receiver.CONSOLE)
 			return text.length();
-
 		int length = 0;
 		for (char c : text.toCharArray())
 			length += getCustomCharLength(c);
-
 		return length;
 	}
 

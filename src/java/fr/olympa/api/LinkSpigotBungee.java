@@ -10,6 +10,8 @@ import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.task.OlympaTask;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
+import fr.olympa.api.spigot.version.VersionHandler;
 import fr.olympa.api.utils.Utils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -72,7 +74,7 @@ public interface LinkSpigotBungee {
 
 	boolean isDatabaseConnected();
 
-	String getFirstVersion();
+	VersionHandler<?> getVersionHandler();
 
-	String getLastVersion();
+	List<ProtocolAPI> getProtocols();
 }

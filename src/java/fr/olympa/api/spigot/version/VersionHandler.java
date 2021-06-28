@@ -3,21 +3,47 @@ package fr.olympa.api.spigot.version;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.bukkit.entity.Player;
-
 import fr.olympa.api.spigot.utils.ProtocolAPI;
 
-public interface VersionHandler {
+public interface VersionHandler<T> {
 
-	boolean isPlayerVersionUnder(Player player, ProtocolAPI version);
+	default boolean isPlayerVersionUnder(T player, ProtocolAPI version) {
+		int protocolPlayer = getPlayerProtocol(player);
+		return version.getProtocolNumber() > protocolPlayer;
+	}
 
-	boolean isPlayerVersionSameOrUpper(Player player, ProtocolAPI version);
+	default boolean isPlayerVersionSameOrUpper(T player, ProtocolAPI version) {
+		int protocolPlayer = getPlayerProtocol(player);
+		return version.getProtocolNumber() <= protocolPlayer;
+	}
 
-	String getVersion(Player player);
+	default String getVersion(T player) {
+		return ProtocolAPI.getName(getPlayerProtocol(player));
+	}
 
-	int getPlayerProtocol(Player player);
+	default String getVersionsDisabled() {
+		return ProtocolAPI.getRange(getProtocolsDisabled());
+	}
 
-	List<ProtocolAPI> getProtocolSupported();
+	//	default List<ProtocolAPI> getVersionsSupportedDisable() {
+	//		List<ProtocolAPI> versions = new ArrayList<>();
+	//		getProtocolsDisabled().forEach(protocolNb -> versions.addAll(ProtocolAPI.getAll(protocolNb)));
+	//		return versions.stream().sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
+	//	}
+	//
+	//	default List<Integer> getProtocolsEnabled() {
+	//		return getProtocolSupported().stream().map(ProtocolAPI::getProtocolNumber).collect(Collectors.toList());
+	//	}
+
+	default Entry<String, String> getRangeVersionArray() {
+		return ProtocolAPI.getRangeEntry(getProtocolsSupported());
+	}
+
+	int getPlayerProtocol(T player);
+
+	List<ProtocolAPI> getProtocolsSupported();
+
+	List<ProtocolAPI> getProtocolsDisabled();
 
 	boolean disable(ProtocolAPI[] versions);
 
@@ -27,12 +53,8 @@ public interface VersionHandler {
 
 	boolean disableAllUpperI(ProtocolAPI version);
 
-	Entry<String, String> getRangeVersionArray();
-
-	String getVersionsDisabled();
-
-	String getVersions();
-
-	List<ProtocolAPI> getVersionsSupportedDisable();
+	default String getVersions() {
+		return ProtocolAPI.getRange(getProtocolsSupported());
+	}
 
 }

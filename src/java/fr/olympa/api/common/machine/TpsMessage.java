@@ -53,6 +53,15 @@ public class TpsMessage extends JavaInstanceInfo {
 		textBuilder.extra("\n");
 		textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
 		textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), olympaPlayer == null, showValueOfVersions));
+		textBuilder.extra("\n");
+		VersionHandler<?> versionHandler = main.getVersionHandler();
+		if (versionHandler != null) {
+			TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", versionHandler.getVersions());
+			String unSupVer = versionHandler.getVersionsDisabled();
+			if (!unSupVer.isBlank() && !unSupVer.equals("unknown"))
+				textBuilder2.onHoverText("&e[&6!&e] &cVersions désactivées &4%s&c.", unSupVer);
+			textBuilder.extra(textBuilder2);
+		}
 		if (main.isSpigot())
 			textBuilder.extra(getOtherSpigotInfo());
 		return textBuilder;
@@ -73,15 +82,7 @@ public class TpsMessage extends JavaInstanceInfo {
 		if (!main.isSpigot())
 			throw new UnsupportedOperationException("Unable to get Spigot Info on not Spigot Environment");
 		OlympaCore core = (OlympaCore) main;
-		TxtComponentBuilder textBuilder = new TxtComponentBuilder("\n");
-		VersionHandler versionHandler = core.getVersionHandler();
-		if (versionHandler != null) {
-			TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", versionHandler.getVersions());
-			String unSupVer = versionHandler.getVersionsDisabled();
-			if (!unSupVer.isBlank())
-				textBuilder2.onHoverText("&e[&6!&e] &cVersions désactivées &4%s&c.", unSupVer);
-			textBuilder.extra(textBuilder2);
-		}
+		TxtComponentBuilder textBuilder = new TxtComponentBuilder();
 		textBuilder.extra(new TxtComponentBuilder("&3Bukkit API: &b%s&3.", Bukkit.getBukkitVersion().replace("-SNAPSHOT", ""))
 				.onHoverText("&eServeur sous &6%s&e.", SpigotInfoFork.getVersionBukkit()));
 		textBuilder.extra(" ");

@@ -44,8 +44,6 @@ public class OlympaCore extends OlympaSpigot {
 
 	private HologramsManager holograms;
 	private RegionManager regions;
-	private String lastVersion = "unknown";
-	private String firstVersion = "unknown";
 	private OlympaServer olympaServer = OlympaServer.ALL;
 
 	@Override
@@ -56,30 +54,6 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public void setOlympaServer(OlympaServer olympaServer) {
 		this.olympaServer = olympaServer;
-	}
-
-	@Override
-	public String getLastVersion() {
-		return lastVersion;
-	}
-
-	public void setLastVersion(String lastVersion) {
-		this.lastVersion = lastVersion;
-	}
-
-	@Override
-	public String getFirstVersion() {
-		return firstVersion;
-	}
-
-	public String getRangeVersion() {
-		if (firstVersion.equals(lastVersion))
-			return firstVersion;
-		return firstVersion + " à " + lastVersion;
-	}
-
-	public void setFirstVersion(String firstVersion) {
-		this.firstVersion = firstVersion;
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.sort.Sorting;
 import fr.olympa.api.utils.Utils;
-import net.md_5.bungee.protocol.ProtocolConstants;
 
 /**
  * Lors d'une nouvelle versionn de protocol, récupérer le numéro via ce lien: https://wiki.vg/Protocol_version_numbers
@@ -207,26 +206,12 @@ public enum ProtocolAPI {
 	}
 
 	/**
-	 * Get default Spigot protocol
-	 * @throw IllegalAccessError when bungee instance call this method
+	 * Get big version allowed protocols for Olympa Servers, based on {@link #allow} & {@link #notRecommended}.
+	 * Bad use for a server like ZTA, as this server only allows one version and the method is not affected by this change.
 	 */
-	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static ProtocolAPI getNativeSpigotProtocolAPI() {
-		if (defaultVersion == null)
-			defaultVersion = get(getNativeSpigotVersion());
-		return defaultVersion;
-	}
-
-	/**
-	 * @throw IllegalAccessError when bungee instance call this method
-	 */
-	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
-	public static String getNativeSpigotVersion() {
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
-		if (version == null)
-			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
-		return version;
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static ProtocolAPI getLastVersion() {
+		return Arrays.stream(ProtocolAPI.values()).filter(protocolApi -> protocolApi.isAllowed()).findFirst().orElse(null);
 	}
 
 	/**
@@ -234,7 +219,7 @@ public enum ProtocolAPI {
 	 * Bad use for a server like ZTA, as this server only allows one version and the method is not affected by this change.
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
-	public static ProtocolAPI getLastVersion() {
+	public static ProtocolAPI getRecommandedVersion() {
 		return Arrays.stream(ProtocolAPI.values()).filter(protocolApi -> protocolApi.isAllowed() && !protocolApi.isNotRecommended()).findFirst().orElse(null);
 	}
 
@@ -277,44 +262,26 @@ public enum ProtocolAPI {
 	}
 
 	/**
-	 * Return all versions names natively supported by Bungeecord.
-	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
-	 * @throw IllegalAccessError when spigot instance call this method
+	 * Get default Spigot protocol
+	 * @throw IllegalAccessError when bungee instance call this method
 	 */
-	@Nullable
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public static List<String> getBungeeVersionsNames() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BungeeVersion on Spigot instance.");
-		return ProtocolConstants.SUPPORTED_VERSIONS;
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
+	public static ProtocolAPI getNativeSpigotProtocolAPI() {
+		if (defaultVersion == null)
+			defaultVersion = get(getNativeSpigotVersion());
+		return defaultVersion;
 	}
 
 	/**
-	 * Return all versions id natively supported by Bungeecord.
-	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
-	 * @throw IllegalAccessError when spigot instance call this method
+	 * @throw IllegalAccessError when bungee instance call this method
 	 */
-	@Nullable
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public static List<Integer> getBungeeVersionId() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
-		return ProtocolConstants.SUPPORTED_VERSION_IDS;
-	}
-
-	/**
-	 * Return all versions id natively supported by Bungeecord.
-	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
-	 * @throw IllegalAccessError when spigot instance call this method
-	 */
-	@Nullable
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public static List<ProtocolAPI> getBungeeVersions() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
-		List<ProtocolAPI> versions = new ArrayList<>();
-		ProtocolConstants.SUPPORTED_VERSION_IDS.forEach(protocolNb -> versions.addAll(getAll(protocolNb)));
-		return versions;
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
+	public static String getNativeSpigotVersion() {
+		if (!LinkSpigotBungee.Provider.link.isSpigot())
+			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
+		if (version == null)
+			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));
+		return version;
 	}
 
 	/**
