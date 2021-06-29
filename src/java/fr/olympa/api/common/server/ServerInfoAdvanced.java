@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 import com.google.gson.annotations.Expose;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.common.annotation.SpigotOrBungee;
+import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
 import fr.olympa.api.common.player.OlympaPlayer;
@@ -165,7 +167,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	public ServerInfoAdvanced() {}
 
 	public ServerInfoAdvanced(LinkSpigotBungee<?> core) {
-		super();
+		super(Utils.getCurrentTimeInSeconds());
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();
 		status = core.getStatus();
@@ -298,5 +300,10 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public String getIdSymbole() {
 		return Utils.getLetterOfNumber(serverId);
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
+	public void setPing(int ping) {
+		this.ping = ping;
 	}
 }

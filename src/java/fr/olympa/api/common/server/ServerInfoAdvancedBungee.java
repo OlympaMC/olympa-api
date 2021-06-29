@@ -148,6 +148,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		serverFrameworkVersion = core.getProxy().getVersion();
 	}
 
+	@Override
 	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 	public void setPing(int ping) {
 		this.ping = ping;

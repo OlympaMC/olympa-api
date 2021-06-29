@@ -10,7 +10,6 @@ import com.google.gson.annotations.Expose;
 import com.sun.management.OperatingSystemMXBean;
 
 import fr.olympa.api.spigot.utils.TPSUtils;
-import fr.olympa.api.utils.Utils;
 
 public class JavaInstanceInfo {
 
@@ -23,8 +22,10 @@ public class JavaInstanceInfo {
 	@Expose
 	private Long time;
 
-	public JavaInstanceInfo() {
-		time = Utils.getCurrentTimeInSeconds();
+	public JavaInstanceInfo() {}
+
+	public JavaInstanceInfo(Long time) {
+		this.time = time;
 		Runtime r = Runtime.getRuntime();
 		//		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 		//		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() ;

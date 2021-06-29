@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
+import fr.olympa.api.common.module.OlympaModule;
 import fr.olympa.api.common.redis.RedisChannel;
 import fr.olympa.api.common.redis.RedisClass;
 import fr.olympa.api.common.redis.RedisConnection;
@@ -62,6 +63,8 @@ public class BungeeServerInfoAdvanced extends RedisSubChannel {
 		String[] serversInfoJson = message.split("\\n");
 		List<ServerInfoAdvanced> newMonitorInfos = new ArrayList<>();
 		for (String s : serversInfoJson) {
+			if (OlympaModule.DEBUG)
+				LinkSpigotBungee.getInstance().sendMessage("&7Debug les infos de &e%s&7 ont été reçu", s);
 			ServerInfoAdvanced monitorInfo = LinkSpigotBungee.getInstance().getGson().fromJson(s, ServerInfoAdvanced.class);
 			newMonitorInfos.add(monitorInfo);
 		}
