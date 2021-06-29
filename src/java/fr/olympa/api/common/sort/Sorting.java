@@ -39,9 +39,9 @@ public class Sorting<T> implements Comparator<T> {
 		for (Entry<ToLongFunction<T>, Boolean> entry : sortArgs.entrySet()) {
 			ToLongFunction<T> f = entry.getKey();
 			if (entry.getValue())
-				compared = Long.compare(entry.getKey().applyAsLong(o1), f.applyAsLong(o2));
+				compared = Long.compare(f.applyAsLong(o1), f.applyAsLong(o2));
 			else
-				compared = Long.compare(entry.getKey().applyAsLong(o2), f.applyAsLong(o1));
+				compared = Long.compare(f.applyAsLong(o2), f.applyAsLong(o1));
 			if (compared != 0)
 				break;
 		}

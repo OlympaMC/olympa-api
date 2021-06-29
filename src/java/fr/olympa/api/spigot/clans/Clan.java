@@ -87,7 +87,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	public void executeAllPlayers(Consumer<Player> consumer) {
 		for (ClanPlayerData<T, D> member : members.values())
 			if (member.isConnected())
-				consumer.accept(member.getConnectedPlayer().getPlayer());
+				consumer.accept((Player) member.getConnectedPlayer().getPlayer());
 	}
 
 	public OlympaPlayerInformations getChief() {
@@ -131,7 +131,7 @@ public abstract class Clan<T extends Clan<T, D>, D extends ClanPlayerData<T, D>>
 	}
 
 	public Set<Player> getPlayers() {
-		return members.values().stream().filter(entry -> entry.isConnected()).map(entry -> entry.getConnectedPlayer().getPlayer()).collect(Collectors.toSet());
+		return members.values().stream().filter(entry -> entry.isConnected()).map(entry -> (Player) entry.getConnectedPlayer().getPlayer()).collect(Collectors.toSet());
 	}
 
 	public Set<OlympaPlayer> getOlympaPlayers() {

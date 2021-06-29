@@ -114,7 +114,9 @@ public enum ProtocolAPI {
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static String getRange(List<ProtocolAPI> protocols) {
-		List<ProtocolAPI> sorted = protocols.stream().sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
+		if (protocols == null || protocols.isEmpty())
+			return "unknown";
+		List<ProtocolAPI> sorted = protocols.stream().filter(protocolApi -> protocolApi != null).sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
 		if (sorted.isEmpty())
 			return "unknown";
 		else if (sorted.size() == 1)
@@ -393,5 +395,4 @@ public enum ProtocolAPI {
 	public boolean isSnapshot() {
 		return snapshot;
 	}
-
 }

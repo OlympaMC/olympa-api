@@ -96,9 +96,6 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			//if (p.hasPlayedBefore())
 			return p;
 		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
-		addArgumentParser("PLAYERS", (sender, arg) -> server.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()), x -> {
-			return server.getPlayerExact(x);
-		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("SUBCOMMAND", (sender, arg) -> commands.entrySet().stream().filter(e -> !e.getValue().cmd.otherArg() && !e.getValue().cmd.hide()).map(Entry::getKey).flatMap(List::stream).collect(Collectors.toList()), x -> {
 			InternalCommand result = getCommand(x);
 			if (result != null && result.cmd.otherArg())

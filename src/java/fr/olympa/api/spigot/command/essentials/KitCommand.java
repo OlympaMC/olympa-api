@@ -28,7 +28,7 @@ import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 
 public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
-	
+
 	private static final NumberFormat numberFormat = new DecimalFormat("00");
 	private final Supplier<Stream<IKit<T>>> kitsStreamSupplier;
 
@@ -37,7 +37,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		super.allowConsole = false;
 		this.kitsStreamSupplier = kitsStreamSupplier;
 	}
-	
+
 	@Override
 	public OlympaCommand register() {
 		super.register();
@@ -45,15 +45,15 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		super.minArg = 0;
 		return this;
 	}
-	
+
 	public KitCommand(Plugin plugin, IKit<T>... kits) {
 		this(plugin, () -> Arrays.stream(kits));
 	}
-	
+
 	protected void noArgument() {
 		sendUsage("kit");
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
@@ -61,50 +61,49 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 			return false;
 		}
 		Optional<IKit<T>> okit = kitsStreamSupplier.get().filter(kit -> kit.getId().equalsIgnoreCase(args[0])).findFirst();
-		if (okit.isEmpty()) {
+		if (okit.isEmpty())
 			sendError("Le kit %s n'existe pas !", args[0]);
-		}else {
+		else {
 			IKit<T> kit = okit.get();
 			T olympaPlayer = getOlympaPlayer();
 			if (kit.canTake(olympaPlayer)) {
-				long timeToWait = (kit.getLastTake(olympaPlayer) + kit.getTimeBetween()) - System.currentTimeMillis();
-				if (timeToWait > 0) {
+				long timeToWait = kit.getLastTake(olympaPlayer) + kit.getTimeBetween() - System.currentTimeMillis();
+				if (timeToWait > 0)
 					sendError("Tu dois encore attendre %s avant de pouvoir reprendre le kit %s !", Utils.durationToString(numberFormat, timeToWait), kit.getId());
-				}else {
+				else {
 					kit.give(olympaPlayer, getPlayer());
 					kit.setLastTake(olympaPlayer, System.currentTimeMillis());
 				}
-			}else {
+			} else
 				kit.sendImpossibleToTake(olympaPlayer);
-			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		T player = sender instanceof Player ? AccountProviderAPI.getter().get((((Player) sender).getUniqueId())) : null;
+		T player = sender instanceof Player ? AccountProviderAPI.getter().get(((Player) sender).getUniqueId()) : null;
 		return kitsStreamSupplier.get().filter(kit -> player == null || kit.canTake(player)).map(IKit::getId).collect(Collectors.toList());
 	}
-	
+
 	public interface IKit<T extends OlympaPlayer> {
-		
+
 		String getId();
-		
+
 		boolean canTake(T player);
-		
+
 		void sendImpossibleToTake(T player);
-		
+
 		long getTimeBetween();
-		
+
 		long getLastTake(T player);
-		
+
 		void setLastTake(T player, long time);
-		
+
 		void give(T olympaPlayer, Player p);
-		
+
 	}
-	
+
 	public static class SimpleKit<T extends OlympaPlayer> implements IKit<T> {
 		private final String id;
 		private final OlympaPermission permission;
@@ -112,7 +111,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 		private final Function<T, Long> getLastTake;
 		private final BiConsumer<T, Long> setLastTask;
 		private final BiFunction<T, Player, ItemStack[]> items;
-		
+
 		public SimpleKit(String id, OlympaPermission permission, long timeBetween, Function<T, Long> getLastTake, BiConsumer<T, Long> setLastTask, BiFunction<T, Player, ItemStack[]> items) {
 			this.id = id;
 			this.permission = permission;
@@ -121,35 +120,35 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 			this.setLastTask = setLastTask;
 			this.items = items;
 		}
-		
+
 		@Override
 		public String getId() {
 			return id;
 		}
-		
+
 		@Override
 		public boolean canTake(T player) {
 			return permission == null || permission.hasPermission(player);
 		}
-		
+
 		@Override
 		public long getTimeBetween() {
 			return timeBetween;
 		}
-		
+
 		@Override
 		public long getLastTake(T player) {
 			return getLastTake.apply(player);
 		}
-		
+
 		@Override
 		public void setLastTake(T player, long time) {
 			setLastTask.accept(player, time);
 		}
-		
+
 		@Override
 		public void sendImpossibleToTake(T player) {
-			Prefix.DEFAULT_BAD.sendMessage(player.getPlayer(), "Tu n'as pas la permission de prendre le kit %s...", id);
+			Prefix.DEFAULT_BAD.sendMessage((Player) player.getPlayer(), "Tu n'as pas la permission de prendre le kit %s...", id);
 		}
 
 		@Override
@@ -157,7 +156,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 			SpigotUtils.giveItems(p, items.apply(olympaPlayer, p));
 			Prefix.DEFAULT_GOOD.sendMessage(p, "Tu as reçu le kit %s !", id);
 		}
-		
+
 	}
-	
+
 }

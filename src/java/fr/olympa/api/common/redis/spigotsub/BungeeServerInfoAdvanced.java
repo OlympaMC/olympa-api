@@ -14,22 +14,23 @@ import fr.olympa.api.common.redis.RedisChannel;
 import fr.olympa.api.common.redis.RedisClass;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.RedisSubChannel;
-import fr.olympa.api.common.server.ServerInfoBasic;
+import fr.olympa.api.common.server.ServerInfoAdvanced;
+import fr.olympa.core.bungee.OlympaBungee;
 import redis.clients.jedis.Jedis;
 
-public class BungeeServerInfo extends RedisSubChannel {
+public class BungeeServerInfoAdvanced extends RedisSubChannel {
 
-	private List<Consumer<List<ServerInfoBasic>>> callbacksRegister = new ArrayList<>();
+	private List<Consumer<List<ServerInfoAdvanced>>> callbacksRegister = new ArrayList<>();
 
-	public List<Consumer<List<ServerInfoBasic>>> getCallbacksRegister() {
+	public List<Consumer<List<ServerInfoAdvanced>>> getCallbacksRegister() {
 		return callbacksRegister;
 	}
 
-	public boolean registerCallback(Consumer<List<ServerInfoBasic>> callback) {
+	public boolean registerCallback(Consumer<List<ServerInfoAdvanced>> callback) {
 		return callbacksRegister.add(callback);
 	}
 
-	public BungeeServerInfo(LinkSpigotBungee core, RedisChannel channel) {
+	public BungeeServerInfoAdvanced(LinkSpigotBungee<?> core, RedisChannel channel) {
 		super(core, channel);
 		canSendFromSpigot = false;
 		canSendFromBungee = true;
@@ -38,7 +39,12 @@ public class BungeeServerInfo extends RedisSubChannel {
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public boolean sendServerInfos(Collection<ServerInfoBasic> serveursInfoBasic) {
+	public boolean sendServerInfos() {
+		return sendServerInfos(OlympaBungee.getInstance().getMonitorServers());
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
+	public boolean sendServerInfos(Collection<ServerInfoAdvanced> serveursInfoBasic) {
 		if (serveursInfoBasic.isEmpty())
 			return false;
 		RedisConnection redis = getRedisAccess();
@@ -54,13 +60,13 @@ public class BungeeServerInfo extends RedisSubChannel {
 	public void onMessage(String channel, String message) {
 		super.onMessage(channel, message);
 		String[] serversInfoJson = message.split("\\n");
-		List<ServerInfoBasic> newMonitorInfos = new ArrayList<>();
+		List<ServerInfoAdvanced> newMonitorInfos = new ArrayList<>();
 		for (String s : serversInfoJson) {
-			ServerInfoBasic monitorInfo = LinkSpigotBungee.getInstance().getGson().fromJson(s, ServerInfoBasic.class);
+			ServerInfoAdvanced monitorInfo = LinkSpigotBungee.getInstance().getGson().fromJson(s, ServerInfoAdvanced.class);
 			newMonitorInfos.add(monitorInfo);
 		}
 		callbacksRegister.forEach(c -> c.accept(newMonitorInfos));
-		List<BiConsumer<List<ServerInfoBasic>, Boolean>> askServerInfo = RedisClass.ASK_SERVER_INFO.getAskServerInfoOld();
+		List<BiConsumer<List<ServerInfoAdvanced>, Boolean>> askServerInfo = RedisClass.ASK_SERVER_INFO.getAskServerInfo();
 		askServerInfo.forEach(c -> c.accept(newMonitorInfos, false));
 		askServerInfo.clear();
 	}

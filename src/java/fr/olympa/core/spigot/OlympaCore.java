@@ -18,7 +18,7 @@ import fr.olympa.api.common.plugin.OlympaSpigot;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
-import fr.olympa.api.common.server.ServerInfoBasic;
+import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.spigot.command.CommandListener;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.gui.Inventories;
@@ -124,7 +124,7 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack) {}
+	public void retreiveMonitorInfos(BiConsumer<List<ServerInfoAdvanced>, Boolean> callback, boolean freshDoubleCallBack) {}
 
 	@Override
 	public void registerPackListener(ResourcePackHandler packHandler) {}

@@ -45,9 +45,6 @@ public abstract class BungeeComplexCommand extends BungeeCommand implements ICom
 	public BungeeComplexCommand(Plugin plugin, String command, String description, OlympaBungeePermission permission, String... aliases) {
 		super(plugin, command, description, permission, aliases);
 		addDefaultParsers();
-		addArgumentParser("PLAYERS", (sender, arg) -> plugin.getProxy().getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), x -> {
-			return plugin.getProxy().getPlayer(x);
-		}, x -> String.format("Le joueur &4%s&c est introuvable", x));
 		addArgumentParser("OLYMPA_PLAYERS",
 				(sender, arg) -> arg.length() > 2 ? AccountProviderAPI.getter().getSQL().getNamesBySimilarName(arg) : plugin.getProxy().getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList()), x -> {
 					try {

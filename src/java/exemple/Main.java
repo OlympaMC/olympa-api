@@ -1,6 +1,7 @@
 package exemple;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.PluginManager;
 
@@ -45,7 +46,7 @@ public class Main extends OlympaAPIPlugin {
 					new FixedLine<>("Yo"),
 					FixedLine.EMPTY_LINE,
 					new TimerLine<Scoreboard<OlympaPlayer>>((x) -> {
-						Location lc = x.getOlympaPlayer().getPlayer().getLocation();
+						Location lc = ((Player) x.getOlympaPlayer().getPlayer()).getLocation();
 						return lc.toString();
 					}, this, 5));
 		} catch (Exception e) {

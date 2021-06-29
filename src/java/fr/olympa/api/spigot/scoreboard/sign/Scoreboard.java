@@ -9,6 +9,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bukkit.entity.Player;
+
 import com.google.common.collect.Iterables;
 
 import fr.olympa.api.common.player.OlympaPlayer;
@@ -152,7 +154,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void initScoreboard() {
-		sb = new FastBoard(p.getPlayer());
+		sb = new FastBoard((Player) p.getPlayer());
 		sb.updateTitle(manager.displayName);
 		sb.updateLines(getRawLines());
 	}

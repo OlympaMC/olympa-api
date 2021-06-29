@@ -3,8 +3,6 @@ package fr.olympa.api.bungee.version;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
@@ -16,11 +14,8 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 
-	private List<ProtocolAPI> protocols;
-
 	public BungeeProtocol(List<ProtocolAPI> protocols) {
-		this.protocols = protocols;
-		this.protocols.addAll(getProtocolsSupported());
+		protocols.addAll(getProtocolsSupported());
 	}
 
 	@Override
@@ -33,7 +28,6 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
 	 * @throw IllegalAccessError when spigot instance call this method
 	 */
-	@Nullable
 	public List<String> getBungeeVersionsNames() {
 		if (LinkSpigotBungee.Provider.link.isSpigot())
 			throw new IllegalAccessError("Can't get BungeeVersion on Spigot instance.");
@@ -45,7 +39,6 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
 	 * @throw IllegalAccessError when spigot instance call this method
 	 */
-	@Nullable
 	public List<Integer> getBungeeVersionId() {
 		if (LinkSpigotBungee.Provider.link.isSpigot())
 			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
@@ -57,7 +50,6 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 * It dosen't contains other versions supported with ProtocolSupportBungee or ViaVersionBungee
 	 * @throw IllegalAccessError when spigot instance call this method
 	 */
-	@Nullable
 	@Override
 	public List<ProtocolAPI> getProtocolsSupported() {
 		if (LinkSpigotBungee.Provider.link.isSpigot())

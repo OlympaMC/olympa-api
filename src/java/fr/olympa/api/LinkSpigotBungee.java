@@ -2,7 +2,11 @@ package fr.olympa.api;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
@@ -16,7 +20,7 @@ import fr.olympa.api.utils.Utils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
-public interface LinkSpigotBungee {
+public interface LinkSpigotBungee<P> {
 
 	long upTime = Utils.getCurrentTimeInSeconds();
 
@@ -50,12 +54,12 @@ public interface LinkSpigotBungee {
 
 	List<String> getPlayersNames();
 
-	static LinkSpigotBungee getInstance() {
+	static LinkSpigotBungee<?> getInstance() {
 		return Provider.link;
 	}
 
 	public static final class Provider {
-		public static LinkSpigotBungee link;
+		public static LinkSpigotBungee<?> link;
 	}
 
 	boolean isServerName(String serverName);
@@ -77,4 +81,11 @@ public interface LinkSpigotBungee {
 	VersionHandler<?> getVersionHandler();
 
 	List<ProtocolAPI> getProtocols();
+
+	@NotNull
+	Collection<? extends P> getPlayers();
+
+	P getPlayer(String playerName);
+
+	P getPlayer(UUID uuid);
 }

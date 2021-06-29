@@ -33,7 +33,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			dp -> dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author)) ? 0l : 1l);
 
 	public static void setPlugins() {
-		LinkSpigotBungee link = LinkSpigotBungee.Provider.link;
+		LinkSpigotBungee<?> link = LinkSpigotBungee.Provider.link;
 		if (link.isSpigot())
 			pluginsOfInstance = Arrays.stream(((OlympaCore) link).getServer().getPluginManager().getPlugins()).map(PluginInfoSpigot::new).sorted(sortingPlugins).collect(Collectors.toList());
 		else
@@ -134,9 +134,37 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected List<ProtocolAPI> versions;
 
+	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, float tps) {
+		this.name = name;
+		this.olympaServer = olympaServer;
+		this.serverId = serverId;
+		this.status = status;
+		this.onlinePlayers = onlinePlayers;
+		this.maxPlayers = maxPlayers;
+		this.ping = ping;
+		this.tps = tps;
+	}
+
+	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, String error, int ping) {
+		this.name = name;
+		this.olympaServer = olympaServer;
+		this.serverId = serverId;
+		this.status = status;
+		this.error = error;
+		this.ping = ping;
+	}
+
+	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, String error, int ping) {
+		this.name = name;
+		this.olympaServer = olympaServer;
+		this.serverId = serverId;
+		this.ping = ping;
+		this.error = error;
+	}
+
 	public ServerInfoAdvanced() {}
 
-	public ServerInfoAdvanced(LinkSpigotBungee core) {
+	public ServerInfoAdvanced(LinkSpigotBungee<?> core) {
 		super();
 		name = core.getServerName();
 		olympaServer = core.getOlympaServer();
@@ -244,6 +272,14 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return error;
 	}
 
+	public boolean hasMinimalInfo() {
+		return getOnlinePlayers() != null && getMaxPlayers() != null && olympaServer != null && name != null;
+	}
+
+	public boolean hasFullInfos() {
+		return hasMinimalInfo() && hasInstanceInfo() && getTps() != null && ping != null;
+	}
+
 	public boolean isUsualError() {
 		return status == ServerStatus.CLOSE && (error == null || error.isEmpty());
 	}
@@ -254,5 +290,13 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public boolean isOpen() {
 		return status != ServerStatus.CLOSE;
+	}
+
+	public boolean canConnect(OlympaPlayer olympaPlayer) {
+		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
+	}
+
+	public String getIdSymbole() {
+		return Utils.getLetterOfNumber(serverId);
 	}
 }

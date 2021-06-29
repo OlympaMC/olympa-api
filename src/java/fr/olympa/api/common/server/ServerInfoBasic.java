@@ -23,11 +23,11 @@ public class ServerInfoBasic {
 	@Expose
 	protected Integer maxPlayers;
 	@Expose
-	protected Integer ramUsage;
+	protected Long ramUsage;
 	@Expose
 	protected Integer threads;
 	@Expose
-	protected Integer allThreads;
+	protected Long allThreads;
 	@Expose
 	protected ServerStatus status = ServerStatus.UNKNOWN;
 	@Expose
@@ -41,8 +41,26 @@ public class ServerInfoBasic {
 	@Expose
 	protected long lastModifiedCore;
 
-	public ServerInfoBasic() {
-		super();
+	public ServerInfoBasic() {}
+
+	@Deprecated
+	public ServerInfoBasic(String serverName, OlympaServer olympaServer, int serverID, Integer ping, Integer onlinePlayers, Integer maxPlayers, Long ramUsage, Integer threads, Long allThreads, ServerStatus status, String error,
+			Float tps, String firstVersion, String lastVersion, long lastModifiedCore) {
+		this.serverName = serverName;
+		this.olympaServer = olympaServer;
+		this.serverID = serverID;
+		this.ping = ping;
+		this.onlinePlayers = onlinePlayers;
+		this.maxPlayers = maxPlayers;
+		this.ramUsage = ramUsage;
+		this.threads = threads;
+		this.allThreads = allThreads;
+		this.status = status;
+		this.error = error;
+		this.tps = tps;
+		this.firstVersion = firstVersion;
+		this.lastVersion = lastVersion;
+		this.lastModifiedCore = lastModifiedCore;
 	}
 
 	public boolean canConnect(OlympaPlayer olympaPlayer) {
@@ -94,7 +112,7 @@ public class ServerInfoBasic {
 		return Utils.tsToShortDur(lastModifiedCore);
 	}
 
-	public Integer getRamUsage() {
+	public Long getRamUsage() {
 		return ramUsage;
 	}
 
@@ -110,7 +128,7 @@ public class ServerInfoBasic {
 		return serverID;
 	}
 
-	public Integer getAllThreads() {
+	public Long getAllThreads() {
 		return allThreads;
 	}
 

@@ -8,35 +8,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
 import fr.olympa.api.common.groups.OlympaGroup;
-import fr.olympa.api.common.provider.OlympaPlayerObject;
+import fr.olympa.api.common.provider.OlympaPlayerCore;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.sql.SQLColumn;
 
 public interface OlympaPlayer {
 
-	SQLColumn<OlympaPlayerObject> COLUMN_ID = new SQLColumn<OlympaPlayerObject>("id", "INT(20) unsigned NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(OlympaPlayerObject::getId);
-	SQLColumn<OlympaPlayerObject> COLUMN_PSEUDO = new SQLColumn<OlympaPlayerObject>("pseudo", "VARCHAR(255) NOT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_UUID_SERVER = new SQLColumn<>("uuid_server", "VARCHAR(36) NOT NULL", Types.VARCHAR);
-	SQLColumn<OlympaPlayerObject> COLUMN_UUID_PREMIUM = new SQLColumn<OlympaPlayerObject>("uuid_premium", "VARCHAR(36) DEFAULT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_GROUPS = new SQLColumn<OlympaPlayerObject>("groups", "VARCHAR(45) DEFAULT '20'", Types.VARCHAR).setUpdatable().setNotDefault();
-	SQLColumn<OlympaPlayerObject> COLUMN_EMAIL = new SQLColumn<OlympaPlayerObject>("email", "VARCHAR(255) DEFAULT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_PASSWORD = new SQLColumn<OlympaPlayerObject>("password", "VARCHAR(512) DEFAULT NULL", Types.VARCHAR).setUpdatable().setNotDefault();
-	SQLColumn<OlympaPlayerObject> COLUMN_MONEY = new SQLColumn<>("money", "VARCHAR(20) DEFAULT '0'", Types.VARCHAR); // unused?
-	SQLColumn<OlympaPlayerObject> COLUMN_IP = new SQLColumn<OlympaPlayerObject>("ip", "VARCHAR(39) NOT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_CREATED = new SQLColumn<OlympaPlayerObject>("created", "DATE NOT NULL", Types.DATE).setUpdatable().setNotDefault();
-	SQLColumn<OlympaPlayerObject> COLUMN_LAST_CONNECTION = new SQLColumn<OlympaPlayerObject>("last_connection", "TIMESTAMP NULL DEFAULT current_timestamp()", Types.TIMESTAMP).setUpdatable().setNotDefault();
-	SQLColumn<OlympaPlayerObject> COLUMN_TS3_ID = new SQLColumn<OlympaPlayerObject>("ts3_id", "INT(11) DEFAULT NULL", Types.INTEGER).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_ID = new SQLColumn<OlympaPlayerCore>("id", "INT(20) unsigned NOT NULL AUTO_INCREMENT", Types.INTEGER).setPrimaryKey(OlympaPlayerCore::getId);
+	SQLColumn<OlympaPlayerCore> COLUMN_PSEUDO = new SQLColumn<OlympaPlayerCore>("pseudo", "VARCHAR(255) NOT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_UUID_SERVER = new SQLColumn<>("uuid_server", "VARCHAR(36) NOT NULL", Types.VARCHAR);
+	SQLColumn<OlympaPlayerCore> COLUMN_UUID_PREMIUM = new SQLColumn<OlympaPlayerCore>("uuid_premium", "VARCHAR(36) DEFAULT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_GROUPS = new SQLColumn<OlympaPlayerCore>("groups", "VARCHAR(45) DEFAULT '20'", Types.VARCHAR).setUpdatable().setNotDefault();
+	SQLColumn<OlympaPlayerCore> COLUMN_EMAIL = new SQLColumn<OlympaPlayerCore>("email", "VARCHAR(255) DEFAULT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_PASSWORD = new SQLColumn<OlympaPlayerCore>("password", "VARCHAR(512) DEFAULT NULL", Types.VARCHAR).setUpdatable().setNotDefault();
+	SQLColumn<OlympaPlayerCore> COLUMN_MONEY = new SQLColumn<>("money", "VARCHAR(20) DEFAULT '0'", Types.VARCHAR); // unused?
+	SQLColumn<OlympaPlayerCore> COLUMN_IP = new SQLColumn<OlympaPlayerCore>("ip", "VARCHAR(39) NOT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_CREATED = new SQLColumn<OlympaPlayerCore>("created", "DATE NOT NULL", Types.DATE).setUpdatable().setNotDefault();
+	SQLColumn<OlympaPlayerCore> COLUMN_LAST_CONNECTION = new SQLColumn<OlympaPlayerCore>("last_connection", "TIMESTAMP NULL DEFAULT current_timestamp()", Types.TIMESTAMP).setUpdatable().setNotDefault();
+	SQLColumn<OlympaPlayerCore> COLUMN_TS3_ID = new SQLColumn<OlympaPlayerCore>("ts3_id", "INT(11) DEFAULT NULL", Types.INTEGER).setUpdatable();
 	//	private static final SQLColumn<OlympaPlayerObject> COLUMN_DISCORD_ID = new SQLColumn<OlympaPlayerObject>("discord_olympa_id", "INT(11) DEFAULT NULL", Types.INTEGER).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_NAME_HISTORY = new SQLColumn<OlympaPlayerObject>("name_history", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_IP_HISTORY = new SQLColumn<OlympaPlayerObject>("ip_history", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_GENDER = new SQLColumn<OlympaPlayerObject>("gender", "TINYINT(1) DEFAULT NULL", Types.TINYINT).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_VANISH = new SQLColumn<OlympaPlayerObject>("vanish", "TINYINT(1) DEFAULT 0", Types.TINYINT).setUpdatable();
-	SQLColumn<OlympaPlayerObject> COLUMN_CUSTOM_PERMISSIONS = new SQLColumn<OlympaPlayerObject>("custom_permissions", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_NAME_HISTORY = new SQLColumn<OlympaPlayerCore>("name_history", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_IP_HISTORY = new SQLColumn<OlympaPlayerCore>("ip_history", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_GENDER = new SQLColumn<OlympaPlayerCore>("gender", "TINYINT(1) DEFAULT NULL", Types.TINYINT).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_VANISH = new SQLColumn<OlympaPlayerCore>("vanish", "TINYINT(1) DEFAULT 0", Types.TINYINT).setUpdatable();
+	SQLColumn<OlympaPlayerCore> COLUMN_CUSTOM_PERMISSIONS = new SQLColumn<OlympaPlayerCore>("custom_permissions", "TEXT(65535) DEFAULT NULL", Types.VARCHAR).setUpdatable();
 
-	List<SQLColumn<OlympaPlayerObject>> COLUMNS = Arrays.asList(COLUMN_ID, COLUMN_PSEUDO, COLUMN_UUID_SERVER, COLUMN_UUID_PREMIUM, COLUMN_GROUPS, COLUMN_EMAIL, COLUMN_PASSWORD, COLUMN_MONEY, COLUMN_IP, COLUMN_CREATED,
+	List<SQLColumn<OlympaPlayerCore>> COLUMNS = Arrays.asList(COLUMN_ID, COLUMN_PSEUDO, COLUMN_UUID_SERVER, COLUMN_UUID_PREMIUM, COLUMN_GROUPS, COLUMN_EMAIL, COLUMN_PASSWORD, COLUMN_MONEY, COLUMN_IP, COLUMN_CREATED,
 			COLUMN_LAST_CONNECTION, COLUMN_TS3_ID/*, COLUMN_DISCORD_ID*/, COLUMN_NAME_HISTORY, COLUMN_IP_HISTORY, COLUMN_GENDER, COLUMN_VANISH, COLUMN_CUSTOM_PERMISSIONS);
 
 	void addGroup(OlympaGroup group);
@@ -69,13 +67,11 @@ public interface OlympaPlayer {
 
 	String getGroupsToString();
 
-	Map<Long, String> getHistHame();
+	Map<Long, String> getHistName();
 
 	Map<Long, String> getHistIp();
 
 	Map<String, OlympaServer> getCustomPermissions();
-
-	Map<Long, String> getHistName();
 
 	long getId();
 
@@ -93,7 +89,7 @@ public interface OlympaPlayer {
 
 	String getPassword();
 
-	Player getPlayer();
+	Object getPlayer();
 
 	UUID getPremiumUniqueId();
 
@@ -150,9 +146,5 @@ public interface OlympaPlayer {
 	void setVanish(boolean vanish);
 
 	boolean hasCustomPermission(String permission, OlympaServer serv);
-
-	//	int getDiscordOlympaId();
-	//
-	//	void setDiscordOlympaId(int discordOlympaId);
 
 }

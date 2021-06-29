@@ -14,15 +14,15 @@ public enum OlympaServer {
 
 	ALL(null, false),
 	BUNGEE("BungeeCord", true, ServerFrameworkType.BUNGEE),
-	AUTH("Authentification", true),
-	LOBBY("Lobby", true),
-	DEV("Développement", false),
-	BUILDEUR("Buildeur", false),
 	ZTA("Olympa ZTA", false, true),
 	CREATIF("Créatif", false),
-	LG("Loup-Garou", true),
-	PVPFAC("PvP-Factions", false),
 	PVPKIT("PvP-Kits", false),
+	PVPFAC("PvP-Factions", false),
+	LG("Loup-Garou", true),
+	LOBBY("Lobby", true),
+	AUTH("Authentification", true),
+	BUILDEUR("Buildeur", false),
+	DEV("Développement", false),
 	;
 
 	private final String name;

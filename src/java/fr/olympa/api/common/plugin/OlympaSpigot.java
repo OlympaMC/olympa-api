@@ -1,15 +1,20 @@
 package fr.olympa.api.common.plugin;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.server.OlympaServer;
-import fr.olympa.api.common.server.ServerInfoBasic;
+import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.spigot.afk.AfkHandler;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
@@ -19,18 +24,18 @@ import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.api.spigot.vanish.IVanishApi;
 import fr.olympa.api.spigot.version.VersionHandler;
 
-public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreSpigotInterface, LinkSpigotBungee {
+public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCoreSpigotInterface, LinkSpigotBungee<Player> {
 
 	protected ServerStatus status;
 	private String serverNameIp = getServer().getIp() + ":" + getServer().getPort();
 	private String serverName;
 	protected Location spawn;
 
-	private List<ProtocolAPI> protocols = new ArrayList<>();
+	private List<ProtocolAPI> protocols;
 	private String version = "unknown";
 
 	protected long lastInfo;
-	protected List<ServerInfoBasic> monitorInfos = new ArrayList<>();
+	protected List<ServerInfoAdvanced> monitorInfos = new ArrayList<>();
 	protected RegionManager regionManager;
 	protected ImageFrameManager imageFrameManager;
 
@@ -42,6 +47,11 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public VersionHandler<Player> getVersionHandler() {
 		return versionHandler;
+	}
+
+	@Override
+	public @NotNull Collection<? extends Player> getPlayers() {
+		return getServer().getOnlinePlayers();
 	}
 
 	public void setVersionHandler(VersionHandler<Player> versionHandler) {
@@ -165,5 +175,17 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 
 	public Location setSpawn(Location spawn) {
 		return this.spawn = spawn;
+	}
+
+	@Override
+	@Nullable
+	public Player getPlayer(String playerName) {
+		return getServer().getPlayer(playerName);
+	}
+
+	@Override
+	@Nullable
+	public Player getPlayer(UUID playerUUID) {
+		return getServer().getPlayer(playerUUID);
 	}
 }

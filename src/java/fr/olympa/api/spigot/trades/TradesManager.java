@@ -133,23 +133,25 @@ public class TradesManager<T extends TradePlayerInterface> implements Listener {
 	
 	
 	public void startTrade(T p1, T p2) {
+		Player player1 = (Player) p1.getPlayer();
+		Player player2 = (Player) p2.getPlayer();
 		if (!p1.getTradeBag().isEmpty()) {
-			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
-			Prefix.BAD.sendMessage(p2.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p1.getName());
+			Prefix.BAD.sendMessage(player1, "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
+			Prefix.BAD.sendMessage(player2, "%s n'est pas encore prêt à démarrer un échange.", p1.getName());
 			
 		} else if (!p2.getTradeBag().isEmpty()) {
-			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
-			Prefix.BAD.sendMessage(p1.getPlayer(), "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
+			Prefix.BAD.sendMessage(player2, "Tu dois d'abord vider ton sac ! Fais /trade collect pour récupérer tes objets.");
+			Prefix.BAD.sendMessage(player1, "%s n'est pas encore prêt à démarrer un échange.", p2.getName());
 		
-		}else if (tradeRange == -1 || (p1.getPlayer().getWorld().getUID().equals(p2.getPlayer().getWorld().getUID()) && p1.getPlayer().getLocation().distance(p2.getPlayer().getLocation()) > tradeRange)) {
-			Prefix.BAD.sendMessage(p1.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p2.getName());
-			Prefix.BAD.sendMessage(p2.getPlayer(), "Tu es trop loin de %s pour commencer l'échange.", p1.getName());
+		}else if (tradeRange == -1 || (player1.getWorld().getUID().equals(player2.getWorld().getUID()) && player1.getLocation().distance(player2.getLocation()) > tradeRange)) {
+			Prefix.BAD.sendMessage(player1, "Tu es trop loin de %s pour commencer l'échange.", p2.getName());
+			Prefix.BAD.sendMessage(player2, "Tu es trop loin de %s pour commencer l'échange.", p1.getName());
 			
 		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p1))) {
-			Prefix.BAD.sendMessage(p2.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p1.getName());
+			Prefix.BAD.sendMessage(player2, "%s est déjà en échange, réessaies dans quelques minutes.", p1.getName());
 			
 		}else if (trades.stream().anyMatch(trade -> trade.containsPlayer(p2))) {
-			Prefix.BAD.sendMessage(p1.getPlayer(), "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
+			Prefix.BAD.sendMessage(player1, "%s est déjà en échange, réessaies dans quelques minutes.", p2.getName());
 			
 		}else {
 			UniqueTradeManager<T> trade = new UniqueTradeManager<T>(p1, p2);

@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 
 import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
-import fr.olympa.api.common.server.ServerInfoBasic;
+import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.holograms.HologramsManager;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
@@ -25,7 +25,7 @@ public interface OlympaCoreSpigotInterface {
 	 * on demande au bungee, et lors qu'un recevera la réponse, @param callback sera exécuté une seconde fois.
 	 * Tous les callback dans {@link fr.olympa.core.spigot.redis.receiver#BungeeServerInfoReceiver callbacksRegister} sont aussi executés.
 	 */
-	void retreiveMonitorInfos(BiConsumer<List<ServerInfoBasic>, Boolean> callback, boolean freshDoubleCallBack);
+	void retreiveMonitorInfos(BiConsumer<List<ServerInfoAdvanced>, Boolean> callback, boolean freshDoubleCallBack);
 
 	void setOlympaServer(OlympaServer olympaServer);
 }

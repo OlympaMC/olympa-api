@@ -60,7 +60,7 @@ public class ArgumentParser<T> {
 	}
 
 	public Collection<String> applyTab(T t, String arg) {
-		return applyTabWithoutCache(t, arg);
+		return tabArgumentsFunction.apply(t, arg);
 		//		if (cache == null)
 		//			return applyTabWithoutCache(t, arg);
 		//		Collection<String> r = cache.getIfPresent(t);
@@ -76,10 +76,6 @@ public class ArgumentParser<T> {
 		//				cache.put(entry, r);
 		//		}
 		//		return r;
-	}
-
-	private Collection<String> applyTabWithoutCache(T t, String arg) {
-		return tabArgumentsFunction.apply(t, arg);
 	}
 
 	public boolean match(T sender, String arg) {

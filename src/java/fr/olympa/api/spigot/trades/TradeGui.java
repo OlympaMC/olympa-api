@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -66,10 +67,10 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 
 		this.p = p;
 		this.manager = trade;
-		moneyEditor = new TextEditor<Double>(p.getPlayer(), d -> {
+		moneyEditor = new TextEditor<Double>((Player) p.getPlayer(), d -> {
 			trade.getOtherTrade(this).setOtherMoney(d);
 			setMoney(d);
-			p.getPlayer().openInventory(inv);
+			((Player) p.getPlayer()).openInventory(inv);
 			
 		}, () -> trade.endTrade(false), false, (player, msg) -> {
 			try {
@@ -139,8 +140,9 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	 
 	void openMoneyEditor() {
 		moneyEditor.enterOrLeave();
-		p.getPlayer().closeInventory();
-		Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Sélectionnez le montant à ajouter à l'échange :");
+		Player player = (Player) p.getPlayer();
+		player.closeInventory();
+		Prefix.DEFAULT_GOOD.sendMessage(player, "Sélectionnez le montant à ajouter à l'échange :");
 	}
 	
 	
@@ -230,7 +232,7 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	void endTrade() {
 		inv.clear();
 		inv.getViewers().forEach(p -> p.closeInventory());
-		Editor.leave(p.getPlayer());
+		Editor.leave((Player) p.getPlayer());
 	}
 	
 	@Override

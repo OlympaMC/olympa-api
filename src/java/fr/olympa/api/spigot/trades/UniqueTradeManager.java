@@ -7,12 +7,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.common.observable.AbstractObservable;
 import fr.olympa.api.spigot.economy.OlympaMoney;
@@ -38,7 +41,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 		map.put(p1, new TradeGui<T>(this, p1, p2));
 		map.put(p2, new TradeGui<T>(this, p2, p1));
 		
-		map.forEach((p, gui) -> p.getPlayer().openInventory(gui.getInventory()));
+		map.forEach((p, gui) -> ((Player) p.getPlayer()).openInventory(gui.getInventory()));
 	}
 	
 	void click(InventoryClickEvent e, T p) {
@@ -82,7 +85,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 	
 	private void removeItemFromTrade(T p, ItemStack item) {
 		if (map.get(p).removeItemOnPlayerSide(item))
-			if (p.getPlayer().getInventory().addItem(item).size() == 0)
+			if (((HumanEntity) p.getPlayer()).getInventory().addItem(item).size() == 0)
 				map.get(getOtherPlayer(p)).removeItemOnOtherSide(item);
 			else
 				map.get(p).addItemOnPlayerSide(item);
@@ -136,7 +139,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 	}
 	
 	void hasClosedInventory(T p) {
-		if (map.containsKey(p) && !Editor.hasEditor(p.getPlayer()))
+		if (map.containsKey(p) && !Editor.hasEditor((Player) p.getPlayer()))
 			endTrade(false);
 	}
 	
@@ -150,7 +153,7 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 			
 		hasEnded = true;
 		map.entrySet().forEach(e -> {
-			e.getKey().getPlayer().closeInventory();
+			((HumanEntity) e.getKey().getPlayer()).closeInventory();
 			e.getValue().endTrade();
 		});
 		
@@ -173,12 +176,13 @@ public class UniqueTradeManager<T extends TradePlayerInterface> extends Abstract
 	
 	private void addItems(boolean success, T p, Collection<ItemStack> items, double money) {
 		int count = items.stream().mapToInt(it -> it.getAmount()).sum();
+		Player player = (Player) p.getPlayer();
 		if (success)
-			Prefix.DEFAULT_GOOD.sendMessage(p.getPlayer(), "Tu as reçu " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + " !");
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Tu as reçu " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + " !");
 		else
-			Prefix.DEFAULT_BAD.sendMessage(p.getPlayer(), "L'échange a échoué, tu as récupéré " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + ".");
+			Prefix.DEFAULT_BAD.sendMessage(player, "L'échange a échoué, tu as récupéré " + count + (count <= 1 ? " objet" : " objets") + (money > 0 ? " et " + money + OlympaMoney.OMEGA : "") + ".");
 		
-		p.getTradeBag().setItems(p.getPlayer().getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
+		p.getTradeBag().setItems(player.getInventory().addItem(items.toArray(new ItemStack[items.size()])).values());
 		if (money > 0)
 			p.getGameMoney().give(money);
 	}

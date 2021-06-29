@@ -4,6 +4,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.text.DecimalFormat;
 
+import javax.annotation.Nullable;
+
+import com.google.gson.annotations.Expose;
 import com.sun.management.OperatingSystemMXBean;
 
 import fr.olympa.api.spigot.utils.TPSUtils;
@@ -11,10 +14,14 @@ import fr.olympa.api.utils.Utils;
 
 public class JavaInstanceInfo {
 
-	private long memFree, memUsed, memeTotal, allThreadsCreated, cpuProcTime;
-	private double cpuProcUsage, cpuSysUsage, memUsage;
-	private int cores, threads;
-	private long time;
+	@Expose
+	private Long memFree, memUsed, memeTotal, allThreadsCreated, cpuProcTime;
+	@Expose
+	private Double cpuProcUsage, cpuSysUsage, memUsage;
+	@Expose
+	private Integer cores, threads;
+	@Expose
+	private Long time;
 
 	public JavaInstanceInfo() {
 		time = Utils.getCurrentTimeInSeconds();
@@ -39,43 +46,58 @@ public class JavaInstanceInfo {
 		allThreadsCreated = threadMXBean.getTotalStartedThreadCount();
 	}
 
-	public long getMemeTotal() {
-		return memeTotal;
-	}
-
-	public long getAllThreadsCreated() {
+	@Nullable
+	public Long getAllThreadsCreated() {
 		return allThreadsCreated;
 	}
 
-	public int getCPUSysCore() {
+	@Nullable
+	public Integer getCPUSysCore() {
 		return cores;
 	}
 
+	@Nullable
 	public String getCPUUsage() {
+		if (cpuProcUsage == null)
+			return null;
 		return TPSUtils.getCPUUsageColor((int) Math.round(cpuProcUsage)) + "%";
 	}
 
+	@Nullable
 	public String getCPUSysUsage() {
+		if (cpuSysUsage == null)
+			return null;
 		return TPSUtils.getCPUUsageColor((int) Math.round(cpuSysUsage)) + "%";
 	}
 
-	public long getMemFree() {
+	@Nullable
+	public Long getMemFree() {
 		return memFree;
 	}
 
-	public long getMemTotal() {
+	@Nullable
+	public Long getMemTotal() {
 		return memeTotal;
 	}
 
+	@Nullable
 	public String getMemUsage() {
+		if (memUsage == null)
+			return null;
 		return TPSUtils.getRamUsageColor((int) Math.round(memUsage)) + "%";
 	}
 
-	public long getRawMemUsage() {
+	@Nullable
+	public Long getRawMemUsage() {
+		if (memUsage == null)
+			return null;
 		return Math.round(memUsage);
 	}
 
+	@Nullable
 	public String getMemUse() {
+		if (memeTotal == null || memUsed == null)
+			return null;
 		if (memeTotal >= 1024L) {
 			DecimalFormat format = new DecimalFormat("0.#");
 			return format.format(memUsed / 1024f) + "/" + format.format(memeTotal / 1024f) + "Go";
@@ -83,24 +105,44 @@ public class JavaInstanceInfo {
 		return memUsed + "/" + memeTotal + "Mo";
 	}
 
+	@Nullable
 	public String getCPUProcTime() {
+		if (cpuProcTime == null)
+			return null;
 		DecimalFormat format = new DecimalFormat("0.#");
-		if (cpuProcTime > 1000000000L)
-			return format.format(cpuProcTime / 1000000000f) + "sec";
-		if (cpuProcTime > 1000000L)
-			return format.format(cpuProcTime / 1000000f) + "ms";
+		if (cpuProcTime > 3_600_000_000_000L)
+			return format.format(cpuProcTime / 3_600_000_000_000f) + "heures";
+		if (cpuProcTime > 60_000_000_000L)
+			return format.format(cpuProcTime / 60_000_000_000f) + "minutes";
+		if (cpuProcTime > 1_000_000_000L)
+			return format.format(cpuProcTime / 1_000_000_000f) + "sec";
+		if (cpuProcTime > 1_000_000L)
+			return format.format(cpuProcTime / 1_000_000f) + "ms";
 		return cpuProcTime + "ns";
 	}
 
-	public long getMemUsed() {
+	@Nullable
+	public Long getMemUsed() {
 		return memUsed;
 	}
 
-	public int getThreads() {
+	@Nullable
+	public Integer getThreads() {
 		return threads;
 	}
 
-	public long getTime() {
+	@Nullable
+	public Long getTime() {
 		return time;
 	}
+
+	@Nullable
+	public Double getCpuProcUsage() {
+		return cpuProcUsage;
+	}
+
+	public boolean hasInstanceInfo() {
+		return memUsed != null && threads != null && cpuProcTime != null && cpuSysUsage != null && cores != null;
+	}
+
 }

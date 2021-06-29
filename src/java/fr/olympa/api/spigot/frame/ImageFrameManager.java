@@ -20,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,6 +50,7 @@ public class ImageFrameManager implements Listener {
 	private List<Integer> sendList = new ArrayList<>();
 	private FastSendTask sendTask;
 	private List<ImageDownloadTask> downloadTasks;
+	private CustomConfig config;
 
 	public String getFileName() {
 		return fileName;
@@ -67,6 +67,7 @@ public class ImageFrameManager implements Listener {
 
 		fileName = mapsFile;
 		loadMaps();
+		config.addTask("imageFrameManager", configNew -> this.loadMaps(configNew));
 		new ImageMapCommand(plugin).register();
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		sendTask = new FastSendTask(this, mapsPerSend);
@@ -133,34 +134,26 @@ public class ImageFrameManager implements Listener {
 	}
 
 	private void loadMaps() {
-		CustomConfig config = new CustomConfig(plugin, fileName);
+		config = new CustomConfig(plugin, fileName);
 		config.load();
 		loadMaps(config);
 	}
 
 	public void loadMaps(FileConfiguration config) {
-		//		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 		Set<String> warnedFilenames = new HashSet<>();
-
 		for (String key : config.getKeys(false)) {
 			int id = Integer.parseInt(key);
-
 			MapView map = plugin.getServer().getMap(id);
-
 			if (map == null)
 				continue;
-
 			for (MapRenderer r : map.getRenderers())
 				map.removeRenderer(r);
-
 			String image = config.getString(key + ".image");
 			int x = config.getInt(key + ".x");
 			int y = config.getInt(key + ".y");
 			boolean fastsend = config.getBoolean(key + ".fastsend", false);
 			double scale = config.getDouble(key + ".scale", 1.0);
-
 			BufferedImage bimage = loadImage(image);
-
 			if (bimage == null) {
 				if (!warnedFilenames.contains(image)) {
 					warnedFilenames.add(image);
@@ -168,10 +161,8 @@ public class ImageFrameManager implements Listener {
 				}
 				continue;
 			}
-
 			if (fastsend)
 				sendList.add(id);
-
 			map.addRenderer(new ImageMapRenderer(loadImage(image), x, y, scale));
 			maps.put(id, new ImageMap(image, x, y, fastsend, scale));
 		}
@@ -181,21 +172,17 @@ public class ImageFrameManager implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (!placing.containsKey(e.getPlayer().getUniqueId()))
 			return;
-
 		if (e.getAction() == Action.RIGHT_CLICK_AIR) {
 			e.getPlayer().sendMessage("Placing cancelled");
 			placing.remove(e.getPlayer().getUniqueId());
 			return;
 		}
-
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
-
 		if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getUniqueId())))
 			e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
 		else
 			saveMaps();
-
 		e.setCancelled(true);
 		placing.remove(e.getPlayer().getUniqueId());
 
@@ -261,12 +248,10 @@ public class ImageFrameManager implements Listener {
 	public void reloadImage(String file) {
 		images.remove(file);
 		BufferedImage image = loadImage(file);
-
 		if (image == null) {
 			plugin.getLogger().warning(() -> "Failed to reload image: " + file);
 			return;
 		}
-
 		maps.values().stream().filter(a -> a.getImage().equals(file)).forEach(imageMap -> {
 			int id = ((MapMeta) getMapItem(file, imageMap.getX(), imageMap.getY(), image, imageMap.getScale()).getItemMeta()).getMapId();
 			MapView map = plugin.getServer().getMap(id);
@@ -280,12 +265,8 @@ public class ImageFrameManager implements Listener {
 	}
 
 	private void saveMaps() {
-		File file = new File(plugin.getDataFolder(), "maps.yml");
-		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
 		for (String key : config.getKeys(false))
-			config.set(key, null);
-
+			config.set(key, (Object) null);
 		for (Entry<Integer, ImageMap> e : maps.entrySet()) {
 			config.set(e.getKey() + ".image", e.getValue().getImage());
 			config.set(e.getKey() + ".x", e.getValue().getX());
@@ -293,12 +274,7 @@ public class ImageFrameManager implements Listener {
 			config.set(e.getKey() + ".fastsend", e.getValue().isFastSend());
 			config.set(e.getKey() + ".scale", e.getValue().getScale());
 		}
-
-		try {
-			config.save(file);
-		} catch (IOException e1) {
-			plugin.getLogger().log(Level.SEVERE, "Failed to save maps.yml!", e1);
-		}
+		config.save();
 	}
 
 	private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache) {

@@ -45,7 +45,7 @@ public class AfkHandler implements Listener, ModuleApi<OlympaCore> {
 		INametagApi nameTagApi = plugin.getNameTagApi();
 		if (nameTagApi != null) {
 			handler = (nametag, player, to) -> {
-				if (isAfk(player.getPlayer()) && (OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB.hasPermission(to) || player.getUniqueId().equals(to.getUniqueId())))
+				if (isAfk((Player) player.getPlayer()) && (OlympaAPIPermissionsSpigot.AFK_SEE_IN_TAB.hasPermission(to) || player.getUniqueId().equals(to.getUniqueId())))
 					nametag.appendSuffix(AfkPlayer.AFK_SUFFIX);
 			};
 			nameTagApi.addNametagHandler(EventPriority.HIGH, handler);

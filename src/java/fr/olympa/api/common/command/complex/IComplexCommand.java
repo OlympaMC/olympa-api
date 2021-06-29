@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.groups.OlympaGroup;
@@ -63,6 +64,9 @@ public interface IComplexCommand<C> {
 				return RegexMatcher.IP.parse(x);
 			return null;
 		}, x -> String.format("&4%s&c n'est pas une IPv4 sous la forme &4%s&c.", x, ColorUtils.joinRedOu(IP)), false);
+		addArgumentParser("PLAYERS", (sender, arg) -> LinkSpigotBungee.getInstance().getPlayersNames(), x -> {
+			return LinkSpigotBungee.getInstance().getPlayer(x);
+		}, x -> String.format("Le joueur &4%s&c n'est pas connecté ou n'existe pas.", x), false);
 	}
 
 	default <T extends Enum<T>> void addArgumentParser(String name, Class<T> enumClass) {

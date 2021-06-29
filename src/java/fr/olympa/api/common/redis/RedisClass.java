@@ -5,21 +5,23 @@ import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.redis.bungeesub.SpigotAskServerInfo;
 import fr.olympa.api.common.redis.bungeesub.SpigotServerSwitch;
-import fr.olympa.api.common.redis.spigotsub.BungeeServerInfo;
+import fr.olympa.api.common.redis.spigotsub.BungeeServerInfoAdvanced;
 import fr.olympa.core.bungee.OlympaBungee;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class RedisClass {
 
-	public static BungeeServerInfo SERVER_INFO;
+	//	public static BungeeServerInfo SERVER_INFO;
+	public static BungeeServerInfoAdvanced SERVER_INFO_ADVANCED;
 
 	public static SpigotServerSwitch SERVER_SWITCH;
 	public static SpigotAskServerInfo ASK_SERVER_INFO;
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
-	private static void register(LinkSpigotBungee core) {
+	private static void register(LinkSpigotBungee<?> core) {
 		ASK_SERVER_INFO = new SpigotAskServerInfo(core, RedisChannel.SPIGOT_ASK_SERVERINFO);
-		SERVER_INFO = new BungeeServerInfo(core, RedisChannel.BUNGEE_SEND_SERVERSINFOS2);
+		//		SERVER_INFO = new BungeeServerInfo(core, RedisChannel.BUNGEE_SEND_SERVERSINFOS2);
+		SERVER_INFO_ADVANCED = new BungeeServerInfoAdvanced(core, RedisChannel.BUNGEE_SEND_SERVERSINFOS);
 		SERVER_SWITCH = new SpigotServerSwitch(core, RedisChannel.SPIGOT_PLAYER_SWITCH_SERVER);
 	}
 
@@ -27,7 +29,8 @@ public class RedisClass {
 	public static void registerSpigotSubChannels(OlympaCore core) {
 		register(core);
 		RedisConnection redisAcccess = core.getRedisAccess();
-		SERVER_INFO.register(redisAcccess.connect());
+		//		SERVER_INFO.register(redisAcccess.connect());
+		SERVER_INFO_ADVANCED.register(redisAcccess.connect());
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)

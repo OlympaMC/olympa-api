@@ -4,7 +4,7 @@ import fr.olympa.api.common.groups.OlympaGroup;
 import fr.olympa.api.common.player.OlympaAccount;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.provider.AccountProviderAPI;
-import fr.olympa.api.common.provider.OlympaPlayerInformationsObject;
+import fr.olympa.api.common.provider.OlympaPlayerInformationsAPI;
 
 public class FakeData {
 
@@ -12,6 +12,6 @@ public class FakeData {
 		olympaPlayer.setGroup(OlympaGroup.DEV);
 		OlympaAccount.getCache().put(olympaPlayer.getUniqueId(), olympaPlayer);
 		olympaPlayer.setId(OlympaAccount.getCache().size());
-		AccountProviderAPI.getter().getCachedInformations().put(olympaPlayer.getId(), new OlympaPlayerInformationsObject(olympaPlayer.getId(), olympaPlayer.getName(), olympaPlayer.getUniqueId()));
+		AccountProviderAPI.getter().getCachedInformations().put(olympaPlayer.getId(), new OlympaPlayerInformationsAPI(olympaPlayer.getId(), olympaPlayer.getName(), olympaPlayer.getUniqueId()));
 	}
 }

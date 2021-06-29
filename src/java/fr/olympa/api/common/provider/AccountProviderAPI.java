@@ -17,7 +17,7 @@ public class AccountProviderAPI implements OlympaAccount {
 	protected static AccountProviderGetterInterface getter;
 	protected static RedisConnection redisAccesss;
 	protected static PlayerSQL playerSQL;
-	protected static SQLTable<OlympaPlayerObject> olympaPlayerTable;
+	protected static SQLTable<OlympaPlayerCore> olympaPlayerTable;
 
 	public static AccountProviderGetterInterface getter() {
 		return getter;
@@ -86,6 +86,10 @@ public class AccountProviderAPI implements OlympaAccount {
 	@Override
 	public void removeFromCache() {
 		cache.remove(uuid);
+	}
+
+	public void saveToCache(OlympaPlayer olympaPlayer) {
+		cache.put(uuid, olympaPlayer);
 	}
 
 	@Override

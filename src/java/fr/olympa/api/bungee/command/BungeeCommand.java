@@ -160,6 +160,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 			try {
 				onCommand(sender, args);
 			} catch (Error | Exception e) {
+				e.printStackTrace();
 				sendError(e);
 			}
 		});
