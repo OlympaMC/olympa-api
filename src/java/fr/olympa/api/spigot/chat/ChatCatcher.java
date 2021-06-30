@@ -226,10 +226,10 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 						if (packet.components != null) {
 							BaseComponent[] baseComponentMsg = packet.components;
 							msg = BaseComponent.toLegacyText(baseComponentMsg);
-							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s BaseComponent envoyé à §e%s %s&7>&r", typeString, player.getName(), uuid != null ? uuid.toString() : "");
+							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s BaseComponent envoyé à §e%s %s&7>&r", typeString, player.getName(), getUUIDString(uuid));
 							OlympaCore.getInstance().getServer().getConsoleSender().sendMessage(baseComponentMsg);
 						} else
-							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s envoyé à §e%s %s&7 > &r%s", typeString, player.getName(), uuid != null ? uuid.toString() : "", msg);
+							LinkSpigotBungee.Provider.link.sendMessage("§7Text %s envoyé à §e%s %s&7 > &r%s", typeString, player.getName(), getUUIDString(uuid), msg);
 					} catch (Exception e) {
 						e.printStackTrace();
 						disable(OlympaCore.getInstance());
@@ -239,5 +239,9 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 			}
 		};
 		((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", player.getName() + "_ChatReader", channelDuplexHandler);
+	}
+	
+	private String getUUIDString(UUID uuid) {
+		return uuid == null || (uuid.getLeastSignificantBits() == 0 && uuid.getMostSignificantBits() == 0) ? "" : uuid.toString();
 	}
 }

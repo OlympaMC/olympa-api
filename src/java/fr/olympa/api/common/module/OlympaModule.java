@@ -28,10 +28,11 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	}
 
 	public static void enableAll() {
-		for (OlympaModule<? extends ModuleApi<?>, ?, ? extends OlympaPluginInterface, ? extends IOlympaCommand> module : modules)
+		modules.stream().filter(OlympaModule::shouldEnableByDefault).forEach(module -> {
 			try {
 				module.enableModule();
 			} catch (Exception e) {} // Exception already printed
+		});
 	}
 
 	public static void disableAll() {
@@ -73,6 +74,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	Function<P, T> functionInitialize;
 	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] dependances;
 	OlympaModule<? extends ModuleApi<?>, ?, ?, ?>[] softDependances;
+	boolean enableByDefault = true;
 
 	/**
 	 * @param plugin
@@ -116,11 +118,16 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 		this.commandsPreProcessRegister = true;
 		return this;
 	}
+	
+	public final OlympaModule<T, L, P, C> enableByDefault(boolean enableByDefault) {
+		this.enableByDefault = enableByDefault;
+		return this;
+	}
 
 	public String getName() {
 		return name;
 	}
-
+	
 	public String isEnabledString() {
 		return isEnabled() ? "&2Activé" : "&4Désactivé";
 	}
@@ -131,6 +138,10 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 
 	public boolean isEnabled() {
 		return api.isEnabled();
+	}
+	
+	public boolean shouldEnableByDefault() {
+		return enableByDefault;
 	}
 
 	public boolean registerCommands() {
