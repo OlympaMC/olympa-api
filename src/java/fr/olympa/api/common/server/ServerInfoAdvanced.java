@@ -137,7 +137,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected List<OlympaPlayerInformations> players;
 	@Expose
-	protected List<PluginInfoAdvanced> plugins;
+	protected List<PluginInfoAdvanced> plugins = new ArrayList<>();
 	@Expose
 	protected List<ProtocolAPI> versions = new ArrayList<>();
 
@@ -353,10 +353,14 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: []
 		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: [{"id":1,"pseudo":"Tristiisch","uuid":"193cdd1c-02e4-3642-91dd-9d676956a664"}]
 		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: [{"id":49,"pseudo":"Yzrohk","uuid":"8df57399-6131-3706-beca-a7dedc0da6da"}]
-		if (object.has("plugins"))
-			serverInfoAdvanced.plugins = (List<PluginInfoAdvanced>) context.deserialize(object.get("plugins"), List.class);
+		if (object.has("plugins")) {
+			object.get("plugins").getAsJsonArray().forEach(element -> {
+				serverInfoAdvanced.plugins.add(context.deserialize(element, PluginInfoAdvanced.class));
+			});
+		}
+		//			((List<PluginInfoAdvanced>) context.deserialize(object.get("plugins"), List.class)).forEach(plugin -> serverInfoAdvanced.plugins.add(plugin));
 		if (object.has("versions"))
-			((List<String>) context.deserialize(object.get("versions"), List.class)).forEach((name) -> serverInfoAdvanced.versions.add(ProtocolAPI.valueOf(name)));
+			((List<String>) context.deserialize(object.get("versions"), List.class)).forEach(name -> serverInfoAdvanced.versions.add(ProtocolAPI.valueOf(name)));
 		//		serverInfoAdvanced.versions = (List<ProtocolAPI>) context.deserialize(object.get("versions"), List.class);
 		JavaInstanceInfo.deserialize(serverInfoAdvanced, json, typeOfT, context);
 		return serverInfoAdvanced;
