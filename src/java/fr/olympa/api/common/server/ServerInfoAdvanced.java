@@ -290,7 +290,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public boolean hasInfoVersions() {
-		return versions != null && versions.isEmpty();
+		return versions != null && !versions.isEmpty();
 	}
 
 	public boolean hasMinimalInfo() {

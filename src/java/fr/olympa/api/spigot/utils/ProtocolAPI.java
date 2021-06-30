@@ -352,7 +352,7 @@ public enum ProtocolAPI {
 		if (size == 1)
 			return latest.getName();
 		ProtocolAPI oldest = all.get(size - 1);
-		return latest.getName() + "-" + oldest.getName();
+		return oldest.getName() + "-" + latest.getName();
 	}
 
 	public int getProtocolNumber() {
