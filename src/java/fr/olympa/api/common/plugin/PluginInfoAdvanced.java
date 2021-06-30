@@ -158,16 +158,14 @@ public class PluginInfoAdvanced {
 			sj.add("Version &2" + getVersion());
 			sj.add("MAJ du fichier &e" + getLastModifiedTime());
 		}
-		List<String> authors = getAuthors();
-		if (!authors.isEmpty())
+		if (authors != null && !authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));
-		List<String> contributors = getContributors();
-		if (!contributors.isEmpty())
+		if (contributors != null && contributors.isEmpty())
 			sj.add("Contributeur" + Utils.withOrWithoutS(contributors.size()) + " &a" + String.join("&7, &a", contributors));
-		if (getDescription() != null)
-			sj.add("Description " + getDescription());
-		if (getWebsite() != null)
-			sj.add("Site Web " + getWebsite());
+		if (description != null && !description.isBlank())
+			sj.add("Description " + description);
+		if (website != null && !website.isBlank())
+			sj.add("Site Web " + website);
 		return sj.toString();
 	}
 
@@ -208,7 +206,7 @@ public class PluginInfoAdvanced {
 				versionNumber = (String) entry.getValue();
 				i++;
 			}
-			regexMatcher = MatcherPattern.of("\\W*(test|dev|master|HEAD)\\b");
+			regexMatcher = MatcherPattern.of("\\W*(test|dev|master|main|HEAD)\\b");
 			entry = regexMatcher.extractAndParseGroupOne(s);
 			if (entry.getValue() != null) {
 				s = entry.getKey();
