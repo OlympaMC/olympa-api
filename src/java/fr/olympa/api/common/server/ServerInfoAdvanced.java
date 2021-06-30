@@ -1,5 +1,7 @@
 package fr.olympa.api.common.server;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -8,11 +10,13 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
 
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.common.annotation.SpigotOrBungee;
-import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.machine.JavaInstanceInfo;
 import fr.olympa.api.common.player.OlympaPlayer;
@@ -97,7 +101,8 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	public static ServerInfoAdvanced fromJson(String string) {
 		if (string == null || string.isBlank() || string.length() == 2 && string.equals("{}"))
 			return null;
-		return LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvanced.class);
+		ServerInfoAdvanced serverInfoAdvanced = LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvanced.class);
+		return serverInfoAdvanced;
 	}
 
 	@Expose
@@ -105,7 +110,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected OlympaServer olympaServer = OlympaServer.ALL;
 	@Expose
-	protected int serverId;
+	protected Integer serverId;
 	@Expose
 	protected ServerStatus status = ServerStatus.UNKNOWN;
 	@Expose
@@ -132,9 +137,9 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected List<OlympaPlayerInformations> players;
 	@Expose
-	protected List<PluginInfoAdvanced> plugins;
+	protected List<PluginInfoAdvanced> plugins = new ArrayList<>();
 	@Expose
-	protected List<ProtocolAPI> versions;
+	protected List<ProtocolAPI> versions = new ArrayList<>();
 
 	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, float tps) {
 		this.name = name;
@@ -169,6 +174,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	public ServerInfoAdvanced(LinkSpigotBungee<?> core) {
 		super(Utils.getCurrentTimeInSeconds());
 		name = core.getServerName();
+		serverId = OlympaServer.getServerId(name);
 		olympaServer = core.getOlympaServer();
 		status = core.getStatus();
 		databaseConnected = core.isDatabaseConnected();
@@ -187,7 +193,8 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			return Utils.capitalize(name);
 		StringJoiner sj = new StringJoiner(" ");
 		sj.add(olympaServer.getNameCaps());
-		sj.add(" " + Utils.intToSymbole(getCPUSysCore()));
+		if (serverId != null)
+			sj.add(Utils.intToSymbole(serverId));
 		return sj.toString();
 	}
 
@@ -200,14 +207,20 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public String getFirstVersionMinecraft() {
+		if (!hasInfoVersions())
+			return "unknown";
 		return versions.get(versions.size() - 1).getName();
 	}
 
 	public String getLastVersionMinecraft() {
+		if (!hasInfoVersions())
+			return "unknown";
 		return versions.get(0).getName();
 	}
 
 	public String getRangeVersionMinecraft() {
+		if (!hasInfoVersions())
+			return "unknown";
 		return ProtocolAPI.getRange(versions);
 	}
 
@@ -237,6 +250,8 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public int getServerId() {
+		if (serverId == null)
+			return 0;
 		return serverId;
 	}
 
@@ -274,8 +289,12 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return error;
 	}
 
+	public boolean hasInfoVersions() {
+		return versions != null && !versions.isEmpty();
+	}
+
 	public boolean hasMinimalInfo() {
-		return getOnlinePlayers() != null && getMaxPlayers() != null && olympaServer != null && name != null;
+		return status != null && olympaServer != null && name != null;
 	}
 
 	public boolean hasFullInfos() {
@@ -299,11 +318,55 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public String getIdSymbole() {
-		return Utils.getLetterOfNumber(serverId);
+		if (serverId == null)
+			return null;
+		return Utils.intToSymbole(serverId);
 	}
 
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
-	public void setPing(int ping) {
-		this.ping = ping;
+	@SuppressWarnings("unchecked")
+	public static ServerInfoAdvanced deserialize(ServerInfoAdvanced serverInfoAdvanced, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		JsonObject object = json.getAsJsonObject();
+		if (object.has("name"))
+			serverInfoAdvanced.name = object.get("name").getAsString();
+		if (object.has("olympaServer"))
+			serverInfoAdvanced.olympaServer = context.deserialize(object.get("olympaServer"), OlympaServer.class);
+		if (object.has("serverId"))
+			serverInfoAdvanced.serverId = object.get("serverId").getAsInt();
+		if (object.has("status"))
+			serverInfoAdvanced.status = context.deserialize(object.get("status"), ServerStatus.class);
+		if (object.has("uptime"))
+			serverInfoAdvanced.uptime = object.get("uptime").getAsLong();
+		if (object.has("serverFrameworkVersion"))
+			serverInfoAdvanced.serverFrameworkVersion = object.get("serverFrameworkVersion").getAsString();
+		if (object.has("onlinePlayers"))
+			serverInfoAdvanced.onlinePlayers = object.get("onlinePlayers").getAsInt();
+		if (object.has("maxPlayers"))
+			serverInfoAdvanced.maxPlayers = object.get("maxPlayers").getAsInt();
+		if (object.has("tps"))
+			serverInfoAdvanced.tps = object.get("tps").getAsFloat();
+		if (object.has("databaseConnected"))
+			serverInfoAdvanced.databaseConnected = object.get("databaseConnected").getAsBoolean();
+		if (object.has("redisConnected"))
+			serverInfoAdvanced.databaseConnected = object.get("redisConnected").getAsBoolean();
+		//				if (object.has("players"))
+		//					serverInfoAdvanced.players = context.deserialize(object.get("players"), OlympaPlayerInformations.class);
+		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: []
+		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: [{"id":1,"pseudo":"Tristiisch","uuid":"193cdd1c-02e4-3642-91dd-9d676956a664"}]
+		// com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Not a JSON Object: [{"id":49,"pseudo":"Yzrohk","uuid":"8df57399-6131-3706-beca-a7dedc0da6da"}]
+		if (object.has("plugins"))
+			object.get("plugins").getAsJsonArray().forEach(element -> {
+				serverInfoAdvanced.plugins.add(context.deserialize(element, PluginInfoAdvanced.class));
+			});
+		//			((List<PluginInfoAdvanced>) context.deserialize(object.get("plugins"), List.class)).forEach(plugin -> serverInfoAdvanced.plugins.add(plugin));
+		if (object.has("versions"))
+			((List<String>) context.deserialize(object.get("versions"), List.class)).forEach(name -> serverInfoAdvanced.versions.add(ProtocolAPI.valueOf(name)));
+		//		serverInfoAdvanced.versions = (List<ProtocolAPI>) context.deserialize(object.get("versions"), List.class);
+		JavaInstanceInfo.deserialize(serverInfoAdvanced, json, typeOfT, context);
+		return serverInfoAdvanced;
+	}
+
+	@Override
+	public ServerInfoAdvanced deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return ServerInfoAdvanced.deserialize(new ServerInfoAdvanced(), json, typeOfT, context);
 	}
 }

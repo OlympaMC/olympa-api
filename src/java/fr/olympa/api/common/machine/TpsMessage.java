@@ -21,12 +21,13 @@ import fr.olympa.api.spigot.version.VersionHandler;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class TpsMessage extends JavaInstanceInfo {
+public class TpsMessage extends ServerInfoAdvanced {
 
-	public LinkSpigotBungee main;
+	public LinkSpigotBungee<?> main;
 	protected OlympaPlayer olympaPlayer;
 
 	public TpsMessage(OlympaPlayer olympaPlayer) {
+		super(LinkSpigotBungee.Provider.link);
 		this.olympaPlayer = olympaPlayer;
 		main = LinkSpigotBungee.Provider.link;
 	}
@@ -54,14 +55,14 @@ public class TpsMessage extends JavaInstanceInfo {
 		textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
 		textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), olympaPlayer == null, showValueOfVersions));
 		textBuilder.extra("\n");
+		TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", getRangeVersionMinecraft());
 		VersionHandler<?> versionHandler = main.getVersionHandler();
 		if (versionHandler != null) {
-			TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", versionHandler.getVersions());
 			String unSupVer = versionHandler.getVersionsDisabled();
 			if (!unSupVer.isBlank() && !unSupVer.equals("unknown"))
 				textBuilder2.onHoverText("&e[&6!&e] &cVersions désactivées &4%s&c.", unSupVer);
-			textBuilder.extra(textBuilder2);
 		}
+		textBuilder.extra(textBuilder2);
 		if (main.isSpigot())
 			textBuilder.extra(getOtherSpigotInfo());
 		return textBuilder;

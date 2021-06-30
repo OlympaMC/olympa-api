@@ -50,7 +50,7 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	private OlympaPlayerInformations cachedInformations = null;
 	private Object cachedPlayer = null;
 
-	public OlympaPlayerCore(UUID uuid, String name, String ip) {
+	protected OlympaPlayerCore(UUID uuid, String name, String ip) {
 		this.uuid = uuid;
 		this.name = name;
 		this.ip = ip;
@@ -124,10 +124,10 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	@Override
 	public String getGroupsToHumainString() {
 		return groups.entrySet().stream().map(entry -> {
-			String time = new String();
+			String time = null;
 			if (entry.getValue() != 0)
-				time = " (" + Utils.timestampToDateAndHour(entry.getValue()) + ")";
-			return entry.getKey().getName(gender) + time;
+				time = " (" + Utils.tsToShortDur(entry.getValue()) + ")";
+			return entry.getKey().getName(gender) + (time != null ? time : "");
 		}).collect(Collectors.joining(", "));
 	}
 

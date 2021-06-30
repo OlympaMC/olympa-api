@@ -1,5 +1,6 @@
 package fr.olympa.api.common.server;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,9 +12,11 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
 import fr.olympa.api.LinkSpigotBungee;
-import fr.olympa.api.common.annotation.SpigotOrBungee;
-import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.common.match.RegexMatcher;
 import fr.olympa.api.common.module.OlympaModule;
 import fr.olympa.api.common.provider.AccountProviderAPI;
@@ -59,13 +62,15 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		String serverName = serverInfo.getName();
 		Entry<OlympaServer, Integer> serverInfos = OlympaServer.getOlympaServerWithId(serverName);
 		OlympaServer olympaServer = serverInfos.getKey();
-		int serverID = serverInfos.getValue();
+		int serverId = serverInfos.getValue();
 		try {
 			if (error == null) {
 				allMotd = serverPing.getDescriptionComponent().toPlainText();
 				if (allMotd.startsWith("V2 "))
-					serverDebugInfo = ServerInfoAdvancedBungee.fromJson(allMotd.substring(3));
+					// V2
+					serverDebugInfo = ServerInfoAdvancedBungee.fromJson(allMotd.substring(3), serverInfo, ping);
 				else {
+					// V1
 					Players players = serverPing.getPlayers();
 					int onlinePlayers = players.getOnline();
 					int maxPlayers = players.getMax();
@@ -79,12 +84,15 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 						tps = RegexMatcher.FLOAT.parse(motd[1]);
 					if (motd.length >= 8) {
 						String json = String.join(" ", Arrays.copyOfRange(motd, 7, motd.length));
-						serverDebugInfo = ServerInfoAdvancedBungee.fromJson(json);
+						serverDebugInfo = ServerInfoAdvancedBungee.fromJson(json, serverInfo, ping);
 						if (serverDebugInfo == null)
 							serverDebugInfo = new ServerInfoAdvancedBungee();
 						serverDebugInfo.setPing(ping);
+						serverDebugInfo.serverId = serverId;
+						serverDebugInfo.cacheServerInfo = serverInfo;
 					} else
-						serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverID, status, onlinePlayers, maxPlayers, ping, tps);
+						// V0.1
+						serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
 				}
 				if (OlympaModule.DEBUG)
 					OlympaBungee.getInstance().sendMessage("&7Réponse du serveur &2%s&7 : &d%s", serverInfo.getName(), allMotd);
@@ -114,7 +122,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		return serverDebugInfo;
 	}
 
-	ServerInfo serverInfo;
+	ServerInfo cacheServerInfo;
 
 	public ServerInfoAdvancedBungee() {
 		super();
@@ -122,17 +130,17 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 
 	public ServerInfoAdvancedBungee(ServerInfo serverInfo, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, float tps) {
 		super(serverInfo.getName(), olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
-		this.serverInfo = serverInfo;
+		cacheServerInfo = serverInfo;
 	}
 
 	public ServerInfoAdvancedBungee(ServerInfo serverInfo, OlympaServer olympaServer, int serverId, String errorMsg, int ping) {
 		super(serverInfo.getName(), olympaServer, serverId, errorMsg, ping);
-		this.serverInfo = serverInfo;
+		cacheServerInfo = serverInfo;
 	}
 
 	public ServerInfoAdvancedBungee(ServerInfo serverInfo, OlympaServer olympaServer, int serverId, ServerStatus status, String errorMsg, int ping) {
 		super(serverInfo.getName(), olympaServer, serverId, status, errorMsg, ping);
-		this.serverInfo = serverInfo;
+		cacheServerInfo = serverInfo;
 	}
 
 	public ServerInfoAdvancedBungee(OlympaBungee core) {
@@ -148,30 +156,31 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		serverFrameworkVersion = core.getProxy().getVersion();
 	}
 
-	@Override
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 	public void setPing(int ping) {
 		this.ping = ping;
 	}
 
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 	public void setError(String error) {
 		this.error = error;
 	}
 
-	@SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 	public void setStatus(ServerStatus status) {
 		this.status = status;
 	}
 
-	public static ServerInfoAdvancedBungee fromJson(String string) {
+	public static ServerInfoAdvancedBungee fromJson(String string, ServerInfo serverInfo, Integer ping) {
 		if (string == null || string.isBlank() || string.length() == 2 && string.equals("{}"))
 			return null;
-		return LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvancedBungee.class);
+		ServerInfoAdvancedBungee serverInfoAdvancedBungee = LinkSpigotBungee.getInstance().getGson().fromJson(string, ServerInfoAdvancedBungee.class);
+		serverInfoAdvancedBungee.cacheServerInfo = serverInfo;
+		serverInfoAdvancedBungee.ping = ping;
+		return serverInfoAdvancedBungee;
 	}
 
 	public ServerInfo getServerInfo() {
-		return serverInfo;
+		if (cacheServerInfo == null)
+			cacheServerInfo = ProxyServer.getInstance().getServersCopy().get(name);
+		return cacheServerInfo;
 	}
 
 	public ServerInfoBasic getServerInfoBasic() {
@@ -179,4 +188,13 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 				getStatus(), getError(), getTps(), getFirstVersionMinecraft(), getLastVersionMinecraft(), 0);
 	}
 
+	public static ServerInfoAdvancedBungee deserialize(ServerInfoAdvancedBungee serverInfoAdvancedBungee, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		ServerInfoAdvanced.deserialize(serverInfoAdvancedBungee, json, typeOfT, context);
+		return serverInfoAdvancedBungee;
+	}
+
+	@Override
+	public ServerInfoAdvancedBungee deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return ServerInfoAdvancedBungee.deserialize(new ServerInfoAdvancedBungee(), json, typeOfT, context);
+	}
 }

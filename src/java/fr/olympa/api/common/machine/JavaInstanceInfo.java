@@ -2,16 +2,22 @@ package fr.olympa.api.common.machine;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
 import com.sun.management.OperatingSystemMXBean;
 
 import fr.olympa.api.spigot.utils.TPSUtils;
 
-public class JavaInstanceInfo {
+public class JavaInstanceInfo implements JsonDeserializer<Object> {
 
 	@Expose
 	private Long memFree, memUsed, memeTotal, allThreadsCreated, cpuProcTime;
@@ -146,4 +152,33 @@ public class JavaInstanceInfo {
 		return memUsed != null && threads != null && cpuProcTime != null && cpuSysUsage != null && cores != null;
 	}
 
+	public static JavaInstanceInfo deserialize(JavaInstanceInfo instanceInfo, JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		JsonObject object = json.getAsJsonObject();
+		if (object.has("memFree"))
+			instanceInfo.memFree = object.get("memFree").getAsLong();
+		if (object.has("memUsed"))
+			instanceInfo.memUsed = object.get("memUsed").getAsLong();
+		if (object.has("allThreadsCreated"))
+			instanceInfo.allThreadsCreated = object.get("allThreadsCreated").getAsLong();
+		if (object.has("cpuProcTime"))
+			instanceInfo.cpuProcTime = object.get("cpuProcTime").getAsLong();
+		if (object.has("cpuSysUsage"))
+			instanceInfo.cpuSysUsage = object.get("cpuSysUsage").getAsDouble();
+		if (object.has("memUsage"))
+			instanceInfo.memUsage = object.get("memUsage").getAsDouble();
+		if (object.has("cpuProcUsage"))
+			instanceInfo.cpuProcUsage = object.get("cpuProcUsage").getAsDouble();
+		if (object.has("cores"))
+			instanceInfo.cores = object.get("cores").getAsInt();
+		if (object.has("threads"))
+			instanceInfo.threads = object.get("threads").getAsInt();
+		if (object.has("time"))
+			instanceInfo.time = object.get("time").getAsLong();
+		return instanceInfo;
+	}
+
+	@Override
+	public JavaInstanceInfo deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		return deserialize(new JavaInstanceInfo(), json, typeOfT, context);
+	}
 }

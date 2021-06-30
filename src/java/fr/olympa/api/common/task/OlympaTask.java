@@ -1,14 +1,14 @@
 package fr.olympa.api.common.task;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public interface OlympaTask {
 
-	Map<String, Integer> taskList = new HashMap<>();
+	Map<String, Integer> taskList = new ConcurrentHashMap<>();
 
 	default void addTask(String name, int id) {
 		taskList.put(name, id);
