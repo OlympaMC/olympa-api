@@ -157,6 +157,7 @@ public class PluginInfoAdvanced {
 		if (withVersion) {
 			sj.add("Version &2" + getVersion());
 			sj.add("MAJ du fichier &e" + getLastModifiedTime());
+			if (apiVersion != null) sj.add("API version §e" + apiVersion);
 		}
 		if (authors != null && !authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));

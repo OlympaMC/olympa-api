@@ -244,6 +244,11 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	}
 
 	@Override
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+	
+	@Override
 	public void setId(long id) {
 		this.id = id;
 	}
