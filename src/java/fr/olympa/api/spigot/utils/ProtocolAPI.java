@@ -3,7 +3,6 @@ package fr.olympa.api.spigot.utils;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -117,16 +116,10 @@ public enum ProtocolAPI {
 	public static String getRange(List<ProtocolAPI> protocols) {
 		if (protocols == null || protocols.isEmpty())
 			return "unknown";
-		List<ProtocolAPI> sorted = protocols.stream().filter(protocolApi -> protocolApi != null).sorted(ProtocolAPI.getComparator()).collect(Collectors.toList());
-		if (sorted.isEmpty())
-			return "unknown";
-		else if (sorted.size() == 1)
+		List<ProtocolAPI> sorted = protocols.stream().filter(protocolApi -> protocolApi != null).sorted(new Sorting<>(ProtocolAPI::ordinal)).collect(Collectors.toList());
+		if (sorted.size() == 1 || sorted.stream().allMatch(protocolApi -> protocolApi.getProtocolNumber() == sorted.get(sorted.size() - 1).getProtocolNumber()))
 			return sorted.get(0).getCompleteName();
 		return sorted.get(sorted.size() - 1).getName() + " à " + sorted.get(0).getName();
-	}
-
-	static Comparator<? super ProtocolAPI> getComparator() {
-		return (o1, o2) -> o2.ordinal() - o1.ordinal();
 	}
 
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
@@ -347,9 +340,9 @@ public enum ProtocolAPI {
 	}
 
 	public String getName() {
-		if (!name().startsWith("SNAPSHOT"))
-			return name().replace("_", ".").substring(1);
-		return Utils.capitalize(name().replaceFirst("_", " ").replace("_", ".").replace("$", "-"));
+		if (!toString().startsWith("SNAPSHOT"))
+			return toString().replace("_", ".").substring(1);
+		return Utils.capitalize(toString().replaceFirst("_", " ").replace("_", ".").replace("$", "-"));
 	}
 
 	public String getCompleteName() {

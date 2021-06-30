@@ -79,12 +79,19 @@ public enum OlympaServer {
 		return ordinal() == olympaServer.ordinal();
 	}
 
+	public static Integer getServerId(String serverName) {
+		java.util.regex.Matcher matcher = MatcherPattern.of("\\d*$").getPattern().matcher(serverName);
+		matcher.find();
+		String id = matcher.group();
+		return Utils.isEmpty(id) ? null : Integer.parseInt(id);
+	}
+
 	public static Entry<OlympaServer, Integer> getOlympaServerWithId(String serverName) {
 		java.util.regex.Matcher matcher = MatcherPattern.of("\\d*$").getPattern().matcher(serverName);
 		matcher.find();
 		String id = matcher.group();
-		int serverID = Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
+		int serverId = Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
 		OlympaServer olympaServer = OlympaServer.valueOf(matcher.replaceAll("").toUpperCase());
-		return new AbstractMap.SimpleEntry<>(olympaServer, serverID);
+		return new AbstractMap.SimpleEntry<>(olympaServer, serverId);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.bungee.plugin.OlympaBungeeCore;
 import fr.olympa.api.common.annotation.SpigotOrBungee;
 import fr.olympa.api.common.annotation.SpigotOrBungee.AllowedFramework;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
@@ -14,8 +15,8 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @SpigotOrBungee(allow = AllowedFramework.BUNGEE)
 public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 
-	public BungeeProtocol(List<ProtocolAPI> protocols) {
-		protocols.addAll(getProtocolsSupported());
+	public BungeeProtocol(OlympaBungeeCore olympaBungeeCore) {
+		olympaBungeeCore.setProtocols(getProtocolsSupported());
 	}
 
 	@Override
@@ -52,10 +53,8 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 */
 	@Override
 	public List<ProtocolAPI> getProtocolsSupported() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
-			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
 		List<ProtocolAPI> versions = new ArrayList<>();
-		ProtocolConstants.SUPPORTED_VERSION_IDS.forEach(protocolNb -> versions.addAll(ProtocolAPI.getAll(protocolNb)));
+		getBungeeVersionId().forEach(protocolNb -> versions.addAll(ProtocolAPI.getAll(protocolNb)));
 		return versions;
 	}
 
@@ -82,11 +81,6 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	@Override
 	public boolean disableAllUpperI(ProtocolAPI version) {
 		return false;
-	}
-
-	@Override
-	public String getVersions() {
-		return null;
 	}
 
 }

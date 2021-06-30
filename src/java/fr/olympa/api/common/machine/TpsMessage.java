@@ -23,10 +23,11 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public class TpsMessage extends JavaInstanceInfo {
 
-	public LinkSpigotBungee main;
+	public LinkSpigotBungee<?> main;
 	protected OlympaPlayer olympaPlayer;
 
 	public TpsMessage(OlympaPlayer olympaPlayer) {
+		super(Utils.getCurrentTimeInSeconds());
 		this.olympaPlayer = olympaPlayer;
 		main = LinkSpigotBungee.Provider.link;
 	}

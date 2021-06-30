@@ -1,6 +1,5 @@
 package fr.olympa.api.bungee.plugin;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +48,7 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	private String serverName = "bungee1";
 	protected boolean redisConnected = false;
 	protected boolean dbConnected = false;
-	private List<ProtocolAPI> protocols = new ArrayList<>();
+	private List<ProtocolAPI> protocols;
 	protected BungeeProtocol versionHandler;
 	protected RedisConnection redisAccess;
 	protected DatabaseConnection database;
@@ -72,8 +71,7 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 		maintConfig = new BungeeCustomConfig(this, "maintenance");
 		maintConfig.loadSafe();
 		status = ServerStatus.get(maintConfig.getConfig().getString("settings.status"));
-		versionHandler = new BungeeProtocol(protocols);
-
+		versionHandler = new BungeeProtocol(this);
 	}
 
 	@Override
@@ -238,4 +236,8 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 
 	@Override
 	public abstract Gson getGson();
+
+	public void setProtocols(List<ProtocolAPI> protocols) {
+		this.protocols = protocols;
+	}
 }

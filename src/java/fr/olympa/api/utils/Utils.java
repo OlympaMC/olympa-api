@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.StringJoiner;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -112,25 +113,20 @@ public class Utils {
 
 	public static String durationToString(NumberFormat numberFormat, long time) {
 		StringBuilder sb = new StringBuilder();
-
 		long days = time / 86_400_000;
 		if (days != 0)
 			sb.append(numberFormat.format(days)).append('J');
 		time -= days * 86_400_000;
-
 		long hours = time / 3_600_000;
 		if (sb.length() != 0)
 			sb.append(' ');
 		sb.append(numberFormat.format(hours)).append("H ");
 		time -= hours * 3_600_000;
-
 		long minutes = time / 60_000;
 		sb.append(numberFormat.format(minutes)).append("M ");
 		time -= minutes * 60_000;
-
 		long seconds = time / 1_000;
 		sb.append(numberFormat.format(seconds)).append("S");
-
 		return sb.toString();
 	}
 
@@ -187,7 +183,7 @@ public class Utils {
 	}
 
 	public static boolean equalsIgnoreCase(String text, String text2) {
-		return removeAccents(text.toLowerCase()).equalsIgnoreCase(removeAccents(text2.toLowerCase()));
+		return text != null && text2 != null && removeAccents(text.toLowerCase()).equalsIgnoreCase(removeAccents(text2.toLowerCase()));
 	}
 
 	public static String formatDouble(double value, int digits) {
@@ -369,7 +365,6 @@ public class Utils {
 	public static double round(double value, int x) {
 		if (x < 0)
 			throw new IllegalArgumentException();
-
 		long factor = (long) Math.pow(10, x);
 		value = value * factor;
 		long tmp = Math.round(value);
@@ -407,7 +402,6 @@ public class Utils {
 	}
 
 	public static String tsToShortDur(long timestamp) {
-
 		long now = Utils.getCurrentTimeInSeconds();
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
@@ -433,22 +427,22 @@ public class Utils {
 		long hour = dur.toHours();
 		long minute = dur.toMinutes() - 60 * dur.toHours();
 		long second = dur.getSeconds() - 60 * dur.toMinutes();
-		List<String> msg = new ArrayList<>();
+		StringJoiner sj = new StringJoiner(" ");
 		if (year > 1)
-			msg.add(year + " ans");
+			sj.add(year + " ans");
 		else if (year == 1)
-			msg.add(year + " an");
-		if (month != 0 && (msg.isEmpty() || month > 5))
-			msg.add(month + " mois");
-		if (day != 0 && (msg.isEmpty() || msg.size() < 2 && day > 16))
-			msg.add(day + "j");
-		if (hour != 0 && (msg.isEmpty() || msg.size() < 2 && day < 2 && day != 0 && hour > 12))
-			msg.add(hour + "h");
-		if (minute != 0 && (msg.isEmpty() || msg.size() < 2 && hour == 1))
-			msg.add(minute + "min");
-		if (msg.isEmpty() && second != 0)
-			msg.add(second + "s");
-		return String.join(" ", msg);
+			sj.add(year + " an");
+		if (month != 0 && (sj.length() == 0 || month > 5))
+			sj.add(month + " mo");
+		if (day != 0 && (sj.length() == 0 || sj.length() < 2 && day > 16))
+			sj.add(day + "j");
+		if (hour != 0 && (sj.length() == 0 || sj.length() < 2 && day < 2 && day != 0 && hour > 12))
+			sj.add(hour + "h");
+		if (minute != 0 && (sj.length() == 0 || sj.length() < 2 && hour == 1))
+			sj.add(minute + "min");
+		if (sj.length() == 0 && second != 0)
+			sj.add(second + "s");
+		return sj.toString();
 	}
 
 	public static String timestampToDuration(long timestamp, int precision) {

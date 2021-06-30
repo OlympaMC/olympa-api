@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -39,7 +40,7 @@ import net.minecraft.server.v1_16_R3.PacketPlayOutChat;
 
 public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<OlympaCore> {
 
-	private final Map<Player, List<TextComponent>> chatPlayer = new HashMap<>();
+	private final Map<Player, List<TextComponent>> chatPlayer = new ConcurrentHashMap<>();
 
 	private boolean isEnabled = false;
 	private boolean isDebugEnable = true;

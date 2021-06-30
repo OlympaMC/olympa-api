@@ -22,6 +22,7 @@ public enum Prefix {
 	ERROR("&c⚠ ", ChatColor.RED, ChatColor.DARK_RED),
 	INFO("&6INFO &6%symbole &e", ChatColor.YELLOW, ChatColor.GOLD),
 	USAGE("&6Usage &7%symbole &c", ChatColor.RED, ChatColor.DARK_RED),
+	QUEUE("&6File d'attente &7%symbole &c", ChatColor.YELLOW, ChatColor.GOLD),
 	NONE("", null, null);
 
 	String prefix;
