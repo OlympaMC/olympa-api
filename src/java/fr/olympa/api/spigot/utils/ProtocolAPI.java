@@ -339,14 +339,28 @@ public enum ProtocolAPI {
 		this.snapshot = snapshot;
 	}
 
+	public boolean contains(int protocolNumber) {
+		List<ProtocolAPI> all = getAllVersionOfProtocol();
+		return all.stream().anyMatch(protocol -> protocol.getProtocolNumber() == protocolNumber);
+	}
+
+	public boolean contains(ProtocolAPI protocol) {
+		List<ProtocolAPI> all = getAllVersionOfProtocol();
+		return all.contains(protocol);
+	}
+
 	public String getName() {
 		if (!toString().startsWith("SNAPSHOT"))
 			return toString().replace("_", ".").substring(1);
 		return Utils.capitalize(toString().replaceFirst("_", " ").replace("_", ".").replace("$", "-"));
 	}
 
+	public List<ProtocolAPI> getAllVersionOfProtocol() {
+		return getAll(getProtocolNumber());
+	}
+
 	public String getCompleteName() {
-		List<ProtocolAPI> all = getAll(getProtocolNumber());
+		List<ProtocolAPI> all = getAllVersionOfProtocol();
 		int size = all.size();
 		ProtocolAPI latest = all.get(0);
 		if (size == 1)
@@ -393,4 +407,5 @@ public enum ProtocolAPI {
 	public boolean isSnapshot() {
 		return snapshot;
 	}
+
 }
