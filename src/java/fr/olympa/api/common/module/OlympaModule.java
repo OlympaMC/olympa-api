@@ -118,7 +118,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 		this.commandsPreProcessRegister = true;
 		return this;
 	}
-	
+
 	public final OlympaModule<T, L, P, C> enableByDefault(boolean enableByDefault) {
 		this.enableByDefault = enableByDefault;
 		return this;
@@ -127,7 +127,7 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	public String getName() {
 		return name;
 	}
-	
+
 	public String isEnabledString() {
 		return isEnabled() ? "&2Activé" : "&4Désactivé";
 	}
@@ -137,9 +137,9 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	}
 
 	public boolean isEnabled() {
-		return api.isEnabled();
+		return api != null && api.isEnabled();
 	}
-	
+
 	public boolean shouldEnableByDefault() {
 		return enableByDefault;
 	}
@@ -224,10 +224,14 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	private boolean enable() {
 		if (isEnabled())
 			return false;
+		boolean b = false;
 		try {
-			api.enable(plugin);
-			plugin.sendMessage("&aModule &2%s&a activé.", name);
-			return true;
+			b = api.enable(plugin);
+			if (b)
+				plugin.sendMessage("&aModule &2%s&a activé.", name);
+			else
+				plugin.sendMessage("[ERROR] &cModule &4" + name + "&c : la methode enable du module renvoit false.");
+			return b;
 		} catch (Exception e) {
 			sendErrorModule(e, "enable");
 			return false;
@@ -253,10 +257,14 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 	private boolean disable() {
 		if (!isEnabled())
 			return false;
+		boolean b = false;
 		try {
-			api.disable(plugin);
-			plugin.sendMessage("&cModule &4" + name + "&c désactivé.");
-			return true;
+			b = api.disable(plugin);
+			if (b)
+				plugin.sendMessage("&cModule &4" + name + "&c désactivé.");
+			else
+				plugin.sendMessage("[ERROR] &cModule &4" + name + "&c : la methode disable du module renvoit false.");
+			return b;
 		} catch (Exception e) {
 			sendErrorModule(e, "disable");
 			return false;
@@ -287,8 +295,8 @@ public abstract class OlympaModule<T extends ModuleApi<P>, L, P extends OlympaPl
 		try {
 			this.initialize();
 			this.enable();
-			this.registerListeners();
 			this.setToPlugin();
+			this.registerListeners();
 			this.registerCommands();
 		} catch (Exception e) {
 			this.sendErrorModule(e, "enable Module");

@@ -133,6 +133,10 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		return regionManager;
 	}
 
+	public void setRegionManager(RegionManager regionManager) {
+		this.regionManager = regionManager;
+	}
+
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		return imageFrameManager;
@@ -141,7 +145,10 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		for (Player p : Bukkit.getOnlinePlayers())
+		Collection<? extends Player> player = Bukkit.getOnlinePlayers();
+		if (player.size() < 10 && getServer().getPluginManager().isPluginEnabled("PlugMan"))
+			return;
+		for (Player p : player)
 			p.kickPlayer("Server closed");
 	}
 
