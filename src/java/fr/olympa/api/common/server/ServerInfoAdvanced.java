@@ -259,9 +259,16 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return players;
 	}
 
+	public boolean canConnect(ProtocolAPI protocol) {
+		return status != null && status.canConnect() && (versions == null || versions.contains(protocol));
+	}
+
 	public boolean canConnect(OlympaPlayer olympaPlayer, ProtocolAPI protocol) {
-		status.hasPermission(olympaPlayer);
-		return status != ServerStatus.CLOSE;
+		return canConnect(olympaPlayer) && canConnect(protocol);
+	}
+
+	public boolean canConnect(OlympaPlayer olympaPlayer) {
+		return status != null && status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
 	}
 
 	@Nullable
@@ -311,10 +318,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 
 	public boolean isOpen() {
 		return status != ServerStatus.CLOSE;
-	}
-
-	public boolean canConnect(OlympaPlayer olympaPlayer) {
-		return status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
 	}
 
 	public String getIdSymbole() {
