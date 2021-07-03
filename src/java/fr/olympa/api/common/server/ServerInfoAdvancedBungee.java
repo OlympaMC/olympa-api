@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -30,9 +28,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 
 	private static Map<String, Boolean> errorAlreadySend = new HashMap<>();
-	private static Set<String> readTimeException = new HashSet<>();
+	private static Map<String, Integer> readTimeException = new HashMap<>();
 
-	public static Set<String> getReadTimeException() {
+	public static Map<String, Integer> getReadTimeException() {
 		return readTimeException;
 	}
 
@@ -41,11 +39,16 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 	}
 
 	public static boolean addReadTimeException(ServerInfo serverInfo) {
-		if (ServerInfoAdvancedBungee.readTimeException.contains(serverInfo.getName())) {
-			ServerInfoAdvancedBungee.readTimeException.remove(serverInfo.getName());
-			return false;
-		}
-		ServerInfoAdvancedBungee.readTimeException.add(serverInfo.getName());
+		if (OlympaModule.DEBUG)
+			OlympaBungee.getInstance().sendMessage("&7Debug Serveur &e%s&7 a été ping et une &cReadTimeoutException est appru.", serverInfo.getName());
+		Integer oldValue = ServerInfoAdvancedBungee.readTimeException.get(serverInfo.getName());
+		if (oldValue != null)
+			if (oldValue <= 2) {
+				ServerInfoAdvancedBungee.readTimeException.put(serverInfo.getName(), ServerInfoAdvancedBungee.readTimeException.get(serverInfo.getName()) + 1);
+				return true;
+			} else
+				return false;
+		ServerInfoAdvancedBungee.readTimeException.put(serverInfo.getName(), 1);
 		return true;
 	}
 
@@ -66,34 +69,34 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		try {
 			if (error == null) {
 				allMotd = serverPing.getDescriptionComponent().toPlainText();
+				String[] motd = allMotd.split(" ");
 				if (allMotd.startsWith("V2 "))
 					// V2
 					serverDebugInfo = ServerInfoAdvancedBungee.fromJson(allMotd.substring(3), serverInfo, ping);
-				else {
-					// V1
+				else if (motd.length < 8) {
+					// V0.1
 					Players players = serverPing.getPlayers();
 					int onlinePlayers = players.getOnline();
 					int maxPlayers = players.getMax();
 					float tps = 0;
 					if (allMotd.startsWith("§"))
 						allMotd = allMotd.substring(2);
-					String[] motd = allMotd.split(" ");
 					if (motd.length >= 1)
 						status = ServerStatus.get(motd[0]);
 					if (motd.length >= 2 && RegexMatcher.FLOAT.is(motd[1]))
 						tps = RegexMatcher.FLOAT.parse(motd[1]);
-					if (motd.length >= 8) {
-						String json = String.join(" ", Arrays.copyOfRange(motd, 7, motd.length));
-						serverDebugInfo = ServerInfoAdvancedBungee.fromJson(json, serverInfo, ping);
-						if (serverDebugInfo == null)
-							serverDebugInfo = new ServerInfoAdvancedBungee();
-						serverDebugInfo.setPing(ping);
-						serverDebugInfo.serverId = serverId;
-						serverDebugInfo.cacheServerInfo = serverInfo;
-					} else
-						// V0.1
-						serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
+					serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
+				} else {
+					// V1
+					String json = String.join(" ", Arrays.copyOfRange(motd, 7, motd.length));
+					serverDebugInfo = ServerInfoAdvancedBungee.fromJson(json, serverInfo, ping);
+					if (serverDebugInfo == null)
+						serverDebugInfo = new ServerInfoAdvancedBungee();
+					serverDebugInfo.setPing(ping);
+					serverDebugInfo.serverId = serverId;
+					serverDebugInfo.cacheServerInfo = serverInfo;
 				}
+
 				if (OlympaModule.DEBUG)
 					OlympaBungee.getInstance().sendMessage("&7Réponse du serveur &2%s&7 : &d%s", serverInfo.getName(), allMotd);
 			} else {

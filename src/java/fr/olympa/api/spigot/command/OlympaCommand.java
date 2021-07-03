@@ -202,6 +202,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	@Override
 	public void unregister() {
+		reflectCommand.unregister(getCommandMap());
 		if (commands.contains(this))
 			commands.remove(this);
 		if (commandPreProcess.containsValue(this))

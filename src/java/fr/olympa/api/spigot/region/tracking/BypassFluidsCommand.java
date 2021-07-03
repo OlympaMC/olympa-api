@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
 import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
@@ -15,8 +16,8 @@ public class BypassFluidsCommand extends ComplexCommand {
 	
 	private static Map<World, Long> bypassFluidUntil = new HashMap<>();
 	
-	public BypassFluidsCommand() {
-		super(OlympaCore.getInstance(), "bypassfluids", "Permet de désactiver l'anti-fluides temporairement.", OlympaAPIPermissionsSpigot.COMMAND_BYPASS_REGIONS);
+	public BypassFluidsCommand(Plugin plugin) {
+		super(plugin, "bypassfluids", "Permet de désactiver l'anti-fluides temporairement.", OlympaAPIPermissionsSpigot.COMMAND_BYPASS_REGIONS);
 		
 		super.setAllowConsole(false);
 	}

@@ -3,6 +3,8 @@ package fr.olympa.api.common.plugin;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,6 +54,10 @@ public class PluginInfoAdvanced {
 
 	public @Nonnull List<String> getAuthors() {
 		return authors;
+	}
+
+	public @Nonnull List<String> getAllAuthors() {
+		return Stream.concat(authors.stream(), contributors.stream()).collect(Collectors.toList());
 	}
 
 	public boolean isEnabled() {
@@ -157,18 +163,17 @@ public class PluginInfoAdvanced {
 		if (withVersion) {
 			sj.add("Version &2" + getVersion());
 			sj.add("MAJ du fichier &e" + getLastModifiedTime());
-			if (apiVersion != null) sj.add("API version §e" + apiVersion);
+			if (apiVersion != null)
+				sj.add("API version §e" + apiVersion);
 		}
-		List<String> authors = getAuthors();
-		if (!authors.isEmpty())
+		if (authors != null && !authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));
-		List<String> contributors = getContributors();
-		if (!contributors.isEmpty())
+		if (contributors != null && contributors.isEmpty())
 			sj.add("Contributeur" + Utils.withOrWithoutS(contributors.size()) + " &a" + String.join("&7, &a", contributors));
-		if (getDescription() != null)
-			sj.add("Description " + getDescription());
-		if (getWebsite() != null)
-			sj.add("Site Web " + getWebsite());
+		if (description != null && !description.isBlank())
+			sj.add("Description " + description);
+		if (website != null && !website.isBlank())
+			sj.add("Site Web " + website);
 		return sj.toString();
 	}
 
@@ -209,7 +214,7 @@ public class PluginInfoAdvanced {
 				versionNumber = (String) entry.getValue();
 				i++;
 			}
-			regexMatcher = MatcherPattern.of("\\W*(test|dev|master|HEAD)\\b");
+			regexMatcher = MatcherPattern.of("\\W*(test|dev|master|main|HEAD)\\b");
 			entry = regexMatcher.extractAndParseGroupOne(s);
 			if (entry.getValue() != null) {
 				s = entry.getKey();
