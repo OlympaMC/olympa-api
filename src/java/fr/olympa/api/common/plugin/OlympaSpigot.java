@@ -44,6 +44,13 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected IVanishApi vanishApi;
 	protected VersionHandler<Player> versionHandler;
 
+	protected OlympaServer olympaServer;
+	
+	protected OlympaSpigot() {
+		LinkSpigotBungee.Provider.link = this;
+		this.olympaServer = OlympaServer.ALL;
+	}
+	
 	@Override
 	public VersionHandler<Player> getVersionHandler() {
 		return versionHandler;
@@ -98,8 +105,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public IVanishApi getVanishApi() {
 		return vanishApi;
 	}
-
-	protected OlympaServer olympaServer = OlympaServer.ALL;
 
 	@Override
 	public OlympaServer getOlympaServer() {
