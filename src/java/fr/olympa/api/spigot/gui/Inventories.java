@@ -93,8 +93,10 @@ public class Inventories implements Listener {
 					event.setCancelled(gui.onMoveItem(p, current));
 				return;
 			}
-			if (gui.noDoubleClick() && event.getClick() == ClickType.DOUBLE_CLICK)
+			if (gui.noDoubleClick() && event.getClick() == ClickType.DOUBLE_CLICK) {
+				event.setCancelled(true);
 				return;
+			}
 
 			if (event.getCursor().getType() == Material.AIR) {
 				if (current == null || current.getType() == Material.AIR)

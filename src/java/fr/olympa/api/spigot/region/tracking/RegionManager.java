@@ -127,7 +127,7 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 	}
 
 	public void unregisterRegion(String id) {
-		trackedRegions.remove(id);
+		if (enable) trackedRegions.remove(id);
 	}
 
 	private void registerWorld(World world) {
@@ -521,10 +521,7 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 		worldRegions = new HashMap<>();
 		trackAwait = new HashMap<>();
 		inRegions = new HashMap<>();
-		plugin.getTask().runTask(() -> {
-			for (World world : Bukkit.getWorlds())
-				registerWorld(world);
-		});
+		plugin.getTask().runTask(() -> Bukkit.getWorlds().forEach(this::registerWorld));
 		enable = true;
 		return enable;
 	}
