@@ -20,7 +20,7 @@ import fr.olympa.api.common.server.ServerFrameworkType;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public abstract class OlympaPermission implements IOlympaPermission {
-
+	
 	public static final Map<String, OlympaPermission> permissions = new HashMap<>();
 
 	public static void registerPermissions(Class<?> clazz) {

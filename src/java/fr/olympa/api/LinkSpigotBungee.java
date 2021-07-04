@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 
+import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerStatus;
@@ -30,6 +31,10 @@ public interface LinkSpigotBungee<P> {
 
 	default long getUptimeLong() {
 		return upTime;
+	}
+	
+	default void setupGlobalTasks() {
+		OlympaAPIPermissionsGlobal.setServerJoinPermissions();
 	}
 
 	Connection getDatabase() throws SQLException;
@@ -57,8 +62,16 @@ public interface LinkSpigotBungee<P> {
 	static LinkSpigotBungee<?> getInstance() {
 		return Provider.link;
 	}
+	
+	static void setInstance(LinkSpigotBungee<?> link) {
+		Provider.link = link;
+	}
 
 	public static final class Provider {
+		/**
+		 * @deprecated use {@link LinkSpigotBungee#getInstance()}
+		 */
+		@Deprecated
 		public static LinkSpigotBungee<?> link;
 	}
 

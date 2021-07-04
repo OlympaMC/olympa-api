@@ -47,7 +47,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected OlympaServer olympaServer;
 	
 	protected OlympaSpigot() {
-		LinkSpigotBungee.Provider.link = this;
+		LinkSpigotBungee.setInstance(this);
 		this.olympaServer = OlympaServer.ALL;
 	}
 	
@@ -160,6 +160,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void onEnable() {
 		super.onEnable();
+		setupGlobalTasks();
 		if (config != null) {
 			String statusString = config.getString("status");
 			if (statusString != null && !statusString.isEmpty()) {

@@ -44,7 +44,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 
 	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
-
+	
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
@@ -69,14 +69,14 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 		return Arrays.stream(OlympaGroup.values()).filter(group -> group.getPower() >= GRAPHISTE.getPower()).collect(Collectors.toList());
 	}
 
-	final int id;
-	final int power;
-	final OlympaServer server;
-	final String name;
-	final String nameFem;
-	final String prefix;
-	final String chatSuffix;
-	final private boolean highStaff;
+	private final int id;
+	private final int power;
+	private final OlympaServer server;
+	private final String name;
+	private final String nameFem;
+	private final String prefix;
+	private final String chatSuffix;
+	private final boolean highStaff;
 	private boolean visible = true;
 
 	public Map<String, Boolean> runtimePermissions = new HashMap<>();
