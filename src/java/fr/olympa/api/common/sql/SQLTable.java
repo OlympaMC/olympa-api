@@ -86,7 +86,7 @@ public class SQLTable<T> {
 	}
 
 	public void updateAsync(T object, Map<SQLColumn<?>, Object> sqlObjects, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				update(object, sqlObjects);
 				if (successCallback != null)
@@ -101,7 +101,7 @@ public class SQLTable<T> {
 	}
 
 	public SQLTable<T> createOrAlter() throws SQLException {
-		LinkSpigotBungee link = LinkSpigotBungee.Provider.link;
+		LinkSpigotBungee link = LinkSpigotBungee.getInstance();
 		Statement statement = link.getDatabase().createStatement();
 
 		String schemaPattern = null, tablePattern = name;
@@ -209,14 +209,14 @@ public class SQLTable<T> {
 				statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
 				i++;
 			}
-			//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
+			//LinkSpigotBungee.getInstance().sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
 			insertStatement.executeUpdate(statement);
 			return statement.getGeneratedKeys();
 		}
 	}
 
 	public void insertAsync(Consumer<ResultSet> successCallback, Consumer<SQLException> failCallback, Object... notDefaultObjects) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				ResultSet resultSet = insert(notDefaultObjects);
 				if (successCallback != null) successCallback.accept(resultSet);
@@ -236,7 +236,7 @@ public class SQLTable<T> {
 	}
 	
 	public void deleteAsync(T primaryObject, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				delete(primaryObject);
 				if (successCallback != null)
@@ -262,7 +262,7 @@ public class SQLTable<T> {
 	}
 	
 	public void deleteMultiAsync(Runnable successCallback, Consumer<SQLException> failCallback, T... primaryObjects) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				deleteMulti(primaryObjects);
 				if (successCallback != null)
@@ -283,7 +283,7 @@ public class SQLTable<T> {
 	}
 	
 	public void deleteSQLObjectAsync(Object primaryObjectSQL, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				deleteSQLObject(primaryObjectSQL);
 				if (successCallback != null)

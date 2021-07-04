@@ -94,7 +94,7 @@ public class AccountProviderAPI implements OlympaAccount {
 
 	@Override
 	public void saveToRedis(OlympaPlayer olympaPlayer) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try (Jedis jedis = redisAccesss.connect()) {
 				jedis.set(getKey(), LinkSpigotBungee.getInstance().getGson().toJson(olympaPlayer));
 			}

@@ -56,7 +56,7 @@ public class ReportReason {
 	public static final ReportReason OTHER = new ReportReason(99, "Autre");
 
 	static {
-		if (LinkSpigotBungee.Provider.link.isSpigot()) {
+		if (LinkSpigotBungee.getInstance().isSpigot()) {
 			ReportReason.CHAT.setItem(new OlympaItemBuild(Material.BOOK, "&7Chat abusif").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
 			ReportReason.PV_SPAM.setItem(new OlympaItemBuild(Material.WRITABLE_BOOK, "&7Message privés abusifs").lore("", "&eSpam, Insulte, Provocations, Publicité ..."));
 			ReportReason.INCORRECT_SKIN_OR_NAME.setItem(new OlympaItemBuild(Material.PLAYER_HEAD, "&7Pseudo ou Skin incorrect").lore("", "&ePseudo insultant, provocant", "&eou skin choquant."));

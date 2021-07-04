@@ -44,7 +44,7 @@ public class TableGenerator {
 	private static String colorsRegex = RegexMatcher.ALL_CHAT_INVISIBLE_CHARS.getRegex();
 
 	static {
-		LinkSpigotBungee.Provider.link.sendMessage("DEBUG TableGenerator REGEX '%s'", regex.pattern());
+		LinkSpigotBungee.getInstance().sendMessage("DEBUG TableGenerator REGEX '%s'", regex.pattern());
 	}
 
 	private Alignment[] alignments;
@@ -363,7 +363,7 @@ public class TableGenerator {
 				i1++;
 			}
 
-			//			LinkSpigotBungee.Provider.link.sendMessage("DEBUG TableGeneratorToTxtBuilder '%s'", out.toLegacyText());
+			//			LinkSpigotBungee.getInstance().sendMessage("DEBUG TableGeneratorToTxtBuilder '%s'", out.toLegacyText());
 			/*if (receiver == Receiver.CLIENT)
 				for (int i = 0; i < 2; i++) {
 					Matcher matcher = regex.matcher(line);
@@ -597,7 +597,7 @@ public class TableGenerator {
 		CLIENT;
 
 		public static Receiver of(Object sender) {
-			if (LinkSpigotBungee.Provider.link.isSpigot()) {
+			if (LinkSpigotBungee.getInstance().isSpigot()) {
 				if (sender instanceof OfflinePlayer)
 					return CLIENT;
 				return CONSOLE;

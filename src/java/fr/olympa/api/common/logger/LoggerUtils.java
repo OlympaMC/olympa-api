@@ -24,13 +24,13 @@ public class LoggerUtils {
 			@Nullable
 			Logger logger = manager.getLogger(name);
 			if (logger == null) {
-				LinkSpigotBungee.Provider.link.sendMessage("&cUnable to hook into logger '&6%s&e', it is null", name);
+				LinkSpigotBungee.getInstance().sendMessage("&cUnable to hook into logger '&6%s&e', it is null", name);
 				continue;
 			}
 			logger.addHandler(handler);
 			i++;
 		}
-		LinkSpigotBungee.Provider.link.sendMessage("Hooked error stream handler into &6%s&e loggers!", i);
+		LinkSpigotBungee.getInstance().sendMessage("Hooked error stream handler into &6%s&e loggers!", i);
 	}
 
 	public static void unHookAll() {
@@ -44,12 +44,12 @@ public class LoggerUtils {
 			@Nullable
 			Logger logger = manager.getLogger(name);
 			if (logger == null) {
-				LinkSpigotBungee.Provider.link.sendMessage("&cUnable to unhook into logger '&6%s&e', it is null", name);
+				LinkSpigotBungee.getInstance().sendMessage("&cUnable to unhook into logger '&6%s&e', it is null", name);
 				continue;
 			}
 			registerHandlers.forEach(handler -> logger.addHandler(handler));
 			i++;
 		}
-		LinkSpigotBungee.Provider.link.sendMessage("Hooked error stream handler into &6%s&e loggers!", i);
+		LinkSpigotBungee.getInstance().sendMessage("Hooked error stream handler into &6%s&e loggers!", i);
 	}
 }

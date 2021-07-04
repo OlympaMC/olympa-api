@@ -34,16 +34,16 @@ public abstract class OlympaPermission implements IOlympaPermission {
 					i++;
 				}
 			} catch (Exception e) {
-				LinkSpigotBungee.Provider.link.sendMessage("&cError when registering permission &4%s&c. %s", f.getName(), e.getMessage());
+				LinkSpigotBungee.getInstance().sendMessage("&cError when registering permission &4%s&c. %s", f.getName(), e.getMessage());
 				e.printStackTrace();
 			}
 		try {
-			LinkSpigotBungee.Provider.link.sendMessage("Registered %d permissions from %s", i, clazz.getName());
+			LinkSpigotBungee.getInstance().sendMessage("Registered %d permissions from %s", i, clazz.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		//		} catch (ReflectiveOperationException ex) {
-		//			LinkSpigotBungee.Provider.link.sendMessage("Error when registering permissions from class " + clazz.getName());
+		//			LinkSpigotBungee.getInstance().sendMessage("Error when registering permissions from class " + clazz.getName());
 		//			ex.printStackTrace();
 		//		}
 	}
@@ -170,7 +170,7 @@ public abstract class OlympaPermission implements IOlympaPermission {
 	@Override
 	public boolean hasPermission(OlympaPlayer olympaPlayer) {
 		return olympaPlayer != null && (this.hasPermission(olympaPlayer.getGroups()) || allowedBypass != null && Arrays.stream(allowedBypass).anyMatch(ab -> ab.equals(olympaPlayer.getUniqueId()))
-				|| olympaPlayer.hasCustomPermission(name, LinkSpigotBungee.Provider.link.getOlympaServer()));
+				|| olympaPlayer.hasCustomPermission(name, LinkSpigotBungee.getInstance().getOlympaServer()));
 	}
 
 	@Override

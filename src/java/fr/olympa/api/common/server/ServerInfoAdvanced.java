@@ -39,7 +39,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			dp -> dp.getAuthors().stream().anyMatch(author -> principalAuthors.contains(author)) ? 0l : 1l);
 
 	public static void setPlugins() {
-		LinkSpigotBungee<?> link = LinkSpigotBungee.Provider.link;
+		LinkSpigotBungee<?> link = LinkSpigotBungee.getInstance();
 		if (link.isSpigot())
 			pluginsOfInstance = Arrays.stream(((OlympaCore) link).getServer().getPluginManager().getPlugins()).map(PluginInfoSpigot::new).sorted(sortingPlugins).collect(Collectors.toList());
 		else

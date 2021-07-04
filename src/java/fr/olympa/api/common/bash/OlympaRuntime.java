@@ -50,7 +50,7 @@ public class OlympaRuntime {
 			//			String out;
 			try {
 				//				StringBuilder sb = new StringBuilder();
-				LinkSpigotBungee.Provider.link.sendMessage("&5EXEC COMMAND BASH < " + command);
+				LinkSpigotBungee.getInstance().sendMessage("&5EXEC COMMAND BASH < " + command);
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line;
@@ -62,14 +62,14 @@ public class OlympaRuntime {
 							.replace("[33m", "§6").replace("[34m", "§1").replace("[35m", "§5").replace("[37m", "§7").replace("[90m", "§8").replace("[91m", "§c")
 							.replace("[92m", "§a").replace("[91m", "§e").replace("[91m", "§9").replace("[91m", "§d").replace("[91m", "§b").replace("[97m", "§f").replace("[1;32m", "§6")
 							.replace("[1;33m", "§7").replace("[1;33", "§5").replace("[1;34m", "").replace("[1m", "").replace("[m", "").replace("0;", "").replaceAll("\\[\\d*(;\\d*)?m?", "").replace("", "");
-					if (LinkSpigotBungee.Provider.link != null && line.replaceAll("§.", "").startsWith(" " + LinkSpigotBungee.Provider.link.getServerName() + " s'est arrêté")) {
+					if (LinkSpigotBungee.getInstance() != null && line.replaceAll("§.", "").startsWith(" " + LinkSpigotBungee.getInstance().getServerName() + " s'est arrêté")) {
 						Runtime.getRuntime().addShutdownHook(action("sh start.sh"));
-						if (LinkSpigotBungee.Provider.link.isSpigot())
+						if (LinkSpigotBungee.getInstance().isSpigot())
 							OlympaCore.getInstance().getServer().shutdown();
 						else
 							OlympaBungee.getInstance().getProxy().stop("restart in comming");
 					}
-					LinkSpigotBungee.Provider.link.sendMessage("&dREAD BASH > " + line);
+					LinkSpigotBungee.getInstance().sendMessage("&dREAD BASH > " + line);
 					//					sb.append(line);
 					if (functionForAllLines != null) // [1m
 						functionForAllLines.accept(line);

@@ -277,7 +277,7 @@ public enum ProtocolAPI {
 	 */
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT)
 	public static String getNativeSpigotVersion() {
-		if (!LinkSpigotBungee.Provider.link.isSpigot())
+		if (!LinkSpigotBungee.getInstance().isSpigot())
 			throw new IllegalAccessError("Can't get BukkitVersion on Bungee instance.");
 		if (version == null)
 			version = Bukkit.getBukkitVersion().substring(0, Bukkit.getBukkitVersion().indexOf('-'));

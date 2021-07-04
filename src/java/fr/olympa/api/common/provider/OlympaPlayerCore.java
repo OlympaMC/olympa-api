@@ -95,7 +95,7 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 				continue;
 			if (OlympaServer.ALL.equals(olympaGroup.getServer()))
 				break;
-			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.Provider.link.getOlympaServer()))
+			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.getInstance().getOlympaServer()))
 				break;
 		}
 		return olympaGroup;

@@ -27,9 +27,9 @@ public class TpsMessage extends ServerInfoAdvanced {
 	protected OlympaPlayer olympaPlayer;
 
 	public TpsMessage(OlympaPlayer olympaPlayer) {
-		super(LinkSpigotBungee.Provider.link);
+		super(LinkSpigotBungee.getInstance());
 		this.olympaPlayer = olympaPlayer;
-		main = LinkSpigotBungee.Provider.link;
+		main = LinkSpigotBungee.getInstance();
 	}
 
 	public TxtComponentBuilder getInfoMessage() {

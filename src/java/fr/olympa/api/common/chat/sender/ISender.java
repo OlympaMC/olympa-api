@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public abstract class ISender {
 
 	public static ISender of(Object commandSender, OlympaPlayer olympaPlayer) {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			return new SpigotSender((org.bukkit.command.CommandSender) commandSender, olympaPlayer);
 		else
 			return new BungeeSender((net.md_5.bungee.api.CommandSender) commandSender, olympaPlayer);
