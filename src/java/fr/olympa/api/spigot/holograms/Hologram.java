@@ -285,6 +285,9 @@ public class Hologram extends AbstractObservable {
 		}
 		
 		void spawnEntity() {
+
+			//System.out.println("Trying to spawn entity for text : " + line);
+
 			if (isPacketHolo() && entityNms == null) {
 				entityNms = new EntityArmorStand(EntityTypes.ARMOR_STAND, ((CraftWorld)getBottom().getWorld()).getHandle());
 				entityNms.setLocation(getPosition().getX(), getPosition().getY(), getPosition().getZ(), 0, 0);
@@ -304,8 +307,11 @@ public class Hologram extends AbstractObservable {
 				
 			}else if (!isPacketHolo() && entity == null) {
 				
-				if (!willSpawn || !bottom.isChunkLoaded())
+				if (!willSpawn)
 					return;
+
+				bottom.getWorld().loadChunk(bottom.getChunk());
+
 				entity = getBottom().getWorld().spawn(getPosition(), ArmorStand.class, entity -> {
 					entity.setGravity(false);
 					entity.setMarker(true);

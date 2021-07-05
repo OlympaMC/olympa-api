@@ -138,9 +138,9 @@ public class OlympaStatement {
 	public PreparedStatement createStatement() throws SQLException {
 		/*if (!lock.tryLock(10, TimeUnit.SECONDS)) throw new SQLException("Le thread n'a pas été acquis au bout de 10 secondes");
 		if (prepared == null || prepared.isClosed() || !prepared.getConnection().isValid(0))
-			prepared = returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand);
+			prepared = returnGeneratedKeys ? LinkSpigotBungee.getInstance().getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.getInstance().getDatabase().prepareStatement(statementCommand);
 		return prepared;*/
-		return returnGeneratedKeys ? LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.Provider.link.getDatabase().prepareStatement(statementCommand);
+		return returnGeneratedKeys ? LinkSpigotBungee.getInstance().getDatabase().prepareStatement(statementCommand, Statement.RETURN_GENERATED_KEYS) : LinkSpigotBungee.getInstance().getDatabase().prepareStatement(statementCommand);
 	}
 
 	private String acuteIfNeeded(String s) {

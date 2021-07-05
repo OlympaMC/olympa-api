@@ -32,7 +32,7 @@ public class SpigotAskServerInfo extends RedisSubChannel {
 	public void askServerInfoOld(BiConsumer<List<ServerInfoBasic>, Boolean> callback) {
 		if (callback != null)
 			askServerInfo.add(callback);
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			RedisConnection redis = getRedisAccess();
 			try (Jedis jedis = redis.connect()) {
 				String serverName = OlympaCore.getInstance().getServerName();
@@ -54,7 +54,7 @@ public class SpigotAskServerInfo extends RedisSubChannel {
 	public void askServerInfo(BiConsumer<List<ServerInfoAdvanced>, Boolean> callback) {
 		if (callback != null)
 			askServerInfoNew.add(callback);
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			RedisConnection redis = getRedisAccess();
 			try (Jedis jedis = redis.connect()) {
 				String serverName = OlympaCore.getInstance().getServerName();

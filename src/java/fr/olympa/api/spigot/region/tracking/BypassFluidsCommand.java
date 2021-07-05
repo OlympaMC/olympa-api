@@ -37,9 +37,9 @@ public class BypassFluidsCommand extends ComplexCommand {
 		
 		Long old = bypassFluidUntil.put(world, seconds * 1000);
 		if (old == null)
-			sendError("L'anti-fluides est réactivé pour %d secondes sur le monde %s.", seconds, world.getName());
+			sendError("L'anti-fluides est désactivé pour %d secondes sur le monde %s.", seconds, world.getName());
 		else
-			sendSuccess("L'anti-fluides est activé pour %d secondes sur le monde %s.", seconds, world.getName());
+			sendSuccess("L'anti-fluides est re-désactivé pour %d secondes sur le monde %s.", seconds, world.getName());
 	}
 	
 	@Cmd (args = "WORLD")

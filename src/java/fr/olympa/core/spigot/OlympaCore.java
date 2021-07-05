@@ -17,7 +17,6 @@ import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.plugin.OlympaSpigot;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.redis.ResourcePackHandler;
-import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.spigot.command.CommandListener;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
@@ -40,26 +39,8 @@ public class OlympaCore extends OlympaSpigot {
 		return instance;
 	}
 
-	private String serverName;
-
 	private HologramsManager holograms;
 	private RegionManager regions;
-	private OlympaServer olympaServer = OlympaServer.ALL;
-
-	@Override
-	public OlympaServer getOlympaServer() {
-		return olympaServer;
-	}
-
-	@Override
-	public void setOlympaServer(OlympaServer olympaServer) {
-		this.olympaServer = olympaServer;
-	}
-
-	@Override
-	public String getServerName() {
-		return serverName;
-	}
 
 	@Override
 	public RegionManager getRegionManager() {
@@ -103,19 +84,9 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
-	}
-
-	@Override
 	public ImageFrameManager getImageFrameManager() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public boolean isServerName(String serverName) {
-		return this.serverName.equals(serverName);
 	}
 
 	@Override

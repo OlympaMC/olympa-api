@@ -15,7 +15,7 @@ public enum SpigotVanillaPermission {
 
 	public static SpigotVanillaPermission get(String minecraftVanillaName) {
 		return Arrays.stream(SpigotVanillaPermission.values()).filter(p -> p.getSpigotVanillaName().equals(minecraftVanillaName)).findFirst().or(() -> {
-			LinkSpigotBungee.Provider.link.sendMessage("&4%s&c is not register in %s. You need to add it to handle this permission with OlympaPermission system.",
+			LinkSpigotBungee.getInstance().sendMessage("&4%s&c is not register in %s. You need to add it to handle this permission with OlympaPermission system.",
 					minecraftVanillaName, SpigotVanillaPermission.class.getName());
 			return Optional.of(BYPASS_PERM_NOT_EXIST);
 		}).get();

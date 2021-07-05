@@ -8,7 +8,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class PlayerUniversal<T> {
 
 	T player;
-	private static final boolean isSpigot = LinkSpigotBungee.Provider.link.isSpigot();
+	private static final boolean isSpigot = LinkSpigotBungee.getInstance().isSpigot();
 
 	public String getName() {
 		if (isSpigot)

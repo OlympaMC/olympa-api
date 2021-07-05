@@ -2,6 +2,7 @@ package fr.olympa.api.spigot.region.tracking.flags;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -25,6 +26,13 @@ public class DamageFlag extends Flag {
 	public void damageEvent(EntityDamageEvent event) {
 		if (onlyPlayers && !(event.getEntity() instanceof Player)) return;
 		event.setCancelled(disabledCauses == null || disabledCauses.contains(event.getCause()));
+	}
+	
+	@Override
+	public void appendDescription(StringJoiner joiner) {
+		super.appendDescription(joiner);
+		joiner.add("Only players: " + onlyPlayers);
+		joiner.add("Causes: " + (disabledCauses == null ? "all" : disabledCauses));
 	}
 
 }

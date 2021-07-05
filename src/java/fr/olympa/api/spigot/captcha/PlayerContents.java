@@ -26,7 +26,7 @@ public class PlayerContents {
 			if (itemContents instanceof ItemStack[])
 				inventoryItemContents = (ItemStack[]) itemContents;
 			else {
-				LinkSpigotBungee.Provider.link.sendMessage("An error as occured with " + player.getName() + "'s inventory: his stuff is lost ...");
+				LinkSpigotBungee.getInstance().sendMessage("An error as occured with " + player.getName() + "'s inventory: his stuff is lost ...");
 				return new PlayerContents(config, player.getUniqueId(), null);
 			}
 

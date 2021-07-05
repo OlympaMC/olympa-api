@@ -1,5 +1,7 @@
 package fr.olympa.api.spigot.region.tracking.flags;
 
+import java.util.StringJoiner;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
@@ -21,6 +23,12 @@ public class FoodFlag extends AbstractProtectionFlag {
 		if (handleUp) {
 			handleCancellable(event, (Player) event.getEntity(), event.getEntity().getFoodLevel() < event.getFoodLevel() ? disableUp : protectedByDefault);
 		}else handleCancellable(event, (Player) event.getEntity());
+	}
+	
+	@Override
+	public void appendDescription(StringJoiner joiner) {
+		super.appendDescription(joiner);
+		if (handleUp && disableUp) joiner.add(" Disables up");
 	}
 
 }

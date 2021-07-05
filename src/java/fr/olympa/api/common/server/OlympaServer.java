@@ -7,13 +7,12 @@ import javax.annotation.Nullable;
 
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.permission.OlympaPermission;
-import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.utils.Utils;
 
 public enum OlympaServer {
 
-	ALL(null, false, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV),
+	ALL(null, false),
 	BUNGEE("BungeeCord", true, ServerFrameworkType.BUNGEE),
 	ZTA("Olympa ZTA", false, true),
 	CREATIF("Créatif", false),
@@ -22,8 +21,8 @@ public enum OlympaServer {
 	LG("Loup-Garou", true),
 	LOBBY("Lobby", true),
 	AUTH("Authentification", true),
-	BUILDEUR("Buildeur", false, OlympaAPIPermissionsGlobal.CONNECT_SERVER_BUILDER),
-	DEV("Développement", true, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV),
+	BUILDEUR("Buildeur", false),
+	DEV("Développement", true),
 	;
 
 	private final String name;
@@ -34,11 +33,6 @@ public enum OlympaServer {
 
 	OlympaServer(String name, boolean multi) {
 		this(name, multi, false);
-	}
-
-	OlympaServer(String name, boolean multi, OlympaPermission joinPermission) {
-		this(name, multi, false);
-		this.joinPermission = joinPermission;
 	}
 
 	OlympaServer(String name, boolean multi, boolean hasPack) {

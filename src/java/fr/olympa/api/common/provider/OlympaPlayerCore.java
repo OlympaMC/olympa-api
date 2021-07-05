@@ -31,9 +31,9 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	@Expose
 	String ip;
 	@Expose
-	public Map<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparing(OlympaGroup::getPower).reversed());
+	public final Map<OlympaGroup, Long> groups = new TreeMap<>(Comparator.comparingInt(OlympaGroup::getPower).reversed());
 	@Expose
-	public Map<Long, String> histName = new TreeMap<>(Comparator.comparing(Long::longValue).reversed());
+	public final Map<Long, String> histName = new TreeMap<>(Comparator.comparingLong(Long::longValue).reversed());
 	@Expose
 	public Gender gender = Gender.UNSPECIFIED;
 	@Expose
@@ -95,7 +95,7 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 				continue;
 			if (OlympaServer.ALL == olympaGroup.getServer())
 				break;
-			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.Provider.link.getOlympaServer()))
+			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.getInstance().getOlympaServer()))
 				break;
 		}
 		return olympaGroup;

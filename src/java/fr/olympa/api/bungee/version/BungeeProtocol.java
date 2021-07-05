@@ -30,7 +30,7 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 * @throw IllegalAccessError when spigot instance call this method
 	 */
 	public List<String> getBungeeVersionsNames() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			throw new IllegalAccessError("Can't get BungeeVersion on Spigot instance.");
 		return ProtocolConstants.SUPPORTED_VERSIONS;
 	}
@@ -41,7 +41,7 @@ public class BungeeProtocol implements VersionHandler<ProxiedPlayer> {
 	 * @throw IllegalAccessError when spigot instance call this method
 	 */
 	public List<Integer> getBungeeVersionId() {
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			throw new IllegalAccessError("Can't get BungeeVersionId on Spigot instance.");
 		return ProtocolConstants.SUPPORTED_VERSION_IDS;
 	}

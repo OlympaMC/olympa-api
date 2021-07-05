@@ -50,7 +50,7 @@ public class SQLTable<T> {
 		return name.replace("`", "");
 	}
 
-	public void update(T object, Map<SQLColumn<T>, Object> sqlObjects) throws SQLException {
+	public void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
 		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
 		try (PreparedStatement statement = updateStatement.createStatement()) {
 			int i = 1;
@@ -215,7 +215,7 @@ public class SQLTable<T> {
 	}
 
 	public void insertAsync(Consumer<ResultSet> successCallback, Consumer<SQLException> failCallback, Object... notDefaultObjects) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				ResultSet resultSet = insert(notDefaultObjects);
 				if (successCallback != null)
@@ -264,7 +264,7 @@ public class SQLTable<T> {
 	}
 
 	public void deleteMultiAsync(Runnable successCallback, Consumer<SQLException> failCallback, T... primaryObjects) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				deleteMulti(primaryObjects);
 				if (successCallback != null)
@@ -285,7 +285,7 @@ public class SQLTable<T> {
 	}
 
 	public void deleteSQLObjectAsync(Object primaryObjectSQL, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				deleteSQLObject(primaryObjectSQL);
 				if (successCallback != null)

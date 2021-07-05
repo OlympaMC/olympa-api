@@ -44,6 +44,13 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected IVanishApi vanishApi;
 	protected VersionHandler<Player> versionHandler;
 
+	protected OlympaServer olympaServer;
+	
+	protected OlympaSpigot() {
+		LinkSpigotBungee.setInstance(this);
+		this.olympaServer = OlympaServer.ALL;
+	}
+	
 	@Override
 	public VersionHandler<Player> getVersionHandler() {
 		return versionHandler;
@@ -99,8 +106,6 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		return vanishApi;
 	}
 
-	protected OlympaServer olympaServer = OlympaServer.ALL;
-
 	@Override
 	public OlympaServer getOlympaServer() {
 		return olympaServer;
@@ -155,6 +160,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void onEnable() {
 		super.onEnable();
+		setupGlobalTasks();
 		if (config != null) {
 			String statusString = config.getString("status");
 			if (statusString != null && !statusString.isEmpty()) {

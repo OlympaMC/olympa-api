@@ -20,7 +20,7 @@ public class OlympaGlobalPermission extends OlympaPermission {
 
 	public OlympaGlobalPermission(OlympaGroup minGroup) {
 		super(minGroup);
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			underlying = new OlympaSpigotPermission(minGroup);
 		else
 			underlying = new OlympaBungeePermission(minGroup);
@@ -28,7 +28,7 @@ public class OlympaGlobalPermission extends OlympaPermission {
 
 	public OlympaGlobalPermission(OlympaGroup... allowedGroups) {
 		super(allowedGroups);
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			underlying = new OlympaSpigotPermission(allowedGroups);
 		else
 			underlying = new OlympaBungeePermission(allowedGroups);
@@ -36,7 +36,7 @@ public class OlympaGlobalPermission extends OlympaPermission {
 
 	public OlympaGlobalPermission(OlympaGroup minGroup, OlympaGroup[] allowedGroups) {
 		super(minGroup, allowedGroups);
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			underlying = new OlympaSpigotPermission(minGroup, allowedGroups);
 		else
 			underlying = new OlympaBungeePermission(minGroup, allowedGroups);

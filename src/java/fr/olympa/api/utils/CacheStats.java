@@ -170,7 +170,7 @@ public class CacheStats {
 	}
 
 	private static TxtComponentBuilder getAllDebugCaches(Receiver receiver) {
-		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliterBN();
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Voici tous les cache de olympa côté %s.", LinkSpigotBungee.getInstance().isSpigot() ? "Spigot" : "BungeeCord").extraSpliterBN();
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
 		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Cache<?, ?>> entry : caches.entrySet())
@@ -182,7 +182,7 @@ public class CacheStats {
 	}
 
 	public static TxtComponentBuilder getAllDebugList(Receiver receiver) {
-		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "List en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "List en mode DEBUG olympa côté %s.", LinkSpigotBungee.getInstance().isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
 		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Collection<?>> entry : debugList.entrySet())
@@ -194,7 +194,7 @@ public class CacheStats {
 	}
 
 	public static TxtComponentBuilder getAllDebugMap(Receiver receiver) {
-		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Map en mode DEBUG olympa côté %s.", LinkSpigotBungee.Provider.link.isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
+		TxtComponentBuilder builder = new TxtComponentBuilder(Prefix.DEFAULT, "Map en mode DEBUG olympa côté %s.", LinkSpigotBungee.getInstance().isSpigot() ? "Spigot" : "BungeeCord").extraSpliter("\n");
 		TableGenerator table = new TableGenerator(Alignment.LEFT, Alignment.LEFT).setReceiver(receiver);
 		table.addRowTxtBuilder("&3Id", "&bTaille");
 		for (Entry<String, Map<Object, Object>> entry : debugMap.entrySet())
@@ -239,7 +239,7 @@ public class CacheStats {
 
 	private static String getCommandToPrint(String listOrMapOrCache, String name) {
 		String commandName;
-		if (LinkSpigotBungee.Provider.link.isSpigot())
+		if (LinkSpigotBungee.getInstance().isSpigot())
 			commandName = "spig";
 		else
 			commandName = "bung";
@@ -255,7 +255,7 @@ public class CacheStats {
 				String tmp = new Gson().toJson(o);
 				key = tmp;
 			} catch (Exception e) {
-				LinkSpigotBungee.Provider.link.sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
+				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
 			}
 		return key;
 	}
@@ -277,7 +277,7 @@ public class CacheStats {
 			} catch (Exception e) {
 				out.extra(key);
 				out.onHoverText("&cImpossible de serialize en json la class &4%s&c.", o.getClass().getSimpleName());
-				LinkSpigotBungee.Provider.link.sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
+				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
 			}
 		else
 			out.extra(key);

@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import com.google.gson.Gson;
 
-import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.bungee.plugin.OlympaBungeeCore;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
@@ -24,17 +23,20 @@ public class OlympaBungee extends OlympaBungeeCore {
 
 	@Override
 	public void onLoad() {
+		super.onLoad();
 		instance = this;
-		LinkSpigotBungee.Provider.link = this;
 	}
 
 	@Override
 	public void onDisable() {
+		super.onDisable();
 		sendMessage("&4" + getDescription().getName() + "&c (" + getDescription().getVersion() + ") est désactivé.");
 	}
 
 	@Override
 	public void onEnable() {
+		super.onEnable();
+		
 		PluginManager pluginManager = getProxy().getPluginManager();
 		pluginManager.registerListener(this, new AuthListener());
 		sendMessage("&2" + getDescription().getName() + "&a (" + getDescription().getVersion() + ") est activé.");

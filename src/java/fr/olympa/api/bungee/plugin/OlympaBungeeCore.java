@@ -61,7 +61,15 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	}
 
 	@Override
+	public void onLoad() {
+		super.onLoad();
+		LinkSpigotBungee.setInstance(this);
+	}
+	
+	@Override
 	public void onEnable() {
+		setupGlobalTasks();
+		
 		OlympaPermission.registerPermissions(OlympaAPIPermissionsGlobal.class);
 		OlympaPermission.registerPermissions(OlympaAPIPermissionsBungee.class);
 

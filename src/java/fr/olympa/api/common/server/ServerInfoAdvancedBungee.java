@@ -40,7 +40,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 
 	public static boolean addReadTimeException(ServerInfo serverInfo) {
 		if (OlympaModule.DEBUG)
-			OlympaBungee.getInstance().sendMessage("&7Debug Serveur &e%s&7 a été ping et une &cReadTimeoutException est appru.", serverInfo.getName());
+			OlympaBungee.getInstance().sendMessage("§8[Debug] §7Le serveur §e%s§7 a été ping et une §cReadTimeoutException§7 est apparue.", serverInfo.getName());
 		Integer oldValue = ServerInfoAdvancedBungee.readTimeException.get(serverInfo.getName());
 		if (oldValue != null)
 			if (oldValue <= 2) {
