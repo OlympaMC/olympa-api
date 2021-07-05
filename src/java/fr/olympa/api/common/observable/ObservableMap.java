@@ -19,8 +19,8 @@ public class ObservableMap<K, V> extends AbstractObservable implements Map<K, V>
 
 	public void putAllFromJson(String json) {
 		if (json != null && !json.isBlank() && !json.equals("{}"))
-			putAll(LinkSpigotBungee.getInstance().getGson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
-		putAll(new Gson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
+			//			putAll(LinkSpigotBungee.getInstance().getGson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
+			putAll(new Gson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
 	}
 
 	private final Map<K, V> sub;
@@ -123,6 +123,8 @@ public class ObservableMap<K, V> extends AbstractObservable implements Map<K, V>
 
 	@Override
 	public void putAll(Map<? extends K, ? extends V> m) {
+		if (m == null || !m.isEmpty())
+			return;
 		sub.putAll(m);
 		m.forEach((key, value) -> {
 			if (key instanceof AbstractObservable observable)
