@@ -93,7 +93,7 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 			olympaGroup = iterator.next();
 			if (!olympaGroup.isVisible())
 				continue;
-			if (OlympaServer.ALL.equals(olympaGroup.getServer()))
+			if (OlympaServer.ALL == olympaGroup.getServer())
 				break;
 			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.Provider.link.getOlympaServer()))
 				break;
@@ -247,7 +247,7 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-	
+
 	@Override
 	public void setId(long id) {
 		this.id = id;

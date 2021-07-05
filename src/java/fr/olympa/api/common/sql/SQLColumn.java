@@ -16,6 +16,7 @@ public class SQLColumn<T> {
 	private final String type;
 	private final int sqlType;
 	private boolean isDefault;
+	private boolean allowNull = false;
 	private Function<T, Object> getSqlObject;
 	private boolean updatable = false;
 
@@ -57,6 +58,15 @@ public class SQLColumn<T> {
 	public SQLColumn<T> setNotDefault() {
 		this.isDefault = false;
 		return this;
+	}
+
+	public SQLColumn<T> allowNull() {
+		this.allowNull = true;
+		return this;
+	}
+
+	public boolean canBeNullable() {
+		return allowNull;
 	}
 
 	public String toDeclaration() {

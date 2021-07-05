@@ -50,14 +50,20 @@ public class SQLTable<T> {
 		return name.replace("`", "");
 	}
 
-	public void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
+	public void update(T object, Map<SQLColumn<T>, Object> sqlObjects) throws SQLException {
 		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
 		try (PreparedStatement statement = updateStatement.createStatement()) {
 			int i = 1;
-			for (Entry<SQLColumn<?>, Object> entry : sqlObjects.entrySet()) {
+			for (Entry<SQLColumn<T>, Object> entry : sqlObjects.entrySet()) {
+				SQLColumn<T> column = entry.getKey();
 				Object value = entry.getValue();
-				if (value instanceof SQLNullObject)
-					value = null;
+				if (value == null || value instanceof SQLNullObject)
+					if (column.canBeNullable())
+						value = null;
+					else
+						new IllegalAccessError("Une commande UPDATE en sql a été effectué sur la table " + name + " et l'objet de la colonne " + column.getName() + " est NULL mais la SQLColumn ne supporte pas "
+								+ "les objets nulls. Ajoute SQLColumn.AllowNull() lors de la constrution de la colonne SQLColumn. L'UPDATE de cette colonne en bdd n'a pas été effectué. Si il est normal"
+								+ "que l'objet ne supporte pas d'être null, cela veux dire qu'il y a une perte de données.").printStackTrace();
 				statement.setObject(i++, value, entry.getKey().getSQLType());
 			}
 			statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());
@@ -65,13 +71,13 @@ public class SQLTable<T> {
 		}
 	}
 
-	public synchronized List<T> select(Map<SQLColumn<?>, Object> whereSqlObjects) throws SQLException, IllegalAccessException {
+	public synchronized List<T> select(Map<SQLColumn<T>, Object> whereSqlObjects) throws SQLException, IllegalAccessException {
 		if (initializeFromRow == null)
 			throw new IllegalAccessException("Function initializeFromRow is not set for table " + name + ", unable to automate select data.");
 		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, whereSqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
 		try (PreparedStatement statement = selectStatement.createStatement()) {
 			int i = 1;
-			for (Entry<SQLColumn<?>, Object> entry : whereSqlObjects.entrySet()) {
+			for (Entry<SQLColumn<T>, Object> entry : whereSqlObjects.entrySet()) {
 				Object value = entry.getValue();
 				if (value instanceof SQLNullObject)
 					value = null;
@@ -79,13 +85,14 @@ public class SQLTable<T> {
 			}
 			ResultSet rs = selectStatement.executeQuery(statement);
 			List<T> objects = new ArrayList<>();
-			while (rs.next()) objects.add(initializeFromRow.initialize(rs));
+			while (rs.next())
+				objects.add(initializeFromRow.initialize(rs));
 			rs.close();
 			return objects;
 		}
 	}
 
-	public void updateAsync(T object, Map<SQLColumn<?>, Object> sqlObjects, Runnable successCallback, Consumer<SQLException> failCallback) {
+	public void updateAsync(T object, Map<SQLColumn<T>, Object> sqlObjects, Runnable successCallback, Consumer<SQLException> failCallback) {
 		LinkSpigotBungee.Provider.link.launchAsync(() -> {
 			try {
 				update(object, sqlObjects);
@@ -101,7 +108,7 @@ public class SQLTable<T> {
 	}
 
 	public SQLTable<T> createOrAlter() throws SQLException {
-		LinkSpigotBungee link = LinkSpigotBungee.Provider.link;
+		LinkSpigotBungee<?> link = LinkSpigotBungee.getInstance();
 		Statement statement = link.getDatabase().createStatement();
 
 		String schemaPattern = null, tablePattern = name;
@@ -113,32 +120,29 @@ public class SQLTable<T> {
 		ResultSet columnsSet = link.getDatabase().getMetaData().getColumns(schemaPattern, null, tablePattern, "%");
 		if (columnsSet.first()) { // la table existe : il faut vérifier si toutes les colonnes sont présentes
 			link.sendMessage("§7Chargement de la table %s...", name);
-			List<SQLColumn<?>> missingColumns = columns.stream().filter(Predicate.not(SQLColumn::isPrimaryKey)).collect(Collectors.toList());
+			List<SQLColumn<T>> missingColumns = columns.stream().filter(Predicate.not(SQLColumn::isPrimaryKey)).collect(Collectors.toList());
 			while (columnsSet.next()) {
 				String columnName = "`" + columnsSet.getString(4) + "`";
 				if (!missingColumns.removeIf(column -> column.getName().equals(columnName)))
 					link.sendMessage("§cColonne %s présente dans la table SQL %s mais non déclarée.", columnName, name);
 			}
-			for (SQLColumn<?> column : missingColumns) {
+			for (SQLColumn<T> column : missingColumns) {
 				statement.executeUpdate("ALTER TABLE " + name + " ADD " + column.toDeclaration());
 				link.sendMessage("La colonne §6%s §ea été créée dans la table §6%s§e.", column.toDeclaration(), name);
 			}
-		}else {
+		} else {
 			int updateResult = statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (" + SQLColumn.toParameters(columns) + ")");
 			columnsSet.close();
 			columnsSet = link.getDatabase().getMetaData().getColumns(schemaPattern, null, tablePattern, "%");
-			if (updateResult < 1 && !columnsSet.first()) {
+			if (updateResult < 1 && !columnsSet.first())
 				new IllegalAccessError(
 						"La table " + name + " (table pattern: " + tablePattern + ", schema pattern: " + schemaPattern + ") n'a pas été trouvée dans le catalog alors qu'elle existe bien. Impossible de vérifier son intégralitée de colonne.")
-				.printStackTrace();
-			}else {
+								.printStackTrace();
+			else
 				link.sendMessage("Table SQL §6%s §ecréée !", name);
-			}
 		}
 		statement.close();
-
 		columns.forEach(column -> column.setSQLSelector(new SQLSelector<>() {
-
 			@Override
 			public List<T> select(Object sqlObject, String... specifiedColumnsReturned) throws SQLException, IllegalAccessException {
 				List<T> objects = new ArrayList<>();
@@ -161,7 +165,6 @@ public class SQLTable<T> {
 			}
 		}));
 		columns.stream().filter(SQLColumn::isUpdatable).forEach(column -> column.setSQLUpdater(new SQLUpdater<>() {
-			//			private OlympaStatement updateStatement = new OlympaStatement("UPDATE " + name + " SET " + column.getName() + " = ? WHERE (" + primaryColumn.getName() + " = ?)");
 			private OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), new String[] { column.getName() });
 
 			@Override
@@ -188,27 +191,23 @@ public class SQLTable<T> {
 				});
 			}
 		}));
-
 		StringJoiner valuesJoiner = new StringJoiner(", ", "(", ")");
 		for (int i = 0; i < columns.stream().filter(SQLColumn::isNotDefault).count(); i++)
 			valuesJoiner.add("?");
-
 		insertStatement = new OlympaStatement("INSERT INTO " + name + " (" + columns.stream().filter(SQLColumn::isNotDefault).map(SQLColumn::getName).collect(Collectors.joining(", ")) + ")"
-				+ " VALUES " + valuesJoiner.toString(),
-				true);
-
+				+ " VALUES " + valuesJoiner.toString(), true);
 		deleteStatement = new OlympaStatement("DELETE FROM " + name + " WHERE (" + primaryColumn.getName() + " = ?)");
-
 		return this;
 	}
 
 	public synchronized ResultSet insert(Object... notDefaultObjects) throws SQLException {
 		try (PreparedStatement statement = insertStatement.createStatement()) {
 			int i = 1;
-			for (SQLColumn<T> column : columns) if (column.isNotDefault()) {
-				statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
-				i++;
-			}
+			for (SQLColumn<T> column : columns)
+				if (column.isNotDefault()) {
+					statement.setObject(i, notDefaultObjects[i - 1], column.getSQLType());
+					i++;
+				}
 			//LinkSpigotBungee.Provider.link.sendMessage("Création d'une ligne sur la table %s (données: %s).", name, Arrays.toString(notDefaultObjects));tqt
 			insertStatement.executeUpdate(statement);
 			return statement.getGeneratedKeys();
@@ -219,55 +218,58 @@ public class SQLTable<T> {
 		LinkSpigotBungee.Provider.link.launchAsync(() -> {
 			try {
 				ResultSet resultSet = insert(notDefaultObjects);
-				if (successCallback != null) successCallback.accept(resultSet);
-				resultSet.close();
-			}catch (SQLException e) {
-				e.printStackTrace();
-				if (failCallback != null) failCallback.accept(e);
-			}
-		});
-	}
-	
-	public synchronized void delete(T primaryObject) throws SQLException {
-		try (PreparedStatement statement = deleteStatement.createStatement()) {
-			statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
-			deleteStatement.executeUpdate(statement);
-		}
-	}
-	
-	public void deleteAsync(T primaryObject, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
-			try {
-				delete(primaryObject);
 				if (successCallback != null)
-					successCallback.run();
-			}catch (SQLException e) {
+					successCallback.accept(resultSet);
+				resultSet.close();
+			} catch (SQLException e) {
 				e.printStackTrace();
 				if (failCallback != null)
 					failCallback.accept(e);
 			}
 		});
 	}
-	
+
+	public synchronized void delete(T primaryObject) throws SQLException {
+		try (PreparedStatement statement = deleteStatement.createStatement()) {
+			statement.setObject(1, primaryColumn.getPrimaryKeySQLObject(primaryObject), primaryColumn.getSQLType());
+			deleteStatement.executeUpdate(statement);
+		}
+	}
+
+	public void deleteAsync(T primaryObject, Runnable successCallback, Consumer<SQLException> failCallback) {
+		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+			try {
+				delete(primaryObject);
+				if (successCallback != null)
+					successCallback.run();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				if (failCallback != null)
+					failCallback.accept(e);
+			}
+		});
+	}
+
 	public void deleteMulti(T... primaryObjects) throws SQLException {
 		if (primaryObjects.length == 1) {
 			delete(primaryObjects[0]);
 			return;
 		}
-		
-		OlympaStatement deletionStatement = new OlympaStatement("DELETE FROM " + name + " WHERE " + primaryColumn.getName() + " IN (" + Arrays.stream(primaryObjects).map(x -> primaryColumn.getPrimaryKeySQLObject(x).toString()).collect(Collectors.joining(", ")) + ")");
+
+		OlympaStatement deletionStatement = new OlympaStatement(
+				"DELETE FROM " + name + " WHERE " + primaryColumn.getName() + " IN (" + Arrays.stream(primaryObjects).map(x -> primaryColumn.getPrimaryKeySQLObject(x).toString()).collect(Collectors.joining(", ")) + ")");
 		try (PreparedStatement statement = deletionStatement.createStatement()) {
 			deletionStatement.executeUpdate(statement);
 		}
 	}
-	
+
 	public void deleteMultiAsync(Runnable successCallback, Consumer<SQLException> failCallback, T... primaryObjects) {
 		LinkSpigotBungee.Provider.link.launchAsync(() -> {
 			try {
 				deleteMulti(primaryObjects);
 				if (successCallback != null)
 					successCallback.run();
-			}catch (SQLException e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
 				if (failCallback != null)
 					failCallback.accept(e);
@@ -281,14 +283,14 @@ public class SQLTable<T> {
 			deleteStatement.executeUpdate(statement);
 		}
 	}
-	
+
 	public void deleteSQLObjectAsync(Object primaryObjectSQL, Runnable successCallback, Consumer<SQLException> failCallback) {
 		LinkSpigotBungee.Provider.link.launchAsync(() -> {
 			try {
 				deleteSQLObject(primaryObjectSQL);
 				if (successCallback != null)
 					successCallback.run();
-			}catch (SQLException e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
 				if (failCallback != null)
 					failCallback.accept(e);
@@ -315,25 +317,25 @@ public class SQLTable<T> {
 		OlympaStatement selectStatement = new OlympaStatement(StatementType.SELECT, name, null);
 		try (PreparedStatement statement = selectStatement.createStatement()) {
 			ResultSet rs = selectStatement.executeQuery(statement);
-			while (rs.next()) {
+			while (rs.next())
 				try {
 					objects.add(initializeFromRow.initialize(rs));
-				}catch (Exception ex) {
-					if (exceptionHandler != null && exceptionHandler.fail(ex, rs)) continue;
+				} catch (Exception ex) {
+					if (exceptionHandler != null && exceptionHandler.fail(ex, rs))
+						continue;
 					throw ex;
 				}
-			}
 			rs.close();
 			return objects;
 		}
 	}
 
 	public interface ObjectInitizalizer<T> {
-		public T initialize(ResultSet resultSet) throws SQLException;
+		T initialize(ResultSet resultSet) throws SQLException;
 	}
-	
+
 	public interface ObjectInitializationHandler {
-		public boolean fail(Exception ex, ResultSet resultSet) throws SQLException;
+		boolean fail(Exception ex, ResultSet resultSet) throws SQLException;
 	}
-	
+
 }
