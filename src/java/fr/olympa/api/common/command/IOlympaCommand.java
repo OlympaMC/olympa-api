@@ -83,7 +83,7 @@ public interface IOlympaCommand {
 	}
 
 	default void sendJSON(Prefix prefix, String message, ClickEvent.Action clickAction, String clickActionValue, HoverEvent.Action hoverAction, Content... contents) {
-		sendComponents(prefix, TxtComponentBuilder.of(prefix, message, clickAction, clickActionValue, hoverAction, contents));
+		sendComponents(TxtComponentBuilder.of(prefix, message, clickAction, clickActionValue, hoverAction, contents));
 	}
 
 	void sendComponents(BaseComponent... components);

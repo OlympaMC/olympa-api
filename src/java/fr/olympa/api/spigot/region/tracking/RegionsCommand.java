@@ -81,20 +81,24 @@ public class RegionsCommand extends ComplexCommand {
 		sendSuccess("La région %s a été affichée.", region.getID());
 	}
 	
-	@Cmd (min = 1, args = "REGION", syntax = "<region id>")
+	@Cmd (min = 1, args = { "REGION", "BOOLEAN" }, syntax = "<region id> [show points: true]")
 	public void regionInfo(CommandContext cmd) {
 		TrackedRegion trackedRegion = cmd.getArgument(0);
 		Region region = trackedRegion.getRegion();
 		sendSuccess("Région §e%s §a(%s)", trackedRegion.getID(), region.getWorld().getName());
 		sendSuccess("Type: §e%s", region.getClass().getSimpleName());
 		sendSuccess("Min: §e%s §a| Max: §e%s", SpigotUtils.convertLocationToHumanString(region.getMin()), SpigotUtils.convertLocationToHumanString(region.getMax()));
-		sendSuccess("%d points:", region.getLocations().size());
-		for (Location location : region.getLocations()) sendMessage(Prefix.DEFAULT, "- " + SpigotUtils.convertLocationToHumanString(location));
+		if (cmd.getArgument(1, Boolean.FALSE)) {
+			sendSuccess("%d points:", region.getLocations().size());
+			for (Location location : region.getLocations()) sendMessage(Prefix.DEFAULT, "- " + SpigotUtils.convertLocationToHumanString(location));
+		}else {
+			sendSuccess("%d points §7(ajouter §otrue§7 pour les voir)", region.getLocations().size());
+		}
 		sendSuccess("Priorité: §e%s", trackedRegion.getPriority().name());
 		sendSuccess("%d flag(s):", trackedRegion.getFlags().size(), trackedRegion.getFlags().stream().map(flag -> flag.getType()).collect(Collectors.joining(", ", "[", "]")));
-		TxtComponentBuilder builder = new TxtComponentBuilder("").extraSpliter("\n§7- §e");
+		TxtComponentBuilder builder = new TxtComponentBuilder().extraSpliter("\n");
 		for (Flag flag : trackedRegion.getFlags()) {
-			TxtComponentBuilder flagCompo = new TxtComponentBuilder(flag.getType());
+			TxtComponentBuilder flagCompo = new TxtComponentBuilder("§7- §e" + flag.getType());
 			StringJoiner description = new StringJoiner("\n§7", "§7", "");
 			flag.appendDescription(description);
 			flagCompo.onHoverText(description.toString());

@@ -47,8 +47,8 @@ public abstract class AbstractProtectionFlag extends Flag {
 	@Override
 	public void appendDescription(StringJoiner joiner) {
 		super.appendDescription(joiner);
-		joiner.add("Protected by default: " + protectedByDefault);
-		if (overrideBypassProtection) joiner.add("Overrides the BYPASS");
+		joiner.add("Protected by default: §a" + protectedByDefault);
+		if (overrideBypassProtection) joiner.add("§eOverrides the BYPASS");
 	}
 
 }

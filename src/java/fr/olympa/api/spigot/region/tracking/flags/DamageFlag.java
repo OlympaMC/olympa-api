@@ -31,8 +31,8 @@ public class DamageFlag extends Flag {
 	@Override
 	public void appendDescription(StringJoiner joiner) {
 		super.appendDescription(joiner);
-		joiner.add("Only players: " + onlyPlayers);
-		joiner.add("Causes: " + (disabledCauses == null ? "all" : disabledCauses));
+		joiner.add("Only players: §a" + onlyPlayers);
+		joiner.add("Causes: §a" + (disabledCauses == null ? "all" : disabledCauses));
 	}
 
 }

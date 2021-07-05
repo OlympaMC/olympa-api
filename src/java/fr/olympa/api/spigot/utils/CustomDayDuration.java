@@ -1,5 +1,8 @@
 package fr.olympa.api.spigot.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -34,12 +37,17 @@ public class CustomDayDuration implements Listener {
 			boolean isNight = world.getTime() >= NIGHT_TIME;
 			double time = world.getFullTime();
 			double mult = isNight ? nightMultiplier : dayMultiplier;
-			if (mult == 1) return;
+			if (mult == 1) {
+				if (nextTick != -1) nextTick = -1;
+				return;
+			}
 			if (nextTick != -1) {
 				if (tolerance == 0 ? (Math.floor(time) != Math.floor(nextTick)) : Math.abs(time - nextTick) >= tolerance) world.setFullTime((long) nextTick);
-				time = nextTick;
-			}
-			nextTick = time + mult;
+				nextTick += mult;
+				BigDecimal bd = BigDecimal.valueOf(nextTick);
+				bd.setScale(2, RoundingMode.HALF_UP);
+				nextTick = bd.doubleValue();
+			}else nextTick = time + mult;
 			
 			if (day != null || night != null) {
 				boolean nextNight = nextTick % 24000L >= NIGHT_TIME;

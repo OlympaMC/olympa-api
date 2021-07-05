@@ -62,15 +62,17 @@ public class Flag {
 	}
 	
 	public void appendDescription(StringJoiner joiner) {
-		StringJoiner classJoiner = new StringJoiner(" -> ");
+		StringJoiner classJoiner = new StringJoiner("§8 -> ");
 		Class<?> clazz = getClass();
 		do {
-			classJoiner.add(clazz.getName());
+			classJoiner.add("§a" + clazz.getName().replace("fr.olympa.api.spigot.region.tracking.flags", "olympa.flags"));
 			clazz = clazz.getSuperclass();
 		}while (!clazz.equals(Flag.class));
 		joiner.add("Class(es): " + classJoiner.toString());
-		joiner.add("Default entry: " + entry.name() + (greeting == null ? "" : ". In " + position.name() + ": " + BaseComponent.toLegacyText(greeting)));
-		joiner.add("Default exit: " + exit.name() + (farewell == null ? "" : ". In " + position.name() + ": " + BaseComponent.toLegacyText(farewell)));
+		joiner.add("");
+		joiner.add("Default entry: §a" + entry.name() + (greeting == null ? "" : "§7. In §a" + position.name() + "§7: §r" + BaseComponent.toLegacyText(greeting)));
+		joiner.add("Default exit: §a" + exit.name() + (farewell == null ? "" : "§7. In §a" + position.name() + "§7: §r" + BaseComponent.toLegacyText(farewell)));
+		joiner.add("");
 	}
 
 }
