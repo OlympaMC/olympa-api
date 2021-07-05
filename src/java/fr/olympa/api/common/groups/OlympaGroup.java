@@ -34,7 +34,15 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
 	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
-	VIP(19, 20, OlympaServer.ALL, "VIP", "VIP", "&6%s", ":&r", false),
+	VIP(
+			19,
+			20,
+			OlympaServer.ALL,
+			"VIP",
+			"VIP",
+			"&6%s ",
+			":&r",
+			false),
 
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),

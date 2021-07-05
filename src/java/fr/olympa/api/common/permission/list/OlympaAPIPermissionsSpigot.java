@@ -10,6 +10,7 @@ public class OlympaAPIPermissionsSpigot {
 	public static final OlympaSpigotPermission COMMAND_HOLOGRAMS_MANAGE = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_IMAGEMAP = new OlympaSpigotPermission(OlympaGroup.DEV);
 	public static final OlympaSpigotPermission COMMAND_BYPASS_REGIONS = new OlympaSpigotPermission(OlympaGroup.BUILDER); // TODO + haute perm après ouverture
+	public static final OlympaSpigotPermission COMMAND_REGIONS_MANAGE = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 
 	public static final OlympaSpigotPermission NAMESPACED_COMMANDS = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission AFK_SEE_IN_TAB = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);

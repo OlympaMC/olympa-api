@@ -1,5 +1,7 @@
 package fr.olympa.api.spigot.region.tracking.flags;
 
+import java.util.StringJoiner;
+
 import fr.olympa.api.spigot.region.tracking.ActionResult;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.ExitEvent;
@@ -46,6 +48,29 @@ public class Flag {
 	public ActionResult leaves(ExitEvent event) {
 		if (farewell != null) event.getPlayer().spigot().sendMessage(position, farewell);
 		return exit;
+	}
+	
+	public String getType() {
+		if (getClass().isAnonymousClass()) {
+			Class<?> notAnonymousClass = getClass();
+			do {
+				notAnonymousClass = notAnonymousClass.getSuperclass();
+			}while (notAnonymousClass.isAnonymousClass());
+			return getClass().getName() + " (" + notAnonymousClass.getSimpleName() + ")";
+		}
+		return getClass().getSimpleName();
+	}
+	
+	public void appendDescription(StringJoiner joiner) {
+		StringJoiner classJoiner = new StringJoiner(" -> ");
+		Class<?> clazz = getClass();
+		do {
+			classJoiner.add(clazz.getName());
+			clazz = clazz.getSuperclass();
+		}while (!clazz.equals(Flag.class));
+		joiner.add("Class(es): " + classJoiner.toString());
+		joiner.add("Default entry: " + entry.name() + (greeting == null ? "" : ". In " + position.name() + ": " + BaseComponent.toLegacyText(greeting)));
+		joiner.add("Default exit: " + exit.name() + (farewell == null ? "" : ". In " + position.name() + ": " + BaseComponent.toLegacyText(farewell)));
 	}
 
 }

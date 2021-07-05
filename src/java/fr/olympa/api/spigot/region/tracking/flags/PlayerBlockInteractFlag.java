@@ -2,6 +2,7 @@ package fr.olympa.api.spigot.region.tracking.flags;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -35,6 +36,12 @@ public class PlayerBlockInteractFlag extends AbstractProtectionFlag {
 	
 	protected void handleOtherBlock(PlayerInteractEvent event) {
 		handleCancellable(event, event.getPlayer());
+	}
+	
+	@Override
+	public void appendDescription(StringJoiner joiner) {
+		super.appendDescription(joiner);
+		if (handleBlocksInventory) joiner.add("Inventory blocks protected: " + blockInventoryProtected);
 	}
 
 }

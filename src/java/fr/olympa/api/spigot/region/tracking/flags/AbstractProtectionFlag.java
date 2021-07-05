@@ -1,5 +1,7 @@
 package fr.olympa.api.spigot.region.tracking.flags;
 
+import java.util.StringJoiner;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -40,6 +42,13 @@ public abstract class AbstractProtectionFlag extends Flag {
 	
 	protected void handleCancellable(Cancellable event, Player player, boolean cancel) {
 		if (applies(player)) event.setCancelled(cancel);
+	}
+	
+	@Override
+	public void appendDescription(StringJoiner joiner) {
+		super.appendDescription(joiner);
+		joiner.add("Protected by default: " + protectedByDefault);
+		if (overrideBypassProtection) joiner.add("Overrides the BYPASS");
 	}
 
 }
