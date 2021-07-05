@@ -18,9 +18,15 @@ public class ObservableMap<K, V> extends AbstractObservable implements Map<K, V>
 	public static final ObservableMap EMPTY_MAP = new ObservableMap<>(Collections.emptyMap());
 
 	public void putAllFromJson(String json) {
-		if (json != null && !json.isBlank() && !json.equals("{}"))
-			//			putAll(LinkSpigotBungee.getInstance().getGson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
-			putAll(new Gson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
+		try {
+
+			if (json != null && !json.isBlank() && !json.equals("{}"))
+				//			putAll(LinkSpigotBungee.getInstance().getGson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
+				putAll(new Gson().fromJson(json, new TypeToken<Map<K, V>>() {}.getType()));
+		} catch (Exception e) {
+			e.addSuppressed(new Exception("JSON : " + json));
+			e.printStackTrace();
+		}
 	}
 
 	private final Map<K, V> sub;
