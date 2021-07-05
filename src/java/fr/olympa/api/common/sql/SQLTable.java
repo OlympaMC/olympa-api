@@ -50,7 +50,7 @@ public class SQLTable<T> {
 		return name.replace("`", "");
 	}
 
-	public void update(T object, Map<SQLColumn<?>, Object> sqlObjects) throws SQLException {
+	public void update(T object, Map<SQLColumn<T>, Object> sqlObjects) throws SQLException {
 		OlympaStatement updateStatement = new OlympaStatement(StatementType.UPDATE, name, primaryColumn.getName(), sqlObjects.keySet().stream().map(e -> e.getName()).toArray(String[]::new));
 		try (PreparedStatement statement = updateStatement.createStatement()) {
 			int i = 1;
