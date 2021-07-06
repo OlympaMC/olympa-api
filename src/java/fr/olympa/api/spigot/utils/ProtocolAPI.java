@@ -29,31 +29,11 @@ import fr.olympa.api.utils.Utils;
  */
 public enum ProtocolAPI {
 
+	V1_17_1(756, true, true),
 	V1_17(755, true, true),
-	//	SNAPSHOT_1_17$RC2(1073741859, false, true, true),
-	//	SNAPSHOT_1_17$RC1(1073741858, false, true, true),
-	//	SNAPSHOT_1_17$PRE5(1073741857, false, true, true),
-	//	SNAPSHOT_1_17$PRE4(1073741856, false, true, true),
-	//	SNAPSHOT_1_17$PRE3(1073741855, false, true, true),
-	//	SNAPSHOT_1_17$PRE2(1073741854, false, true, true),
-	//	SNAPSHOT_1_17$PRE1(1073741853, false, true, true),
-	//	SNAPSHOT_1_17$21W20A(1073741852, false, true, true),
-	//	SNAPSHOT_1_17$21W19A(1073741851, false, true, true),
-	//	SNAPSHOT_1_17$21W18A(1073741850, false, true, true),
-	//	SNAPSHOT_1_17$21W17A(1073741849, false, true, true),
-	//	SNAPSHOT_1_17$21W16A(1073741847, false, true, true),
-	//	SNAPSHOT_1_17$21W15A(1073741846, false, true, true),
-	//	SNAPSHOT_1_17$21W14A(1073741845, false, true, true),
-	//	SNAPSHOT_1_17$21W13A(1073741844, false, true, true),
-	//	SNAPSHOT_1_17$21W11A(1073741843, false, true, true),
-	//	SNAPSHOT_1_17$21W10A(1073741842, false, true, true),
-	//	SNAPSHOT_1_17$21W08A(1073741841, false, true, true),
-	//	SNAPSHOT_1_17$21W07A(1073741840, false, true, true),
-	//	SNAPSHOT_1_17$21W06A(1073741839, false, true, true),
 	V1_16_5(754),
 	V1_16_4(754),
 	V1_16_3(753),
-	//	V1_16_3$RC1(752, false, true, true),
 	V1_16_2(751),
 	V1_16_1(736),
 	V1_16(735),
@@ -314,22 +294,20 @@ public enum ProtocolAPI {
 	}
 
 	private final int protocolNumber;
-	private boolean allow = true;
-	private boolean notRecommended = false;
-	private boolean snapshot = false;
+	private final boolean allow;
+	private final boolean notRecommended;
+	private final boolean snapshot;
 
 	ProtocolAPI(int protocolNumber) {
-		this.protocolNumber = protocolNumber;
+		this(protocolNumber, true, false, false);
 	}
 
 	ProtocolAPI(int protocolNumber, boolean allow) {
-		this(protocolNumber);
-		this.allow = allow;
+		this(protocolNumber, allow, false, false);
 	}
 
-	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommanded) {
-		this(protocolNumber, allow);
-		notRecommended = notRecommanded;
+	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommended) {
+		this(protocolNumber, allow, false, false);
 	}
 
 	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommended, boolean snapshot) {
@@ -401,7 +379,7 @@ public enum ProtocolAPI {
 	}
 
 	public boolean isNotRecommended() {
-		return snapshot || notRecommended;
+		return notRecommended || snapshot;
 	}
 
 	public boolean isSnapshot() {
