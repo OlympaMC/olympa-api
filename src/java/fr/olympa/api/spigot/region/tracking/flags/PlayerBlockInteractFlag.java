@@ -41,7 +41,7 @@ public class PlayerBlockInteractFlag extends AbstractProtectionFlag {
 	@Override
 	public void appendDescription(StringJoiner joiner) {
 		super.appendDescription(joiner);
-		if (handleBlocksInventory) joiner.add("Inventory blocks protected: " + blockInventoryProtected);
+		if (handleBlocksInventory) joiner.add("Inventory blocks protected: §a" + blockInventoryProtected);
 	}
 
 }

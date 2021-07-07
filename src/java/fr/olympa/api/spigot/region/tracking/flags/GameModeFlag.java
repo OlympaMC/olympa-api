@@ -36,7 +36,7 @@ public class GameModeFlag extends Flag {
 	@Override
 	public void appendDescription(StringJoiner joiner) {
 		super.appendDescription(joiner);
-		joiner.add("Gamemode: " + mode.name());
+		joiner.add("Gamemode: §a" + mode.name());
 	}
 
 }

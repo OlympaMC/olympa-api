@@ -43,7 +43,7 @@ public class TitleOnEntryFlag extends Flag {
 		super.appendDescription(joiner);
 		if (title != null) joiner.add("Title: " + title);
 		if (subtitle != null) joiner.add("Subtitle: " + subtitle);
-		joiner.add("Times (in/stay/out): %d/%d/%d".formatted(fadeIn, stay, fadeOut));
+		joiner.add("Times (in/stay/out): §a%d/%d/%d".formatted(fadeIn, stay, fadeOut));
 	}
 	
 }
