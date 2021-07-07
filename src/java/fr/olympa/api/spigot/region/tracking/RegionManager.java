@@ -39,6 +39,7 @@ import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.MoistureChangeEvent;
 import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
@@ -370,6 +371,15 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 	public void onLecternTake(PlayerTakeLecternBookEvent e) {
 		fireEvent(e.getLectern().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getLectern().getBlock()));
 	}
+	
+	@EventHandler
+	public void onEntityChangeBlock(EntityChangeBlockEvent e) {
+		if (e.getEntity() instanceof Player)
+			fireEvent(e.getBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, (Player) e.getEntity(), e.getBlock()));
+		else
+			fireEvent(e.getBlock().getLocation(), PhysicsFlag.class, x -> x.blockEvent(e, e.getBlock()));
+		
+	}
 
 	@EventHandler
 	public void onEntityInteract(EntityInteractEvent e) {
@@ -456,13 +466,23 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 			return;
 		if (e.getHand() == EquipmentSlot.OFF_HAND)
 			return;
-		if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
-			return;
+		
+		boolean block = false;
+		boolean interact = false;
 		Material type = e.getClickedBlock().getType();
-		if (type == Material.DAYLIGHT_DETECTOR || type == Material.REDSTONE_WIRE || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type == Material.JUKEBOX
-				|| type.name().endsWith("_SIGN") || type.name().startsWith("POTTED_"))
+		if (e.getAction() == Action.PHYSICAL) {
+			if (type == Material.FARMLAND || type == Material.TURTLE_EGG) {
+				block = true;
+			}else interact = true;
+		}else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (type == Material.DAYLIGHT_DETECTOR || type == Material.REDSTONE_WIRE || type == Material.COMPARATOR || type == Material.REPEATER || type == Material.FLOWER_POT || type == Material.NOTE_BLOCK || type == Material.JUKEBOX || type.name().endsWith("_SIGN") || type.name().startsWith("POTTED_")) {
+				block = true;
+			}else interact = true;
+		}else return;
+		
+		if (block)
 			fireEvent(e.getClickedBlock().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getClickedBlock()));
-		else
+		if (interact)
 			fireEvent(e.getClickedBlock().getLocation(), PlayerBlockInteractFlag.class, x -> x.interactEvent(e));
 	}
 

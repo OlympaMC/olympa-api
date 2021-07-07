@@ -80,6 +80,8 @@ public class Polygon extends AbstractRegion {
 		if (world != this.world) return false;
 		if (y < minY || y > maxY) return false;
 		
+		if (x < min.getBlockX() || x > max.getBlockX() || z < min.getBlockZ() || z > max.getBlockZ()) return false;
+		
 		boolean inside = false;
 		int npoints = points.size();
 		int xNew, zNew;
@@ -111,7 +113,7 @@ public class Polygon extends AbstractRegion {
 				z2 = zOld;
 			}
 			if (x1 <= x && x <= x2) {
-				crossproduct = ((long) z - (long) z1) * (long) (x2 - x1) - ((long) z2 - (long) z1) * (long) (x - x1);
+				crossproduct = ((long) z - (long) z1) * (x2 - x1) - ((long) z2 - (long) z1) * (x - x1);
 				if (crossproduct == 0) {
 					if ((z1 <= z) == (z <= z2)) return true; // on edge
 				}else if (crossproduct < 0 && (x1 != x)) {

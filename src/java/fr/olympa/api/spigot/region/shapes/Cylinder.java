@@ -76,7 +76,7 @@ public class Cylinder extends AbstractRegion {
 
 	@Override
 	public Location getRandomLocation() {
-		double r = getRadius() * Math.sqrt(random.nextDouble());
+		double r = radius * Math.sqrt(random.nextDouble());
 		double theta = random.nextDouble() * 2 * Math.PI;
 		double x = centerX + r * Math.cos(theta);
 		double z = centerZ + r * Math.sin(theta);
@@ -90,9 +90,9 @@ public class Cylinder extends AbstractRegion {
 		if (y > maxY || y < minY) return false;
 		int oX = Math.abs(x - centerX);
 		int oZ = Math.abs(z - centerZ);
-		if (oX > getRadius() || oZ > getRadius()) return false; // rapide si c'est en dehors du "carré"
-		if (oX + oZ <= getRadius()) return true;
-		return oX * oX + oZ * oZ <= radiusSquared;
+		if (oX > radius || oZ > radius) return false; // rapide si c'est en dehors du "carré"
+		if (oX + oZ <= radius) return true;
+		return oX * oX + oZ * oZ <= radiusSquared; // pythagore
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class Cylinder extends AbstractRegion {
 		map.put("world", world.getName());
 		map.put("centerX", centerX);
 		map.put("centerZ", centerZ);
-		map.put("radius", getRadius());
+		map.put("radius", radius);
 		map.put("minY", minY);
 		map.put("maxY", maxY);
 		return map;
