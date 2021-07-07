@@ -60,10 +60,12 @@ public class SQLTable<T> {
 				if (value == null || value instanceof SQLNullObject)
 					if (column.canBeNullable())
 						value = null;
-					else
+					else {
 						new IllegalAccessError("Une commande UPDATE en sql a été effectué sur la table " + name + " et l'objet de la colonne " + column.getName() + " est NULL mais la SQLColumn ne supporte pas "
-								+ "les objets nulls. Ajoute SQLColumn.AllowNull() lors de la constrution de la colonne SQLColumn. L'UPDATE de cette colonne en bdd n'a pas été effectué. Si il est normal"
+								+ "les objets nulls. Ajoute SQLColumn.allowNull() lors de la constrution de la colonne SQLColumn. L'UPDATE de cette colonne en bdd n'a pas été effectué. Si il est normal"
 								+ "que l'objet ne supporte pas d'être null, cela veux dire qu'il y a une perte de données.").printStackTrace();
+						continue;
+					}
 				statement.setObject(i++, value, entry.getKey().getSQLType());
 			}
 			statement.setObject(i, primaryColumn.getPrimaryKeySQLObject(object), primaryColumn.getSQLType());

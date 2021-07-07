@@ -19,7 +19,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	RESP(25, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp._Technique", "Resp._Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp._Staff", "Resp._Staff", "&c%s ", ":&r", true),
-	//	RESP_COM(5, 70, OlympaServer.ALL, "Resp._Communication", "Resp._Communication", "&3%s ", ":&r", true),
+	RESP_COM(5, 70, OlympaServer.ALL, "Resp._Communication", "Resp._Communication", "&3%s ", ":&r", true),
 	RESP_ANIMATION(10, 65, OlympaServer.ALL, "Resp._Animateur", "Resp._Animatrice", "&5%s ", ":&r", true),
 	RESP_BUILDER(11, 60, OlympaServer.ALL, "Resp._Buildeur", "Resp._Buildeuse", "&2%s ", ":&r", true),
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
@@ -52,7 +52,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 
 	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
-	
+
 	/**
 	 * Get {@link #OlympaGroup}
 	 *
