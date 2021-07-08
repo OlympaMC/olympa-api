@@ -307,7 +307,7 @@ public enum ProtocolAPI {
 	}
 
 	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommended) {
-		this(protocolNumber, allow, false, false);
+		this(protocolNumber, allow, notRecommended, false);
 	}
 
 	ProtocolAPI(int protocolNumber, boolean allow, boolean notRecommended, boolean snapshot) {

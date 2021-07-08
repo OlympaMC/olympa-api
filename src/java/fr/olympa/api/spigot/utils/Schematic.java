@@ -38,11 +38,14 @@ public class Schematic {
 	}
 
 	public void paste(Location location, boolean setAir) {
+		int blockX = location.getBlockX();
+		int blockY = location.getBlockY();
+		int blockZ = location.getBlockZ();
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				for (int z = 0; z < length; ++z) {
 					EmptyBuildBlock buildBlock = blocks[x][y][z];
-					Block block = location.getWorld().getBlockAt(location.getBlockX() + x, location.getBlockY() + y, location.getBlockZ() + z);
+					Block block = location.getWorld().getBlockAt(blockX + x, blockY + y, blockZ + z);
 					buildBlock.setBlock(block, setAir);
 				}
 			}
@@ -80,30 +83,31 @@ public class Schematic {
 
 					BlockData data = blocks.get((int) blockData[index]);
 
-					EmptyBuildBlock M = null;
+					EmptyBuildBlock block = null;
 
 					if (data != null) {
-						M = new DataBuildBlock(x, y, z, data);
+						block = new DataBuildBlock(x, y, z, data);
 					}else {
-						M = new EmptyBuildBlock(x, y, z);
+						block = new EmptyBuildBlock(x, y, z);
 					}
 
-					out.blocks[x][y][z] = M;
+					out.blocks[x][y][z] = block;
 				}
 			}
 		}
 		
         NBTTagList tileEntities = nbt.getList("TileEntities", NBT.TAG_COMPOUND);
 		if (tileEntities == null || tileEntities.isEmpty()) tileEntities = nbt.getList("BlockEntities", NBT.TAG_COMPOUND);
-        if (tileEntities != null) {
-            for (NBTBase tileEntityBase : tileEntities) {
-            	NBTTagCompound tileEntity = (NBTTagCompound) tileEntityBase;
-                int[] pos = tileEntity.getIntArray("Pos");
+        
+		if (tileEntities != null) {
+			for (NBTBase tileEntityBase : tileEntities) {
+				NBTTagCompound tileEntity = (NBTTagCompound) tileEntityBase;
+				int[] pos = tileEntity.getIntArray("Pos");
 				if (tileEntity.hasKey("Id")) tileEntity.setInt("id", tileEntity.getInt("Id"));
 				EmptyBuildBlock block = out.blocks[pos[0]][pos[1]][pos[2]];
 				((DataBuildBlock) block).tileEntity = tileEntity;
-            }
-        }
+			}
+		}
 
 		out.name = file.getName();
 		return out;

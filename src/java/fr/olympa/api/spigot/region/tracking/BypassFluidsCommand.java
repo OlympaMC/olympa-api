@@ -10,7 +10,6 @@ import fr.olympa.api.common.command.complex.Cmd;
 import fr.olympa.api.common.command.complex.CommandContext;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.spigot.command.ComplexCommand;
-import fr.olympa.core.spigot.OlympaCore;
 
 public class BypassFluidsCommand extends ComplexCommand {
 	
@@ -35,7 +34,7 @@ public class BypassFluidsCommand extends ComplexCommand {
 		}else world = cmd.getArgument(0);
 		seconds = cmd.getArgument(1, 60);
 		
-		Long old = bypassFluidUntil.put(world, seconds * 1000);
+		Long old = bypassFluidUntil.put(world, System.currentTimeMillis() + seconds * 1000);
 		if (old == null)
 			sendError("L'anti-fluides est désactivé pour %d secondes sur le monde %s.", seconds, world.getName());
 		else
