@@ -527,5 +527,32 @@ public class SpigotUtils {
 		Bukkit.getConsoleSender().sendMessage(message);
 		return players.size() + 1;
 	}
+
+	public static boolean isInAir(Location location) {
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		if (!location.getWorld().getBlockAt(x, y, z).isEmpty()) return false;
+		if (!location.getWorld().getBlockAt(x, --y, z).isEmpty()) return false;
+		double deltaX = location.getX() - x;
+		int newX = x;
+		if (deltaX < 0.3) {
+			newX--;
+			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
+		}else if (deltaX > 0.7) {
+			newX++;
+			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
+		}
+		double deltaZ = location.getZ() - z;
+		int newZ = z;
+		if (deltaZ < 0.3) {
+			newZ--;
+			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
+		}else if (deltaZ > 0.7) {
+			newZ++;
+			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
+		}
+		return location.getWorld().getBlockAt(newX, y, newZ).isEmpty();
+	}
 	
 }
