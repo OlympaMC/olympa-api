@@ -24,7 +24,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class HologramsCommand extends ComplexCommand {
-	
+
+	public static boolean onlyListPersistentHolo = true;
+
 	private HologramsManager holograms;
 	private Paginator<Hologram> paginator;
 
@@ -37,6 +39,8 @@ public class HologramsCommand extends ComplexCommand {
 				.map(hologram -> Integer.toString(hologram.getID())).collect(Collectors.toList()), (arg) -> {
 			try {
 				Hologram hologram = hologramsManager.getHologram(Integer.parseInt(arg));
+				if (hologram == null)
+					return null;
 				if (holograms.hasAccessTo(sender, hologram, HoloActionType.COMMAND))
 					return hologram;
 			} catch (NumberFormatException ex) {
@@ -48,7 +52,7 @@ public class HologramsCommand extends ComplexCommand {
 
 			@Override
 			protected List<Hologram> getObjects() {
-				return hologramsManager.holograms.values().stream().filter(holo -> holo.isPersistent() && holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND)).collect(Collectors.toList());
+				return hologramsManager.holograms.values().stream().filter(holo -> (!onlyListPersistentHolo || holo.isPersistent()) && holograms.hasAccessTo(sender, holo, HoloActionType.COMMAND)).collect(Collectors.toList());
 			}
 
 			@Override
