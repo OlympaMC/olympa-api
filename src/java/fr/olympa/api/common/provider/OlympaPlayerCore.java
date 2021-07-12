@@ -3,8 +3,8 @@ package fr.olympa.api.common.provider;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -89,8 +89,8 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	@Override
 	public OlympaGroup getGroup() {
 		OlympaGroup olympaGroup = null;
-		for (Iterator<OlympaGroup> iterator = groups.keySet().iterator(); iterator.hasNext();) {
-			olympaGroup = iterator.next();
+		for (Entry<OlympaGroup, Long> entry : groups.entrySet()) {
+			olympaGroup = entry.getKey();
 			if (!olympaGroup.isVisible())
 				continue;
 			if (OlympaServer.ALL == olympaGroup.getServer())
