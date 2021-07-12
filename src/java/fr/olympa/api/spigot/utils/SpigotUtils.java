@@ -32,6 +32,7 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import fr.olympa.api.common.chat.Chat;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.provider.AccountProviderAPI;
@@ -486,24 +487,24 @@ public class SpigotUtils {
 		if (dMax == dx) {
 			for (int domstep = skipFirst ? 1 : 0; domstep <= dx; domstep++) {
 				tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
-				tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
-				tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
+				tipy = (int) Math.round(y1 + domstep * ((double) dy) / (dx) * (y2 - y1 > 0 ? 1 : -1));
+				tipz = (int) Math.round(z1 + domstep * ((double) dz) / (dx) * (z2 - z1 > 0 ? 1 : -1));
 				
 				locations.add(new Location(world, tipx, tipy, tipz));
 			}
 		}else if (dMax == dy) {
 			for (int domstep = skipFirst ? 1 : 0; domstep <= dy; domstep++) {
 				tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
-				tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
-				tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+				tipx = (int) Math.round(x1 + domstep * ((double) dx) / (dy) * (x2 - x1 > 0 ? 1 : -1));
+				tipz = (int) Math.round(z1 + domstep * ((double) dz) / (dy) * (z2 - z1 > 0 ? 1 : -1));
 				
 				locations.add(new Location(world, tipx, tipy, tipz));
 			}
 		}else /* if (dMax == dz) */ {
 			for (int domstep = skipFirst ? 1 : 0; domstep <= dz; domstep++) {
 				tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
-				tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2 - y1 > 0 ? 1 : -1));
-				tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2 - x1 > 0 ? 1 : -1));
+				tipy = (int) Math.round(y1 + domstep * ((double) dy) / (dz) * (y2 - y1 > 0 ? 1 : -1));
+				tipx = (int) Math.round(x1 + domstep * ((double) dx) / (dz) * (x2 - x1 > 0 ? 1 : -1));
 				
 				locations.add(new Location(world, tipx, tipy, tipz));
 			}
@@ -512,13 +513,13 @@ public class SpigotUtils {
 	}
 	
 	public static String getBarsWithLoreLength(String itemName, List<String> lore, String inside) {
-		int size = -1;
-		if (!lore.isEmpty()) size = lore.stream().filter(x -> x != null).mapToInt(String::length).max().getAsInt();
-		size = Math.max(size, ChatColor.stripColor(itemName).length() - 3);
+		inside = "§e[ §6§l" + inside + "§e ]";
+		int size = lore.stream().filter(x -> x != null).mapToInt(x -> Chat.getPxSize(x, true)).max().orElse(-1);
+		size = Math.max(size, Chat.getPxSize(itemName, true));
 		size -= ChatColor.stripColor(inside).length();
 		size = Math.max(size, 4);
-		String bar = "§m" + " ".repeat((int) Math.ceil(size / 2D));
-		return "§e" + bar + "§e[ §6§l" + inside + "§e ]" + bar + "§r";
+		String bar = "§m" + " ".repeat((int) Math.floor(size / (2D * (Chat.SPACE.getLength() + 2D))));
+		return "§e" + bar + inside + bar + "§r";
 	}
 	
 	public static int broadcastMessage(String message) {

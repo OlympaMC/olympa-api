@@ -251,24 +251,19 @@ public enum Chat {
 		int messagePxSize = 0;
 		boolean previousCode = false;
 		boolean isBold = false;
-		int charIndex = 0;
-		int lastSpaceIndex = 0;
-		//		String toSendAfter = null;
-		String recentColorCode = "";
 		for (char c : message.toCharArray()) {
 			if (c == '§') {
 				previousCode = true;
 				continue;
-			} else if (previousCode == true) {
+			}else if (previousCode) {
 				previousCode = false;
-				recentColorCode = "§" + c;
-				if (c == 'l' || c == 'L') {
+				ChatColor code = ChatColor.getByChar(Character.toLowerCase(c));
+				if (ChatColor.BOLD.equals(code)) {
 					isBold = true;
 					continue;
-				} else
+				}else if (code != null && code.getColor() != null) // if ChatColor#getColor == null then it's a formatting code
 					isBold = false;
 			} else if (c == ' ') {
-				lastSpaceIndex = charIndex;
 				if (countSpaces)
 					messagePxSize += Chat.SPACE.getLength() + 1;
 			} else {
@@ -276,12 +271,6 @@ public enum Chat {
 				messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
 				messagePxSize++;
 			}
-			//			if (messagePxSize >= MAX_CHAT_PX) {
-			//				toSendAfter = recentColorCode + message.substring(lastSpaceIndex + 1, message.length());
-			//				message = message.substring(0, lastSpaceIndex + 1);
-			//				break;
-			//			}
-			charIndex++;
 		}
 		return messagePxSize;
 	}

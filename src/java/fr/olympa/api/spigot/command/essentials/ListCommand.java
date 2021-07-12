@@ -18,7 +18,9 @@ import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.provider.AccountProviderAPI;
+import fr.olympa.api.spigot.afk.AfkHandler;
 import fr.olympa.api.spigot.command.OlympaCommand;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class ListCommand extends OlympaCommand {
 	
@@ -36,8 +38,9 @@ public class ListCommand extends OlympaCommand {
 			List<Player> groupPlayers = groups.computeIfAbsent(player.getGroup(), group -> new ArrayList<>());
 			groupPlayers.add(p);
 		}
+		AfkHandler afk = OlympaCore.getInstance().getAfkHandler();
 		groups.entrySet().stream().sorted((o1, o2) -> Integer.compare(o1.getKey().ordinal(), o2.getKey().ordinal())).forEach(entry -> {
-			sender.sendMessage("§7➤ " + entry.getKey().getColor() + entry.getKey().getName(Gender.UNSPECIFIED) + "§8 (" + entry.getValue().size() + "): §7" + entry.getValue().stream().map(Player::getName).collect(Collectors.joining(", ")));
+			sender.sendMessage("§7➤ " + entry.getKey().getColor() + entry.getKey().getName(Gender.UNSPECIFIED) + "§8 (" + entry.getValue().size() + "): §7" + entry.getValue().stream().map(x -> x.getName() + (afk != null && afk.isAfk(player) ? "§8 (AFK)§7" : "")).collect(Collectors.joining(", ")));
 		});
 		return false;
 	}
