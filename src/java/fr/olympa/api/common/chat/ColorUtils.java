@@ -71,8 +71,26 @@ public class ColorUtils {
 		return matcher.appendTail(buffer).toString();
 	}
 
+	public static String translateAlternateColorCodes(String textToTranslate) {
+		return translateAlternateColorCodes("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx", textToTranslate);
+	}
+	public static String translateAlternateColorCodes(String allowedColors, String textToTranslate) {
+		char[] b = textToTranslate.toCharArray();
+		char altColorChar = '&';
+		for (int i = 0; i < b.length - 1; ++i)
+			if (b[i] == altColorChar && allowedColors.indexOf(b[i + 1]) > -1) {
+				b[i] = 167;
+				b[i + 1] = Character.toLowerCase(b[i + 1]);
+			}
+		return new String(b);
+	}
+
+	public static String colorSoft(String string) {
+		return string != null ? translateAlternateColorCodes("012356789AaBbDdEeFfKkMmNnOoRrXx", translateHexColorCodes(string)) : null;
+	}
+
 	public static String color(String string) {
-		return string != null ? ChatColor.translateAlternateColorCodes('&', translateHexColorCodes(string)) : null;
+		return string != null ? translateAlternateColorCodes(translateHexColorCodes(string)) : null;
 	}
 
 	public static String joinGold(CharSequence... elements) {
