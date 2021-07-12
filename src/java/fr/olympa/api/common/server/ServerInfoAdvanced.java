@@ -362,7 +362,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			});
 		//			((List<PluginInfoAdvanced>) context.deserialize(object.get("plugins"), List.class)).forEach(plugin -> serverInfoAdvanced.plugins.add(plugin));
 		if (object.has("versions"))
-			((List<String>) context.deserialize(object.get("versions"), List.class)).forEach(name -> serverInfoAdvanced.versions.add(ProtocolAPI.valueOf(name)));
+			((List<String>) context.deserialize(object.get("versions"), List.class)).forEach(name -> serverInfoAdvanced.versions.add(ProtocolAPI.getByEnumName(name)));
 		//		serverInfoAdvanced.versions = (List<ProtocolAPI>) context.deserialize(object.get("versions"), List.class);
 		JavaInstanceInfo.deserialize(serverInfoAdvanced, json, typeOfT, context);
 		return serverInfoAdvanced;

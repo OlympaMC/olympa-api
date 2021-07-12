@@ -29,6 +29,7 @@ import fr.olympa.api.utils.Utils;
  */
 public enum ProtocolAPI {
 
+	UNKNOW(999999, false, true),
 	V1_17_1(756, true, true),
 	V1_17(755, true, true),
 	V1_16_5(754),
@@ -183,6 +184,11 @@ public enum ProtocolAPI {
 	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
 	public static ProtocolAPI get(String version) {
 		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.getName().equals(version)).findFirst().orElse(null);
+	}
+
+	@SpigotOrBungee(allow = AllowedFramework.SPIGOT_BUNGEE)
+	public static ProtocolAPI getByEnumName(String version) {
+		return Arrays.stream(ProtocolAPI.values()).filter(p -> p.name().equals(version)).findFirst().orElse(ProtocolAPI.UNKNOW);
 	}
 
 	/**
