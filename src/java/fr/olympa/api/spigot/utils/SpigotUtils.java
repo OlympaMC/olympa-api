@@ -516,9 +516,9 @@ public class SpigotUtils {
 		inside = "§e[ §6§l" + inside + "§e ]";
 		int size = lore.stream().filter(x -> x != null).mapToInt(x -> Chat.getPxSize(x, true)).max().orElse(-1);
 		size = Math.max(size, Chat.getPxSize(itemName, true));
-		size -= ChatColor.stripColor(inside).length();
-		size = Math.max(size, 2);
-		String bar = "§m" + " ".repeat((int) Math.ceil(size / (2D * (Chat.SPACE.getLength() + 2D))));
+		size -= Chat.getPxSize(inside, true);
+		size = Math.max(size, 4);
+		String bar = "§m" + " ".repeat((int) Math.ceil(size / (2D * (Chat.SPACE.getLength()/* + 2D*/))));
 		return "§e" + bar + inside + bar + "§r";
 	}
 	

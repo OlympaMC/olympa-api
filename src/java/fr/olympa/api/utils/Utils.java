@@ -22,19 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.StringJoiner;
-import java.util.TimeZone;
-import java.util.TreeSet;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -509,8 +498,7 @@ public class Utils {
 
 		case "year":
 			return Calendar.YEAR;
-		case "month":
-		case "mois":
+		case "month", "mois":
 			return Calendar.MONTH;
 		case "day":
 			return Calendar.DAY_OF_MONTH;
@@ -546,10 +534,9 @@ public class Utils {
 	}
 
 	public static boolean isEmptyFile(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		boolean b = br.readLine() == null;
-		br.close();
-		return b;
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			return br.readLine() == null;
+		}
 	}
 
 	public static int getRandomAmount(Random random, int min, int max) {

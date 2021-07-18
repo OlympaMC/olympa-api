@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.provider.OlympaPlayerCore;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.sql.SQLColumn;
@@ -146,5 +147,9 @@ public interface OlympaPlayer {
 	void setVanish(boolean vanish);
 
 	boolean hasCustomPermission(String permission, OlympaServer serv);
+
+	void removeCustomPermission(OlympaPermission perm, OlympaServer serv);
+
+	void addCustomPermission(OlympaPermission perm, OlympaServer serv);
 
 }

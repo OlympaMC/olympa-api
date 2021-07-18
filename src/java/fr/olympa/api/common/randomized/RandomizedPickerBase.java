@@ -138,10 +138,10 @@ public interface RandomizedPickerBase<T> {
 	
 	public class ConditionalContext<T> {
 		
-		private List<T> picked = new ArrayList<>();
+		protected List<T> picked = new ArrayList<>();
 		
-		public List<T> getPickedSoFar() {
-			return picked;
+		public void addPicked(T picked) {
+			this.picked.add(picked);
 		}
 		
 	}
@@ -219,7 +219,7 @@ public interface RandomizedPickerBase<T> {
 				}
 				T picked = pick(random, objects, objectsChanceSum);
 				if (picked != null) pickeds.add(picked);
-				if (mustRecompute && context != null) context.getPickedSoFar().add(picked);
+				if (mustRecompute && context != null) context.addPicked(picked);
 			}
 			return pickeds;
 		}

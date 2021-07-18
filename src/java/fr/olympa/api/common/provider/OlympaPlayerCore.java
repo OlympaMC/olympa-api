@@ -14,6 +14,7 @@ import com.google.gson.annotations.Expose;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.groups.OlympaGroup;
+import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
@@ -282,4 +283,10 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	@Override
+	public void removeCustomPermission(OlympaPermission perm, OlympaServer serv) {}
+
+	@Override
+	public void addCustomPermission(OlympaPermission perm, OlympaServer serv) {}
 }
