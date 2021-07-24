@@ -522,9 +522,10 @@ public class SpigotUtils {
 		return "§e" + bar + inside + bar + "§r";
 	}
 	
-	public static int broadcastMessage(String message) {
+	public static int broadcastMessage(String message, Object... args) {
+		message = String.format(message, args);
 		List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-		players.forEach(x -> x.sendMessage(message));
+		for (Player p : players) p.sendMessage(message);
 		Bukkit.getConsoleSender().sendMessage(message);
 		return players.size() + 1;
 	}
