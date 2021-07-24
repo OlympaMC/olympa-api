@@ -25,7 +25,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
 	MOD(7, 53, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
 	ASSISTANT(8, 50, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
-	DEVP(19, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
+	DEVP(22, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
 	DEV(12, 43, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
 	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&a%s ", ":&r", false),
 	GAMEMASTER(4, 39, OlympaServer.ALL, "GameMaster", "GameMaster", "&0%s ", ":&r", true),
