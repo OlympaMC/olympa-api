@@ -39,10 +39,10 @@ public class TradeCommand<T extends TradePlayerInterface> extends ComplexCommand
 		Player partner = cmd.getArgument(0);
 		
 		if (getPlayer().equals(partner))
-			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu ne peux pas échanger avec toi même...");
+			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu ne peux pas échanger avec toi-même...");
 		
 		else if (map.containsEntry(getPlayer(), partner))
-			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu as déjà envoyé une demande à %s, patientes un peu avant d'en renvoyer une !", ((Player)partner).getName());
+			Prefix.DEFAULT_BAD.sendMessage(getPlayer(), "Tu as déjà envoyé une demande à %s, patiente un peu avant d'en renvoyer une !", partner.getName());
 		
 		else if (map.remove(partner, getPlayer()))
 			trades.startTrade(getOlympaPlayer(), AccountProviderAPI.getter().get(partner.getUniqueId()));

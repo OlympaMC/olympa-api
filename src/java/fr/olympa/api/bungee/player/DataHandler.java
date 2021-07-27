@@ -24,7 +24,7 @@ public class DataHandler {
 		bungee.getTask().runTaskLater("login_" + player.getName(), () -> {
 			ProxiedPlayer pd = bungee.getProxy().getPlayer(player.getName());
 			if (pd != null)
-				pd.disconnect(BungeeUtils.connectScreen("Tu as mis trop de temps a entrer ton mot de passe."));
+				pd.disconnect(BungeeUtils.connectScreen("Tu as mis trop de temps à saisir ton mot de passe."));
 		}, 60, TimeUnit.SECONDS);
 	}
 

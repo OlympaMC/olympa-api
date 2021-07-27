@@ -63,7 +63,7 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	
 	@SuppressWarnings("deprecation")
 	public TradeGui(UniqueTradeManager<T> trade, T p, T other) {
-		this.inv = Bukkit.createInventory(this, 9 * 6, "Echange avec " + other.getName());
+		this.inv = Bukkit.createInventory(this, 9 * 6, "Échange avec " + other.getName());
 
 		this.p = p;
 		this.manager = trade;
@@ -142,7 +142,7 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 		moneyEditor.enterOrLeave();
 		Player player = (Player) p.getPlayer();
 		player.closeInventory();
-		Prefix.DEFAULT_GOOD.sendMessage(player, "Sélectionnez le montant à ajouter à l'échange :");
+		Prefix.DEFAULT_GOOD.sendMessage(player, "Sélectionne le montant à ajouter à l'échange :");
 	}
 	
 	
@@ -242,9 +242,9 @@ public class TradeGui<T extends TradePlayerInterface> implements InventoryHolder
 	
 	
 	public static enum TradeStep {
-		FILLING(false, ItemUtils.item(Material.HOPPER, "§aSélection des objets", new String[]{"§7Ajoute les objets et l'argent", "§7que tu souhaites échanger"})),
+		FILLING(false, ItemUtils.item(Material.HOPPER, "§aSélection des objets", new String[]{"§7Ajoute les objets et l'argent", "§7que tu souhaites échanger."})),
 		COMPARING(false, ItemUtils.item(Material.CHEST, "§aComparaison des objets", new String[]{"§7Tu ne peux plus modifier", "§7l'échange, vérifie que tu ne", "§7t'es pas trompé !"})),
-		TIMER(true, ItemUtils.item(Material.MINECART, "§aEchange des objets", new String[]{"§7Les objets et l'argent vont être", "§7échangés dans quelques secondes", " ", "§cPour annuler l'échange ferme l'inventaire"})),
+		TIMER(true, ItemUtils.item(Material.MINECART, "§aÉchange des objets", new String[]{"§7Les objets et l'argent vont être", "§7échangés dans quelques secondes", " ", "§cPour annuler l'échange, ferme l'inventaire."})),
 		;
 		
 		public boolean isLastStep;

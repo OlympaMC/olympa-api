@@ -26,7 +26,7 @@ public class TpConfirmCommand extends OlympaCommand {
 		if (args.length == 0) {
 			creator = handler.getCreatorByTarget(player);
 			if (creator == null) {
-				sendMessage(Prefix.DEFAULT_BAD, "Tu n'a pas de demande de téléportation en attente.");
+				sendMessage(Prefix.DEFAULT_BAD, "Tu n'as pas de demande de téléportation en attente.");
 				return false;
 			}
 		} else {

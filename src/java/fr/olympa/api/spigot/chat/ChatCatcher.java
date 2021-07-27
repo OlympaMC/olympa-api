@@ -2,7 +2,6 @@ package fr.olympa.api.spigot.chat;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,16 +95,16 @@ public class ChatCatcher extends OlympaCommand implements Listener, ModuleApi<Ol
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length > 0 && args[0].equalsIgnoreCase("debug")) {
 			if (toggleDebug())
-				sendMessage(Prefix.DEFAULT_GOOD, "Le DEBUG du chat catcher a été activée.");
+				sendMessage(Prefix.DEFAULT_GOOD, "Le DEBUG du chat catcher a été activé.");
 			else
-				sendMessage(Prefix.DEFAULT_BAD, "Le DEBUG du chat catcher a été désactivée.");
+				sendMessage(Prefix.DEFAULT_BAD, "Le DEBUG du chat catcher a été désactivé.");
 			return false;
 		}
 		if (toggle(OlympaCore.getInstance())) {
 			if (isEnabled)
-				sendMessage(Prefix.DEFAULT_GOOD, "Le chat catcher a été activée.");
+				sendMessage(Prefix.DEFAULT_GOOD, "Le chat catcher a été activé.");
 			else
-				sendMessage(Prefix.DEFAULT_BAD, "Le chat catcher a été désactivée.");
+				sendMessage(Prefix.DEFAULT_BAD, "Le chat catcher a été désactivé.");
 		} else
 			sendError();
 		return false;

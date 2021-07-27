@@ -58,7 +58,7 @@ public class ClickChoice {
 
 	public TxtComponentBuilder build() {
 		TxtComponentBuilder builder = new TxtComponentBuilder(message, args).extraSpliter(" ");
-		emojiAndCommand.forEach((emoji, command) -> builder.extra(new TxtComponentBuilder(emoji).onHoverText("&eClique pour executer l'action " + emoji).onClickCommand(command)));
+		emojiAndCommand.forEach((emoji, command) -> builder.extra(new TxtComponentBuilder(emoji).onHoverText("&eClique pour exécuter l'action " + emoji).onClickCommand(command)));
 		return builder;
 	}
 }

@@ -41,7 +41,7 @@ public interface IComplexCommand<C> {
 			return null;
 		}, x -> {
 			String random = UUID.randomUUID().toString();
-			return String.format("&4%s&c doit être un uuid sous la forme &4%s&c", x, random);
+			return String.format("&4%s&c doit être un UUID de la forme &4%s&c", x, random);
 		}, false);
 		addArgumentParser("DOUBLE", (sender, arg) -> DOUBLE, x -> {
 			if (RegexMatcher.DOUBLE.is(x))
@@ -57,7 +57,7 @@ public interface IComplexCommand<C> {
 			if (RegexMatcher.HEX_COLOR.is(x))
 				return RegexMatcher.HEX_COLOR.parse(x);
 			return null;
-		}, x -> String.format("&4%s&c n'est pas un code hexadicimal sous la forme &4#123456", x), false);
+		}, x -> String.format("&4%s&c n'est pas un code héxadicimal sous la forme &4#123456", x), false);
 		addArgumentParser("BOOLEAN", (sender, arg) -> BOOLEAN, Boolean::parseBoolean, null);
 		addArgumentParser("IP", (sender, arg) -> IP, x -> {
 			if (RegexMatcher.IP.is(x))

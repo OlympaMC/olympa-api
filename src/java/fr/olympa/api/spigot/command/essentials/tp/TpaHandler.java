@@ -128,7 +128,7 @@ public class TpaHandler implements Listener {
 			return;
 		addRequest(creator, new Request(target, creator));
 		target.spigot()
-				.sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléporte à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
+				.sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléportes à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
 		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 
@@ -182,13 +182,13 @@ public class TpaHandler implements Listener {
 				requests.invalidate(request);
 			} else if (!request.from.isOnline() && request.to.isOnline())
 				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProviderAPI(request.from.getUniqueId()).get().getGender().getTurne());
+					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProviderAPI(request.from.getUniqueId()).get().getGender().getPronoun());
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			else if (!request.to.isOnline() && request.from.isOnline())
 				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProviderAPI(request.to.getUniqueId()).get().getGender().getTurne());
+					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProviderAPI(request.to.getUniqueId()).get().getGender().getPronoun());
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -224,8 +224,8 @@ public class TpaHandler implements Listener {
 		requestsTarget.forEach(r -> {
 			if (r != null && r.task != null) {
 				requests.invalidate(r);
-				Prefix.DEFAULT_BAD.sendMessage(player, "Téléportation annulée, bouges pas !.");
-				Prefix.DEFAULT_BAD.sendMessage(r.to, "Téléportation de &4%s&c &lVERS&c toi a été annulée, %s a bougé pendant la tp.", player.getName(), olympaPlayer.getGender().getPronoun());
+				Prefix.DEFAULT_BAD.sendMessage(player, "Téléportation annulée, ne bouge pas !");
+				Prefix.DEFAULT_BAD.sendMessage(r.to, "Téléportation de &4%s&c &lVERS&c toi a été annulée, %s a bougé...", player.getName(), olympaPlayer.getGender().getPronoun());
 			}
 		});
 

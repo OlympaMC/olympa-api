@@ -52,7 +52,7 @@ public class TpsMessage extends ServerInfoAdvanced {
 		textBuilder.extra(new TxtComponentBuilder("&3CPU Système: &b%s&3 (%d cores).", getCPUSysUsage(), getCPUSysCore()).onHoverText("&eUtilisation globale du processeur."));
 		boolean showValueOfVersions = olympaPlayer != null ? OlympaAPIPermissionsGlobal.PLUGINS_SEE_VALUE_VERSION.hasPermission(olympaPlayer) : true;
 		textBuilder.extra("\n");
-		textBuilder.extra(new TxtComponentBuilder("&3Plugins Maison: &b"));
+		textBuilder.extra(new TxtComponentBuilder("&3Plugins maison: &b"));
 		textBuilder.extra(ServerInfoAdvanced.getPluginsToString(ServerInfoAdvanced.getAllHomeMadePlugins(), olympaPlayer == null, showValueOfVersions));
 		textBuilder.extra("\n");
 		TxtComponentBuilder textBuilder2 = new TxtComponentBuilder("&3Versions autorisées: &b%s&3 ", getRangeVersionMinecraft());
@@ -75,7 +75,7 @@ public class TpsMessage extends ServerInfoAdvanced {
 		double[] tps = TPS.getDoubleTPS();
 		float average = TPS.getAverage(tps);
 		textBuilder.extra(new TxtComponentBuilder("&3TPS: &b1m %s&b 5m %s&b 15m %s ", TPSUtils.getTpsColor(tps[0]), TPSUtils.getTpsColor(tps[1]), TPSUtils.getTpsColor(tps[2])));
-		textBuilder.extra(new TxtComponentBuilder("&3Moyenne: &b%s&3.", TPSUtils.getTpsColor(average)).onHoverText("&eLes TPS (0 à environ 20) sont les ticks par secondes."));
+		textBuilder.extra(new TxtComponentBuilder("&3Moyenne: &b%s&3.", TPSUtils.getTpsColor(average)).onHoverText("&eLes TPS (0 à environ 20) sont les ticks par seconde."));
 		return textBuilder;
 	}
 
@@ -94,14 +94,14 @@ public class TpsMessage extends ServerInfoAdvanced {
 			List<LivingEntity> livingEntities = world.getLivingEntities();
 
 			textBuilder.extra("&3Monde &b%s&3: ", world.getName());
-			textBuilder.extra(new TxtComponentBuilder("&b%d&3 chunks", chunks.length).onHoverText("&eChunks (region de 16x16) chargés dans le monde"));
+			textBuilder.extra(new TxtComponentBuilder("&b%d&3 chunks", chunks.length).onHoverText("&eChunks (régions de 16x16) chargés dans le monde"));
 			textBuilder.extra(" ");
 			Collection<Chunk> forceChunks = world.getForceLoadedChunks();
 			if (!forceChunks.isEmpty()) {
 				textBuilder.extra(new TxtComponentBuilder("(%d forcés)", forceChunks.size()).onHoverText("&eLes chunks forcés sont les chunks du spawn du monde &6ou &edes chunks victime de Chunk Loader."));
 				textBuilder.extra(" ");
 			}
-			textBuilder.extra(new TxtComponentBuilder("&b%d&3 entités et &b%d&3 non vivantes", livingEntities.size(), entities.size() - livingEntities.size()).onHoverText("&eEntités chargés dans le monde."));
+			textBuilder.extra(new TxtComponentBuilder("&b%d&3 entités et &b%d&3 non vivantes", livingEntities.size(), entities.size() - livingEntities.size()).onHoverText("&eEntités chargées dans le monde."));
 		}
 		textBuilder.extra(new TxtComponentBuilder("&3."));
 		return textBuilder;

@@ -140,7 +140,7 @@ public class OlympaSpigotPermission extends OlympaPermission {
 			else if (getAllowedGroups() != null && getAllowedGroups().length != 0)
 				Prefix.DEFAULT_BAD.sendMessage(player, "Pour exécuter cette action, tu dois avoir l'un des groupes suivants : %s.", Arrays.stream(getAllowedGroups()).map(g -> g.getName(olympaPlayer.getGender())));
 			else
-				Prefix.DEFAULT_BAD.sendMessage(player, "Tu n'a pas la permission.");
+				Prefix.DEFAULT_BAD.sendMessage(player, "Tu n'as pas la permission.");
 
 		return b;
 	}

@@ -32,7 +32,7 @@ public class DataManagmentListener implements Listener {
 		OlympaPlayer olympaPlayer = AccountProviderAPI.getter().get(player.getUniqueId());
 
 		if (olympaPlayer == null) {
-			player.kickPlayer("§cUne erreur de données est survenu, merci de réessayer.");
+			player.kickPlayer("§cUne erreur de données est survenue, merci de réessayer.");
 			event.setJoinMessage(null);
 			return;
 		}

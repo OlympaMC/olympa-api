@@ -1,16 +1,7 @@
 package fr.olympa.api.bungee.command;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.bungee.config.BungeeCustomConfig;
@@ -258,7 +249,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 
 	@Override
 	public void sendDoNotHavePermission() {
-		sendError("Tu as pas la permission &l(◑_◑)");
+		sendError("Tu n'as pas la permission &l(◑_◑)");
 	}
 
 	public void sendError(String message) {
@@ -272,7 +263,7 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 
 	@Override
 	public void sendImpossibleWithOlympaPlayer() {
-		sendError("Une erreur est survenu avec tes donnés.");
+		sendError("Une erreur est survenue avec tes données.");
 	}
 
 	public static void sendMessage(CommandSender sender, Prefix prefix, String text) {
