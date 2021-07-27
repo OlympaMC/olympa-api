@@ -41,6 +41,10 @@ public class OlympaGlobalPermission extends OlympaPermission {
 		else
 			underlying = new OlympaBungeePermission(minGroup, allowedGroups);
 	}
+	
+	public <T extends OlympaPermission> T getUnderlying() {
+		return (T) underlying;
+	}
 
 	@Override
 	public ServerFrameworkType getServerType() {

@@ -38,6 +38,10 @@ public class RandomizedPickerBuilder {
 		
 		RandomizedMultiPickerBase<T> build(int min, int max);
 		
+		RandomizedMultiPickerBase<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance);
+		
+		RandomizedMultiPickerBase<T> build(RandomValueProvider<Integer> amountProvider);
+		
 		IMultiBuilderBase<T> clone();
 		
 	}
@@ -66,6 +70,12 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		RandomizedMultiPicker<T> build(int min, int max);
+		
+		@Override
+		RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance);
+		
+		@Override
+		RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider);
 		
 		@Override
 		INormalMultiBuilder<T> clone();
@@ -117,6 +127,12 @@ public class RandomizedPickerBuilder {
 		ConditionalMultiPicker<T, C> build(int min, int max);
 		
 		@Override
+		ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider, double emptyChance);
+		
+		@Override
+		ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider);
+		
+		@Override
 		IConditionalMultiBuilder<T, C> clone();
 		
 	}
@@ -144,9 +160,9 @@ public class RandomizedPickerBuilder {
 		
 		protected Map<T, Double> values = new HashMap<>();
 		
-		public PickerBuilderBase() {}
+		protected PickerBuilderBase() {}
 		
-		public PickerBuilderBase(Map<T, Double> values) {
+		protected PickerBuilderBase(Map<T, Double> values) {
 			this.values.putAll(values);
 		}
 		
@@ -177,9 +193,9 @@ public class RandomizedPickerBuilder {
 
 	public static class PickerBuilder<T> extends PickerBuilderBase<T> implements INormalBuilder<T> {
 		
-		protected PickerBuilder() {}
+		public PickerBuilder() {}
 		
-		protected PickerBuilder(Map<T, Double> values) {
+		public PickerBuilder(Map<T, Double> values) {
 			super(values);
 		}
 		
@@ -205,12 +221,22 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public RandomizedMultiPicker<T> build(int min, int max, double emptyChance) {
-			return new FixedMultiPicker<>(values, Collections.emptyList(), min, max, emptyChance);
+			return build(new RandomValueProvider.UniformProvider(min, max), emptyChance);
 		}
 		
 		@Override
 		public RandomizedMultiPicker<T> build(int min, int max) {
-			return new FixedMultiPicker<>(values, Collections.emptyList(), min, max, 0);
+			return build(new RandomValueProvider.UniformProvider(min, max));
+		}
+		
+		@Override
+		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new FixedMultiPicker<>(values, Collections.emptyList(), amountProvider, emptyChance);
+		}
+		
+		@Override
+		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider) {
+			return build(amountProvider, 0);
 		}
 		
 		@Override
@@ -244,12 +270,22 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public RandomizedMultiPicker<T> build(int min, int max, double emptyChance) {
-			return new FixedMultiPicker<>(values, valuesAlways, min, max, emptyChance);
+			return build(new RandomValueProvider.UniformProvider(min, max), emptyChance);
 		}
 		
 		@Override
 		public RandomizedMultiPicker<T> build(int min, int max) {
-			return new FixedMultiPicker<>(values, valuesAlways, min, max, 0);
+			return build(min, max, 0);
+		}
+		
+		@Override
+		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new FixedMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+		}
+		
+		@Override
+		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider) {
+			return build(amountProvider, 0);
 		}
 		
 		@Override
@@ -326,12 +362,22 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(int min, int max, double emptyChance) {
-			return new FixedConditionalMultiPicker<>(values, Collections.emptyList(), min, max, emptyChance);
+			return build(new RandomValueProvider.UniformProvider(min, max), emptyChance);
 		}
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(int min, int max) {
-			return new FixedConditionalMultiPicker<>(values, Collections.emptyList(), min, max, 0);
+			return build(min, max, 0);
+		}
+		
+		@Override
+		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new FixedConditionalMultiPicker<>(values, Collections.emptyList(), amountProvider, emptyChance);
+		}
+		
+		@Override
+		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider) {
+			return build(amountProvider, 0);
 		}
 		
 		@Override
@@ -376,12 +422,22 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(int min, int max, double emptyChance) {
-			return new FixedConditionalMultiPicker<>(values, valuesAlways, min, max, emptyChance);
+			return build(new RandomValueProvider.UniformProvider(min, max));
 		}
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(int min, int max) {
-			return new FixedConditionalMultiPicker<>(values, valuesAlways, min, max, 0);
+			return build(min, max, 0);
+		}
+		
+		@Override
+		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new FixedConditionalMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+		}
+		
+		@Override
+		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider) {
+			return build(amountProvider, 0);
 		}
 		
 		@Override

@@ -8,9 +8,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import fr.olympa.api.utils.Utils;
-
-public interface RandomizedPickerBase<T> {
+public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 	
 	public static <T> T pickWithEmpty(Random random, Map<T, Double> objects, double emptyChance) {
 		return pick(random, objects, objects.values().stream().mapToDouble(Double::doubleValue).sum() + emptyChance);
@@ -26,6 +24,7 @@ public interface RandomizedPickerBase<T> {
 		return null;
 	}
 	
+	@Override
 	public default T pickOne(Random random) {
 		return pickWithEmpty(random, getObjectList(), getEmptyChance());
 	}
@@ -41,7 +40,7 @@ public interface RandomizedPickerBase<T> {
 	public interface RandomizedMultiPickerBase<T> extends RandomizedPickerBase<T> {
 		
 		public default List<T> pickMulti(Random random) {
-			int itemAmount = Utils.getRandomAmount(random, getMinItems(), getMaxItems());
+			int itemAmount = getAmountProvider().pickOne(random);
 			
 			List<T> pickeds = new ArrayList<>(itemAmount);
 			
@@ -62,9 +61,7 @@ public interface RandomizedPickerBase<T> {
 		
 		public abstract List<T> getAlwaysObjectList();
 		
-		public abstract int getMinItems();
-		
-		public abstract int getMaxItems();
+		public abstract RandomValueProvider<Integer> getAmountProvider();
 		
 	}
 	
@@ -199,7 +196,7 @@ public interface RandomizedPickerBase<T> {
 		}
 		
 		default List<T> pickMulti(Random random, C context) {
-			int itemAmount = Utils.getRandomAmount(random, getMinItems(), getMaxItems());
+			int itemAmount = getAmountProvider().pickOne(random);
 			
 			List<T> pickeds = new ArrayList<>(itemAmount);
 			
@@ -263,14 +260,12 @@ public interface RandomizedPickerBase<T> {
 	public class FixedMultiPicker<T> extends FixedPicker<T> implements RandomizedMultiPicker<T> {
 		
 		private List<T> valuesAlways;
-		private int min;
-		private int max;
+		private RandomValueProvider<Integer> amountProvider;
 		
-		public FixedMultiPicker(Map<T, Double> values, List<T> valuesAlways, int min, int max, double emptyChance) {
+		public FixedMultiPicker(Map<T, Double> values, List<T> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
 			super(values, emptyChance);
 			this.valuesAlways = valuesAlways;
-			this.min = min;
-			this.max = max;
+			this.amountProvider = amountProvider;
 		}
 		
 		@Override
@@ -279,13 +274,8 @@ public interface RandomizedPickerBase<T> {
 		}
 		
 		@Override
-		public int getMinItems() {
-			return min;
-		}
-		
-		@Override
-		public int getMaxItems() {
-			return max;
+		public RandomValueProvider<Integer> getAmountProvider() {
+			return amountProvider;
 		}
 		
 	}
@@ -315,14 +305,12 @@ public interface RandomizedPickerBase<T> {
 	public class FixedConditionalMultiPicker<T, C extends ConditionalContext<T>> extends FixedConditionalPicker<T, C> implements ConditionalMultiPicker<T, C> {
 		
 		private List<Conditioned<T, C>> valuesAlways;
-		private int min;
-		private int max;
+		private RandomValueProvider<Integer> amountProvider;
 		
-		public FixedConditionalMultiPicker(Map<Conditioned<T, C>, Double> values, List<Conditioned<T, C>> valuesAlways, int min, int max, double emptyChance) {
+		public FixedConditionalMultiPicker(Map<Conditioned<T, C>, Double> values, List<Conditioned<T, C>> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
 			super(values, emptyChance);
 			this.valuesAlways = valuesAlways;
-			this.min = min;
-			this.max = max;
+			this.amountProvider = amountProvider;
 		}
 		
 		@Override
@@ -331,13 +319,8 @@ public interface RandomizedPickerBase<T> {
 		}
 		
 		@Override
-		public int getMinItems() {
-			return min;
-		}
-		
-		@Override
-		public int getMaxItems() {
-			return max;
+		public RandomValueProvider<Integer> getAmountProvider() {
+			return amountProvider;
 		}
 		
 	}

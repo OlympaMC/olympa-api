@@ -41,6 +41,8 @@ import fr.olympa.api.common.match.MatcherPattern;
 
 public class Utils {
 
+	private Utils() {}
+	
 	private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
 		Collections.shuffle(list);
 		return list;
@@ -543,10 +545,6 @@ public class Utils {
 		if (min == max)
 			return min;
 		return random.nextInt(max - min + 1) + min;
-	}
-
-	private Utils() {
-
 	}
 
 }

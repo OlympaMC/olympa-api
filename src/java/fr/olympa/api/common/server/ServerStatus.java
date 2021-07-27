@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fr.olympa.api.common.permission.OlympaGlobalPermission;
-import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.permission.list.OlympaAPIPermissionsGlobal;
 import fr.olympa.api.common.player.OlympaPlayer;
 import net.md_5.bungee.api.ChatColor;
@@ -46,7 +45,7 @@ public enum ServerStatus {
 	private String name;
 
 	private ChatColor color;
-	private OlympaPermission permission;
+	private OlympaGlobalPermission permission;
 	private String commandArg;
 
 	ServerStatus(int id, String name, ChatColor color, OlympaGlobalPermission permission, String commandArg) {
@@ -77,7 +76,7 @@ public enum ServerStatus {
 		return color + name;
 	}
 
-	public OlympaPermission getPermission() {
+	public OlympaGlobalPermission getPermission() {
 		return permission;
 	}
 
