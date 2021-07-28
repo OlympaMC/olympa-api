@@ -162,11 +162,6 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		});
 		serverFrameworkVersion = core.getProxy().getVersion();
 	}
-
-	@Override
-	public boolean isSpigot() {
-		return true;
-	}
 	
 	public void setPing(int ping) {
 		this.ping = ping;

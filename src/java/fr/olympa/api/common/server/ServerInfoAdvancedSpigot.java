@@ -34,9 +34,4 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 		//tps = TPS.getTPS();
 		tpsArray = TPS.getDoubleTPS();
 	}
-	
-	@Override
-	public boolean isSpigot() {
-		return true;
-	}
 }

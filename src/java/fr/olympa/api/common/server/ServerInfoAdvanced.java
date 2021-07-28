@@ -26,6 +26,7 @@ import fr.olympa.api.common.plugin.PluginInfoBungee;
 import fr.olympa.api.common.plugin.PluginInfoSpigot;
 import fr.olympa.api.common.sort.Sorting;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
+import fr.olympa.api.spigot.utils.TPSUtils;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.bungee.OlympaBungee;
 import fr.olympa.core.spigot.OlympaCore;
@@ -128,10 +129,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Nullable
 	protected String error;
 	@Expose
-	@Deprecated
-	@Nullable
-	protected Float tps;
-	@Expose
 	@Nullable
 	protected double[] tpsArray;
 	@Expose
@@ -186,10 +183,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		uptime = core.getUptimeLong();
 		plugins = getCachePlugins();
 		versions = core.getProtocols();
-	}
-
-	public boolean isSpigot() {
-		return false;
 	}
 	
 	public String getName() {
@@ -289,10 +282,9 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return maxPlayers;
 	}
 
-	@Deprecated (forRemoval = true) // see getTpsArray
 	@Nullable
 	public Float getTps() {
-		return tps;
+		return tpsArray == null ? null : TPSUtils.getAverage(tpsArray);
 	}
 	
 	@Nullable
@@ -359,8 +351,6 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			serverInfoAdvanced.onlinePlayers = object.get("onlinePlayers").getAsInt();
 		if (object.has("maxPlayers"))
 			serverInfoAdvanced.maxPlayers = object.get("maxPlayers").getAsInt();
-		if (object.has("tps"))
-			serverInfoAdvanced.tps = object.get("tps").getAsFloat();
 		if (object.has("tpsArray"))
 			serverInfoAdvanced.tpsArray = context.deserialize(object.get("tpsArray").getAsJsonArray(), double[].class);
 		if (object.has("databaseConnected"))
