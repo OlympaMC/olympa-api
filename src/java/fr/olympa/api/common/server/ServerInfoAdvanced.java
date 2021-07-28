@@ -128,8 +128,12 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Nullable
 	protected String error;
 	@Expose
+	@Deprecated
 	@Nullable
 	protected Float tps;
+	@Expose
+	@Nullable
+	protected double[] tpsArray;
 	@Expose
 	protected boolean databaseConnected;
 	@Expose
@@ -141,7 +145,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Expose
 	protected List<ProtocolAPI> versions = new ArrayList<>();
 
-	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, float tps) {
+	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, double[] tpsArray) {
 		this.name = name;
 		this.olympaServer = olympaServer;
 		this.serverId = serverId;
@@ -149,7 +153,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		this.onlinePlayers = onlinePlayers;
 		this.maxPlayers = maxPlayers;
 		this.ping = ping;
-		this.tps = tps;
+		this.tpsArray = tpsArray;
 	}
 
 	public ServerInfoAdvanced(String name, OlympaServer olympaServer, int serverId, ServerStatus status, String error, int ping) {
@@ -184,6 +188,10 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		versions = core.getProtocols();
 	}
 
+	public boolean isSpigot() {
+		return false;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -281,9 +289,15 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return maxPlayers;
 	}
 
+	@Deprecated (forRemoval = true) // see getTpsArray
 	@Nullable
 	public Float getTps() {
 		return tps;
+	}
+	
+	@Nullable
+	public double[] getTpsArray() {
+		return tpsArray;
 	}
 
 	@Nullable
@@ -305,7 +319,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public boolean hasFullInfos() {
-		return hasMinimalInfo() && hasInstanceInfo() && getTps() != null && ping != null;
+		return hasMinimalInfo() && hasInstanceInfo() && getTpsArray() != null && ping != null;
 	}
 
 	public boolean isUsualError() {
@@ -347,6 +361,8 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 			serverInfoAdvanced.maxPlayers = object.get("maxPlayers").getAsInt();
 		if (object.has("tps"))
 			serverInfoAdvanced.tps = object.get("tps").getAsFloat();
+		if (object.has("tpsArray"))
+			serverInfoAdvanced.tpsArray = context.deserialize(object.get("tpsArray").getAsJsonArray(), double[].class);
 		if (object.has("databaseConnected"))
 			serverInfoAdvanced.databaseConnected = object.get("databaseConnected").getAsBoolean();
 		if (object.has("redisConnected"))

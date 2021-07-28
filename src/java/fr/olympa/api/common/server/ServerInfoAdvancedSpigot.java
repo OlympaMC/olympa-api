@@ -1,7 +1,7 @@
 package fr.olympa.api.common.server;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -16,18 +16,27 @@ public class ServerInfoAdvancedSpigot extends ServerInfoAdvanced {
 	public ServerInfoAdvancedSpigot() {
 		super();
 	}
-
+	
 	public ServerInfoAdvancedSpigot(OlympaCore core) {
+		this(core, true);
+	}
+
+	public ServerInfoAdvancedSpigot(OlympaCore core, boolean savePlayers) {
 		super(core);
 		Server server = core.getServer();
 		maxPlayers = server.getMaxPlayers();
 		Collection<? extends Player> playersSpigot = server.getOnlinePlayers();
 		onlinePlayers = playersSpigot.size();
-		players = new ArrayList<>();
-		server.getOnlinePlayers().forEach(player -> {
-			players.add(AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()));
-		});
+		if (savePlayers) players = playersSpigot.stream()
+				.map(player -> AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId()))
+				.collect(Collectors.toList());
 		serverFrameworkVersion = Bukkit.getBukkitVersion().replace("-SNAPSHOT", "");
-		tps = TPS.getTPS();
+		//tps = TPS.getTPS();
+		tpsArray = TPS.getDoubleTPS();
+	}
+	
+	@Override
+	public boolean isSpigot() {
+		return true;
 	}
 }

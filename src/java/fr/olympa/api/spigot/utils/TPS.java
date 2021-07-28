@@ -2,7 +2,6 @@ package fr.olympa.api.spigot.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,16 +32,12 @@ public class TPS {
 
 	public static float[] getAllTPS() {
 		double[] recentTps = getDoubleTPS();
-		float[] recentTpsF = round(recentTps);
+		float[] recentTpsF = TPSUtils.round(recentTps);
 		return recentTpsF;
 	}
 
 	public static float getAverage() {
-		return getAverage(getDoubleTPS());
-	}
-
-	public static float getAverage(double[] tps) {
-		return round(Arrays.stream(tps).sum() / tps.length);
+		return TPSUtils.getAverage(getDoubleTPS());
 	}
 
 	public static double[] getDoubleTPS() {
@@ -98,16 +93,5 @@ public class TPS {
 		default:
 			throw new IllegalArgumentException("Unsupported tps measure time " + time);
 		}
-	}
-
-	public static float round(double tps) {
-		return (float) Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
-	}
-
-	public static float[] round(double[] tps) {
-		float[] tpsFloat = new float[tps.length];
-		for (int i = 0; i < tps.length; i++)
-			tpsFloat[i] = round(tps[i]);
-		return tpsFloat;
 	}
 }

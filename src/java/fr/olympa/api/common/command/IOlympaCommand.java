@@ -150,6 +150,10 @@ public interface IOlympaCommand {
 
 	<T extends OlympaPlayer> T getOlympaPlayer();
 
+	default <T extends OlympaPlayer> T getOlympaPlayerNullable() {
+		return getPlayer() == null ? null : getOlympaPlayer();
+	}
+	
 	void setAllowConsole(boolean allowConsole);
 
 	boolean isConsoleAllowed();

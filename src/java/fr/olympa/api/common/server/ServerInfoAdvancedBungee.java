@@ -78,14 +78,18 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 					Players players = serverPing.getPlayers();
 					int onlinePlayers = players.getOnline();
 					int maxPlayers = players.getMax();
-					float tps = 0;
+					double[] tpsArray = null;
 					if (allMotd.startsWith("§"))
 						allMotd = allMotd.substring(2);
 					if (motd.length >= 1)
 						status = ServerStatus.get(motd[0]);
-					if (motd.length >= 2 && RegexMatcher.FLOAT.is(motd[1]))
-						tps = RegexMatcher.FLOAT.parse(motd[1]);
-					serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
+					if (motd.length >= 4 && RegexMatcher.DOUBLE.is(motd[1])) {
+						tpsArray = new double[3];
+						for (int i = 1; i < 4; i++) {
+							tpsArray[i - 1] = RegexMatcher.DOUBLE.parse(motd[i]).doubleValue();
+						}
+					}
+					serverDebugInfo = new ServerInfoAdvancedBungee(serverInfo, olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tpsArray);
 				} else {
 					// V1
 					String json = String.join(" ", Arrays.copyOfRange(motd, 7, motd.length));
@@ -131,8 +135,8 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		super();
 	}
 
-	public ServerInfoAdvancedBungee(ServerInfo serverInfo, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, float tps) {
-		super(serverInfo.getName(), olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tps);
+	public ServerInfoAdvancedBungee(ServerInfo serverInfo, OlympaServer olympaServer, int serverId, ServerStatus status, int onlinePlayers, int maxPlayers, int ping, double[] tpsArray) {
+		super(serverInfo.getName(), olympaServer, serverId, status, onlinePlayers, maxPlayers, ping, tpsArray);
 		cacheServerInfo = serverInfo;
 	}
 
@@ -159,6 +163,11 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 		serverFrameworkVersion = core.getProxy().getVersion();
 	}
 
+	@Override
+	public boolean isSpigot() {
+		return true;
+	}
+	
 	public void setPing(int ping) {
 		this.ping = ping;
 	}

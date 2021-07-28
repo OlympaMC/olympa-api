@@ -1,6 +1,7 @@
 package fr.olympa.api.spigot.utils;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -8,6 +9,20 @@ public class TPSUtils {
 
 	private static DecimalFormat format = new DecimalFormat("##.##");
 
+	public static float getAverage(double[] tps) {
+		return Math.round(Arrays.stream(tps).sum() / tps.length);
+	}
+	
+	public static float round(double tps) {
+		return (float) Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
+	}
+	
+	public static float[] round(double[] tps) {
+		float[] tpsFloat = new float[tps.length];
+		for (int i = 0; i < tps.length; i++) tpsFloat[i] = round(tps[i]);
+		return tpsFloat;
+	}
+	
 	// A ajuster
 	public static String getCPUUsageColor(int cpuUsage) {
 		if (cpuUsage < 25)
