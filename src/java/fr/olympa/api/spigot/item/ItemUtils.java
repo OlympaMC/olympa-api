@@ -41,7 +41,8 @@ import fr.olympa.core.spigot.OlympaCore;
 public class ItemUtils {
 
 	public static ImmutableItemStack none = new ImmutableItemStack(item(Material.RED_STAINED_GLASS_PANE, "§cx"));
-	public static ImmutableItemStack done = new ImmutableItemStack(item(Material.DIAMOND, "§aValider"));
+	public static ImmutableItemStack cancel = new ImmutableItemStack(item(Material.BARRIER, "§cAnnuler"));
+	public static ImmutableItemStack done = new ImmutableItemStack(item(Material.DIAMOND, "§b§lValider"));
 	public static ImmutableItemStack error = new ImmutableItemStack(item(Material.BARRIER, "§c§lerreur"));
 
 	private static Map<String, String> textures = new HashMap<>();

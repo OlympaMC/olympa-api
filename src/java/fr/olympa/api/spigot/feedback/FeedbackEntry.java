@@ -1,5 +1,7 @@
 package fr.olympa.api.spigot.feedback;
 
+import org.bukkit.Location;
+
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
@@ -19,5 +21,13 @@ public class FeedbackEntry {
 	public OlympaServer server;
 	
 	public ServerInfoAdvanced serverInfo;
+	
+	public Location position;
+	
+	public String worldName;
+	
+	public int getID() {
+		return id;
+	}
 	
 }
