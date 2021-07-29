@@ -11,12 +11,14 @@ import org.bukkit.entity.Player;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvancedSpigot;
+import fr.olympa.api.spigot.editor.Editor;
 import fr.olympa.api.spigot.editor.TextEditor;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.core.spigot.OlympaCore;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -30,18 +32,20 @@ public class FeedbackBuilder {
 			new Step(FeedbackBuilder::beginDescription, FeedbackBuilder::setDescription)
 			));
 	
+	private static HoverEvent<Component> button = HoverEvent.showText(Component.text("Clique!", NamedTextColor.GRAY));
+	
 	private static Book typeBook = Book.book(
 			Component.text("Olympa Feedback"), 
 			Component.text("Olympa"), 
-			Component.text("\n\n\n   Que comptez-vous     faire remonter au          staff ?", NamedTextColor.DARK_GRAY)
+			Component.text("\n\n\n  Que comptez-vous      faire remonter au          staff ?", NamedTextColor.DARK_GRAY)
 			.append(Component.text("\n\n         [", NamedTextColor.RED)
-					.append(Component.text("BUG", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next BUG")))
+					.append(Component.text("BUG", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next BUG")).hoverEvent(button))
 					.append(Component.text("]")))
-			.append(Component.text("\n     [", NamedTextColor.GOLD)
-					.append(Component.text("SUGGESTION", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next SUGGESTION")))
+			.append(Component.text("\n    [", NamedTextColor.GOLD)
+					.append(Component.text("SUGGESTION", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next SUGGESTION")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n         [", NamedTextColor.DARK_GREEN)
-					.append(Component.text("AVIS", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next AVIS")))
+					.append(Component.text("AVIS", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next AVIS")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n\n\n\n\n ", NamedTextColor.DARK_RED)
 					.append(Component.text("◀").clickEvent(ClickEvent.runCommand("/feedback prev")))
@@ -53,16 +57,16 @@ public class FeedbackBuilder {
 			Component.text("Olympa"), 
 			Component.text("\n\n\n  Quelle est la gravité          du bug ?", NamedTextColor.DARK_GRAY)
 			.append(Component.text("\n\n       [", NamedTextColor.DARK_RED)
-					.append(Component.text("CRITIQUE", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next CRITICAL")))
+					.append(Component.text("CRITIQUE", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next CRITICAL")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n      [", NamedTextColor.RED)
-					.append(Component.text("IMPORTANT", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next IMPORTANT")))
+					.append(Component.text("IMPORTANT", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next IMPORTANT")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n        [", NamedTextColor.GOLD)
-					.append(Component.text("MOYEN", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MEDIUM")))
+					.append(Component.text("MOYEN", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MEDIUM")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n        [", NamedTextColor.DARK_GREEN)
-					.append(Component.text("MINEUR", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MINOR")))
+					.append(Component.text("MINEUR", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MINOR")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n\n\n\n ", NamedTextColor.DARK_RED)
 					.append(Component.text("◀").clickEvent(ClickEvent.runCommand("/feedback prev")))
@@ -73,15 +77,15 @@ public class FeedbackBuilder {
 			Component.text("Olympa Feedback"), 
 			Component.text("Olympa"), 
 			Component.text("\n\n\n Ce bug concerne-t-il ", NamedTextColor.DARK_GRAY)
-			.append(Component.text("tout le serveur", NamedTextColor.GOLD))
+			.append(Component.text("  tout le serveur", NamedTextColor.GOLD))
 			.append(Component.text(" ou  seulement le serveur  "))
-			.append(Component.text(OlympaCore.getInstance().getOlympaServer().getNameCaps(), NamedTextColor.RED))
+			.append(Component.text(" " + OlympaCore.getInstance().getOlympaServer().getNameCaps(), NamedTextColor.RED))
 			.append(Component.text("?"))
-			.append(Component.text("\n\n  [", NamedTextColor.GOLD)
-					.append(Component.text("TOUT", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next TOUT")))
+			.append(Component.text("\n\n [", NamedTextColor.GOLD)
+					.append(Component.text("TOUT", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next TOUT")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("   [", NamedTextColor.RED)
-					.append(Component.text("SERVEUR", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next SERVEUR")))
+					.append(Component.text("SERVEUR", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next SERVEUR")).hoverEvent(button))
 					.append(Component.text("]")))
 			.append(Component.text("\n\n\n\n\n ", NamedTextColor.DARK_RED)
 					.append(Component.text("◀").clickEvent(ClickEvent.runCommand("/feedback prev")))
@@ -98,31 +102,41 @@ public class FeedbackBuilder {
 	public FeedbackBuilder(Player player) {
 		this.player = player;
 		
+		iterator = steps.listIterator(0);
+	}
+	
+	public boolean start() {
+		if (Editor.hasEditor(player)) throw new IllegalStateException("Joueur dans un éditeur.");
+		
 		entry = new FeedbackEntry();
 		entry.setPosition(player.getLocation());
 		
-		iterator = steps.listIterator(0);
-		next(null);
+		return next(null);
 	}
 	
 	public boolean next(String arg) {
 		if (step != null) step.complete.accept(this, arg);
+		if (!iterator.hasNext()) {
+			finish();
+			return false;
+		}
 		step = iterator.next();
 		if (!step.begin.test(this)) {
 			step = null;
-			if (!iterator.hasNext()) {
-				finish();
-				return false;
-			}
 			return next(null);
 		}
-		if (iterator.hasNext()) return true;
-		finish();
-		return false;
+		return true;
 	}
 	
 	public void previous() {
-		if (iterator.hasPrevious()) iterator.previous().begin.test(this);
+		if (!iterator.hasPrevious()) return;
+		iterator.previous();
+		if (!iterator.hasPrevious()) return;
+		step = iterator.previous();
+		if (!step.begin.test(this)) {
+			step = null;
+			previous();
+		}
 	}
 	
 	private boolean beginType() {
@@ -176,6 +190,7 @@ public class FeedbackBuilder {
 	
 	private boolean beginDescription() {
 		Prefix.DEFAULT_GOOD.sendMessage(player, entry.type.getDescriptionMessage());
+		player.sendTitle("§6Retour au staff", "§eDécris-le dans le chat!", 4, 150, 20);
 		new TextEditor<String>(player, this::next, this::previous, false).enterOrLeave();
 		return true;
 	}

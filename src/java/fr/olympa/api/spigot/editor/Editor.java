@@ -36,7 +36,7 @@ public abstract class Editor implements Listener {
 		if (edit == null) {
 			enter(p, editor);
 		} else {
-			Prefix.BAD.sendMessage(p, "Vous êtes déjà dans un éditeur.");
+			Prefix.BAD.sendMessage(p, "Tu es déjà dans un éditeur.");
 		}
 		return editor;
 	}

@@ -24,7 +24,7 @@ public class FeedbackCommand extends ComplexCommand {
 	@Override
 	public boolean noArguments(CommandSender sender) {
 		FeedbackBuilder builder = new FeedbackBuilder(getPlayer());
-		builders.put(getPlayer(), builder);
+		if (builder.start()) builders.put(getPlayer(), builder);
 		return true;
 	}
 	
@@ -35,7 +35,7 @@ public class FeedbackCommand extends ComplexCommand {
 			sendError("Ce créateur de retour n'est plus disponible...");
 			return;
 		}
-		if (!builder.next(cmd.getFrom(1))) builders.remove(getPlayer());
+		if (!builder.next(cmd.getFrom(0))) builders.remove(getPlayer());
 	}
 	
 	@Cmd (hide = true)

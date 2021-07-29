@@ -22,7 +22,7 @@ public class FeedbackManager {
 	public static final SQLColumn<FeedbackEntry> COLUMN_OWNER = new SQLColumn<FeedbackEntry>("owner", "BIGINT NOT NULL", Types.BIGINT);
 	public static final SQLColumn<FeedbackEntry> COLUMN_TYPE = new SQLColumn<FeedbackEntry>("type", "TINYINT(4) NOT NULL", Types.TINYINT);
 	public static final SQLColumn<FeedbackEntry> COLUMN_STATUS = new SQLColumn<FeedbackEntry>("status", "TINYINT(3) NULL", Types.TINYINT).setNotDefault();
-	public static final SQLColumn<FeedbackEntry> COLUMN_DESCRIPTION = new SQLColumn<FeedbackEntry>("description", "VARCHAR(65532) NOT NULL", Types.VARCHAR);
+	public static final SQLColumn<FeedbackEntry> COLUMN_DESCRIPTION = new SQLColumn<FeedbackEntry>("description", "TEXT NOT NULL", Types.VARCHAR);
 	public static final SQLColumn<FeedbackEntry> COLUMN_SERVER = new SQLColumn<FeedbackEntry>("server", "VARCHAR(255) NOT NULL", Types.VARCHAR);
 	public static final SQLColumn<FeedbackEntry> COLUMN_SERVERINFO = new SQLColumn<FeedbackEntry>("server_info", "TEXT NOT NULL", Types.VARCHAR);
 	public static final SQLColumn<FeedbackEntry> COLUMN_POSITION = new SQLColumn<FeedbackEntry>("position", "VARCHAR(255) NOT NULL", Types.VARCHAR);
@@ -51,11 +51,12 @@ public class FeedbackManager {
 	public void registerFeedback(FeedbackEntry entry, IntConsumer callback, Consumer<SQLException> failCallback) {
 		table.insertAsync(resultSet -> {
 			try {
+				resultSet.next();
 				callback.accept(resultSet.getInt("id"));
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}, failCallback, entry.date, entry.owner.getId(), entry.type.getId(), entry.status == null ? null : entry.status.getId(), entry.description, entry.server.name(), entry.serverInfo.toString(), entry.getPositionString());
+		}, failCallback, entry.date, entry.owner.getId(), entry.status == null ? null : entry.status.getId(), entry.type.getId(), entry.description, entry.server.name(), entry.serverInfo.toString(), entry.getPositionString());
 	}
 	
 }

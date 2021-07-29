@@ -67,6 +67,10 @@ public interface OlympaPlayer {
 	String getGroupsToHumainString();
 
 	String getGroupsToString();
+	
+	default boolean hasGroup(OlympaGroup group) {
+		return getGroups().containsKey(group);
+	}
 
 	Map<Long, String> getHistName();
 
