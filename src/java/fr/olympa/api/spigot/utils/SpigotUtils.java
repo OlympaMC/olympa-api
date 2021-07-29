@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
@@ -95,28 +96,29 @@ public class SpigotUtils {
 	}
 	
 	public static String convertLocationToString(Location loc) {
-		String world = loc.getWorld().getName();
-		double x = loc.getX();
-		double y = loc.getY();
-		double z = loc.getZ();
+		StringJoiner joiner = new StringJoiner(" ");
+		if (loc.getWorld() != null) joiner.add(loc.getWorld().getName());
+		joiner.add(Double.toString(loc.getX()));
+		joiner.add(Double.toString(loc.getY()));
+		joiner.add(Double.toString(loc.getZ()));
 		if ((int) loc.getPitch() != 0 || (int) loc.getYaw() != 0) {
-			int yaw = (int) loc.getYaw();
-			int pitch = (int) loc.getPitch();
-			return world + " " + x + " " + y + " " + z + " " + yaw + " " + pitch;
+			joiner.add(Integer.toString((int) loc.getYaw()));
+			joiner.add(Integer.toString((int) loc.getPitch()));
 		}
-		return world + " " + x + " " + y + " " + z;
+		return joiner.toString();
 	}
 
 	public static Location convertStringToLocation(String loc) {
 		if (loc != null) {
 			String[] coords = loc.split(" ");
-			World w = Bukkit.getWorld(coords[0]);
-			double x = Double.parseDouble(coords[1]);
-			double y = Double.parseDouble(coords[2]);
-			double z = Double.parseDouble(coords[3]);
-			if (coords.length == 6) {
-				float yaw = Float.parseFloat(coords[4]);
-				float pitch = Float.parseFloat(coords[5]);
+			int i = 0;
+			World w = coords.length == 4 || coords.length == 6 ? Bukkit.getWorld(coords[i++]) : null;
+			double x = Double.parseDouble(coords[i++]);
+			double y = Double.parseDouble(coords[i++]);
+			double z = Double.parseDouble(coords[i++]);
+			if (coords.length != i) {
+				float yaw = Float.parseFloat(coords[i++]);
+				float pitch = Float.parseFloat(coords[i]);
 				return new Location(w, x, y, z, yaw, pitch);
 			}
 			return new Location(w, x, y, z);

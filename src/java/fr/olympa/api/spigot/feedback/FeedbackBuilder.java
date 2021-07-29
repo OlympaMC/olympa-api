@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.bukkit.entity.Player;
 
@@ -25,6 +25,7 @@ public class FeedbackBuilder {
 	
 	private static LinkedList<Step> steps = new LinkedList<>(Arrays.asList(
 			new Step(FeedbackBuilder::beginType, FeedbackBuilder::setType),
+			new Step(FeedbackBuilder::beginStatus, FeedbackBuilder::setStatus),
 			new Step(FeedbackBuilder::beginServer, FeedbackBuilder::setServer),
 			new Step(FeedbackBuilder::beginDescription, FeedbackBuilder::setDescription)
 			));
@@ -43,6 +44,27 @@ public class FeedbackBuilder {
 					.append(Component.text("AVIS", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next AVIS")))
 					.append(Component.text("]")))
 			.append(Component.text("\n\n\n\n\n ", NamedTextColor.DARK_RED)
+					.append(Component.text("◀").clickEvent(ClickEvent.runCommand("/feedback prev")))
+					.append(Component.text("        "))
+					.append(Component.text("✖").clickEvent(ClickEvent.runCommand("/feedback exit")))));
+	
+	private static Book statusBook = Book.book(
+			Component.text("Olympa Feedback"), 
+			Component.text("Olympa"), 
+			Component.text("\n\n\n  Quelle est la gravité          du bug ?", NamedTextColor.DARK_GRAY)
+			.append(Component.text("\n\n       [", NamedTextColor.DARK_RED)
+					.append(Component.text("CRITIQUE", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next CRITICAL")))
+					.append(Component.text("]")))
+			.append(Component.text("\n      [", NamedTextColor.RED)
+					.append(Component.text("IMPORTANT", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next IMPORTANT")))
+					.append(Component.text("]")))
+			.append(Component.text("\n        [", NamedTextColor.GOLD)
+					.append(Component.text("MOYEN", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MEDIUM")))
+					.append(Component.text("]")))
+			.append(Component.text("\n        [", NamedTextColor.DARK_GREEN)
+					.append(Component.text("MINEUR", Style.style(TextDecoration.BOLD)).clickEvent(ClickEvent.runCommand("/feedback next MINOR")))
+					.append(Component.text("]")))
+			.append(Component.text("\n\n\n\n ", NamedTextColor.DARK_RED)
 					.append(Component.text("◀").clickEvent(ClickEvent.runCommand("/feedback prev")))
 					.append(Component.text("        "))
 					.append(Component.text("✖").clickEvent(ClickEvent.runCommand("/feedback exit")))));
@@ -77,29 +99,35 @@ public class FeedbackBuilder {
 		this.player = player;
 		
 		entry = new FeedbackEntry();
-		entry.position = player.getLocation();
-		entry.worldName = entry.position.getWorld().getName();
-		entry.position.setWorld(null);
+		entry.setPosition(player.getLocation());
 		
 		iterator = steps.listIterator(0);
-		step = iterator.next();
-		step.begin.accept(this);
+		next(null);
 	}
 	
 	public boolean next(String arg) {
-		step.complete.accept(this, arg);
-		iterator.next().begin.accept(this);
+		if (step != null) step.complete.accept(this, arg);
+		step = iterator.next();
+		if (!step.begin.test(this)) {
+			step = null;
+			if (!iterator.hasNext()) {
+				finish();
+				return false;
+			}
+			return next(null);
+		}
 		if (iterator.hasNext()) return true;
 		finish();
 		return false;
 	}
 	
 	public void previous() {
-		if (iterator.hasPrevious()) iterator.previous().begin.accept(this);
+		if (iterator.hasPrevious()) iterator.previous().begin.test(this);
 	}
 	
-	private void beginType() {
+	private boolean beginType() {
 		player.openBook(typeBook);
+		return true;
 	}
 	
 	private void setType(String arg) {
@@ -111,8 +139,24 @@ public class FeedbackBuilder {
 		}
 	}
 	
-	private void beginServer() {
+	private boolean beginStatus() {
+		if (entry.type != FeedbackType.BUG) return false;
+		player.openBook(statusBook);
+		return true;
+	}
+	
+	private void setStatus(String arg) {
+		try {
+			entry.status = FeedbackStatus.valueOf(arg);
+		}catch (IllegalArgumentException ex) {
+			Prefix.ERROR.sendMessage(player, "Statut de feedback invalide: %s", arg);
+			if (entry.status == null) entry.status = FeedbackStatus.MEDIUM;
+		}
+	}
+	
+	private boolean beginServer() {
 		player.openBook(serverBook);
+		return true;
 	}
 	
 	private void setServer(String arg) {
@@ -130,9 +174,10 @@ public class FeedbackBuilder {
 		}
 	}
 	
-	private void beginDescription() {
+	private boolean beginDescription() {
 		Prefix.DEFAULT_GOOD.sendMessage(player, entry.type.getDescriptionMessage());
 		new TextEditor<String>(player, this::next, this::previous, false).enterOrLeave();
+		return true;
 	}
 	
 	private void setDescription(String arg) {
@@ -143,13 +188,19 @@ public class FeedbackBuilder {
 		entry.date = System.currentTimeMillis();
 		entry.owner = AccountProviderAPI.getter().getPlayerInformations(player.getUniqueId());
 		entry.serverInfo = new ServerInfoAdvancedSpigot(OlympaCore.getInstance(), false);
+		
+		OlympaCore.getInstance().getFeedbackManager().registerFeedback(entry, id -> {
+			Prefix.DEFAULT_GOOD.sendMessage(player, "Ton retour a été fait, il porte le numéro %d ! Merci beaucoup de nous aider à améliorer Olympa ;-)", id);
+		}, error -> {
+			Prefix.ERROR.sendMessage(player, "Une erreur est survenue lors de l'envoi de ton retour : §4%s", error.getMessage());
+		});
 	}
 	
 	static class Step {
-		Consumer<FeedbackBuilder> begin;
+		Predicate<FeedbackBuilder> begin;
 		BiConsumer<FeedbackBuilder, String> complete;
 		
-		public Step(Consumer<FeedbackBuilder> begin, BiConsumer<FeedbackBuilder, String> complete) {
+		public Step(Predicate<FeedbackBuilder> begin, BiConsumer<FeedbackBuilder, String> complete) {
 			this.begin = begin;
 			this.complete = complete;
 		}

@@ -239,7 +239,7 @@ public class SQLTable<T> {
 	}
 
 	public void deleteAsync(T primaryObject, Runnable successCallback, Consumer<SQLException> failCallback) {
-		LinkSpigotBungee.Provider.link.launchAsync(() -> {
+		LinkSpigotBungee.getInstance().launchAsync(() -> {
 			try {
 				delete(primaryObject);
 				if (successCallback != null)

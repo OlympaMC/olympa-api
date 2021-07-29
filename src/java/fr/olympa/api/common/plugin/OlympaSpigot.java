@@ -17,6 +17,7 @@ import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.spigot.afk.AfkHandler;
+import fr.olympa.api.spigot.feedback.FeedbackManager;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
 import fr.olympa.api.spigot.scoreboard.tab.INametagApi;
@@ -38,6 +39,8 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected List<ServerInfoAdvanced> monitorInfos = new ArrayList<>();
 	protected RegionManager regionManager;
 	protected ImageFrameManager imageFrameManager;
+	
+	protected FeedbackManager feedbackManager;
 
 	protected AfkHandler afkHandler;
 	protected INametagApi nameTagApi;
@@ -142,6 +145,14 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		this.regionManager = regionManager;
 	}
 
+	public FeedbackManager getFeedbackManager() {
+		return feedbackManager;
+	}
+	
+	public void setFeedbackManager(FeedbackManager feedbackManager) {
+		this.feedbackManager = feedbackManager;
+	}
+	
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		return imageFrameManager;

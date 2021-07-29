@@ -53,4 +53,9 @@ public class FeedbackCommand extends ComplexCommand {
 		builders.remove(getPlayer());
 	}
 	
+	@Cmd (permissionName = "FEEDBACK_COMMAND_SEE")
+	public void view(CommandContext cmd) {
+		new FeedbackChooseGUI().create(getPlayer());
+	}
+	
 }
