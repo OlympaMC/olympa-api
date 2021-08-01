@@ -37,6 +37,10 @@ public class ObservableDouble extends AbstractObservable implements Comparable<O
 		return value;
 	}
 	
+	public float getAsFloat() {
+		return (float) value;
+	}
+	
 	@Override
 	public int compareTo(ObservableDouble o) {
 		return compareTo(o.value);

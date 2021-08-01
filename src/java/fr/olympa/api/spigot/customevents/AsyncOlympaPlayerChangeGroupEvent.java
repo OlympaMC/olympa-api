@@ -126,8 +126,8 @@ public class AsyncOlympaPlayerChangeGroupEvent extends Event {
 		return handlers;
 	}
 
-	public OlympaPlayer getOlympaPlayer() {
-		return olympaPlayer;
+	public <T extends OlympaPlayer> T getOlympaPlayer() {
+		return (T) olympaPlayer;
 	}
 
 	public Player getPlayer() {

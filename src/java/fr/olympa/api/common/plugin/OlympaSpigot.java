@@ -117,6 +117,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void setOlympaServer(OlympaServer olympaServer) {
 		this.olympaServer = olympaServer;
+		sendMessage("Serveur de type §6§l%s", olympaServer.getNameCaps());
 	}
 
 	@Override

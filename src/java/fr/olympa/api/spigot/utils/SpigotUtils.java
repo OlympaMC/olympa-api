@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -540,23 +541,30 @@ public class SpigotUtils {
 		if (!location.getWorld().getBlockAt(x, --y, z).isEmpty()) return false;
 		double deltaX = location.getX() - x;
 		int newX = x;
-		if (deltaX < 0.3) {
+		if (deltaX <= 0.3) {
 			newX--;
 			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
-		}else if (deltaX > 0.7) {
+		}else if (deltaX >= 0.7) {
 			newX++;
 			if (!location.getWorld().getBlockAt(newX, y, z).isEmpty()) return false;
 		}
 		double deltaZ = location.getZ() - z;
 		int newZ = z;
-		if (deltaZ < 0.3) {
+		if (deltaZ <= 0.3) {
 			newZ--;
 			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
-		}else if (deltaZ > 0.7) {
+		}else if (deltaZ >= 0.7) {
 			newZ++;
 			if (!location.getWorld().getBlockAt(x, y, newZ).isEmpty()) return false;
 		}
 		return location.getWorld().getBlockAt(newX, y, newZ).isEmpty();
+	}
+	
+	public static void runPrimaryThread(Runnable runnable, Plugin plugin) {
+		if (Bukkit.isPrimaryThread())
+			runnable.run();
+		else
+			Bukkit.getScheduler().runTask(plugin, runnable);
 	}
 	
 }

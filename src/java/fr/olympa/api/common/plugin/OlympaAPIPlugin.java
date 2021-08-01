@@ -77,6 +77,7 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 			config.saveIfNotExists();
 		} else
 			config = null;
+		sendMessage("Démarrage du plugin...");
 	}
 
 	@Override
