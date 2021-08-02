@@ -16,6 +16,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4%s ", ":&r", true),
+	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&#9b4747%s ", ":&r", true, false),
 	RESP(25, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp._Technique", "Resp._Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp._Staff", "Resp._Staff", "&c%s ", ":&r", true),
