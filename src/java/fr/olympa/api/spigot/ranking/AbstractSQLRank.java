@@ -22,7 +22,7 @@ public abstract class AbstractSQLRank extends AbstractRank {
 		OlympaStatement topStatement =
 				new OlympaStatement("SELECT pseudo, " + db + "." + column
 						+ " FROM " + db
-						+ " INNER JOIN commun.players ON " + db + ".player_id = commun.players.id"
+						+ " INNER JOIN common.players ON " + db + ".player_id = common.players.id"
 						+ " ORDER BY " + db + "." + column + " DESC LIMIT " + getMaxSlots());
 		try (PreparedStatement statement = topStatement.createStatement()) {
 			ResultSet resultSet = topStatement.executeQuery(statement);

@@ -26,7 +26,7 @@ public class SQLGroup {
 		// Todo remove unused ID in db
 	}
 
-	static String tableName = "commun.groups";
+	static String tableName = "common.groups";
 	private static OlympaStatement insertPlayerStatement = new OlympaStatement(StatementType.INSERT, tableName, "id", "name", "name_fem", "power", "prefix", "chat_suffix", "high_staff", "server");
 
 	public static void insert(OlympaGroup group) throws SQLException {

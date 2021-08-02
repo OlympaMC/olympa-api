@@ -25,7 +25,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
 	MOD(7, 53, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
 	ASSISTANT(8, 50, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
-	DEVP(22, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
+	DEVP(26, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
 	DEV(12, 43, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
 	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&a%s ", ":&r", false),
 	GAMEMASTER(4, 39, OlympaServer.ALL, "GameMaster", "GameMaster", "&0%s ", ":&r", true),
@@ -55,7 +55,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),
-	CREA_CONSTRUCTOR(22, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
+	CREA_CONSTRUCTOR(25, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
 
 	FRIEND(16, 0, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
