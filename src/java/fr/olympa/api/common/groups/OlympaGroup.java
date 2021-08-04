@@ -1,5 +1,6 @@
 package fr.olympa.api.common.groups;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.server.OlympaServer;
@@ -17,7 +19,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4%s ", ":&r", true),
 	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&#9b4747%s ", ":&r", true, false),
-	RESP(25, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
+	RESP(28, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp._Technique", "Resp._Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp._Staff", "Resp._Staff", "&c%s ", ":&r", true),
 	RESP_COM(5, 70, OlympaServer.ALL, "Resp._Communication", "Resp._Communication", "&3%s ", ":&r", true),
@@ -56,12 +58,26 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),
-	CREA_CONSTRUCTOR(25, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
+	CREA_CONSTRUCTOR(29, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
 
 	FRIEND(16, 0, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 
-	//ZTA_MAFIEUX(21, 10, OlympaServer.ZTA, "Mafieux", "Mafieuse", "&d%s ", ":&r", false),
+	static {
+		Map<Integer, List<OlympaGroup>> duplicateGroups = new HashMap<>();
+		Arrays.stream(values()).forEach(group -> {
+			List<OlympaGroup> list = duplicateGroups.get(group.getId());
+			if (list == null) {
+				list = new ArrayList<>();
+				duplicateGroups.put(group.getId(), list);
+			}
+			list.add(group);
+		});
+		duplicateGroups.forEach((id, list) -> {
+			if (list.size() != 1)
+				LinkSpigotBungee.getInstance().sendMessage("&4[ERROR SEVERE] &cThere are several groups with the same id : %d", id, list.stream().map(OlympaGroup::getName).collect(Collectors.joining(", ")));
+		});
+	}
 
 	/**
 	 * Get {@link #OlympaGroup}
