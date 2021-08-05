@@ -38,33 +38,28 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
 	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
-	VIPPLUS(
-			25,
-			28,
-			OlympaServer.ALL,
-			"VIP+",
-			"VIP+",
-			"&6%s ",
-			":&r",
-			false),
 	VIP(
 			19,
 			26,
-			OlympaServer.ALL,
+			OlympaServer.LOBBY,
 			"VIP",
 			"VIP",
 			"&6%s ",
 			":&r",
 			false),
 
-	ZTA3(31, 23, OlympaServer.ZTA, "ZTA3", "ZTA3", "&3%s ", ":&r", false),
-	ZTA2(31, 22, OlympaServer.ZTA, "ZTA2", "ZTA2", "&6%s ", ":&r", false),
-	ZTA1(30, 21, OlympaServer.ZTA, "ZTA1", "ZTA1", "&e%s ", ":&r", false),
+	ZTA_LEGENDE(34, 25, OlympaServer.ZTA, "Légende", "Légende", "&3%s ", ":&r", false),
+	ZTA_HEROS(33, 24, OlympaServer.ZTA, "Héros", "Héroïne", "&3%s ", ":&r", false),
+	ZTA_SAUVEUR(32, 23, OlympaServer.ZTA, "Sauveur", "Sauveuse", "&3%s ", ":&r", false),
+	ZTA_RODEUR(31, 22, OlympaServer.ZTA, "Rôdeur", "Rodeuse", "&6%s ", ":&r", false),
+	ZTA_SURVIVANT(30, 21, OlympaServer.ZTA, "Survivant", "Survivante", "&e%s ", ":&r", false),
 
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),
 	CREA_CONSTRUCTOR(29, 21, OlympaServer.CREATIF, "Bâtisseur", "Bâtisseuse", "&e%s ", ":&r", false),
 
+	PVPKIT_CHAMPION(25, 28, OlympaServer.PVPKIT, "Champion", "Championne", "&6%s ", ":&r", false),
+	
 	FRIEND(16, 0, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 

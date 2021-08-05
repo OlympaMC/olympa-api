@@ -262,10 +262,6 @@ public class Utils {
 		return i > 0 && i < 27 ? String.valueOf((char) ('Z' - (Character.toUpperCase((char) (i + 64)) - 'A'))) : null;
 	}
 
-	public static Object getRandom(List<?> list) {
-		return list.get(new Random().nextInt(list.size()));
-	}
-
 	/**
 	 * Utilise RegexMatcher.UUID.parse(uuid)
 	 */
