@@ -56,6 +56,10 @@ public class OlympaStatement {
 		this(type, tableName, new String[] { what }, keys);
 	}
 
+	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, int limit, String... keys) {
+		this(type, tableName, what, null, null, null, 0, limit, keys);
+	}
+
 	public OlympaStatement(StatementTypeSelectUpdate type, String tableName, String[] what, String... keys) {
 		this(type, tableName, what, 0, 0, keys);
 	}
@@ -200,7 +204,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-
+	
 	public int executeUpdate(StatementProvider statementProvider, ResultSetProvider generatedKeysProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -216,7 +220,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-
+	
 	public void executeQuery(StatementProvider statementProvider, ResultSetProvider queryProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -230,12 +234,12 @@ public class OlympaStatement {
 			close();
 		}
 	}
-
+	
 	@FunctionalInterface
 	public interface StatementProvider {
 		public void call(PreparedStatement statement) throws Exception;
 	}
-
+	
 	@FunctionalInterface
 	public interface ResultSetProvider {
 		public void call(ResultSet resultSet) throws Exception;

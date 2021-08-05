@@ -1,6 +1,7 @@
 package fr.olympa.api.common.chat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -165,6 +166,13 @@ public class TxtComponentBuilder {
 		if (extras == null)
 			extras = new ArrayList<>();
 		extras.add(extra);
+		return this;
+	}
+
+	public TxtComponentBuilder extra(TxtComponentBuilder extra, TxtComponentBuilder... multiExtra) {
+		extra(extra);
+		if (multiExtra != null && multiExtra.length > 0)
+			Collections.addAll(extras, multiExtra);
 		return this;
 	}
 
