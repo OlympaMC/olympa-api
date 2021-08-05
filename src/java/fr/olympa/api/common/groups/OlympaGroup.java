@@ -34,12 +34,13 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	GAMEMASTER(4, 39, OlympaServer.ALL, "GameMaster", "GameMaster", "&0%s ", ":&r", true),
 	ANIMATOR(13, 38, OlympaServer.ALL, "Animateur", "Animatrice", "&d%s ", ":&r", false),
 	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&a%s ", ":&r", false),
+	PARTENER(21, 35, OlympaServer.ALL, "Partenaire", "Partenaire", "&d%s ", ":&r", true, false),
 	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
 	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
 	VIPPLUS(
 			25,
-			21,
+			28,
 			OlympaServer.ALL,
 			"VIP+",
 			"VIP+",
@@ -48,13 +49,17 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 			false),
 	VIP(
 			19,
-			20,
+			26,
 			OlympaServer.ALL,
 			"VIP",
 			"VIP",
 			"&6%s ",
 			":&r",
 			false),
+
+	ZTA3(31, 23, OlympaServer.ZTA, "ZTA3", "ZTA3", "&3%s ", ":&r", false),
+	ZTA2(31, 22, OlympaServer.ZTA, "ZTA2", "ZTA2", "&6%s ", ":&r", false),
+	ZTA1(30, 21, OlympaServer.ZTA, "ZTA1", "ZTA1", "&e%s ", ":&r", false),
 
 	CREA_CREATOR(24, 23, OlympaServer.CREATIF, "Créateur", "Créatrice", "&3%s ", ":&r", false),
 	CREA_ARCHITECT(23, 22, OlympaServer.CREATIF, "Architecte", "Architecte", "&6%s ", ":&r", false),

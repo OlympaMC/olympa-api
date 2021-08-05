@@ -44,7 +44,7 @@ public class TableGenerator {
 	private static String colorsRegex = RegexMatcher.ALL_CHAT_INVISIBLE_CHARS.getRegex();
 
 	static {
-		LinkSpigotBungee.getInstance().sendMessage("DEBUG TableGenerator REGEX '%s'", regex.pattern());
+		//		LinkSpigotBungee.getInstance().sendMessage("DEBUG TableGenerator REGEX '%s'", regex.pattern()); // ៲(?:)?(\s*)(?:)?៲(?:)?(\s*)(?:)?៲(?:)?(\s*)(?:)?៲
 	}
 
 	private Alignment[] alignments;

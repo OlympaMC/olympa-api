@@ -2,7 +2,9 @@ package fr.olympa.api.common.logger;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -31,6 +33,23 @@ public class LoggerUtils {
 			i++;
 		}
 		LinkSpigotBungee.getInstance().sendMessage("Hooked error stream handler into &6%s&e loggers!", i);
+	}
+
+	public static Set<Logger> getAllHooks() {
+		LogManager manager = LogManager.getLogManager();
+		Set<Logger> loggers = new HashSet<>();
+		Enumeration<String> names = manager.getLoggerNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			@Nullable
+			Logger logger = manager.getLogger(name);
+			if (logger == null) {
+				LinkSpigotBungee.getInstance().sendMessage("&cUnable to hook into logger '&6%s&e', it is null", name);
+				continue;
+			}
+			loggers.add(logger);
+		}
+		return loggers;
 	}
 
 	public static void unHookAll() {
