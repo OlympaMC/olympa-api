@@ -86,6 +86,11 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	public void sendMessage(String message, Object... args) {
 		getProxy().getConsole().sendMessage(TextComponent.fromLegacyText(String.format(ColorUtils.color(getPrefixConsole() + message), args)));
 	}
+	
+	@Override
+	public void sendRedis(String message, Object... args) {
+		getProxy().getConsole().sendMessage(TextComponent.fromLegacyText(String.format(ColorUtils.color("§f[§e§lRedis§f] §7" + message), args)));
+	}
 
 	@Override
 	public OlympaServer getOlympaServer() {

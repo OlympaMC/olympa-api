@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.api.common.server.ServerStatus;
@@ -212,5 +213,10 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Nullable
 	public Player getPlayer(UUID playerUUID) {
 		return getServer().getPlayer(playerUUID);
+	}
+	
+	@Override
+	public void sendRedis(String message, Object... args) {
+		getServer().getConsoleSender().sendMessage(ColorUtils.format("§f[§e§lRedis§f] §7" + message, args));
 	}
 }

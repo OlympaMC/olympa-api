@@ -44,6 +44,8 @@ public interface LinkSpigotBungee<P> {
 	String getServerName();
 
 	void sendMessage(String message, Object... args);
+	
+	void sendRedis(String message, Object... args);
 
 	boolean isSpigot();
 

@@ -343,7 +343,7 @@ public class SpigotUtils {
 		if (leftover.isEmpty())
 			return;
 		leftover.forEach((i, item) -> p.getWorld().dropItem(p.getLocation(), item));
-		Prefix.DEFAULT.sendMessage(p, "Tes items ont été jetés au sol car tu n'as plus de place dans ton inventaire !");
+		Prefix.DEFAULT.sendMessage(p, "Des items ont été jetés au sol car tu n'as plus de place dans ton inventaire !");
 	}
 	
 	/**
