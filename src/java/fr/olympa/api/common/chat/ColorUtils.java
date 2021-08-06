@@ -14,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -46,11 +48,11 @@ public class ColorUtils {
 	/**
 	 * Method copied from Paper {@link org.bukkit.ChatColor#getLastColors(String)}
 	 */
-	@NotNull
-	public static String getLastColors(@NotNull String input) {
+	@Nullable
+	public static ChatColor getLastColor(@NotNull String input) {
 		Validate.notNull(input, "Cannot get last colors from null text");
 
-		String result = "";
+		ChatColor result = null;
 		int length = input.length();
 
 		// Search backwards from the end as it is faster
@@ -61,23 +63,21 @@ public class ColorUtils {
 				if (index > 11 && input.charAt(index - 12) == ChatColor.COLOR_CHAR && (input.charAt(index - 11) == 'x' || input.charAt(index - 11) == 'X')) {
 					String color = input.substring(index - 12, index + 2);
 					if (HEX_COLOR_PATTERN.matcher(color).matches()) {
-						result = color + result;
+						result = ColorUtils.getNearestForLegacyColor(ChatColor.of(color.substring(2).replace(ChatColor.COLOR_CHAR, Character.MIN_VALUE)));
 						break;
 					}
 				}
 				char c = input.charAt(index + 1);
 				ChatColor color = ChatColor.getByChar(c);
 
-				if (color != null) {
-					result = color.toString() + result;
-
+				if (color != null)
 					// Once we find a color or reset we can stop searching
-					if (!color.equals(ChatColor.RESET) && !color.equals(ChatColor.BOLD) && !color.equals(ChatColor.UNDERLINE) && !color.equals(ChatColor.STRIKETHROUGH) && !color.equals(ChatColor.MAGIC))
+					if (!color.equals(ChatColor.RESET) && !color.equals(ChatColor.BOLD) && !color.equals(ChatColor.UNDERLINE) && !color.equals(ChatColor.STRIKETHROUGH) && !color.equals(ChatColor.MAGIC)) {
+						result = color;
 						break;
-				}
+					}
 			}
 		}
-
 		return result;
 	}
 
