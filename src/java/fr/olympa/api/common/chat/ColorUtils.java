@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.match.RegexMatcher;
@@ -23,6 +26,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ColorUtils {
 
 	public static ChatColor ORANGE = ChatColor.of("#FF4500");
+	private static final Pattern HEX_COLOR_PATTERN = Pattern.compile(ChatColor.COLOR_CHAR + "x(?>" + ChatColor.COLOR_CHAR + "[0-9a-f]){6}", Pattern.CASE_INSENSITIVE);
 
 	private static final Random RANDOM = new Random();
 	private static final float MIN_BRIGHTNESS = 0.8f;
@@ -37,6 +41,44 @@ public class ColorUtils {
 		float s = 1f;
 		float b = MIN_BRIGHTNESS + (1f - MIN_BRIGHTNESS) * RANDOM.nextFloat();
 		return ChatColor.of(Color.getHSBColor(h, s, b));
+	}
+
+	/**
+	 * Method copied from Paper {@link org.bukkit.ChatColor#getLastColors(String)}
+	 */
+	@NotNull
+	public static String getLastColors(@NotNull String input) {
+		Validate.notNull(input, "Cannot get last colors from null text");
+
+		String result = "";
+		int length = input.length();
+
+		// Search backwards from the end as it is faster
+		for (int index = length - 1; index > -1; index--) {
+			char section = input.charAt(index);
+			if (section == ChatColor.COLOR_CHAR && index < length - 1) {
+				// Support hex colors
+				if (index > 11 && input.charAt(index - 12) == ChatColor.COLOR_CHAR && (input.charAt(index - 11) == 'x' || input.charAt(index - 11) == 'X')) {
+					String color = input.substring(index - 12, index + 2);
+					if (HEX_COLOR_PATTERN.matcher(color).matches()) {
+						result = color + result;
+						break;
+					}
+				}
+				char c = input.charAt(index + 1);
+				ChatColor color = ChatColor.getByChar(c);
+
+				if (color != null) {
+					result = color.toString() + result;
+
+					// Once we find a color or reset we can stop searching
+					if (!color.equals(ChatColor.RESET) && !color.equals(ChatColor.BOLD) && !color.equals(ChatColor.UNDERLINE) && !color.equals(ChatColor.STRIKETHROUGH) && !color.equals(ChatColor.MAGIC))
+						break;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -74,6 +116,7 @@ public class ColorUtils {
 	public static String translateAlternateColorCodes(String textToTranslate) {
 		return translateAlternateColorCodes("0123456789AaBbCcDdEeFfKkLlMmNnOoRrXx", textToTranslate);
 	}
+
 	public static String translateAlternateColorCodes(String allowedColors, String textToTranslate) {
 		char[] b = textToTranslate.toCharArray();
 		char altColorChar = '&';
