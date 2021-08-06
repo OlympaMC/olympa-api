@@ -63,7 +63,7 @@ public class ColorUtils {
 				if (index > 11 && input.charAt(index - 12) == ChatColor.COLOR_CHAR && (input.charAt(index - 11) == 'x' || input.charAt(index - 11) == 'X')) {
 					String color = input.substring(index - 12, index + 2);
 					if (HEX_COLOR_PATTERN.matcher(color).matches()) {
-						result = ColorUtils.getNearestForLegacyColor(ChatColor.of(color.substring(2).replace(ChatColor.COLOR_CHAR, Character.MIN_VALUE)));
+						result = ChatColor.of(color.substring(2).replace(ChatColor.COLOR_CHAR, Character.MIN_VALUE));
 						break;
 					}
 				}
@@ -263,10 +263,10 @@ public class ColorUtils {
 	public static String joinTry(Object delimiter, Object elements) {
 		if (elements instanceof Iterable<?>)
 			return join((CharSequence) delimiter, (Iterable<? extends CharSequence>) elements);
-		else if (elements instanceof CharSequence[])
-			return join((CharSequence) delimiter, (CharSequence[]) elements);
-		else if (elements instanceof Object[])
-			return join((CharSequence) delimiter, Arrays.stream((Object[]) elements).map(Object::toString).collect(Collectors.toList()));
+		else if (elements instanceof CharSequence[] chars)
+			return join((CharSequence) delimiter, chars);
+		else if (elements instanceof Object[] objs)
+			return join((CharSequence) delimiter, Arrays.stream(objs).map(Object::toString).collect(Collectors.toList()));
 		else if (elements instanceof Object)
 			return join((CharSequence) delimiter, (CharSequence) elements.toString());
 		throw new IllegalAccessError("Unknown Type for String.join() in ColorUtils.joinTry().");
@@ -349,5 +349,17 @@ public class ColorUtils {
 
 	public static ChatColor getNearestForLegacyColor(ChatColor color) {
 		return getNearestForLegacyColor(color.getColor());
+	}
+
+	// TODO
+	public static String replaceRGBByNearest(String s) {
+		//		StringBuilder newString = new StringBuilder();
+		//		ChatColor lastColor;
+		//		for (int i = 0; s.length() > i; i++)
+		//			if (s.charAt(i) == ChatColor.COLOR_CHAR && s.charAt(i) == 'x') {
+		//
+		//			}
+
+		return s;
 	}
 }

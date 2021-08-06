@@ -1,5 +1,6 @@
 package fr.olympa.api.spigot.scoreboard.tab;
 
+import fr.olympa.api.common.chat.ColorUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class Nametag {
@@ -24,7 +25,8 @@ public class Nametag {
 
 	public String getPrefix() {
 		if (cachedPrefix == null) {
-			if (prefixSpace) prefix.append(' ');
+			if (prefixSpace)
+				prefix.append(' ');
 			cachedPrefix = prefix.toString();
 		}
 		return cachedPrefix;
@@ -33,7 +35,8 @@ public class Nametag {
 	public String getSuffix() {
 		if (cachedSuffix == null) {
 			cachedSuffix = suffix.toString();
-			if (!ChatColor.stripColor(cachedSuffix).isBlank()) cachedSuffix = " " + cachedSuffix;
+			if (!ChatColor.stripColor(cachedSuffix).isBlank())
+				cachedSuffix = " " + cachedSuffix;
 		}
 		return cachedSuffix;
 	}
@@ -45,31 +48,35 @@ public class Nametag {
 	/*public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	
+
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}*/
 
 	public void appendPrefix(String prefix) {
-		if (prefix.isBlank()) return;
+		if (prefix.isBlank())
+			return;
 		//this.prefix.add(prefix);
 		boolean blank = ChatColor.stripColor(prefix).isBlank();
-		if (prefixSpace && !blank) this.prefix.append(' ');
+		if (prefixSpace && !blank)
+			this.prefix.append(' ');
 		this.prefix.append(prefix);
 		prefixSpace = !blank || prefixSpace;
 		cachedPrefix = null;
 	}
-	
+
 	public void appendSuffix(String suffix) {
-		if (suffix.isBlank()) return;
+		if (suffix.isBlank())
+			return;
 		//this.suffix.add(suffix);
 		boolean blank = ChatColor.stripColor(suffix).isBlank();
-		if (suffixSpace && !blank) this.suffix.append(' ');
+		if (suffixSpace && !blank)
+			this.suffix.append(' ');
 		this.suffix.append(suffix);
 		suffixSpace = !blank || suffixSpace;
 		cachedSuffix = null;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 37;
@@ -77,20 +84,30 @@ public class Nametag {
 		hash += hash * 11 * getSuffix().hashCode();
 		return hash;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) return true;
+		if (obj == this)
+			return true;
 		if (obj instanceof Nametag) {
 			Nametag tag = (Nametag) obj;
 			return tag.getPrefix().equals(getPrefix()) && tag.getSuffix().equals(getSuffix());
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getPrefix() + "|" + getSuffix();
 	}
-	
+
+	public Nametag removeRBG() {
+		Nametag newNameTag = new Nametag();
+		if (prefix != null && !prefix.isEmpty())
+			newNameTag.appendPrefix(ColorUtils.replaceRGBByNearest(prefix.toString()));
+		if (suffix != null && !suffix.isEmpty())
+			newNameTag.appendPrefix(ColorUtils.replaceRGBByNearest(suffix.toString()));
+		return new Nametag();
+	}
+
 }
