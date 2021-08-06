@@ -4,13 +4,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,24 +27,18 @@ import fr.olympa.api.utils.Utils;
 public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 
 	private static final NumberFormat numberFormat = new DecimalFormat("00");
-	private final Supplier<Stream<IKit<T>>> kitsStreamSupplier;
+	private final List<IKit<T>> kits;
 
-	public KitCommand(Plugin plugin, Supplier<Stream<IKit<T>>> kitsStreamSupplier) {
+	public KitCommand(Plugin plugin, List<IKit<T>> kits) {
 		super(plugin, "kit", "Permet d'obtenir un kit.", (OlympaSpigotPermission) null, "kits");
 		super.allowConsole = false;
-		this.kitsStreamSupplier = kitsStreamSupplier;
-	}
-
-	@Override
-	public OlympaCommand register() {
-		super.register();
+		this.kits = kits;
 		super.usageString = "<nom du kit>";
 		super.minArg = 0;
-		return this;
 	}
-
+	
 	public KitCommand(Plugin plugin, IKit<T>... kits) {
-		this(plugin, () -> Arrays.stream(kits));
+		this(plugin, Arrays.asList(kits));
 	}
 
 	protected void noArgument() {
@@ -56,15 +47,19 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		IKit<T> kit;
 		if (args.length == 0) {
-			noArgument();
-			return false;
+			if (kits.size() == 1) {
+				kit = kits.get(0);
+			}else {
+				sendSuccess("§eKits disponibles: §a", kits.stream().map(IKit::getId).collect(Collectors.joining(", ")));
+				return false;
+			}
 		}
-		Optional<IKit<T>> okit = kitsStreamSupplier.get().filter(kit -> kit.getId().equalsIgnoreCase(args[0])).findFirst();
-		if (okit.isEmpty())
+		kit = kits.stream().filter(x -> x.getId().equalsIgnoreCase(args[0])).findAny().orElse(null);
+		if (kit == null)
 			sendError("Le kit %s n'existe pas !", args[0]);
 		else {
-			IKit<T> kit = okit.get();
 			T olympaPlayer = getOlympaPlayer();
 			if (kit.canTake(olympaPlayer)) {
 				long timeToWait = kit.getLastTake(olympaPlayer) + kit.getTimeBetween() - System.currentTimeMillis();
@@ -83,7 +78,7 @@ public class KitCommand<T extends OlympaPlayer> extends OlympaCommand {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		T player = sender instanceof Player ? AccountProviderAPI.getter().get(((Player) sender).getUniqueId()) : null;
-		return kitsStreamSupplier.get().filter(kit -> player == null || kit.canTake(player)).map(IKit::getId).collect(Collectors.toList());
+		return kits.stream().filter(kit -> player == null || kit.canTake(player)).map(IKit::getId).collect(Collectors.toList());
 	}
 
 	public interface IKit<T extends OlympaPlayer> {

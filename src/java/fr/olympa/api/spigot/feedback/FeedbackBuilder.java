@@ -133,6 +133,7 @@ public class FeedbackBuilder {
 		iterator.previous();
 		if (!iterator.hasPrevious()) return;
 		step = iterator.previous();
+		iterator.next();
 		if (!step.begin.test(this)) {
 			step = null;
 			previous();

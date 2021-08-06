@@ -196,7 +196,7 @@ public class CustomConfig extends YamlConfiguration {
 		try {
 			loadUnSafe();
 		} catch (IOException | InvalidConfigurationException e) {
-			e.initCause(new IllegalAccessError("Unable to load config: " + fileName));
+			plugin.sendMessage("§cImpossible de charger la configuration %s", fileName);
 			e.printStackTrace();
 		}
 	}
