@@ -40,7 +40,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected List<ServerInfoAdvanced> monitorInfos = new ArrayList<>();
 	protected RegionManager regionManager;
 	protected ImageFrameManager imageFrameManager;
-	
+
 	protected FeedbackManager feedbackManager;
 
 	protected AfkHandler afkHandler;
@@ -49,12 +49,12 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	protected VersionHandler<Player> versionHandler;
 
 	protected OlympaServer olympaServer;
-	
+
 	protected OlympaSpigot() {
 		LinkSpigotBungee.setInstance(this);
-		this.olympaServer = OlympaServer.ALL;
+		olympaServer = OlympaServer.ALL;
 	}
-	
+
 	@Override
 	public VersionHandler<Player> getVersionHandler() {
 		return versionHandler;
@@ -150,11 +150,11 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public FeedbackManager getFeedbackManager() {
 		return feedbackManager;
 	}
-	
+
 	public void setFeedbackManager(FeedbackManager feedbackManager) {
 		this.feedbackManager = feedbackManager;
 	}
-	
+
 	@Override
 	public ImageFrameManager getImageFrameManager() {
 		return imageFrameManager;
@@ -164,10 +164,9 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public void onDisable() {
 		super.onDisable();
 		Collection<? extends Player> player = Bukkit.getOnlinePlayers();
-		if (player.size() < 10 && getServer().getPluginManager().isPluginEnabled("PlugMan"))
+		if (getServer().getPluginManager().isPluginEnabled("PlugMan"))
 			return;
-		for (Player p : player)
-			p.kickPlayer("Server closed");
+		player.forEach(p -> p.kickPlayer("Server closed"));
 	}
 
 	@Override
@@ -214,7 +213,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	public Player getPlayer(UUID playerUUID) {
 		return getServer().getPlayer(playerUUID);
 	}
-	
+
 	@Override
 	public void sendRedis(String message, Object... args) {
 		getServer().getConsoleSender().sendMessage(ColorUtils.format("§f[§e§lRedis§f] §7" + message, args));
