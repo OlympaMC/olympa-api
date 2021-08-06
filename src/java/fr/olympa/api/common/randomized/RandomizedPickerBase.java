@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
@@ -127,6 +128,46 @@ public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 			public boolean equals(Object o) {
 				if (!(o instanceof EmptyConditioned)) return false;
 				return Objects.equals(object, ((EmptyConditioned<T, C>) o).object);
+			}
+			
+		}
+		
+		class SimpleConditioned<T, C extends ConditionalContext<T>> implements Conditioned<T, C> {
+			
+			private T object;
+			private Predicate<C> isValid;
+			
+			public SimpleConditioned(T object, Predicate<C> isValid) {
+				this.object = object;
+				this.isValid = isValid;
+			}
+			
+			@Override
+			public T getObject() {
+				return object;
+			}
+			
+			@Override
+			public boolean isValid(C context) {
+				return isValid.test(context);
+			}
+			
+			@Override
+			public boolean isValidWithNoContext() {
+				return true;
+			}
+			
+			@Override
+			public int hashCode() {
+				int hash = object.hashCode();
+				hash = hash + 7 * isValid.hashCode();
+				return hash;
+			}
+			
+			@Override
+			public boolean equals(Object o) {
+				if (!(o instanceof SimpleConditioned)) return false;
+				return Objects.equals(object, ((SimpleConditioned<T, C>) o).object) && Objects.equals(isValid, ((SimpleConditioned<T, C>) o).isValid);
 			}
 			
 		}
