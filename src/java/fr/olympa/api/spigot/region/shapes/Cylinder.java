@@ -61,6 +61,18 @@ public class Cylinder extends AbstractRegion {
 	public int getCenterZ() {
 		return centerZ;
 	}
+	
+	public int getMinY() {
+		return minY;
+	}
+	
+	public int getMaxY() {
+		return maxY;
+	}
+	
+	public Location getCenter() {
+		return new Location(world, centerX, minY, centerZ);
+	}
 
 	/**
 	 * @return the radius

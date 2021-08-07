@@ -43,6 +43,27 @@ public class RegionEditor extends InventoryClear {
 	public RegionEditor(Player p, Consumer<Region> end) {
 		super(p);
 		this.end = end;
+		this.regionType = RegionType.CUBOID;
+	}
+	
+	public RegionEditor edit(Region region) {
+		if (region instanceof Cuboid cuboid) {
+			locations.add(cuboid.getMin());
+			locations.add(cuboid.getMax());
+			regionType = RegionType.CUBOID;
+		}else if (region instanceof Polygon polygon) {
+			locations.addAll(polygon.getLocations());
+			regionType = RegionType.POLYGON;
+		}else if (region instanceof Cylinder cylinder) {
+			Location center = cylinder.getCenter();
+			locations.add(center);
+			Location edge = center.clone();
+			edge.setX(edge.getX() + cylinder.getRadius());
+			edge.setY(cylinder.getMaxY());
+			locations.add(edge);
+			regionType = RegionType.CYLINDER;
+		}else throw new IllegalArgumentException("Impossible to edit region type " + region.getClass().getName());
+		return this;
 	}
 
 	@Override
@@ -56,11 +77,10 @@ public class RegionEditor extends InventoryClear {
 		inv.setItem(5, regionCylinder.clone());
 		inv.setItem(6, ItemUtils.itemSwitch("Région étendue", expanded));
 		inv.setItem(8, validate);
-		setRegionType(RegionType.CUBOID);
+		setRegionType(regionType);
 	}
 
 	public void setRegionType(RegionType newRegion) {
-		if (regionType == newRegion) return;
 		if (regionType != null) p.getInventory().getItem(regionType.slot).removeEnchantment(Enchantment.ARROW_DAMAGE); // retire l'effet glowing sur l'item de l'ancienne région
 		regionType = newRegion;
 		p.getInventory().getItem(regionType.slot).addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1); // ajoute l'effet glowing sur l'item de la nouvelle région

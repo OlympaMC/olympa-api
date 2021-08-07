@@ -134,6 +134,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 		return ItemUtils.item(Material.FILLED_MAP, "§eInformations sur le clan §6§l" + clan.getName(), "§eTag: §6[§l" + clan.getTag() + "§6]", "§eNombre de membres : §6§o" + clan.getMembersAmount() + "/" + clan.getMaxSize(), "§eCagnotte : §6§l" + clan.getMoney().getFormatted());
 	}
 
+	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == slotLeave()) {
 			if (!isChief) {
@@ -145,7 +146,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 			if (playerID >= 0 && playerID < clan.getMaxSize()) {
 				if (playersOrder.size() <= playerID) {
 					Prefix.DEFAULT.sendMessage(p, "Entre le nom du joueur à inviter.");
-					new TextEditor<Player>(p, (target) -> {
+					new TextEditor<Player>(p, target -> {
 						manager.invite(clan, p, target);
 						refreshInventory();
 						create(p);
@@ -156,7 +157,7 @@ public class ClanManagementGUI<T extends Clan<T, D>, D extends ClanPlayerData<T,
 				}
 				return true;
 			}else if (slot == slotDisband()) {
-				new ConfirmGUI(() -> clan.disband(), () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
+				new ConfirmGUI(clan::disband, () -> this.create(p), manager.stringSureDisband, "§cCette action sera définitive.").create(p);
 				return true;
 			}
 		}
