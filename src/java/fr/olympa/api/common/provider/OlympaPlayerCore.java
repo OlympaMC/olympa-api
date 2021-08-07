@@ -91,15 +91,15 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	public OlympaGroup getGroup() {
 		OlympaGroup olympaGroup = null;
 		for (Entry<OlympaGroup, Long> entry : groups.entrySet()) {
-			olympaGroup = entry.getKey();
-			if (!olympaGroup.isVisible())
+			OlympaGroup tmpGroup = entry.getKey();
+			if (!tmpGroup.isVisible())
 				continue;
-			if (OlympaServer.ALL == olympaGroup.getServer())
-				break;
-			if (Objects.equals(olympaGroup.getServer(), LinkSpigotBungee.getInstance().getOlympaServer()))
-				break;
+			if (OlympaServer.ALL != tmpGroup.getServer()) {
+				if (!Objects.equals(tmpGroup.getServer(), LinkSpigotBungee.getInstance().getOlympaServer())) continue;
+			}
+			olympaGroup = tmpGroup;
 		}
-		return olympaGroup;
+		return olympaGroup == null ? OlympaGroup.PLAYER : olympaGroup;
 	}
 
 	@Override
