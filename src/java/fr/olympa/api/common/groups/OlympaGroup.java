@@ -20,7 +20,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4Admin", "&4%s ", ":&r", true),
-	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&cAmbassadeur ", "&#9b4747%s ", ":&r", false),
+	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&cAmbassadeur ", "&c%s ", ":&r", false), //#9b4747
 	RESP(28, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp_Technique", "Resp_Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp_Staff", "Resp_Staff", "&c%s ", ":&r", true),
@@ -127,15 +127,15 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	public Map<String, Boolean> runtimePermissions = new HashMap<>();
 
 	OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String legacyNameAndPrefix, String prefix, String chatSuffix, boolean highStaff) {
-		this.id = id;
-		this.power = power;
-		this.server = server;
-		this.name = name;
-		this.legacyNameAndPrefix = legacyNameAndPrefix;
-		this.nameFem = nameFem;
-		this.prefix = ColorUtils.color(prefix);
-		this.chatSuffix = ColorUtils.color(chatSuffix);
-		this.highStaff = highStaff;
+		id = id;
+		power = power;
+		server = server;
+		name = name;
+		legacyNameAndPrefix = legacyNameAndPrefix;
+		nameFem = nameFem;
+		prefix = ColorUtils.color(prefix);
+		chatSuffix = ColorUtils.color(chatSuffix);
+		highStaff = highStaff;
 	}
 
 	OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff) {
@@ -144,7 +144,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	OlympaGroup(int id, int power, OlympaServer server, String name, String nameFem, String prefix, String chatSuffix, boolean highStaff, boolean visible) {
 		this(id, power, server, name, nameFem, prefix, chatSuffix, highStaff);
-		this.visible = visible;
+		visible = visible;
 	}
 
 	public Stream<OlympaGroup> getAllGroups() {

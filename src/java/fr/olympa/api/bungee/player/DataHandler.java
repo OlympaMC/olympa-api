@@ -25,7 +25,7 @@ public class DataHandler {
 			ProxiedPlayer pd = bungee.getProxy().getPlayer(player.getName());
 			if (pd != null)
 				pd.disconnect(BungeeUtils.connectScreen("Tu as mis trop de temps à saisir ton mot de passe."));
-		}, 60, TimeUnit.SECONDS);
+		}, 120, TimeUnit.SECONDS);
 	}
 
 	public static synchronized CachePlayer get(String name) {
