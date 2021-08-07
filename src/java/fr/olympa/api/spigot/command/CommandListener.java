@@ -8,6 +8,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -74,6 +75,11 @@ public class CommandListener implements Listener {
 		if (command.contains(":") && !OlympaAPIPermissionsSpigot.NAMESPACED_COMMANDS.hasSenderPermission(sender)) {
 			Prefix.DEFAULT_BAD.sendMessage(sender, "Par mesure de sécurité, les commandes avec namespace sont désactivées.");
 			event.setCancelled(true);
+			return;
+		}
+		if (command.equalsIgnoreCase("op") && !(sender instanceof ConsoleCommandSender)) {
+			event.setCancelled(true);
+			Prefix.DEFAULT_BAD.sendMessage(sender, "Désolé, on va éviter de laisser traîner cette commande...");
 			return;
 		}
 		OlympaCommand cmd = OlympaCommand.commandPreProcess.entrySet().stream().filter(entry -> entry.getKey().contains(command)).map(entry -> entry.getValue()).findFirst().orElse(null);
