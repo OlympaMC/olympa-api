@@ -186,7 +186,7 @@ public class ServerInfoAdvancedBungee extends ServerInfoAdvanced {
 
 	public ServerInfo getServerInfo() {
 		if (cacheServerInfo == null)
-			cacheServerInfo = ProxyServer.getInstance().getServersCopy().get(name);
+			cacheServerInfo = ProxyServer.getInstance().getServerInfo(name);
 		return cacheServerInfo;
 	}
 
