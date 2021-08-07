@@ -46,7 +46,7 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 		for (Entry<T, String> holderEntry : holders.entrySet()) {
 			if (holderEntry.getKey() == holder) {
 				updateHolder(holderEntry);
-				return;
+				break;
 			}
 		}
 		lock.readLock().unlock();
