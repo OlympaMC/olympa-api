@@ -22,7 +22,7 @@ import fr.olympa.api.utils.Prefix;
 public class TpCommand extends OlympaCommand {
 
 	public TpCommand(Plugin plugin) {
-		super(plugin, "teleport", "Permet de se téléporter à un joueur ou une position.", OlympaAPIPermissionsSpigot.TP_COMMAND, "tp");
+		super(plugin, "tp", "Permet de se téléporter à un joueur ou une position.", OlympaAPIPermissionsSpigot.TP_COMMAND, "teleport");
 		addArgs(false, "JOUEUR", "RELATIVE", "NUMBER");
 		addArgs(false, "JOUEUR", "RELATIVE", "NUMBER");
 		addArgs(false, "RELATIVE", "NUMBER");

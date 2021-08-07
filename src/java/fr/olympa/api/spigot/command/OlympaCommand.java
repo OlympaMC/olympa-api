@@ -34,13 +34,17 @@ import fr.olympa.api.spigot.utils.Reflection;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-@SuppressWarnings ("unchecked")
+@SuppressWarnings("unchecked")
 public abstract class OlympaCommand implements IOlympaCommand {
-	
+
 	public static List<OlympaCommand> commands = new ArrayList<>();
 	protected static Map<List<String>, OlympaCommand> commandPreProcess = new HashMap<>();
 	protected static CommandMap cmap;
-	
+
+	public static OlympaCommand getCmd(String name) {
+		return commands.stream().filter(oc -> oc.getCommand().equals(name) && oc.getAliases().contains(name)).findFirst().orElse(null);
+	}
+
 	protected Plugin plugin;
 	protected List<String> aliases;
 	protected LinkedHashMap<List<CommandArgument>, Boolean> args = new LinkedHashMap<>();
@@ -211,7 +215,8 @@ public abstract class OlympaCommand implements IOlympaCommand {
 
 	public void sendMessage(Iterable<? extends CommandSender> senders, Prefix prefix, String text, Object... args) {
 		text = prefix.formatMessage(text, args);
-		for (CommandSender sender : senders) sender.sendMessage(text);
+		for (CommandSender sender : senders)
+			sender.sendMessage(text);
 	}
 
 	@Override
@@ -262,9 +267,10 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
 			for (PluginCommand cmd : cmds) {
 				knownCommands.remove(cmd.getName());
-				for (String alias : cmd.getAliases()) knownCommands.remove(alias);
+				for (String alias : cmd.getAliases())
+					knownCommands.remove(alias);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -275,8 +281,9 @@ public abstract class OlympaCommand implements IOlympaCommand {
 			Object map = Reflection.getField(commandMap.getClass(), "knownCommands");
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) map;
 			knownCommands.remove(cmd.getName());
-			for (String alias : cmd.getAliases()) knownCommands.remove(alias);
-		}catch (Exception e) {
+			for (String alias : cmd.getAliases())
+				knownCommands.remove(alias);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -288,7 +295,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 				f.setAccessible(true);
 				cmap = (CommandMap) f.get(Bukkit.getServer());
 				f.setAccessible(false);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
 			}
