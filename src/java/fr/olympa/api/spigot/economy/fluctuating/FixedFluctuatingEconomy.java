@@ -29,7 +29,7 @@ public class FixedFluctuatingEconomy extends FluctuatingEconomy {
 	
 	@Override
 	protected double processUpValue() {
-		return Math.min(min, value.get() + upValue);
+		return Math.min(getBase(), value.get() + upValue);
 	}
 	
 	@Override
