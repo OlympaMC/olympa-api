@@ -7,6 +7,7 @@ import java.util.Collection;
 import com.google.gson.Gson;
 
 import fr.olympa.api.bungee.plugin.OlympaBungeeCore;
+import fr.olympa.api.common.mongo.MongoManager;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -45,6 +46,11 @@ public class OlympaBungee extends OlympaBungeeCore {
 
 	@Override
 	public Connection getDatabase() throws SQLException {
+		return null;
+	}
+
+	@Override
+	public MongoManager getMongo() {
 		return null;
 	}
 

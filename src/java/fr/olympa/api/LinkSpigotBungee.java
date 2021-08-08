@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import fr.olympa.api.common.mongo.MongoManager;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
@@ -38,6 +39,8 @@ public interface LinkSpigotBungee<P> {
 	}
 
 	Connection getDatabase() throws SQLException;
+
+	MongoManager getMongo();
 
 	void launchAsync(Runnable run);
 

@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import fr.olympa.api.common.redis.ResourcePackHandler;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
+import fr.olympa.api.common.translation.AbstractTranslationManager;
 import fr.olympa.api.spigot.frame.ImageFrameManager;
 import fr.olympa.api.spigot.holograms.HologramsManager;
 import fr.olympa.api.spigot.region.tracking.RegionManager;
@@ -17,6 +18,8 @@ public interface OlympaCoreSpigotInterface {
 	HologramsManager getHologramsManager();
 
 	ImageFrameManager getImageFrameManager();
+
+	AbstractTranslationManager getTranslationManager();
 
 	void registerPackListener(ResourcePackHandler packHandler);
 

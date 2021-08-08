@@ -5,3 +5,9 @@ database:
       port: 3306
       user: 'root'
       password: ''
+
+mongo:
+   host: 'host'
+   port: 4242
+   user: 'user'
+   password: 'password'

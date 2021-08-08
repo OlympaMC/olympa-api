@@ -6,6 +6,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import fr.olympa.api.common.mongo.MongoManager;
+import fr.olympa.api.common.mongo.MongoServerInfo;
+import fr.olympa.api.common.player.Gender;
+import fr.olympa.api.common.translation.AbstractTranslationManager;
+import fr.olympa.api.common.translation.TranslationManager;
+import fr.olympa.api.spigot.config.CustomConfig;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.messaging.Messenger;
 
@@ -41,6 +47,10 @@ public class OlympaCore extends OlympaSpigot {
 
 	private HologramsManager holograms;
 	private RegionManager regions;
+	private AbstractTranslationManager translations;
+
+	//Temporary DB access, will be removed when released
+	private MongoManager mongo;
 
 	@Override
 	public RegionManager getRegionManager() {
@@ -53,6 +63,11 @@ public class OlympaCore extends OlympaSpigot {
 	}
 
 	@Override
+	public AbstractTranslationManager getTranslationManager() {
+		return translations;
+	}
+
+	@Override
 	public void onDisable() {
 		holograms.unload();
 		sendMessage("§4" + getDescription().getName() + "§c (" + getDescription().getVersion() + ") is disabled.");
@@ -61,6 +76,22 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public void onEnable() {
 		instance = this;
+
+		//Temporary load of config.yml & MongoClient instantiation, will be removed when merged to master
+		CustomConfig dbCfg = new CustomConfig(this, "config");
+		dbCfg.load();
+
+		mongo = new MongoManager(new MongoServerInfo(
+				dbCfg.getString("mongo.host"),
+				dbCfg.getInt("mongo.port"),
+				dbCfg.getString("mongo.user"),
+				dbCfg.getString("mongo.password")
+		));
+
+		translations = new TranslationManager(this);
+		translations.loadTranslations();
+
+		System.out.println(translations.translate("FRENCH", "olympacore.general.test", Gender.UNSPECIFIED));
 
 		OlympaPermission.registerPermissions(OlympaAPIPermissionsSpigot.class);
 
@@ -92,6 +123,11 @@ public class OlympaCore extends OlympaSpigot {
 	@Override
 	public Connection getDatabase() throws SQLException {
 		return null;
+	}
+
+	@Override
+	public MongoManager getMongo() {
+		return mongo; //Shall return null in final release
 	}
 
 	@Override
