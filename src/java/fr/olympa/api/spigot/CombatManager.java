@@ -51,6 +51,10 @@ public class CombatManager implements Listener {
 		this.sendMessages = sendMessages;
 	}
 	
+	public boolean isInCombat(Player p) {
+		return inCombat.containsKey(p);
+	}
+	
 	public void unload() {
 		HandlerList.unregisterAll(this);
 		task.cancel();
