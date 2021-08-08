@@ -42,6 +42,7 @@ public class TeleportationManager implements Listener {
 		
 		Runnable teleport = () -> {
 			teleportations.remove(p);
+			if (!p.isOnline()) return;
 			p.teleport(to);
 			p.sendMessage(message);
 			if (run != null) run.run();

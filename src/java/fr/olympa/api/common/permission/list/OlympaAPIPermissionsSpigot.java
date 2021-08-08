@@ -20,6 +20,7 @@ public class OlympaAPIPermissionsSpigot {
 	public static final OlympaSpigotPermission TP_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission GAMEMODE_COMMAND_CREATIVE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission FLY_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaSpigotPermission KILL_SEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaSpigotPermission INVSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
 	public static final OlympaSpigotPermission INVSEE_COMMAND_INTERACT = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission ECSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
