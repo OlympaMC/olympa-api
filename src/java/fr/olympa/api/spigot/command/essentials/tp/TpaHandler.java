@@ -15,9 +15,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.google.common.cache.RemovalCause;
-import com.google.common.cache.RemovalNotification;
-
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.provider.AccountProviderAPI;
@@ -50,22 +47,15 @@ public class TpaHandler implements Listener {
 		//CacheStats.addCache("TPA_REQUESTS", requests);
 	}
 
-	private void invalidate(RemovalNotification<Request, Player> notif) {
-		Request request = notif.getKey();
-		if (request.task != null)
-			request.task.cancel();
-		else if (notif.getCause() == RemovalCause.EXPIRED) {
+	public void addRequest(Player player, Request request) {
+		requestsMap.put(request, player);
+		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+			request.invalidate();
 			if (request.from.isOnline())
 				Prefix.BAD.sendMessage(request.from, "La téléportation vers &4%s&c a expiré.", request.to.getName());
 			if (request.to.isOnline())
 				Prefix.BAD.sendMessage(request.to, "La téléportation de &4%s&c §lvers toi§c a expiré.", request.from.getName());
-		}
-
-	}
-
-	public void addRequest(Player player, Request request) {
-		requestsMap.put(request, player);
-		request.task = Bukkit.getScheduler().runTaskLater(plugin, request::invalidate, 60 * 20);
+		}, 60 * 20);
 	}
 
 	public Request getRequest(Player creator, Player target) {

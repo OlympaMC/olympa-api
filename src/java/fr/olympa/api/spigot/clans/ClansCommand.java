@@ -92,7 +92,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 		String tag = cmd.getFrom(0);
 		T clan = manager.getPlayerInvitations(getPlayer()).stream().filter(x -> x.getTag().equals(tag)).findFirst().orElse(null);
 		if (clan == null) {
-			sendError(manager.stringNoInvitation, cmd.getArgument(0));
+			sendError(manager.stringNoInvitation, tag);
 			return;
 		}
 
