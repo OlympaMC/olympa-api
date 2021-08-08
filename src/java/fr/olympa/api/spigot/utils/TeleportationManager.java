@@ -2,6 +2,8 @@ package fr.olympa.api.spigot.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +22,7 @@ public class TeleportationManager implements Listener {
 	public static final int TELEPORTATION_SECONDS = 3;
 	public static final int TELEPORTATION_TICKS = TELEPORTATION_SECONDS * 20;
 	
-	private Map<Player, BukkitTask> teleportations = new HashMap<>();
+	private Map<Player, Teleportation> teleportations = new HashMap<>();
 	
 	private final Plugin plugin;
 	private final OlympaSpigotPermission bypassPermission;
@@ -30,55 +32,69 @@ public class TeleportationManager implements Listener {
 		this.bypassPermission = bypassPermission;
 	}
 	
-	public void teleport(Player p, Location to, String message) {
-		teleport(p, to, message, null);
+	public boolean teleport(Player p, Location to, String message) {
+		return teleport(p, to, message, null);
 	}
 	
-	public void teleport(Player p, Location to, String message, Runnable run) {
-		if (!canTeleport(p, to)) {
+	public boolean teleport(Player p, Location to, String message, Runnable run) {
+		return teleport(p, () -> to, message, run, null, null);
+	}
+	
+	public boolean teleport(Player p, Player to, String message, Runnable run, BooleanSupplier check, Runnable cancel) {
+		return teleport(p, to::getLocation, message, run, check, null);
+	}
+	
+	public boolean teleport(Player p, Supplier<Location> to, String message, Runnable run, BooleanSupplier check, Runnable cancel) {
+		if (!canTeleport(p)) {
 			Prefix.BAD.sendMessage(p, "La téléportation ne peut être effectuée.");
-			return;
+			return false;
 		}
 		
 		Runnable teleport = () -> {
 			teleportations.remove(p);
+			if (check != null && !check.getAsBoolean()) return;
 			if (!p.isOnline()) return;
-			p.teleport(to);
-			p.sendMessage(message);
+			p.teleport(to.get());
+			if (message != null) p.sendMessage(message);
 			if (run != null) run.run();
 		};
 		
-		if (canBypass(p, to)) {
-			teleport.run();
-			return;
+		if (canBypass(p)) {
+			Bukkit.getScheduler().runTask(plugin, teleport);
+			return true;
 		}
 		
-		BukkitTask removed = teleportations.remove(p);
+		Teleportation removed = teleportations.remove(p);
 		if (removed != null) {
 			removed.cancel();
 			Prefix.INFO.sendMessage(p, "La téléportation précédente a été annulée.");
 		}
-		teleportations.put(p, Bukkit.getScheduler().runTaskLater(plugin, teleport, TELEPORTATION_TICKS));
+		teleportations.put(p, new Teleportation(cancel, Bukkit.getScheduler().runTaskLater(plugin, teleport, TELEPORTATION_TICKS)));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
-	}
-	
-	public boolean canTeleport(Player p, Location to) {
+		
 		return true;
 	}
 	
-	public boolean canBypass(Player p, Location to) {
+	public boolean canTeleport(Player p) {
+		return true;
+	}
+	
+	public boolean canBypass(Player p) {
 		return bypassPermission.hasPermission(p.getUniqueId());
 	}
 	
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
-		if (!SpigotUtils.isSameLocation(e.getFrom(), e.getTo())) {
-			BukkitTask task = teleportations.remove(e.getPlayer());
+		if (!SpigotUtils.isSameLocationXZ(e.getFrom(), e.getTo())) {
+			Teleportation task = teleportations.remove(e.getPlayer());
 			if (task != null) {
 				task.cancel();
 				Prefix.BAD.sendMessage(e.getPlayer(), "La téléportation a été annulée.");
+				if (task.cancel != null) task.cancel.run();
 			}
 		}
 	}
+	
+	record Teleportation(Runnable cancel, BukkitTask task) {}
 	
 }

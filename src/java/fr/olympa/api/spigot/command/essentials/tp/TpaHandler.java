@@ -1,31 +1,27 @@
 package fr.olympa.api.spigot.command.essentials.tp;
 
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
 
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
-import fr.olympa.api.common.player.OlympaPlayer;
+import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.provider.AccountProviderAPI;
-import fr.olympa.api.spigot.utils.SpigotUtils;
-import fr.olympa.api.utils.CacheStats;
+import fr.olympa.api.spigot.utils.TeleportationManager;
 import fr.olympa.api.utils.Prefix;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -34,30 +30,24 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class TpaHandler implements Listener {
 
-	private static int TELEPORTATION_SECONDS;
-	private static int TELEPORTATION_TICKS;// = TELEPORTATION_SECONDS * 20;
-
-	private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
-
+	//private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
+	private Map<Request, Player> requestsMap = new HashMap<>();
+	
 	Plugin plugin;
 	OlympaSpigotPermission permission;
 
-	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission) {
-		this(plugin, permission, 3);
-	}
-
-	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission, int tpDelay) {
+	private TeleportationManager teleportationManager;
+	
+	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission, TeleportationManager teleportationManager) {
 		this.plugin = plugin;
 		this.permission = permission;
-
-		TELEPORTATION_SECONDS = tpDelay;
-		TELEPORTATION_TICKS = tpDelay * 20;
+		this.teleportationManager = teleportationManager;
 		
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
 		//		new TpHereConfirmCommand(this).register();
 		new TpConfirmCommand(this).register();
-		CacheStats.addCache("TPA_REQUESTS", requests);
+		//CacheStats.addCache("TPA_REQUESTS", requests);
 	}
 
 	private void invalidate(RemovalNotification<Request, Player> notif) {
@@ -74,36 +64,37 @@ public class TpaHandler implements Listener {
 	}
 
 	public void addRequest(Player player, Request request) {
-		requests.put(request, player);
+		requestsMap.put(request, player);
+		request.task = Bukkit.getScheduler().runTaskLater(plugin, request::invalidate, 60 * 20);
 	}
 
 	public Request getRequest(Player creator, Player target) {
 		UUID creatorUUID = creator.getUniqueId();
 		UUID targetUUID = target.getUniqueId();
-		return requests.asMap().entrySet().stream()
+		return requestsMap.entrySet().stream()
 				.filter(entry -> entry.getValue().getUniqueId().equals(creatorUUID) && (entry.getKey().to.getUniqueId().equals(targetUUID) || entry.getKey().from.getUniqueId().equals(target.getUniqueId())))
 				.map(Entry::getKey).findFirst().orElse(null);
 	}
 
-	public Cache<Request, Player> getRequests() {
-		return requests;
+	public Map<Request, Player> getRequests() {
+		return requestsMap;
 	}
 
 	public List<Request> getRequestsByPlayerTeleported(Player target) {
-		return requests.asMap().entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
+		return requestsMap.entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
 	}
   
 	public Player getCreatorByTarget(Player target) {
 		UUID targetUUID = target.getUniqueId();
-		return requests.asMap().entrySet().stream().filter(entry -> !entry.getValue().getUniqueId().equals(targetUUID) &&
+		return requestsMap.entrySet().stream().filter(entry -> !entry.getValue().getUniqueId().equals(targetUUID) &&
 				(entry.getKey().from.getUniqueId().equals(targetUUID) || entry.getKey().to.getUniqueId().equals(targetUUID)))
 				.map(Entry::getValue).findFirst().orElse(null);
 	}
 
 	public void removeAllRequests(Player player) {
 		UUID playerUUID = player.getUniqueId();
-		requests.asMap().entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) || entry.getKey().from.getUniqueId().equals(playerUUID)
-				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(r -> requests.invalidate(r));
+		requestsMap.entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) || entry.getKey().from.getUniqueId().equals(playerUUID)
+				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(Request::invalidate);
 	}
 
 	private boolean testRequest(Player creator, Player target) {
@@ -163,37 +154,33 @@ public class TpaHandler implements Listener {
 			return;
 		}
 
-		if (request.task != null) {
+		if (request.into) {
 			Prefix.DEFAULT_BAD.sendMessage(target, "Tu es déjà en train de te faire téléporter !");
 			return;
 		}
 		
-		if (TELEPORTATION_SECONDS > 0) {
-			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s dans " + TELEPORTATION_SECONDS + " secondes...", request.to.getName());
+		Gender fromGender = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender();
+		boolean teleport = teleportationManager.teleport(request.from, request.to, null, () -> {
+			String tune = fromGender.getTurne();
+			Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
+			Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
+		}, () -> {
+			if (!request.from.isOnline()) {
+				Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), fromGender.getPronoun());
+			}else if (!request.to.isOnline()) {
+				Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, tu ne va pas se téléporter.", request.to.getName());
+			}else return true;
+			return false;
+		}, () -> {
+			request.into = false;
+			Prefix.DEFAULT_BAD.sendMessage(request.from, "Téléportation annulée, ne bouge pas !");
+			Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée, %s a bougé...", request.from, fromGender.getPronoun());
+		});
+		if (teleport) {
+			request.into = true;
+			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s.", request.to.getName());
 			Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
 		}
-		
-		request.task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			if (request.from.isOnline() && request.to.isOnline()) {
-				String tune = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender().getTurne();
-				Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
-				Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
-				request.from.teleport(request.to.getLocation());
-				requests.invalidate(request);
-			} else if (!request.from.isOnline() && request.to.isOnline())
-				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), new AccountProviderAPI(request.from.getUniqueId()).get().getGender().getPronoun());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			else if (!request.to.isOnline() && request.from.isOnline())
-				try {
-					Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.to.getName(), new AccountProviderAPI(request.to.getUniqueId()).get().getGender().getPronoun());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-
-		}, TELEPORTATION_TICKS);
 	}
 
 	public void refuseRequest(Player target, Player creator) {
@@ -202,7 +189,7 @@ public class TpaHandler implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(target, "Tu n'as pas de demande de téléportation en attente...");
 			return;
 		}
-		requests.invalidate(request);
+		request.invalidate();
 		if (creator.isOnline())
 			Prefix.DEFAULT_BAD.sendMessage(creator, "&4%s&c a refusé la demande de téléportation.", target.getName());
 		Prefix.DEFAULT_GOOD.sendMessage(target, "Tu as refusé la demande de téléportation de &2%s&a.", creator.getName());
@@ -214,31 +201,20 @@ public class TpaHandler implements Listener {
 		removeAllRequests(player);
 	}
 
-	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
-		if (SpigotUtils.isSameLocationXZ(e.getFrom(), e.getTo()) || TELEPORTATION_SECONDS == 0)
-			return;
-		Player player = e.getPlayer();
-		OlympaPlayer olympaPlayer = AccountProviderAPI.getter().get(player.getUniqueId());
-		List<Request> requestsTarget = getRequestsByPlayerTeleported(player);
-		requestsTarget.forEach(r -> {
-			if (r != null && r.task != null) {
-				requests.invalidate(r);
-				Prefix.DEFAULT_BAD.sendMessage(player, "Téléportation annulée, ne bouge pas !");
-				Prefix.DEFAULT_BAD.sendMessage(r.to, "Téléportation de &4%s&c &lVERS&c toi a été annulée, %s a bougé...", player.getName(), olympaPlayer.getGender().getPronoun());
-			}
-		});
-
-	}
-
 	class Request {
 		public Player from;
 		public Player to;
 		public BukkitTask task;
+		public boolean into = false;
 
 		public Request(Player from, Player to) {
 			this.from = from;
 			this.to = to;
+		}
+		
+		public void invalidate() {
+			if (task != null && !task.isCancelled()) task.cancel();
+			requestsMap.remove(this);
 		}
 	}
 }

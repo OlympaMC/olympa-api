@@ -34,6 +34,10 @@ public class SitManager implements Listener {
 		this.plugin = plugin;
 	}
 	
+	public boolean canSit(Player p) {
+		return p.getGameMode() != GameMode.CREATIVE && p.getGameMode() == GameMode.SPECTATOR;
+	}
+	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -42,7 +46,7 @@ public class SitManager implements Listener {
 		if (p.isSneaking()) return;
 		if (e.getClickedBlock().getType().name().endsWith("_STAIRS")) {
 			if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR) {
-				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cTu ne peux t'asseoir en étant en créatif."));
+				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cVous ne pouvez pas vous asseoir maintenant."));
 				return;
 			}
 			if (sits.containsKey(e.getClickedBlock().getLocation())) {
@@ -76,10 +80,12 @@ public class SitManager implements Listener {
 		for (Iterator<Sitting> iterator = sits.values().iterator(); iterator.hasNext();) {
 			Sitting sitting = iterator.next();
 			if (sitting.player().equals(e.getEntity())) {
-				Bukkit.getScheduler().runTask(plugin, () -> {
-					e.getEntity().teleport(sitting.previous().setDirection(e.getEntity().getLocation().getDirection()));
-					e.getDismounted().remove();
-				});
+				if (!e.getEntity().isDead()) {
+					Bukkit.getScheduler().runTask(plugin, () -> {
+						e.getEntity().teleport(sitting.previous().setDirection(e.getEntity().getLocation().getDirection()));
+						e.getDismounted().remove();
+					});
+				}
 				iterator.remove();
 				break;
 			}

@@ -3,6 +3,7 @@ package fr.olympa.api.spigot.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +76,7 @@ public class KillManager extends ComplexCommand implements ModuleApi<OlympaAPIPl
 						Prefix.NONE,
 						object.getBasicInfos(),
 						ClickEvent.Action.RUN_COMMAND,
-						"/kills drops " + object.id,
+						"/kills inventory " + object.id,
 						HoverEvent.Action.SHOW_TEXT,
 						new Text("§7Clique pour afficher les drops."));
 			}
@@ -130,7 +131,7 @@ public class KillManager extends ComplexCommand implements ModuleApi<OlympaAPIPl
 	}
 	
 	@Cmd (player = true, args = "KILL", min = 1)
-	public void drops(CommandContext cmd) {
+	public void inventory(CommandContext cmd) {
 		new KillDropsGUI(cmd.getArgument(0)).create(getPlayer());
 	}
 	
@@ -138,19 +139,19 @@ public class KillManager extends ComplexCommand implements ModuleApi<OlympaAPIPl
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.isCancelled()) return;
 		int id = lastID++;
-		KillEntry entry = new KillEntry(id, e.getEntity().getLastDamageCause(), e.getEntity().getLocation(), e.getDrops(), new Date());
+		KillEntry entry = new KillEntry(id, e.getEntity().getLastDamageCause(), e.getEntity().getLocation(), Arrays.asList(e.getEntity().getInventory().getContents()), new Date());
 		kills.put(id, entry);
 		killsCache.put(id, entry);
 	}
 	
-	record KillEntry(int id, EntityDamageEvent cause, Location location, List<ItemStack> drops, Date date) {
+	record KillEntry(int id, EntityDamageEvent cause, Location location, List<ItemStack> inv, Date date) {
 		
 		public String getDead() {
 			return cause.getEntity().getName();
 		}
 		
 		public Entity getDamager() {
-			return ((EntityDamageByEntityEvent) cause).getDamager();
+			return cause instanceof EntityDamageByEntityEvent event ? event.getDamager() : null;
 		}
 		
 		public String getBasicInfos() {
@@ -166,9 +167,9 @@ public class KillManager extends ComplexCommand implements ModuleApi<OlympaAPIPl
 	class KillDropsGUI extends OlympaGUI {
 		
 		public KillDropsGUI(KillEntry entry) {
-			super("Drops de " + entry.getDead(), (int) (Math.ceil(entry.drops.size() / 9D) * 9));
-			for (int i = 0; i < entry.drops.size(); i++) {
-				inv.setItem(i, entry.drops.get(i));
+			super("Drops de " + entry.getDead(), Math.max(1, (int) (Math.ceil(entry.inv.size() / 9D) * 9)));
+			for (int i = 0; i < entry.inv.size(); i++) {
+				inv.setItem(i, entry.inv.get(i));
 			}
 		}
 		

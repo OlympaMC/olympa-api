@@ -81,6 +81,7 @@ public class AuctionsManager {
 			setAuctionBoughtStatement.executeUpdate(statement);
 			auctionExpired(auction);
 			auction.bought = true;
+			ongoingAuctions.remove(auction);
 		}
 	}
 	
@@ -100,7 +101,7 @@ public class AuctionsManager {
 	
 	private void addAuction(Auction auction) {
 		auctions.put(auction.id, auction);
-		if (!auction.hasExpired()) ongoingAuctions.add(auction);
+		if (auction.isOngoing()) ongoingAuctions.add(auction);
 	}
 	
 	public ObservableList<Auction> getOngoingAuctions() {
