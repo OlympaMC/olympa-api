@@ -30,6 +30,7 @@ public class OlympaAPIPermissionsSpigot {
 	public static final OlympaSpigotPermission VANISH_SEE = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission VANISH_COMMAND = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission VANISH_COMMAND_HIDE_STAFF = new OlympaSpigotPermission(OlympaGroup.MODP);
+	public static final OlympaSpigotPermission VANISH_SEE_ADMIN = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission ITEM_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP);
 	public static final OlympaSpigotPermission TRADE_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
 	public static final OlympaSpigotPermission FEEDBACK_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);
