@@ -22,43 +22,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFertilizeEvent;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockGrowEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockSpreadEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
-import org.bukkit.event.block.FluidLevelChangeEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.block.MoistureChangeEvent;
-import org.bukkit.event.block.SpongeAbsorbEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTakeLecternBookEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -73,16 +48,7 @@ import fr.olympa.api.spigot.region.shapes.WorldRegion;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.EntryEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.ExitEvent;
 import fr.olympa.api.spigot.region.tracking.RegionEvent.RegionEventReason;
-import fr.olympa.api.spigot.region.tracking.flags.DamageFlag;
-import fr.olympa.api.spigot.region.tracking.flags.DropFlag;
-import fr.olympa.api.spigot.region.tracking.flags.FishFlag;
-import fr.olympa.api.spigot.region.tracking.flags.Flag;
-import fr.olympa.api.spigot.region.tracking.flags.FoodFlag;
-import fr.olympa.api.spigot.region.tracking.flags.FrostWalkerFlag;
-import fr.olympa.api.spigot.region.tracking.flags.ItemDurabilityFlag;
-import fr.olympa.api.spigot.region.tracking.flags.PhysicsFlag;
-import fr.olympa.api.spigot.region.tracking.flags.PlayerBlockInteractFlag;
-import fr.olympa.api.spigot.region.tracking.flags.PlayerBlocksFlag;
+import fr.olympa.api.spigot.region.tracking.flags.*;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
 
@@ -367,6 +333,14 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 			fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
 	}
 
+	@EventHandler
+	public void onEntityPickup(EntityPickupItemEvent e) {
+		if (e.getEntity() instanceof Player)
+			fireEvent(e.getEntity().getLocation(), ItemPickupFlag.class, x -> x.itemPickupEvent(e));
+		else
+			fireEvent(e.getEntity().getLocation(), PhysicsFlag.class, x -> x.entityEvent(e, e.getEntity()));
+	}
+	
 	@EventHandler
 	public void onLecternTake(PlayerTakeLecternBookEvent e) {
 		fireEvent(e.getLectern().getLocation(), PlayerBlocksFlag.class, x -> x.blockEvent(e, e.getPlayer(), e.getLectern().getBlock()));
