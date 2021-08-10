@@ -29,17 +29,17 @@ public class TpaHandler implements Listener {
 
 	//private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
 	private Map<Request, Player> requestsMap = new HashMap<>();
-	
+
 	Plugin plugin;
 	OlympaSpigotPermission permission;
 
 	private TeleportationManager teleportationManager;
-	
+
 	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission, TeleportationManager teleportationManager) {
 		this.plugin = plugin;
 		this.permission = permission;
 		this.teleportationManager = teleportationManager;
-		
+
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
 		//		new TpHereConfirmCommand(this).register();
@@ -73,7 +73,7 @@ public class TpaHandler implements Listener {
 	public List<Request> getRequestsByPlayerTeleported(Player target) {
 		return requestsMap.entrySet().stream().filter(entry -> entry.getKey().from.getUniqueId().equals(target.getUniqueId())).map(Entry::getKey).collect(Collectors.toList());
 	}
-  
+
 	public Player getCreatorByTarget(Player target) {
 		UUID targetUUID = target.getUniqueId();
 		return requestsMap.entrySet().stream().filter(entry -> !entry.getValue().getUniqueId().equals(targetUUID) &&
@@ -84,7 +84,7 @@ public class TpaHandler implements Listener {
 	public void removeAllRequests(Player player) {
 		UUID playerUUID = player.getUniqueId();
 		requestsMap.entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) || entry.getKey().from.getUniqueId().equals(playerUUID)
-				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(Request::invalidate);
+				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(Request::invalidate); // ConcurrentModificationException
 	}
 
 	private boolean testRequest(Player creator, Player target) {
@@ -148,18 +148,19 @@ public class TpaHandler implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(target, "Tu es déjà en train de te faire téléporter !");
 			return;
 		}
-		
+
 		Gender fromGender = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender();
 		boolean teleport = teleportationManager.teleport(request.from, request.to, null, () -> {
 			String tune = fromGender.getTurne();
 			Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
 			Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
 		}, () -> {
-			if (!request.from.isOnline()) {
+			if (!request.from.isOnline())
 				Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), fromGender.getPronoun());
-			}else if (!request.to.isOnline()) {
+			else if (!request.to.isOnline())
 				Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, tu ne va pas se téléporter.", request.to.getName());
-			}else return true;
+			else
+				return true;
 			return false;
 		}, () -> {
 			request.into = false;
@@ -201,9 +202,10 @@ public class TpaHandler implements Listener {
 			this.from = from;
 			this.to = to;
 		}
-		
+
 		public void invalidate() {
-			if (task != null && !task.isCancelled()) task.cancel();
+			if (task != null && !task.isCancelled())
+				task.cancel();
 			requestsMap.remove(this);
 		}
 	}

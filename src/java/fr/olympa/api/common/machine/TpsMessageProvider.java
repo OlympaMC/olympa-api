@@ -23,7 +23,7 @@ import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
 public class TpsMessageProvider {
-	
+
 	private OlympaPlayer olympaPlayer;
 	private ServerInfoAdvanced serverInfo;
 	private LinkSpigotBungee<?> main;
@@ -37,7 +37,7 @@ public class TpsMessageProvider {
 		main = LinkSpigotBungee.getInstance();
 		serverInfo = main.isSpigot() ? new ServerInfoAdvancedSpigot((OlympaCore) main) : new ServerInfoAdvanced(main);
 	}
-	
+
 	/**
 	 * Constructs a new {@link TpsMessageProvider} for another server.
 	 * @param serverInfo
@@ -45,7 +45,7 @@ public class TpsMessageProvider {
 	public TpsMessageProvider(ServerInfoAdvanced serverInfo) {
 		this.serverInfo = serverInfo;
 	}
-	
+
 	public TxtComponentBuilder getInfoMessage() {
 		TxtComponentBuilder textBuilder = new TxtComponentBuilder("&e&m-------------------");
 		if (main != null) {
@@ -85,7 +85,7 @@ public class TpsMessageProvider {
 			textBuilder.extra(getCurrentSpigotInfo());
 		return textBuilder;
 	}
-	
+
 	private TxtComponentBuilder getSpigotTPSInfo() {
 		TxtComponentBuilder textBuilder = new TxtComponentBuilder("\n");
 		double[] tps = TPS.getDoubleTPS();
@@ -94,7 +94,7 @@ public class TpsMessageProvider {
 		textBuilder.extra(new TxtComponentBuilder("&3Moyenne: &b%s&3.", TPSUtils.getTpsColor(average)).onHoverText("&eLes TPS (0 à environ 20) sont les ticks par seconde."));
 		return textBuilder;
 	}
-	
+
 	private TxtComponentBuilder getCurrentSpigotInfo() {
 		OlympaCore core = (OlympaCore) main;
 		TxtComponentBuilder textBuilder = new TxtComponentBuilder();
@@ -105,7 +105,7 @@ public class TpsMessageProvider {
 			Chunk[] chunks = world.getLoadedChunks();
 			List<Entity> entities = world.getEntities();
 			List<LivingEntity> livingEntities = world.getLivingEntities();
-			
+
 			textBuilder.extra("&3Monde &b%s&3: ", world.getName());
 			textBuilder.extra(new TxtComponentBuilder("&b%d&3 chunks", chunks.length).onHoverText("&eChunks (régions de 16x16) chargés dans le monde"));
 			textBuilder.extra(" ");
@@ -119,5 +119,5 @@ public class TpsMessageProvider {
 		textBuilder.extra(new TxtComponentBuilder("&3."));
 		return textBuilder;
 	}
-	
+
 }
