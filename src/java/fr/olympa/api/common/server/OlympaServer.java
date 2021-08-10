@@ -12,7 +12,6 @@ import fr.olympa.api.utils.Utils;
 
 public enum OlympaServer {
 
-	ALL("Autre", false),
 	BUNGEE("BungeeCord", true, ServerFrameworkType.BUNGEE),
 	ZTA("Olympa ZTA", false, true),
 	CREATIF("Créatif", false),
@@ -23,6 +22,7 @@ public enum OlympaServer {
 	AUTH("Authentification", true),
 	BUILDEUR("Buildeur", false),
 	DEV("Développement", true),
+	ALL(null, false),
 	;
 
 	private final String name;
