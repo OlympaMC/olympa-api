@@ -13,6 +13,7 @@ import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.provider.OlympaPlayerCore;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.sql.SQLColumn;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 
 public interface OlympaPlayer {
 
@@ -67,7 +68,7 @@ public interface OlympaPlayer {
 	String getGroupsToHumainString();
 
 	String getGroupsToString();
-	
+
 	default boolean hasGroup(OlympaGroup group) {
 		return getGroups().containsKey(group);
 	}
@@ -155,5 +156,11 @@ public interface OlympaPlayer {
 	void removeCustomPermission(OlympaPermission perm, OlympaServer serv);
 
 	void addCustomPermission(OlympaPermission perm, OlympaServer serv);
+
+	void setProtocol(ProtocolAPI protocolAPI);
+
+	ProtocolAPI getProtocol();
+
+	String getProtocolName();
 
 }

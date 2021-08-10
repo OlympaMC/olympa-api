@@ -184,7 +184,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		plugins = getCachePlugins();
 		versions = core.getProtocols();
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -264,9 +264,29 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 		return status != null && status.canConnect() && (versions == null || versions.contains(protocol));
 	}
 
+	public boolean canConnect(int protocolId) {
+		ProtocolAPI protocol = ProtocolAPI.getHighestVersion(protocolId);
+		return canConnect(protocol);
+	}
+
 	public boolean canConnect(OlympaPlayer olympaPlayer, ProtocolAPI protocol) {
 		return canConnect(olympaPlayer) && canConnect(protocol);
 	}
+
+	public ConnectResult canConnectNew(OlympaPlayer olympaPlayer) {
+		if (status == null || status == ServerStatus.CLOSE)
+			return ConnectResult.OFF;
+		if (status == ServerStatus.UNKNOWN)
+			return ConnectResult.ERROR;
+		if (olympaPlayer.getProtocol() != null && !canConnect(olympaPlayer.getProtocol())) // TODO remove olympaPlayer.getProtocol() != null
+			return ConnectResult.BAD_VERSION;
+		if (!olympaServer.canConnect(olympaPlayer))
+			return ConnectResult.NO_PERM;
+		if (!status.hasPermission(olympaPlayer))
+			return ConnectResult.NO_PERM_STATUS;
+		return ConnectResult.GOOD;
+	}
+
 
 	public boolean canConnect(OlympaPlayer olympaPlayer) {
 		return status != null && status.canConnect() && olympaServer.canConnect(olympaPlayer) && status.hasPermission(olympaPlayer);
@@ -286,7 +306,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	public Float getTps() {
 		return tpsArray == null ? null : TPSUtils.getAverage(tpsArray);
 	}
-	
+
 	@Nullable
 	public double[] getTpsArray() {
 		return tpsArray;
@@ -377,5 +397,14 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	@Override
 	public ServerInfoAdvanced deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		return ServerInfoAdvanced.deserialize(new ServerInfoAdvanced(), json, typeOfT, context);
+	}
+
+	public enum ConnectResult {
+		GOOD,
+		BAD_VERSION,
+		NO_PERM,
+		NO_PERM_STATUS,
+		ERROR,
+		OFF;
 	}
 }

@@ -19,6 +19,7 @@ import fr.olympa.api.common.player.Gender;
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.server.OlympaServer;
+import fr.olympa.api.spigot.utils.ProtocolAPI;
 import fr.olympa.api.utils.Utils;
 
 public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
@@ -47,6 +48,10 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	public long firstConnection;
 	@Expose
 	public long lastConnection;
+	@Expose
+	public ProtocolAPI protocolAPI;
+	@Expose
+	public String protocolName;
 
 	private OlympaPlayerInformations cachedInformations = null;
 	private Object cachedPlayer = null;
@@ -93,9 +98,8 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 			OlympaGroup tmpGroup = entry.getKey();
 			if (!tmpGroup.isVisible())
 				continue;
-			if (OlympaServer.ALL != tmpGroup.getServer()) {
+			if (OlympaServer.ALL != tmpGroup.getServer())
 				if (!Objects.equals(tmpGroup.getServer(), LinkSpigotBungee.getInstance().getOlympaServer())) continue;
-			}
 			return tmpGroup;
 		}
 		return OlympaGroup.PLAYER;
@@ -281,6 +285,22 @@ public abstract class OlympaPlayerCore implements OlympaPlayer, Cloneable {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public ProtocolAPI getProtocol() {
+		return protocolAPI;
+	}
+
+	@Override
+	public void setProtocol(ProtocolAPI protocolAPI) {
+		this.protocolAPI = protocolAPI;
+		protocolName = protocolAPI.getCompleteName();
+	}
+
+	@Override
+	public String getProtocolName() {
+		return protocolName;
 	}
 
 	@Override
