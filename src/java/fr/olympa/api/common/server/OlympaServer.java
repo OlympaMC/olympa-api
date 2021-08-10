@@ -1,6 +1,7 @@
 package fr.olympa.api.common.server;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
@@ -77,6 +78,10 @@ public enum OlympaServer {
 
 	public boolean isSame(OlympaServer olympaServer) {
 		return ordinal() == olympaServer.ordinal();
+	}
+
+	public boolean isSame(OlympaServer... olympaServers) {
+		return Arrays.stream(olympaServers).anyMatch(olympaServer -> ordinal() == olympaServer.ordinal());
 	}
 
 	public static Integer getServerId(String serverName) {
