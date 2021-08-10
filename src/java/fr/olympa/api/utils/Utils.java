@@ -42,7 +42,7 @@ import fr.olympa.api.common.match.MatcherPattern;
 public class Utils {
 
 	private Utils() {}
-	
+
 	private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(Collectors.toList(), list -> {
 		Collections.shuffle(list);
 		return list;
@@ -432,8 +432,7 @@ public class Utils {
 		return sj.toString();
 	}
 
-	public static String timestampToDuration(long timestamp, int precision) {
-		long now = Utils.getCurrentTimeInSeconds();
+	public static String timestampToDuration(long timestamp, int precision, long now) {
 		LocalDateTime timestamp2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 		LocalDateTime now2 = LocalDateTime.ofInstant(Instant.ofEpochSecond(now), TimeZone.getDefault().toZoneId());
 		LocalDateTime start;
@@ -489,6 +488,10 @@ public class Utils {
 				break;
 		}
 		return String.join(", ", msgs);
+	}
+
+	public static String timestampToDuration(long timestamp, int precision) {
+		return timestampToDuration(timestamp, precision, Utils.getCurrentTimeInSeconds());
 	}
 
 	public static int toField(String field) {
