@@ -84,7 +84,7 @@ public class TpaHandler implements Listener {
 	public void removeAllRequests(Player player) {
 		UUID playerUUID = player.getUniqueId();
 		requestsMap.entrySet().stream().filter(entry -> entry.getValue().getUniqueId().equals(playerUUID) || entry.getKey().from.getUniqueId().equals(playerUUID)
-				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).forEach(Request::invalidate); // ConcurrentModificationException
+				|| entry.getKey().to.getUniqueId().equals(playerUUID)).map(Entry::getKey).toList().forEach(Request::invalidate);
 	}
 
 	private boolean testRequest(Player creator, Player target) {
