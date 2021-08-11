@@ -91,7 +91,7 @@ public class TeleportationManager implements Listener {
 			} else
 				Prefix.INFO.sendMessage(p, "La téléportation précédente a été annulée.");
 		}
-		teleportations.put(p, new Teleportation(cancel, run != null ? taskManager.runTaskLater(run, TELEPORTATION_TICKS) : 0, request));
+		teleportations.put(p, new Teleportation(cancel, taskManager.runTaskLater(teleport, TELEPORTATION_TICKS), request));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
 
 		return true;
