@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.common.task.OlympaTask;
@@ -28,6 +26,7 @@ public class TeleportationManager implements Listener {
 	private Map<Player, Teleportation> teleportations = new HashMap<>();
 
 	private final OlympaAPIPlugin plugin;
+	@Nullable
 	private final OlympaSpigotPermission bypassPermission;
 
 	public TeleportationManager(OlympaAPIPlugin plugin, OlympaSpigotPermission bypassPermission) {
@@ -35,15 +34,14 @@ public class TeleportationManager implements Listener {
 		this.bypassPermission = bypassPermission;
 	}
 
-	@Nullable
-	public Teleportation remove(Player p) {
-		OlympaTask taskManager = plugin.getTask();
-		Teleportation removed = teleportations.remove(p);
-		if (removed != null && removed.request != null)
-			removed.request.invalidate();
-		//			taskManager.runTask(removed.deleteRequest);
-		return removed;
-	}
+	//	@Nullable
+	//	public Teleportation remove(Player p) {
+	//		//		OlympaTask taskManager = plugin.getTask();
+	//		Teleportation teleportation = teleportations.remove(p);
+	//		if (teleportation != null && teleportation.request != null)
+	//			teleportation.request.invalidate();
+	//		return teleportation;
+	//	}
 
 	public boolean teleport(Player p, Location to, String message) {
 		return teleport(p, to, message, null);
@@ -54,7 +52,7 @@ public class TeleportationManager implements Listener {
 	}
 
 	public boolean teleport(TpaHandler.Request request, String message, Runnable run, BooleanSupplier check, Runnable cancel) {
-		return teleport(request, request.from, () -> request.to.getLocation(), message, run, check, null);
+		return teleport(request, request.from, () -> request.to.getLocation(), message, run, check, cancel);
 	}
 
 	public boolean teleport(Player p, Player to, String message, Runnable run, BooleanSupplier check, Runnable cancel) {
@@ -82,18 +80,18 @@ public class TeleportationManager implements Listener {
 			return true;
 		}
 
-		Teleportation removed = teleportations.remove(p);
-		if (removed != null) {
-			removed.task.cancel();
-			if (removed.request != null) {
+		Teleportation teleportation = teleportations.remove(p);
+		if (teleportation != null) {
+			if (teleportation.taskId != 0)
+				taskManager.cancelTaskById(teleportation.taskId);
+			if (teleportation.request != null) {
 				Prefix.DEFAULT_BAD.sendMessage(request.from, "La téléportation précédente vers &4%s&c a été annulée.", request.to.getName());
 				Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée.", request.from);
-				removed.request.invalidate();
+				teleportation.request.invalidate();
 			} else
 				Prefix.INFO.sendMessage(p, "La téléportation précédente a été annulée.");
 		}
-		BukkitTask task = (BukkitTask) taskManager.getTask(taskManager.runTaskLater(teleport, TELEPORTATION_TICKS));
-		teleportations.put(p, new Teleportation(cancel, task, request));
+		teleportations.put(p, new Teleportation(cancel, taskManager.runTaskLater(run, TELEPORTATION_TICKS), request));
 		Prefix.INFO.sendMessage(p, "Téléportation dans " + TELEPORTATION_SECONDS + " secondes...");
 
 		return true;
@@ -104,23 +102,26 @@ public class TeleportationManager implements Listener {
 	}
 
 	public boolean canBypass(Player p) {
-		return bypassPermission.hasPermission(p.getUniqueId());
+		return bypassPermission != null && bypassPermission.hasPermission(p.getUniqueId());
 	}
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
 		if (!SpigotUtils.isSameLocationXZ(e.getFrom(), e.getTo())) {
-			Teleportation task = remove(e.getPlayer());
-			if (task != null) {
-				task.task.cancel();
-				if (task.cancel != null)
-					task.cancel.run();
+			Teleportation teleportation = teleportations.remove(e.getPlayer());
+			if (teleportation != null) {
+				if (teleportation.taskId != 0) {
+					OlympaTask taskManager = plugin.getTask();
+					taskManager.cancelTaskById(teleportation.taskId);
+				}
+				if (teleportation.cancel != null)
+					teleportation.cancel.run();
 				else
 					Prefix.BAD.sendMessage(e.getPlayer(), "La téléportation a été annulée.");
 			}
 		}
 	}
 
-	record Teleportation(Runnable cancel, BukkitTask task, TpaHandler.Request request) {}
+	record Teleportation(Runnable cancel, int taskId, TpaHandler.Request request) {}
 
 }

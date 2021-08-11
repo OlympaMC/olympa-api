@@ -2,6 +2,8 @@ package fr.olympa.api.common.task;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
@@ -48,6 +50,7 @@ public class BukkitTaskManager implements OlympaTask {
 	}
 
 	@Override
+	@Nullable
 	public BukkitTask getTask(int id) {
 		BukkitTask task = null;
 		if (id > 0)

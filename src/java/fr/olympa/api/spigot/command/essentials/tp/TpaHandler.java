@@ -33,11 +33,13 @@ public class TpaHandler implements Listener {
 	Plugin plugin;
 	OlympaSpigotPermission permission;
 
+
 	private TeleportationManager teleportationManager;
 
 	public TpaHandler(Plugin plugin, OlympaSpigotPermission permission, TeleportationManager teleportationManager) {
 		this.plugin = plugin;
 		this.permission = permission;
+
 		this.teleportationManager = teleportationManager;
 
 		new TpaCommand(this).register();
@@ -89,7 +91,7 @@ public class TpaHandler implements Listener {
 
 	private boolean testRequest(Player creator, Player target) {
 		if (creator.getUniqueId().equals(target.getUniqueId())) {
-			Prefix.DEFAULT_BAD.sendMessage(creator, "Impossible de te tp à toi même &4%s&c.", target.getName());
+			Prefix.DEFAULT_BAD.sendMessage(creator, "Impossible de te tp à toi même.");
 			return false;
 		}
 		Request request = getRequest(creator, target);
@@ -171,7 +173,7 @@ public class TpaHandler implements Listener {
 		}, () -> {
 			request.into = false;
 			Prefix.DEFAULT_BAD.sendMessage(request.from, "Téléportation annulée, tu ne dois pas te déplacer !");
-			Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée, %s a bougé...", request.from, fromGender.getPronoun());
+			Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée, %s a bougé...", request.from.getName(), fromGender.getPronoun());
 			request.invalidate();
 		});
 		if (teleport) {
