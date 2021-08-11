@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,13 +34,15 @@ public class TeleportationManager implements Listener {
 		this.bypassPermission = bypassPermission;
 	}
 
+	@Nullable
 	public Teleportation remove(Player p) {
-		Teleportation removed = teleportations.remove(p);
-		if (removed != null)
-			removed.task.cancel();
 		OlympaTask taskManager = plugin.getTask();
-		if (removed.deleteRequest != null)
-			taskManager.runTask(removed.deleteRequest);
+		Teleportation removed = teleportations.remove(p);
+		if (removed != null) {
+			removed.task.cancel();
+			if (removed.deleteRequest != null)
+				taskManager.runTask(removed.deleteRequest);
+		}
 		return removed;
 	}
 

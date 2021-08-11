@@ -89,7 +89,7 @@ public class TpaHandler implements Listener {
 
 	private boolean testRequest(Player creator, Player target) {
 		if (creator.getUniqueId().equals(target.getUniqueId())) {
-			Prefix.DEFAULT_BAD.sendMessage(creator, "Impossible de te tp à toi même.");
+			Prefix.DEFAULT_BAD.sendMessage(creator, "Impossible de te tp à toi même &4%s&c.", target.getName());
 			return false;
 		}
 		Request request = getRequest(creator, target);
@@ -208,7 +208,7 @@ public class TpaHandler implements Listener {
 		}
 
 		public void invalidate() {
-			teleportationManager.remove(from);
+			//			teleportationManager.remove(from); Not needed
 			if (task != null && !task.isCancelled())
 				task.cancel();
 			requestsMap.remove(this);
