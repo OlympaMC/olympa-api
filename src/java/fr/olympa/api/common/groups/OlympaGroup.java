@@ -20,7 +20,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
 	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4Admin", "&4%s ", ":&r", true),
-	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&cAmbassadeur ", "&c%s ", ":&r", false), 
+	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&cAmbassadeur ", "&c%s ", ":&r", false),
 	RESP(28, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp_Technique", "Resp_Technique", "&3%s ", ":&r", true),
 	RESP_STAFF(9, 75, OlympaServer.ALL, "Resp_Staff", "Resp_Staff", "&c%s ", ":&r", true),
@@ -38,7 +38,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&a%s ", ":&r", false),
 	PARTENER(21, 35, OlympaServer.LOBBY, "Partenaire", "Partenaire", "&d%s ", ":&r", false),
 	YOUTUBER(17, 32, OlympaServer.ALL, "Youtubeur", "Youtubeuse", "&5%s ", ":&r", false),
-	MINI_YOUTUBER(18, 30, OlympaServer.LOBBY, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
+	MINI_YOUTUBER(18, 30, OlympaServer.ALL, "M-Youtubeur", "M-Youtubeuse", "&d%s ", ":&r", false),
 
 	VIP(
 			19,
