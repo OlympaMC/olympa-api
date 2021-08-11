@@ -18,6 +18,7 @@ import fr.olympa.api.common.permission.list.OlympaAPIPermissionsSpigot;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class TpCommand extends OlympaCommand {
 
@@ -64,6 +65,10 @@ public class TpCommand extends OlympaCommand {
 		} else {
 			sendUsage(label);
 			return false;
+		}
+		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && OlympaCore.getInstance().getVanishApi().isVanished(player)) {
+			sendMessage(Prefix.DEFAULT_BAD, "Tu peux te téléporter aux joueurs uniquement quand tu es en vanish.");
+			return true;
 		}
 		Entity target = targets.get(0);
 		sources.forEach(s -> {

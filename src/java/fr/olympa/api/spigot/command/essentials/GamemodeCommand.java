@@ -109,6 +109,8 @@ public class GamemodeCommand extends OlympaCommand {
 			target = player;
 		} else if (args.length == 1) {
 			if (shortCommand || gm == null) {
+				if (!hasPermission(OlympaAPIPermissionsSpigot.GAMEMODE_COMMAND_OTHER))
+					sendDoNotHavePermission();
 				target = Bukkit.getPlayer(args[0]);
 				if (target == null) {
 					sendUnknownPlayer(args[0]);
