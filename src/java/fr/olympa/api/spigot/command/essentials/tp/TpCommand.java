@@ -66,7 +66,7 @@ public class TpCommand extends OlympaCommand {
 			sendUsage(label);
 			return false;
 		}
-		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && OlympaCore.getInstance().getVanishApi().isVanished(player)) {
+		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && !OlympaCore.getInstance().getVanishApi().isVanished(player)) {
 			sendMessage(Prefix.DEFAULT_BAD, "Tu peux te téléporter aux joueurs uniquement quand tu es en vanish.");
 			return true;
 		}

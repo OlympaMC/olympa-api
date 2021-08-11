@@ -389,7 +389,7 @@ public abstract class ClansManager<T extends Clan<T, D>, D extends ClanPlayerDat
 			clan.memberLeave(oplayer);
 	}
 	
-	@EventHandler (priority = EventPriority.HIGH)
+	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e) {
 		ClanPlayerInterface<T, D> target = AccountProviderAPI.getter().get(e.getPlayer().getUniqueId());
 		if (target.getClan() == null) return;

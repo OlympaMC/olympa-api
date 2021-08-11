@@ -19,6 +19,7 @@ import fr.olympa.api.common.chat.TableGenerator.Receiver;
 import fr.olympa.api.common.chat.TxtComponentBuilder;
 import fr.olympa.api.common.command.IOlympaCommand;
 import fr.olympa.api.common.command.complex.CommandContext;
+import fr.olympa.core.spigot.OlympaCore;
 
 public class CacheStats {
 
@@ -247,27 +248,27 @@ public class CacheStats {
 	}
 
 	private static String objectToString(Object o) {
-		if (o instanceof String)
-			return (String) o;
+		if (o instanceof String string)
+			return string;
 		String key = o.toString();
 		if (key.startsWith(o.getClass().getName() + "@"))
 			try {
-				String tmp = new Gson().toJson(o);
+				String tmp = OlympaCore.getInstance().getGson().toJson(o);
 				key = tmp;
 			} catch (Exception e) {
-				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
+				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats impossible de mettre &4" + o + "&c en JSON : " + e.getMessage());
 			}
 		return key;
 	}
 
 	private static TxtComponentBuilder objectToTxtBuilder(Object o, Receiver receiver) {
-		if (o instanceof String)
-			return new TxtComponentBuilder((String) o);
+		if (o instanceof String string)
+			return new TxtComponentBuilder(string);
 		TxtComponentBuilder out = new TxtComponentBuilder();
 		String key = o.toString();
 		if (key.startsWith(o.getClass().getName() + "@"))
 			try {
-				String tmp = new Gson().toJson(o);
+				String tmp = OlympaCore.getInstance().getGson().toJson(o);
 				if (receiver == Receiver.CONSOLE || tmp.length() < 50)
 					out.extra(tmp);
 				else {
@@ -277,7 +278,7 @@ public class CacheStats {
 			} catch (Exception e) {
 				out.extra(key);
 				out.onHoverText("&cImpossible de serialize en json la class &4%s&c.", o.getClass().getSimpleName());
-				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats &4" + o.getClass().getName() + "&c - Impossible de mettre &4" + o + "&c en JSON.");
+				LinkSpigotBungee.getInstance().sendMessage("&4ERROR CacheStats impossible de mettre &4" + o + "&c en JSON" + e.getMessage());
 			}
 		else
 			out.extra(key);
