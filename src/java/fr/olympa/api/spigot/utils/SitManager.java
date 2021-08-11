@@ -45,7 +45,7 @@ public class SitManager implements Listener {
 		if (p.isInsideVehicle()) return;
 		if (p.isSneaking()) return;
 		if (e.getClickedBlock().getType().name().endsWith("_STAIRS")) {
-			if (p.getGameMode() == GameMode.CREATIVE || p.getGameMode() == GameMode.SPECTATOR) {
+			if (canSit(p)) {
 				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cVous ne pouvez pas vous asseoir maintenant."));
 				return;
 			}

@@ -109,7 +109,7 @@ public class TpaHandler implements Listener {
 			return;
 		addRequest(creator, new Request(target, creator));
 		target.spigot()
-				.sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléportes à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
+		.sendMessage(getCompo(creator, "§4" + creator.getName() + "§e veut que §lTU§e te téléportes à §lLUI§e.", "§2Accepte de te téléporter à " + creator.getName() + ".", "§4Refuse de te téléporter à " + creator.getName() + "."));
 		Prefix.DEFAULT_GOOD.sendMessage(creator, "Tu as envoyé une requête à §2%s§a.", target.getName());
 	}
 
@@ -150,7 +150,7 @@ public class TpaHandler implements Listener {
 		}
 
 		Gender fromGender = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender();
-		boolean teleport = teleportationManager.teleport(request.from, request.to, null, () -> {
+		boolean teleport = teleportationManager.teleport(request::invalidate, request.from, request.to, null, () -> {
 			String tune = fromGender.getTurne();
 			Prefix.DEFAULT_GOOD.sendMessage(request.from, "Tu as été téléporté%s à §e%s§a.", tune, request.to.getName());
 			Prefix.DEFAULT_GOOD.sendMessage(request.to, "§e%s §as'est téléporté%s à toi.", request.from.getName(), tune);
@@ -158,7 +158,7 @@ public class TpaHandler implements Listener {
 			if (!request.from.isOnline())
 				Prefix.DEFAULT_BAD.sendMessage(request.to, "&4%s&c s'est déconnecté, %s ne va pas se téléporter.", request.from.getName(), fromGender.getPronoun());
 			else if (!request.to.isOnline())
-				Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, tu ne va pas se téléporter.", request.to.getName());
+				Prefix.DEFAULT_BAD.sendMessage(request.from, "&4%s&c s'est déconnecté, tu ne va pas te téléporter.", request.to.getName());
 			else
 				return true;
 			return false;
@@ -204,6 +204,7 @@ public class TpaHandler implements Listener {
 		}
 
 		public void invalidate() {
+			teleportationManager.remove(from);
 			if (task != null && !task.isCancelled())
 				task.cancel();
 			requestsMap.remove(this);
