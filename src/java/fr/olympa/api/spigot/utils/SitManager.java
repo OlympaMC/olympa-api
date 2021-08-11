@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
@@ -42,9 +43,11 @@ public class SitManager implements Listener {
 	public void onInteract(PlayerInteractEvent e) {
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Player p = e.getPlayer();
+		
 		if (p.isInsideVehicle()) return;
 		if (p.isSneaking()) return;
 		if (e.getClickedBlock().getType().name().endsWith("_STAIRS")) {
+			if (!p.getTargetBlockExact(3).equals(e.getClickedBlock())) return;
 			if (canSit(p)) {
 				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§cVous ne pouvez pas vous asseoir maintenant."));
 				return;
@@ -82,7 +85,7 @@ public class SitManager implements Listener {
 			if (sitting.player().equals(e.getEntity())) {
 				if (!e.getEntity().isDead()) {
 					Bukkit.getScheduler().runTask(plugin, () -> {
-						e.getEntity().teleport(sitting.previous().setDirection(e.getEntity().getLocation().getDirection()));
+						sitting.teleportBack();
 						e.getDismounted().remove();
 					});
 				}
@@ -92,6 +95,24 @@ public class SitManager implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent e) {
+		for (Iterator<Sitting> iterator = sits.values().iterator(); iterator.hasNext();) {
+			Sitting sitting = iterator.next();
+			if (sitting.player().equals(e.getPlayer())) {
+				sitting.teleportBack();
+				iterator.remove();
+				break;
+			}
+		}
+	}
+	
 }
 
-record Sitting(Player player, Location previous) {}
+record Sitting(Player player, Location previous) {
+	
+	public void teleportBack() {
+		player.teleport(previous.setDirection(player.getLocation().getDirection()));
+	}
+	
+}
