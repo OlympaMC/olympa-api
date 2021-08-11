@@ -88,6 +88,10 @@ public class TpaHandler implements Listener {
 	}
 
 	private boolean testRequest(Player creator, Player target) {
+		if (creator.getUniqueId().equals(target.getUniqueId())) {
+			Prefix.DEFAULT_BAD.sendMessage(creator, "Impossible de te tp à toi même.");
+			return false;
+		}
 		Request request = getRequest(creator, target);
 		if (request != null) {
 			Prefix.DEFAULT_BAD.sendMessage(creator, "Tu as déjà envoyé une demande à &4%s&c.", target.getName());
