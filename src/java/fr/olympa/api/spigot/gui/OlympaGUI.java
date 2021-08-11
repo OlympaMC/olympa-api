@@ -9,21 +9,24 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.chat.ColorUtils;
-import fr.olympa.api.common.chat.TxtComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class OlympaGUI implements InventoryHolder {
-	
+
 	protected Inventory inv;
 
 	public OlympaGUI(String name, int rows) {
-		this.inv = Bukkit.createInventory(this, 9 * rows, ColorUtils.color(name));
+		inv = Bukkit.createInventory(this, 9 * rows, ColorUtils.color(name));
+	}
+
+	public OlympaGUI(int placeNeeded, String name) {
+		inv = Bukkit.createInventory(this, (int) Math.ceil(placeNeeded / 9d) * 9, ColorUtils.color(name));
 	}
 
 	public OlympaGUI(String name, InventoryType type) {
-		this.inv = Bukkit.createInventory(this, type,ColorUtils.color(name));
+		inv = Bukkit.createInventory(this, type,ColorUtils.color(name));
 	}
 
+	@Override
 	public Inventory getInventory() {
 		return inv;
 	}
@@ -40,7 +43,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		return true;
 	}
-	
+
 	/**
 	 * Called when clicking on an item <b>with something on the cursor</b>
 	 * @param p Player who clicked
@@ -52,7 +55,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public boolean onClickCursor(Player p, ItemStack current, ItemStack cursor, int slot) {
 		return true;
 	}
-	
+
 	/**
 	 * Appelé lors d'un shift-click depuis l'inventaire du joueur
 	 * @param p Joueur qui a bougé l'item
@@ -75,7 +78,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public boolean noDoubleClick() {
 		return true;
 	}
-	
+
 	/**
 	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, OlympaGUI)}
 	 * @param p Player
@@ -84,5 +87,5 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public final void create(Player p) {
 		Inventories.create(p, this);
 	}
-	
+
 }

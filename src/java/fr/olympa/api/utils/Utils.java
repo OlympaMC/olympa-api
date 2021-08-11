@@ -524,10 +524,10 @@ public class Utils {
 	 * Permet d'accroder ou nom un mot.
 	 *
 	 * @param i Nombre d'object
-	 * @return Un s si le nombre est supérieur à 1, sinon un string vide.
+	 * @return Un s si le nombre n'est pas 1
 	 */
 	public static String withOrWithoutS(int i) {
-		return i < 2 ? "" : "s";
+		return i == 1 ? "" : "s";
 	}
 
 	public static String withOrWithoutS(long i, String string) {
