@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
+import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.common.match.MatcherPattern;
 import fr.olympa.api.common.permission.OlympaPermission;
 import fr.olympa.api.common.player.OlympaPlayer;
@@ -18,6 +19,7 @@ public enum OlympaServer {
 	CREATIF("Créatif", false),
 	PVPKIT("PvP-Kits", false),
 	PVPFAC("PvP-Factions", false),
+	WARFARE("Warfare", true),
 	LG("Loup-Garou", true),
 	LOBBY("Lobby", true),
 	AUTH("Authentification", true),
@@ -96,7 +98,14 @@ public enum OlympaServer {
 		matcher.find();
 		String id = matcher.group();
 		int serverId = Utils.isEmpty(id) ? 0 : Integer.parseInt(id);
-		OlympaServer olympaServer = OlympaServer.valueOf(matcher.replaceAll("").toUpperCase());
+		String olympaServerName = matcher.replaceAll("").toUpperCase();
+		OlympaServer olympaServer;
+		try {
+			olympaServer = OlympaServer.valueOf(olympaServerName);
+		}catch (IllegalArgumentException ex) {
+			olympaServer = null;
+			LinkSpigotBungee.getInstance().sendMessage("§cOlympaServer.%s introuvable.", olympaServerName);
+		}
 		return new AbstractMap.SimpleEntry<>(olympaServer, serverId);
 	}
 }

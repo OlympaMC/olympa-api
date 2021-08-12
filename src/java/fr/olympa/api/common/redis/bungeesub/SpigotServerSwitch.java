@@ -57,7 +57,7 @@ public class SpigotServerSwitch extends RedisSubChannel {
 			if (olympaServer != null) {
 				//				ServersConnection.tryConnect(player, server, false);
 				serverName = Utils.capitalize(olympaServer.getNameCaps());
-				System.out.println(String.format("[REDIS] Demande de serveur switch %s sur le serv %s.", player.getName(), serverName));
+				OlympaBungee.getInstance().sendRedis("[REDIS] Demande de serveur switch %s sur le serv %s.", player.getName(), serverName);
 			}
 		}
 
@@ -77,7 +77,7 @@ public class SpigotServerSwitch extends RedisSubChannel {
 			else if (error != null)
 				player.sendMessage(TxtComponentBuilder.of(Prefix.DEFAULT_BAD, "Échec de la connexion au serveur &4%s&c: &4%s&c. ", serverNameFinal, error.getMessage()));
 		};
-		System.out.println(String.format("[REDIS] Demande de serveur switch %s sur le serveur %s.", player.getName(), serverName));
+		LinkSpigotBungee.getInstance().sendRedis("[REDIS] Demande de serveur switch %s sur le serveur %s.", player.getName(), serverName);
 		//		player.connect(server, callback, false, Reason.PLUGIN_MESSAGE, 10000);
 	}
 
