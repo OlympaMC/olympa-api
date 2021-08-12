@@ -163,7 +163,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	public abstract List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args);
 
 	private void build() {
-		usageString = args.entrySet().stream().map(entry -> {
+		if (usageString != null) usageString = args.entrySet().stream().map(entry -> {
 			boolean isMandatory = entry.getValue();
 			List<CommandArgument> ca = entry.getKey();
 			return (isMandatory ? "<" : "[") + ca.stream().map(c -> c.getArgName()).collect(Collectors.joining("|")) + (isMandatory ? ">" : "]");
