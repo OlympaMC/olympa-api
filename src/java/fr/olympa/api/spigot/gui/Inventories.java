@@ -97,6 +97,10 @@ public class Inventories implements Listener {
 				event.setCancelled(true);
 				return;
 			}
+			if (gui.noNumberKey() && event.getClick() == ClickType.NUMBER_KEY) {
+				event.setCancelled(true);
+				return;
+			}
 
 			if (event.getCursor().getType() == Material.AIR) {
 				if (current == null || current.getType() == Material.AIR)

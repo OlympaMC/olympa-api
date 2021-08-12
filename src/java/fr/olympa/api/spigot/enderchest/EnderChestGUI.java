@@ -32,6 +32,16 @@ public class EnderChestGUI extends OlympaGUI {
 	}
 	
 	@Override
+	public boolean noDoubleClick() {
+		return false;
+	}
+	
+	@Override
+	public boolean noNumberKey() {
+		return false;
+	}
+	
+	@Override
 	public boolean onClose(Player p) {
 		player.setEnderChestContents(inv.getContents());
 		return super.onClose(p);

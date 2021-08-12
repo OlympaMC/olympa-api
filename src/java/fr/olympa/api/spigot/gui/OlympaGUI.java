@@ -78,6 +78,10 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public boolean noDoubleClick() {
 		return true;
 	}
+	
+	public boolean noNumberKey() {
+		return true;
+	}
 
 	/**
 	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, OlympaGUI)}
