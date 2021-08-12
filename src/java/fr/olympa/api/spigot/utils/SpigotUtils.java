@@ -521,7 +521,7 @@ public class SpigotUtils {
 		size = Math.max(size, Chat.getPxSize(itemName, true));
 		size -= Chat.getPxSize(inside, true);
 		size = Math.max(size, 4);
-		String bar = "§m" + " ".repeat((int) Math.ceil(size / (2D * (Chat.SPACE.getLength()/* + 2D*/))));
+		String bar = "§m" + " ".repeat((int) Math.ceil(size / (2D * (Chat.SPACE.getLength() + 1D))));
 		return "§e" + bar + inside + bar + "§r";
 	}
 	

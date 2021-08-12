@@ -22,7 +22,7 @@ public class SayCommand extends OlympaCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		String msg = String.join(" ", args);
-		String text = "§d§k##§6 " + (isConsole() ? "§6CONSOLE" : getOlympaPlayer().getGroup().getColor() + player.getName()) + " §7➤ " + ColorUtils.color(msg);
+		String text = "§d§k##§6 " + (isConsole() ? "§6CONSOLE" : getOlympaPlayer().getGroup().getColor() + player.getName()) + " §7➤ §f" + ColorUtils.color(msg);
 		int receivers = SpigotUtils.broadcastMessage(text);
 		sendSuccess("Message envoyé. (%d receveurs) ", receivers);
 		return false;
