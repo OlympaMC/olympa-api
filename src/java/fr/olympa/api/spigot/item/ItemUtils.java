@@ -406,4 +406,12 @@ public class ItemUtils {
 		return length;
 	}
 
+	public static ItemStack clone(ItemStack item, int amount) {
+		if (item.getAmount() != amount) {
+			item = item.clone();
+			item.setAmount(amount);
+		}
+		return item;
+	}
+	
 }
