@@ -44,7 +44,6 @@ public class TpaHandler implements Listener {
 
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
-		//		new TpHereConfirmCommand(this).register();
 		new TpConfirmCommand(this).register();
 		//CacheStats.addCache("TPA_REQUESTS", requests);
 	}

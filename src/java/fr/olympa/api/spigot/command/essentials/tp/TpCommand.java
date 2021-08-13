@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -66,8 +67,8 @@ public class TpCommand extends OlympaCommand {
 			sendUsage(label);
 			return false;
 		}
-		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && !OlympaCore.getInstance().getVanishApi().isVanished(player)) {
-			sendMessage(Prefix.DEFAULT_BAD, "Tu peux te téléporter aux joueurs uniquement quand tu es en vanish.");
+		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && (!OlympaCore.getInstance().getVanishApi().isVanished(player) || player.getGameMode() != GameMode.SPECTATOR)) {
+			sendMessage(Prefix.DEFAULT_BAD, "Tu peux te téléporter aux joueurs uniquement quand tu es en vanish ou gamemode spectateur.");
 			return true;
 		}
 		Entity target = targets.get(0);
@@ -77,7 +78,7 @@ public class TpCommand extends OlympaCommand {
 				String turneS = AccountProviderAPI.getter().get(s.getUniqueId()).getGender().getTurne();
 				if (s != player)
 					if (target.getUniqueId().equals(player.getUniqueId())) {
-						String turneT = AccountProviderAPI.getter().get(s.getUniqueId()).getGender().getTurne();
+						String turneT = AccountProviderAPI.getter().get(target.getUniqueId()).getGender().getTurne();
 						sendMessage(Prefix.DEFAULT_GOOD, "&2Tu as téléporté%s &2%s&a &nICI&a.", turneT, s.getName(), target.getName());
 					} else
 						sendMessage(Prefix.DEFAULT_GOOD, "&2%s&a a été téléporté%s à &2%s&a.", s.getName(), turneS, target.getName());
