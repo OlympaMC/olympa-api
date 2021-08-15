@@ -60,9 +60,10 @@ public class ReflectCommand extends Command {
 			return false;
 		}
 		if (exe.canExecute != null && exe.player != null && !exe.canExecute.isEmpty()) {
-			Map<BiFunction<CommandSender, @Nullable OlympaPlayer, Boolean>, Consumer<CommandSender>> canExecute = exe.canExecute;
+			Map<BiFunction<CommandSender, OlympaPlayer, Boolean>, Consumer<CommandSender>> canExecute = exe.canExecute;
 			if (canExecute.entrySet().stream().anyMatch(entry -> {
 				BiFunction<CommandSender, OlympaPlayer, Boolean> can = entry.getKey();
+				@Nullable
 				Consumer<CommandSender> msg = entry.getValue();
 				boolean canI = can.apply(sender, exe.getOlympaPlayer());
 				if (!canI) {
