@@ -10,6 +10,7 @@ public class OlympaAPIPermissionsGlobal {
 	public static final OlympaGlobalPermission CONNECT_SERVERSTATUS_MAINTENANCE = new OlympaGlobalPermission(OlympaGroup.PARTENER);
 	public static final OlympaGlobalPermission CONNECT_SERVERSTATUS_BETA = new OlympaGlobalPermission(OlympaGroup.YOUTUBER);
 	public static final OlympaGlobalPermission CONNECT_SERVERSTATUS_SOON = new OlympaGlobalPermission(OlympaGroup.FRIEND);
+	public static final OlympaGlobalPermission CONNECT_SERVERSTATUS_INGAME = new OlympaGlobalPermission(new OlympaGroup[] {});
 
 	public static final OlympaGlobalPermission CONNECT_SERVER_BUILDER = new OlympaGlobalPermission(OlympaGroup.BUILDER);
 	public static final OlympaGlobalPermission CONNECT_SERVER_DEV = new OlympaGlobalPermission(OlympaGroup.DEV);

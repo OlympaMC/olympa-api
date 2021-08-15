@@ -19,8 +19,10 @@ public enum ServerStatus {
 	DEV(5, "Développement", ChatColor.LIGHT_PURPLE, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV, "Dev"),
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV, null),
 	STARTING(8, "Démarrage", ChatColor.BLUE, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_MAINTENANCE, null),
-	CLOSE(10, "Fermé", ChatColor.RED, null, null);
-
+	CLOSE(10, "Fermé", ChatColor.RED, null, null),
+	IN_GAME(11, "En jeu", ChatColor.RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_INGAME, null),
+	;
+	
 	public static ServerStatus get(int id) {
 		return Arrays.stream(values()).filter(status -> status.getId() == id).findFirst().orElse(ServerStatus.UNKNOWN);
 	}
@@ -85,6 +87,6 @@ public enum ServerStatus {
 	}
 
 	public boolean canConnect() {
-		return this != CLOSE && this != UNKNOWN;
+		return this != CLOSE && this != UNKNOWN && this != IN_GAME;
 	}
 }
