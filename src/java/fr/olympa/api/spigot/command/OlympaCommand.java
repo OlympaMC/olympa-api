@@ -15,8 +15,6 @@ import java.util.function.Consumer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -64,7 +62,11 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected boolean allowConsole = true;
 	protected boolean isAsynchronous = false;
 
-	protected Map<BiFunction<CommandSender, @Nullable OlympaPlayer, Boolean>, @Nullable Consumer<CommandSender>> canExecute;
+	/**
+	 * OlympaPlayer may be nul if sender is console.
+	 * The key Consumer<CommandSender> can be null to if you didn't want to send msg.
+	 */
+	protected Map<BiFunction<CommandSender, OlympaPlayer, Boolean>, Consumer<CommandSender>> canExecute;
 	public ReflectCommand reflectCommand;
 
 	public OlympaCommand(Plugin plugin, String command, OlympaSpigotPermission permission, String... aliases) {
