@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -53,6 +58,21 @@ public class ReflectCommand extends Command {
 		if (args.length < exe.minArg) {
 			exe.sendUsage(label);
 			return false;
+		}
+		if (exe.canExecute != null && exe.player != null && !exe.canExecute.isEmpty()) {
+			Map<BiFunction<CommandSender, @Nullable OlympaPlayer, Boolean>, Consumer<CommandSender>> canExecute = exe.canExecute;
+			if (canExecute.entrySet().stream().anyMatch(entry -> {
+				BiFunction<CommandSender, OlympaPlayer, Boolean> can = entry.getKey();
+				Consumer<CommandSender> msg = entry.getValue();
+				boolean canI = can.apply(sender, exe.getOlympaPlayer());
+				if (!canI) {
+					if (msg != null)
+						msg.accept(sender);
+					return true;
+				}
+				return false;
+			}))
+				return true;
 		}
 		if (!exe.isAsynchronous)
 			return exe.onCommand(sender, this, label, args);
