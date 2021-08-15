@@ -54,9 +54,6 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 			footers.add(new Line(line));
 			line.addHolder(this);
 		}
-		updateScrollState();
-		initScoreboard();
-		start();
 	}
 	
 	public T getOlympaPlayer() {
@@ -67,14 +64,28 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		return sb;
 	}
 	
-	public void addLine(AbstractLine<Scoreboard<T>> line) {
-		if (sb.isDeleted()) return;
+	@Deprecated (forRemoval = true)
+	public void addLine(AbstractLine<Scoreboard<T>> absline) {
+		addLines(absline);
+	}
+	
+	public void addLines(AbstractLine<Scoreboard<T>>... abslines) { // can be called before scoreboard load
+		if (sb != null && sb.isDeleted()) return;
 		updateLock.lock();
-		lines.add(new Line(line));
-		line.addHolder(this);
-		updateScrollState();
+		for (AbstractLine<Scoreboard<T>> line : abslines) {
+			lines.add(new Line(line));
+			line.addHolder(this);
+		}
+		if (sb != null) updateScrollState();
 		updateLock.unlock();
-		needsUpdate();
+		if (sb != null) needsUpdate();
+	}
+	
+	@Override
+	public synchronized void start() {
+		updateScrollState();
+		initScoreboard();
+		super.start();
 	}
 	
 	private void updateScrollState() {
@@ -192,7 +203,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	}
 	
 	private void updateScoreboard() {
-		if (sb.isDeleted()) return;
+		if (sb == null || sb.isDeleted()) return;
 		
 		updateLock.lock();
 		List<String> rawLines = getRawLines();

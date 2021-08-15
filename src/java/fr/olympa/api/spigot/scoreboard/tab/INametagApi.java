@@ -34,6 +34,10 @@ public interface INametagApi {
 		default boolean needsDatas() {
 			return true;
 		}
+		
+		default Integer getPriority(OlympaPlayer player) {
+			return null;
+		}
 	}
 
 }
