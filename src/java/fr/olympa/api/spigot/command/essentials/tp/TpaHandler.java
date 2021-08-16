@@ -27,12 +27,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class TpaHandler implements Listener {
 
-	//private Cache<Request, Player> requests = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).removalListener(this::invalidate).build();
 	private Map<Request, Player> requestsMap = new HashMap<>();
 
 	Plugin plugin;
 	OlympaSpigotPermission permission;
-
 
 	private TeleportationManager teleportationManager;
 
@@ -45,7 +43,6 @@ public class TpaHandler implements Listener {
 		new TpaCommand(this).register();
 		new TpaHereCommand(this).register();
 		new TpConfirmCommand(this).register();
-		//CacheStats.addCache("TPA_REQUESTS", requests);
 	}
 
 	public void addRequest(Player player, Request request) {
@@ -154,6 +151,11 @@ public class TpaHandler implements Listener {
 			return;
 		}
 
+		if (!teleportationManager.canTeleport(target)) {
+			request.invalidate();
+			return;
+		}
+		
 		Gender fromGender = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender();
 		boolean teleport = teleportationManager.teleport(request, null, () -> {
 			String tune = fromGender.getTurne();
@@ -175,10 +177,13 @@ public class TpaHandler implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée, %s a bougé...", request.from.getName(), fromGender.getPronoun());
 			request.invalidate();
 		});
+		
 		if (teleport) {
 			request.into = true;
 			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s.", request.to.getName());
 			Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
+		}else {
+			request.invalidate();
 		}
 	}
 
