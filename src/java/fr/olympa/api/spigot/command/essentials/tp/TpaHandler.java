@@ -40,9 +40,9 @@ public class TpaHandler implements Listener {
 
 		this.teleportationManager = teleportationManager;
 
-		new TpaCommand(this).register();
-		new TpaHereCommand(this).register();
-		new TpConfirmCommand(this).register();
+		teleportationManager.addCommand(new TpaCommand(this).register());
+		teleportationManager.addCommand(new TpaHereCommand(this).register());
+		teleportationManager.addCommand(new TpConfirmCommand(this).register());
 	}
 
 	public void addRequest(Player player, Request request) {
@@ -155,7 +155,7 @@ public class TpaHandler implements Listener {
 			request.invalidate();
 			return;
 		}
-		
+
 		Gender fromGender = AccountProviderAPI.getter().get(request.from.getUniqueId()).getGender();
 		boolean teleport = teleportationManager.teleport(request, null, () -> {
 			String tune = fromGender.getTurne();
@@ -177,14 +177,13 @@ public class TpaHandler implements Listener {
 			Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée, %s a bougé...", request.from.getName(), fromGender.getPronoun());
 			request.invalidate();
 		});
-		
+
 		if (teleport) {
 			request.into = true;
 			Prefix.INFO.sendMessage(request.from, "Téléportation vers %s.", request.to.getName());
 			Prefix.INFO.sendMessage(request.to, "%s va se téléporter à toi.", request.from.getName());
-		}else {
+		} else
 			request.invalidate();
-		}
 	}
 
 	public void refuseRequest(Player target, Player creator) {

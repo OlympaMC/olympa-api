@@ -127,15 +127,15 @@ public interface IOlympaCommand {
 	}
 
 	default boolean hasPermission(OlympaPermission perm) {
-		return hasPermission(perm, getOlympaPlayer());
+		return getPlayer() == null || hasPermission(perm, getOlympaPlayer());
 	}
 
 	default boolean hasPermission(OlympaPlayer player) {
-		return hasPermission(getOlympaPermission(), player);
+		return getPlayer() == null || hasPermission(getOlympaPermission(), player);
 	}
 
 	default boolean hasPermission() {
-		return hasPermission(getOlympaPermission(), getOlympaPlayer());
+		return getPlayer() == null || hasPermission(getOlympaPermission(), getOlympaPlayer());
 	}
 
 	default String buildText(int min, String[] args) {
@@ -153,7 +153,7 @@ public interface IOlympaCommand {
 	default <T extends OlympaPlayer> T getOlympaPlayerNullable() {
 		return getPlayer() == null ? null : getOlympaPlayer();
 	}
-	
+
 	void setAllowConsole(boolean allowConsole);
 
 	boolean isConsoleAllowed();

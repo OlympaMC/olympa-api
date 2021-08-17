@@ -45,7 +45,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected static CommandMap cmap;
 
 	public static OlympaCommand getCmd(String name) {
-		return commands.stream().filter(oc -> oc.getCommand().equals(name) && oc.getAliases().contains(name)).findFirst().orElse(null);
+		return commands.stream().filter(oc -> oc.getCommand().equals(name) || oc.getAliases().contains(name)).findFirst().orElse(null);
 	}
 
 	protected Plugin plugin;

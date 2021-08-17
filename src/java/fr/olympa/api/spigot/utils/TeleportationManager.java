@@ -1,7 +1,9 @@
 package fr.olympa.api.spigot.utils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -15,6 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import fr.olympa.api.common.permission.OlympaSpigotPermission;
 import fr.olympa.api.common.plugin.OlympaAPIPlugin;
 import fr.olympa.api.common.task.OlympaTask;
+import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.command.essentials.tp.TpaHandler;
 import fr.olympa.api.utils.Prefix;
 
@@ -23,7 +26,9 @@ public class TeleportationManager implements Listener {
 	public static final int TELEPORTATION_SECONDS = 3;
 	public static final int TELEPORTATION_TICKS = TELEPORTATION_SECONDS * 20;
 
+	private Set<OlympaCommand> commands = new HashSet<>();
 	private Map<Player, Teleportation> teleportations = new HashMap<>();
+
 
 	private final OlympaAPIPlugin plugin;
 	@Nullable
@@ -32,6 +37,14 @@ public class TeleportationManager implements Listener {
 	public TeleportationManager(OlympaAPIPlugin plugin, OlympaSpigotPermission bypassPermission) {
 		this.plugin = plugin;
 		this.bypassPermission = bypassPermission;
+	}
+
+	public Set<OlympaCommand> getCommands() {
+		return commands;
+	}
+
+	public void addCommand(OlympaCommand command) {
+		commands.add(command);
 	}
 
 	//	@Nullable
