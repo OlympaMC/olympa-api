@@ -19,7 +19,7 @@ import fr.olympa.api.utils.Utils;
 public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	FONDA(1, 100, OlympaServer.ALL, "Fondateur", "Fondatrice", "&4%s ", ":&c", true),
-	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administatrice", "&4Admin", "&4%s ", ":&r", true),
+	ADMIN(2, 95, OlympaServer.ALL, "Administrateur", "Administratrice", "&4Admin", "&4%s ", ":&r", true),
 	AMBASSADOR(27, 33, OlympaServer.ALL, "Ambassadeur", "Ambassadrice", "&cAmbassadeur ", "&c%s ", ":&r", false),
 	RESP(28, 90, OlympaServer.ALL, "Responsable", "Responsable", "&c%s ", ":&r", true, false),
 	RESP_TECH(3, 80, OlympaServer.ALL, "Resp_Technique", "Resp_Technique", "&3%s ", ":&r", true),

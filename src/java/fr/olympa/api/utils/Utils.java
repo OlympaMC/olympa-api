@@ -545,5 +545,13 @@ public class Utils {
 			return min;
 		return random.nextInt(max - min + 1) + min;
 	}
+	
+	public static <T> T getRandomFrom(Random random, List<T> list) {
+		return list.isEmpty() ? null : list.get(random.nextInt(list.size()));
+	}
+	
+	public static <T> T getRandomFrom(Random random, T[] array) {
+		return array.length == 0 ? null : array[random.nextInt(array.length)];
+	}
 
 }

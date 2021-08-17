@@ -74,7 +74,7 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 		if (barSlot == 1) {
 			manager.openAuctionsGUI(p);
 		}else if (barSlot == 2) {
-			if (manager.getAllAuctions().stream().filter(auction -> auction.player.equals(player.getInformation())).count() > manager.getMaxAuctions(player)) {
+			if (manager.getAllAuctions().stream().filter(auction -> auction.player.equals(player.getInformation())).count() >= manager.getMaxAuctions(player)) {
 				Prefix.DEFAULT_BAD.sendMessage(p, "Tu as atteint la limite des %d ventes ! Récupères tes gains en attente et patiente pour que tes autres objets se vendent.", manager.getMaxAuctions(player));
 			}else manager.openAuctionCreationGUI(p);
 		}

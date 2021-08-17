@@ -22,6 +22,7 @@ import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.command.OlympaCommand;
 import fr.olympa.api.spigot.customevents.OlympaPlayerLoadEvent;
 import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent;
+import fr.olympa.api.spigot.customevents.ScoreboardCreateEvent.Reason;
 import fr.olympa.api.spigot.lines.AbstractLine;
 import fr.olympa.api.utils.CacheStats;
 
@@ -93,15 +94,16 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 		return this;
 	}
 
-	private void create(T p) {
+	private void create(T p, ScoreboardCreateEvent.Reason reason) {
 		Scoreboard<T> scoreboard = new Scoreboard<>(p, this);
 		scoreboards.put(p, scoreboard);
-		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread()));
+		Bukkit.getPluginManager().callEvent(new ScoreboardCreateEvent<>(p, scoreboard, !Bukkit.isPrimaryThread(), reason));
+		scoreboard.start();
 	}
 
 	public void refresh(T p) {
 		if (removePlayerScoreboard(p))
-			create(p);
+			create(p, Reason.RESET);
 	}
 
 	public Scoreboard<T> getPlayerScoreboard(T p) {
@@ -111,7 +113,7 @@ public class ScoreboardManager<T extends OlympaPlayer> implements Listener, Modu
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(OlympaPlayerLoadEvent e) {
 		if (!scoreboards.containsKey(e.getOlympaPlayer()))
-			create(e.getOlympaPlayer());
+			create(e.getOlympaPlayer(), Reason.JOIN);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

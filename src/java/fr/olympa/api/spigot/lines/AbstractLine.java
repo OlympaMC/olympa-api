@@ -1,6 +1,5 @@
 package fr.olympa.api.spigot.lines;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +10,7 @@ import fr.olympa.core.spigot.OlympaCore;
 
 public abstract class AbstractLine<T extends LinesHolder<T>> {
 
-	private Map<T, String> holders = Collections.synchronizedMap(new HashMap<>());
+	private Map<T, String> holders = new HashMap<>();
 
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	
@@ -34,6 +33,7 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 	}
 
 	public void updateGlobal() {
+		if (holders.isEmpty()) return;
 		lock.readLock().lock();
 		for (Entry<T, String> holderEntry : holders.entrySet()) {
 			updateHolder(holderEntry);
@@ -42,6 +42,7 @@ public abstract class AbstractLine<T extends LinesHolder<T>> {
 	}
 
 	public void updateHolder(T holder) {
+		if (holders.isEmpty()) return;
 		lock.readLock().lock();
 		for (Entry<T, String> holderEntry : holders.entrySet()) {
 			if (holderEntry.getKey() == holder) {

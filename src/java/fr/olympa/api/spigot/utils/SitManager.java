@@ -13,6 +13,7 @@ import org.bukkit.block.data.Bisected.Half;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.type.Stairs.Shape;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -100,8 +101,10 @@ public class SitManager implements Listener {
 		for (Iterator<Sitting> iterator = sits.values().iterator(); iterator.hasNext();) {
 			Sitting sitting = iterator.next();
 			if (sitting.player().equals(e.getPlayer())) {
-				sitting.teleportBack();
 				iterator.remove();
+				sitting.teleportBack();
+				Entity vehicle = sitting.player().getVehicle();
+				if (vehicle != null) vehicle.remove();
 				break;
 			}
 		}

@@ -10,9 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -58,6 +61,12 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	protected Integer minArg;
 	protected boolean allowConsole = true;
 	protected boolean isAsynchronous = false;
+
+	/**
+	 * OlympaPlayer may be nul if sender is console.
+	 * The key Consumer<CommandSender> can be null to if you didn't want to send msg.
+	 */
+	protected Map<BiFunction<CommandSender, OlympaPlayer, Boolean>, Consumer<CommandSender>> canExecute;
 	public ReflectCommand reflectCommand;
 
 	public OlympaCommand(Plugin plugin, String command, OlympaSpigotPermission permission, String... aliases) {
@@ -81,6 +90,13 @@ public abstract class OlympaCommand implements IOlympaCommand {
 		this.aliases = Arrays.asList(aliases);
 	}
 
+	public void addCanExecute(BiFunction<CommandSender, OlympaPlayer, Boolean> canExecute, Consumer<CommandSender> cantMessage) {
+		Validate.notNull(canExecute);
+		if (this.canExecute == null)
+			this.canExecute = new HashMap<>();
+		this.canExecute.put(canExecute, cantMessage);
+	}
+
 	public String getCommand() {
 		return command;
 	}
@@ -88,6 +104,7 @@ public abstract class OlympaCommand implements IOlympaCommand {
 	public List<String> getAliases() {
 		return aliases;
 	}
+
 
 	public List<String> getAllCommands() {
 		return allCommands;
