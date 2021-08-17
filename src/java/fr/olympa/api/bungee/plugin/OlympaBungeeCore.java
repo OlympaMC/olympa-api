@@ -2,6 +2,7 @@ package fr.olympa.api.bungee.plugin;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import fr.olympa.api.common.plugin.OlympaPluginInterface;
 import fr.olympa.api.common.redis.RedisConnection;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
+import fr.olympa.api.common.server.ServerInfoAdvancedBungee;
 import fr.olympa.api.common.server.ServerStatus;
 import fr.olympa.api.common.sql.DatabaseConnection;
 import fr.olympa.api.spigot.utils.ProtocolAPI;
@@ -65,11 +67,11 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 		super.onLoad();
 		LinkSpigotBungee.setInstance(this);
 	}
-	
+
 	@Override
 	public void onEnable() {
 		setupGlobalTasks();
-		
+
 		OlympaPermission.registerPermissions(OlympaAPIPermissionsGlobal.class);
 		OlympaPermission.registerPermissions(OlympaAPIPermissionsBungee.class);
 
@@ -86,7 +88,7 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	public void sendMessage(String message, Object... args) {
 		getProxy().getConsole().sendMessage(TextComponent.fromLegacyText(String.format(ColorUtils.color(getPrefixConsole() + message), args)));
 	}
-	
+
 	@Override
 	public void sendRedis(String message, Object... args) {
 		getProxy().getConsole().sendMessage(TextComponent.fromLegacyText(String.format(ColorUtils.color("§f[§e§lRedis§f] §7" + message), args)));
@@ -246,6 +248,8 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 
 	@Override
 	public abstract Collection<ServerInfoAdvanced> getMonitorServers();
+
+	public abstract Map<OlympaServer, Map<Integer, ServerInfoAdvancedBungee>> getServersByTypeWithBungee();
 
 	@Override
 	public abstract Gson getGson();

@@ -3,11 +3,14 @@ package fr.olympa.core.bungee;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
 import fr.olympa.api.bungee.plugin.OlympaBungeeCore;
+import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
+import fr.olympa.api.common.server.ServerInfoAdvancedBungee;
 import fr.olympa.core.bungee.datamanagment.AuthListener;
 import net.md_5.bungee.api.plugin.PluginManager;
 import redis.clients.jedis.Jedis;
@@ -36,7 +39,7 @@ public class OlympaBungee extends OlympaBungeeCore {
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		
+
 		PluginManager pluginManager = getProxy().getPluginManager();
 		pluginManager.registerListener(this, new AuthListener());
 		sendMessage("&2" + getDescription().getName() + "&a (" + getDescription().getVersion() + ") est activé.");
@@ -55,6 +58,11 @@ public class OlympaBungee extends OlympaBungeeCore {
 
 	@Override
 	public Collection<ServerInfoAdvanced> getMonitorServers() {
+		return null;
+	}
+
+	@Override
+	public Map<OlympaServer, Map<Integer, ServerInfoAdvancedBungee>> getServersByTypeWithBungee() {
 		return null;
 	}
 

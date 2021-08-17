@@ -24,4 +24,11 @@ public class OlympaAPIPermissionsBungee {
 	public static final OlympaBungeePermission COMMAND_REDISBUNGEE_INFODIV = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV });
 	public static final OlympaBungeePermission COMMAND_DEFAULT_NO_PERM_NEEDED = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEVP, OlympaGroup.DEV, OlympaGroup.GAMEMASTER });
 
+	public static final OlympaBungeePermission DISCORD_COMMAND_MANAGE = new OlympaBungeePermission(OlympaGroup.RESP_TECH, true);
+	public static final OlympaBungeePermission TEAMSPEAK_COMMAND = new OlympaBungeePermission(OlympaGroup.PLAYER);
+	public static final OlympaBungeePermission TEAMSPEAK_COMMAND_MANAGE = new OlympaBungeePermission(OlympaGroup.RESP_TECH, new OlympaGroup[] { OlympaGroup.DEV });
+	public static final OlympaBungeePermission STAFF_CHAT = new OlympaBungeePermission(OlympaGroup.GRAPHISTE);
+	public static final OlympaBungeePermission TEAMSPEAK_SEE_MODHELP = new OlympaBungeePermission(OlympaGroup.ASSISTANT);
+	public static final OlympaBungeePermission TEAMSPEAK_SEE_ADMINHELP = new OlympaBungeePermission(OlympaGroup.MODP);
+
 }
