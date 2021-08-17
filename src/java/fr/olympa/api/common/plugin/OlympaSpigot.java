@@ -178,9 +178,9 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 		if (config != null) {
 			String statusString = config.getString("status");
 			if (statusString != null && !statusString.isEmpty()) {
-				ServerStatus status2 = ServerStatus.get(statusString);
-				if (status2 != null)
-					status = status2;
+				ServerStatus configStatus = ServerStatus.get(statusString);
+				if (configStatus != null)
+					setStatus(configStatus);
 			} else
 				setStatus(ServerStatus.UNKNOWN);
 		}
@@ -205,6 +205,7 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void setStatus(ServerStatus status) {
 		this.status = status;
+		sendMessage("Statut du serveur: %s", status.getNameColored());
 	}
 
 	public Location getSpawn() {

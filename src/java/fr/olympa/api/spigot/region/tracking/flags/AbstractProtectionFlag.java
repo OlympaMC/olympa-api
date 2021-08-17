@@ -29,9 +29,17 @@ public abstract class AbstractProtectionFlag extends Flag {
 	}
 	
 	protected boolean applies(Player player) {
-		return overrideBypassProtection || player == null || !BypassCommand.bypasses.contains(player);
+		if (!overrideBypassProtection && player != null) {
+			if (BypassCommand.bypasses.contains(player)) {
+				overrides(player);
+				return false;
+			}
+		}
+		return true;
 	}
 
+	protected void overrides(Player player) {}
+	
 	protected void handleCancellable(Cancellable event) {
 		handleCancellable(event, null, protectedByDefault);
 	}

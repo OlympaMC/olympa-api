@@ -327,6 +327,13 @@ public class ItemUtils {
 		is.setItemMeta(im);
 		return is;
 	}
+	
+	public static ItemStack customModelData(ItemStack is, Integer customModelData) {
+		ItemMeta im = is.getItemMeta();
+		im.setCustomModelData(customModelData);
+		is.setItemMeta(im);
+		return is;
+	}
 
 	public static ItemStack itemSeparator(DyeColor color) {
 		return item(Material.valueOf(color.name() + "_STAINED_GLASS_PANE"), "§a");
