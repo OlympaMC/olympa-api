@@ -67,7 +67,7 @@ public class TpCommand extends OlympaCommand {
 			sendUsage(label);
 			return false;
 		}
-		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && (!OlympaCore.getInstance().getVanishApi().isVanished(player) || player.getGameMode() != GameMode.SPECTATOR)) {
+		if (!hasPermission(OlympaAPIPermissionsSpigot.TP_COMMAND_NOT_VANISH) && !OlympaCore.getInstance().getVanishApi().isVanished(player) && player.getGameMode() != GameMode.SPECTATOR) {
 			sendMessage(Prefix.DEFAULT_BAD, "Tu peux te téléporter aux joueurs uniquement quand tu es en vanish ou gamemode spectateur.");
 			return true;
 		}
