@@ -19,8 +19,22 @@ public class UuidResponse {
 	Boolean demo;
 	Boolean legacy;
 
+	int retry;
+
+	public UuidResponse() {
+		retry = 1;
+	}
+
 	public String getId() {
 		return id;
+	}
+
+	public int getRetry() {
+		return retry;
+	}
+
+	public int addRetry() {
+		return retry++;
 	}
 
 	public String getName() {
@@ -28,9 +42,8 @@ public class UuidResponse {
 	}
 
 	public UUID getUuid() {
-		if (uuid == null) {
+		if (uuid == null)
 			uuid = Utils.getUUID(id);
-		}
 		return uuid;
 	}
 
