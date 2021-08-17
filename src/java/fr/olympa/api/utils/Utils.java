@@ -101,19 +101,27 @@ public class Utils {
 		jsonObject.isJsonObject();
 		new JSONParser().parse("your string");
 	}
-
+	
 	public static String durationToString(NumberFormat numberFormat, long time) {
+		return durationToString(numberFormat, time, true);
+	}
+
+	public static String durationToString(NumberFormat numberFormat, long time, boolean showHours) {
 		StringBuilder sb = new StringBuilder();
 		long days = time / 86_400_000;
 		if (days != 0)
 			sb.append(numberFormat.format(days)).append('J');
 		time -= days * 86_400_000;
 		long hours = time / 3_600_000;
-		if (sb.length() != 0)
-			sb.append(' ');
-		sb.append(numberFormat.format(hours)).append("H ");
+		if (hours != 0) {
+			if (sb.length() != 0)
+				sb.append(' ');
+			sb.append(numberFormat.format(hours)).append("H ");
+		}
 		time -= hours * 3_600_000;
 		long minutes = time / 60_000;
+		if (sb.length() != 0)
+			sb.append(' ');
 		sb.append(numberFormat.format(minutes)).append("M ");
 		time -= minutes * 60_000;
 		long seconds = time / 1_000;

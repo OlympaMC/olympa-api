@@ -15,14 +15,14 @@ import fr.olympa.api.utils.Utils;
 public enum OlympaServer {
 
 	BUNGEE("BungeeCord", true, ServerFrameworkType.BUNGEE),
-	ZTA("Olympa ZTA", false, true),
+	ZTA("Olympa ZTA", false, false, true),
 	CREATIF("Créatif", false),
 	PVPKIT("PvP-Kits", false),
 	PVPFAC("PvP-Factions", false),
-	WARFARE("Warfare", true),
+	WARFARE("Warfare", true, false, false),
 	LG("Loup-Garou", true),
-	LOBBY("Lobby", true),
-	AUTH("Authentification", true),
+	LOBBY("Lobby", true, true, true),
+	AUTH("Authentification", true, true, true),
 	BUILDEUR("Buildeur", false),
 	DEV("Développement", true),
 	ALL(null, false),
@@ -30,17 +30,19 @@ public enum OlympaServer {
 
 	private final String name;
 	private final boolean multi;
+	private final boolean sendOther;
+	private final boolean hasPack;
 	private OlympaPermission joinPermission;
 	private ServerFrameworkType type = ServerFrameworkType.SPIGOT;
-	private boolean hasPack;
 
 	OlympaServer(String name, boolean multi) {
-		this(name, multi, false);
+		this(name, multi, false, false);
 	}
 
-	OlympaServer(String name, boolean multi, boolean hasPack) {
+	OlympaServer(String name, boolean multi, boolean sendOther, boolean hasPack) {
 		this.name = name;
 		this.multi = multi;
+		this.sendOther = sendOther;
 		this.hasPack = hasPack;
 	}
 
@@ -56,6 +58,10 @@ public enum OlympaServer {
 
 	public boolean hasMultiServers() {
 		return multi;
+	}
+	
+	public boolean sendToOtherServer() {
+		return sendOther;
 	}
 
 	public boolean hasPack() {

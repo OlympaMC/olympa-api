@@ -9,10 +9,12 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
+import fr.olympa.api.common.bash.OlympaRuntime;
 import fr.olympa.api.common.chat.ColorUtils;
 import fr.olympa.api.common.server.OlympaServer;
 import fr.olympa.api.common.server.ServerInfoAdvanced;
@@ -182,6 +184,17 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 			} else
 				setStatus(ServerStatus.UNKNOWN);
 		}
+	}
+	
+	public void restartServer(CommandSender sender) {
+		Runtime.getRuntime().addShutdownHook(OlympaRuntime.action("sh start.sh", sender != null ? sender::sendMessage : null));
+		stopServer();
+	}
+	
+	public void stopServer() {
+		Bukkit.getOnlinePlayers().forEach(p -> p.kickPlayer("Server is restarting"));
+		setStatus(ServerStatus.UNKNOWN);
+		getTask().runTaskLater(() -> getServer().shutdown(), 4 * 20);
 	}
 
 	@Override
