@@ -113,8 +113,11 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	}
 
 	@Override
-	public void setStatus(ServerStatus status) {
+	public boolean setStatus(ServerStatus status) {
+		if (this.status == status) return false;
 		this.status = status;
+		sendMessage("Statut du serveur: %s", status.getNameColored());
+		return true;
 	}
 
 	@Override

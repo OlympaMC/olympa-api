@@ -81,7 +81,7 @@ public interface LinkSpigotBungee<P> {
 
 	void setServerName(String serverName);
 
-	void setStatus(ServerStatus status);
+	boolean setStatus(ServerStatus status);
 
 	void registerRedisSub(JedisPubSub sub, String channel);
 

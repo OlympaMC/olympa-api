@@ -20,6 +20,7 @@ public enum ServerStatus {
 	UNKNOWN(6, "Inconnu", ChatColor.DARK_RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_DEV, null),
 	STARTING(8, "Démarrage", ChatColor.BLUE, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_MAINTENANCE, null),
 	CLOSE(10, "Fermé", ChatColor.RED, null, null),
+	CLOSING(12, "En fermeture", ChatColor.RED, null, null),
 	IN_GAME(11, "En jeu", ChatColor.RED, OlympaAPIPermissionsGlobal.CONNECT_SERVERSTATUS_INGAME, null),
 	;
 	
@@ -87,6 +88,6 @@ public enum ServerStatus {
 	}
 
 	public boolean canConnect() {
-		return this != CLOSE && this != UNKNOWN && this != IN_GAME;
+		return this != CLOSE && this != UNKNOWN && this != IN_GAME && this != CLOSING;
 	}
 }

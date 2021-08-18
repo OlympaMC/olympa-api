@@ -193,7 +193,8 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	
 	public void stopServer() {
 		Bukkit.getOnlinePlayers().forEach(p -> p.kickPlayer("Server is restarting"));
-		setStatus(ServerStatus.UNKNOWN);
+		setStatus(ServerStatus.CLOSING);
+		sendMessage("§c§lArrêt du serveur dans %d secondes !", 4);
 		getTask().runTaskLater(() -> getServer().shutdown(), 4 * 20);
 	}
 
@@ -203,9 +204,11 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	}
 
 	@Override
-	public void setStatus(ServerStatus status) {
+	public boolean setStatus(ServerStatus status) {
+		if (this.status == status) return false;
 		this.status = status;
 		sendMessage("Statut du serveur: %s", status.getNameColored());
+		return true;
 	}
 
 	public Location getSpawn() {

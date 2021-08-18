@@ -141,7 +141,7 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 	}
 
 	public Set<TrackedRegion> getApplicableRegions(Location location) {
-		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).collect(Collectors.toUnmodifiableSet());
+		return trackedRegions.values().stream().filter(x -> x.getRegion().isIn(location)).collect(Collectors.toSet());
 	}
 
 	public <T extends Flag> void fireEvent(Location location, Class<T> flagClass, Consumer<T> consumer) {
