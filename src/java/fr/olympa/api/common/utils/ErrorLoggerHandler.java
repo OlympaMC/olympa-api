@@ -17,8 +17,8 @@ public class ErrorLoggerHandler extends Handler {
 		this.sendError = sendError;
 	}
 
-	public String replaceInfo(String trace) {
-		return trace.replaceAll("ask #?\\d+", "ask XXX").replaceAll(RegexMatcher.IP.getRegex(), "xxx.xxx.xxx.xxx");
+	public String replaceInfo(String message) {
+		return message == null ? null : message.replaceAll("ask #?\\d+", "ask XXX").replaceAll(RegexMatcher.IP.getRegex(), "xxx.xxx.xxx.xxx");
 	}
 
 	@Override
