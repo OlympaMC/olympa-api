@@ -204,7 +204,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	public int executeUpdate(StatementProvider statementProvider, ResultSetProvider generatedKeysProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -220,7 +220,7 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	public void executeQuery(StatementProvider statementProvider, ResultSetProvider queryProvider) throws SQLException {
 		try {
 			PreparedStatement statement = getStatement();
@@ -234,12 +234,12 @@ public class OlympaStatement {
 			close();
 		}
 	}
-	
+
 	@FunctionalInterface
 	public interface StatementProvider {
 		public void call(PreparedStatement statement) throws Exception;
 	}
-	
+
 	@FunctionalInterface
 	public interface ResultSetProvider {
 		public void call(ResultSet resultSet) throws Exception;
