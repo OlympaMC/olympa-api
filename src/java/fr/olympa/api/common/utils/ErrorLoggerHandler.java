@@ -25,10 +25,12 @@ public class ErrorLoggerHandler extends Handler {
 	public void publish(LogRecord record) {
 		if (record.getThrown() != null)
 			try {
-				String stackTrace = ExceptionUtils.getStackTrace(record.getThrown());
+				String stackTrace = ExceptionUtils.getStackTrace(record.getThrown()); // can have at closing java.lang.IllegalStateException: zip file closed
 				sendError.accept(record.getLevel().getName() + " [" + record.getLoggerName() + "] " + replaceInfo(record.getMessage()) + "\n" + stackTrace); // remove "Task XXXX"
 			} catch (Exception ex) {
-				LinkSpigotBungee.getInstance().sendMessage("§cUne erreur est survenue durant le passage d'une erreur au bungee via redis: ", ExceptionUtils.getMessage(ex));
+				//				LinkSpigotBungee.getInstance().sendMessage("§cUne erreur est survenue durant le passage d'une erreur au bungee via redis: ", ExceptionUtils.getMessage(ex));  java.lang.IllegalStateException: zip file closed
+				LinkSpigotBungee.getInstance().sendMessage("§cUne erreur est survenue durant le passage d'une erreur au bungee via redis: ");
+				ex.printStackTrace();
 			}
 	}
 
