@@ -51,6 +51,7 @@ import fr.olympa.api.spigot.region.tracking.RegionEvent.RegionEventReason;
 import fr.olympa.api.spigot.region.tracking.flags.*;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.core.spigot.OlympaCore;
+import io.papermc.paper.event.block.BlockPreDispenseEvent;
 
 public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 
@@ -120,7 +121,11 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 	}
 
 	public void awaitWorldTracking(String worldName, Consumer<WorldTrackingEvent> consumer) {
-		trackAwait.put(worldName, consumer);
+		World world = Bukkit.getWorld(worldName);
+		TrackedRegion region = worldRegions.get(world);
+		if (region != null) {
+			consumer.accept(new WorldTrackingEvent(world, region));
+		}else trackAwait.put(worldName, consumer);
 	}
 
 	public boolean isIn(Player p, String id) {
@@ -491,6 +496,26 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 	@EventHandler
 	public void onFish(PlayerFishEvent e) {
 		fireEvent(e.getPlayer().getLocation(), FishFlag.class, x -> x.fishEvent(e));
+	}
+	
+	@EventHandler
+	public void onPistonExtend(BlockPistonExtendEvent e) {
+		fireEvent(e.getBlock().getLocation(), RedstoneFlag.class, x -> x.blockEvent(e, e.getBlock()));
+	}
+	
+	@EventHandler
+	public void onPistonRetract(BlockPistonRetractEvent e) {
+		fireEvent(e.getBlock().getLocation(), RedstoneFlag.class, x -> x.blockEvent(e, e.getBlock()));
+	}
+	
+	@EventHandler
+	public void onPreDispense(BlockPreDispenseEvent e) {
+		fireEvent(e.getBlock().getLocation(), RedstoneFlag.class, x -> x.blockEvent(e, e.getBlock()));
+	}
+	
+	@EventHandler
+	public void onRedstone(BlockRedstoneEvent e) {
+		fireEvent(e.getBlock().getLocation(), RedstoneFlag.class, x -> x.redstoneEvent(e));
 	}
 
 	@Override
