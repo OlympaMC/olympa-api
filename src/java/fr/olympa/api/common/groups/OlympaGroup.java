@@ -27,7 +27,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	RESP_COM(5, 70, OlympaServer.ALL, "Resp_Communication", "Resp_Communication", "&3%s ", ":&r", true),
 	RESP_ANIMATION(10, 65, OlympaServer.ALL, "Resp_Animateur", "Resp_Animatrice", "&5%s ", ":&r", true),
 	RESP_BUILDER(11, 60, OlympaServer.ALL, "Resp_Buildeur", "Resp_Buildeuse", "&2%s ", ":&r", true),
-	RESP_GAMES(35, 57, OlympaServer.ALL, "Resp_Game_Design", "Resp_Game_Design", "&2%s ", ":&r", true),
+	RESP_GAMES(35, 57, OlympaServer.ALL, "Resp_Game_Design", "Resp_Game_Design", "&6%s ", ":&r", true),
 	MODP(6, 55, OlympaServer.ALL, "Modérateur+", "Modératrice+", "&c%s ", ":&r", true),
 	MOD(7, 53, OlympaServer.ALL, "Modérateur", "Modératrice", "&6%s ", ":&r", false),
 	ASSISTANT(8, 50, OlympaServer.ALL, "Assistant", "Assistante", "&e%s ", ":&r", false),
