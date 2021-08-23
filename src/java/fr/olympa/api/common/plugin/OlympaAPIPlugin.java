@@ -87,6 +87,8 @@ public abstract class OlympaAPIPlugin extends JavaPlugin implements OlympaPlugin
 		super.onDisable();
 	}
 
+	public void onBeforeStop() {}
+	
 	@Override
 	public void sendMessage(String message, Object... args) {
 		getServer().getConsoleSender().sendMessage(ColorUtils.format(getPrefixConsole() + message, args));

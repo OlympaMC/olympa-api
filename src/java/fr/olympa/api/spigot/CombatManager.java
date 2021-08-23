@@ -26,7 +26,7 @@ public class CombatManager implements Listener {
 	private final int combatTime, combatTimeMillis;
 	
 	private final Map<Player, CombatPlayer> inCombat = new HashMap<>();
-	private final BukkitTask task;
+	private BukkitTask task;
 	private boolean sendMessages = true;
 	
 	public CombatManager(OlympaAPIPlugin plugin, int combatTime) {
@@ -56,8 +56,10 @@ public class CombatManager implements Listener {
 	}
 	
 	public void unload() {
+		if (task == null) return;
 		HandlerList.unregisterAll(this);
 		task.cancel();
+		task = null;
 		plugin.sendMessage("§cArrêt du mode combat (%d joueurs).", inCombat.size());
 		if (sendMessages) inCombat.keySet().forEach(this::sendExitCombatMessage);
 		inCombat.clear();

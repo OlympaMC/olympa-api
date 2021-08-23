@@ -315,8 +315,13 @@ public class ItemUtils {
 	}
 
 	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level) {
+		return addEnchant(is, en, level, false);
+	}
+	
+	public static ItemStack addEnchant(ItemStack is, Enchantment en, int level, boolean hide) {
 		ItemMeta im = is.getItemMeta();
 		im.addEnchant(en, level, true);
+		if (hide) im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		is.setItemMeta(im);
 		return is;
 	}

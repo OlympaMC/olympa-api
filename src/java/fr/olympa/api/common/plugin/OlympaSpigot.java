@@ -7,10 +7,10 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import fr.olympa.api.LinkSpigotBungee;
@@ -165,8 +165,8 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	@Override
 	public void onDisable() {
 		super.onDisable();
-		Collection<? extends Player> player = Bukkit.getOnlinePlayers();
-		if (getServer().getPluginManager().isPluginEnabled("PlugMan"))
+		Collection<? extends Player> player = getServer().getOnlinePlayers();
+		if (getServer().getPluginManager().isPluginEnabled("PlugMan")) // TODO ???
 			return;
 		player.forEach(p -> p.kickPlayer("Server closed"));
 	}
@@ -192,7 +192,10 @@ public abstract class OlympaSpigot extends OlympaAPIPlugin implements OlympaCore
 	}
 	
 	public void stopServer() {
-		Bukkit.getOnlinePlayers().forEach(p -> p.kickPlayer("Server is restarting"));
+		for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
+			if (plugin instanceof OlympaAPIPlugin olympaPlugin) olympaPlugin.onBeforeStop();
+		}
+		getServer().getOnlinePlayers().forEach(p -> p.kickPlayer("Server is restarting"));
 		setStatus(ServerStatus.CLOSING);
 		sendMessage("§c§lArrêt du serveur dans %d secondes !", 4);
 		getTask().runTaskLater(() -> getServer().shutdown(), 4 * 20);
