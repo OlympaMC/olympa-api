@@ -17,8 +17,8 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 
 public abstract class Paginator<T> {
 
-	private final int pageSize;
-	private final String title;
+	protected final int pageSize;
+	protected final String title;
 
 	public Paginator(int pageSize, String title) {
 		this.pageSize = pageSize;
@@ -40,60 +40,89 @@ public abstract class Paginator<T> {
 		return IntStream.rangeClosed(1, max - 1).mapToObj(String::valueOf).collect(Collectors.toList());
 	}
 
+	public BaseComponent getPageDidntExist(int page) {
+		return new TextComponent(Prefix.DEFAULT_BAD.formatMessage("La page §4%d §cn'existe pas.", page));
+	}
+
 	public BaseComponent getPageFromString(String page) {
 		Integer pageInt = RegexMatcher.INT.parse(page);
 		if (pageInt == null)
-			return getPage(0);
+			return getPage(1);
 		return getPage(pageInt);
 	}
 
 	public BaseComponent getPage(int page) {
-		if (page >= 1) {
-			List<T> objects = getObjects();
-			int max = Math.max(1, (int) Math.ceil(objects.size() * 1D / pageSize));
-			if (page <= max) {
-				page--;
-				TextComponent compo = new TextComponent();
-				int length = title.length();
-				int bars = Math.min(length, 10);
-				String bar = "§e§m" + " ".repeat(bars);
-				compo.addExtra(new TextComponent(bar + "§6 " + title + " " + bar + "§a"));
-				compo.addExtra("\n");
-				for (int i = page * pageSize; i < Math.min((page + 1) * pageSize, objects.size()); i++) {
-					compo.addExtra(getObjectDescription(objects.get(i)));
-					compo.addExtra("\n");
-				}
-				TextComponent pageCompo = new TextComponent("  ");
-				TextComponent previousPage = new TextComponent("◀");
-				if (page == 0) {
-					previousPage.setColor(ChatColor.RED);
-					previousPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cTu es à la première page.")));
-				} else {
-					previousPage.setColor(ChatColor.GOLD);
-					previousPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eRevenir à la page " + page)));
-					previousPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(page)));
-				}
-				pageCompo.addExtra(previousPage);
-				pageCompo.addExtra("§e" + " ".repeat(bars) + "Page " + (page + 1) + "/" + max + " ".repeat(bars));
-				TextComponent nextPage = new TextComponent("▶");
-				if (page == max - 1) {
-					nextPage.setColor(ChatColor.RED);
-					nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cTu es à la dernière page.")));
-				} else {
-					nextPage.setColor(ChatColor.GOLD);
-					nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eAller à la page " + (page + 2))));
-					nextPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(page + 2)));
-				}
-				pageCompo.addExtra(nextPage);
-				compo.addExtra(pageCompo);
-				compo.addExtra("\n");
-				int pxSize = Chat.getPxSize(title, true);
-				int spaces = pxSize / (Chat.SPACE.getLength() + 1) + 2;
-				compo.addExtra(new TextComponent("§e§m" + " ".repeat(2 * bars + spaces)));
-				return compo;
-			}
+		if (page < 1)
+			return getPageDidntExist(page);
+		List<T> objects = getObjects();
+		if (objects == null || objects.isEmpty())
+			return getPageDidntExist(page);
+		int offset = (page - 1) * 10;
+		List<T> pageObjects = objects.stream().skip(offset).limit(pageSize).toList();
+		int maxPage = Math.max(1, (int) Math.ceil(objects.size() * 1D / pageSize));
+		return getTemplatePage(page, pageObjects, maxPage);
+	}
+
+	protected BaseComponent getTemplatePage(int page, List<T> objects, int maxPage) {
+		if (page < 1 || maxPage != 0 && maxPage < page || objects == null || objects.isEmpty())
+			return getPageDidntExist(page);
+		TextComponent compo = new TextComponent();
+		int length = title.length();
+		int bars = Math.min(length, 13);
+		String bar = "§e§m" + " ".repeat(bars);
+		compo.addExtra(new TextComponent(bar + "§6 " + title + " " + bar + "§a"));
+		compo.addExtra("\n");
+		for (T object : objects) {
+			compo.addExtra(getObjectDescription(object));
+			compo.addExtra("\n");
 		}
-		return new TextComponent(Prefix.DEFAULT_BAD.formatMessage("La page §4%d §cn'existe pas.", page));
+		TextComponent pageCompo;
+		if (page >= 3) {
+			pageCompo = new TextComponent();
+			TextComponent firstPage = new TextComponent("⏪ ");
+			firstPage.setColor(ChatColor.GOLD);
+			firstPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eRevenir à la premère page")));
+			firstPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(1)));
+			pageCompo.addExtra(firstPage);
+		} else
+			pageCompo = new TextComponent("   ");
+		TextComponent previousPage = new TextComponent("◀");
+		if (page == 1) {
+			previousPage.setColor(ChatColor.RED);
+			previousPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cTu es à la première page.")));
+		} else {
+			previousPage.setColor(ChatColor.GOLD);
+			previousPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eRevenir à la page " + (page - 1))));
+			previousPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(page - 1)));
+		}
+		pageCompo.addExtra(previousPage);
+		if (maxPage != 0)
+			pageCompo.addExtra("§e" + " ".repeat(bars) + "Page " + page + "/" + maxPage + " ".repeat(bars));
+		else
+			pageCompo.addExtra("§e" + " ".repeat(bars) + "Page " + page + " ".repeat(bars));
+		TextComponent nextPage = new TextComponent("▶");
+		if (maxPage != 0 && page == maxPage) {
+			nextPage.setColor(ChatColor.RED);
+			nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cTu es à la dernière page.")));
+		} else {
+			nextPage.setColor(ChatColor.GOLD);
+			nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eAller à la page " + (page + 1))));
+			nextPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(page + 1)));
+		}
+		pageCompo.addExtra(nextPage);
+		if (maxPage != 0 && page <= maxPage - 2) {
+			TextComponent lastPage = new TextComponent(" ⏩");
+			lastPage.setColor(ChatColor.GOLD);
+			lastPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§eAller à la page " + maxPage)));
+			lastPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, getCommand(maxPage)));
+			pageCompo.addExtra(lastPage);
+		}
+		compo.addExtra(pageCompo);
+		compo.addExtra("\n");
+		int pxSize = Chat.getPxSize(title, true);
+		int spaces = pxSize / (Chat.SPACE.getLength() + 1) + 2;
+		compo.addExtra(new TextComponent("§e§m" + " ".repeat(2 * bars + spaces)));
+		return compo;
 	}
 
 }

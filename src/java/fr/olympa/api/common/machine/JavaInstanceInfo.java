@@ -33,8 +33,8 @@ public class JavaInstanceInfo implements JsonDeserializer<Object> {
 	public JavaInstanceInfo(Long time) {
 		this.time = time;
 		Runtime r = Runtime.getRuntime();
-		//		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-		//		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted() ;
+		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted();
 		memUsed = r.totalMemory() / 1048576L;
 		memFree = r.freeMemory() / 1048576L;
 		memeTotal = r.maxMemory() / 1048576L;
