@@ -44,8 +44,7 @@ public class ClansCommand<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> 
 
 	@Override
 	public boolean noArguments(CommandSender sender) {
-		if (sender instanceof Player) {
-			Player p = (Player) sender;
+		if (sender instanceof Player p) {
 			ClanPlayerInterface<T, D> olp = AccountProviderAPI.getter().get(p.getUniqueId());
 			T clan = olp.getClan();
 			if (clan == null) {

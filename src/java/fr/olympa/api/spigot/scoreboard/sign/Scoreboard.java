@@ -7,11 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.bukkit.entity.Player;
-
-import com.google.common.collect.Iterables;
 
 import fr.olympa.api.common.player.OlympaPlayer;
 import fr.olympa.api.spigot.lines.AbstractLine;
@@ -33,7 +33,7 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	private Lock lock = new ReentrantLock();
 	private Condition condition = lock.newCondition();
 	
-	private Lock updateLock = new ReentrantLock();
+	private ReadWriteLock linesLock = new ReentrantReadWriteLock();
 	
 	private boolean willScroll;
 	private int position;
@@ -71,13 +71,13 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	public void addLines(AbstractLine<Scoreboard<T>>... abslines) { // can be called before scoreboard load
 		if (sb != null && sb.isDeleted()) return;
-		updateLock.lock();
+		linesLock.writeLock().lock();
 		for (AbstractLine<Scoreboard<T>> line : abslines) {
 			lines.add(new Line(line));
 			line.addHolder(this);
 		}
 		if (sb != null) updateScrollState();
-		updateLock.unlock();
+		linesLock.writeLock().unlock();
 		if (sb != null) needsUpdate();
 	}
 	
@@ -111,13 +111,16 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 	
 	@Override
 	public void update(AbstractLine<Scoreboard<T>> line, String newValue) {
-		for (Line internalLine : Iterables.concat(lines, footers)) {
+		linesLock.readLock().lock();
+		for (int i = 0; i < lines.size() + footers.size(); i++) {
+			Line internalLine = i < lines.size() ? lines.get(i) : footers.get(i - lines.size());
 			if (internalLine.line == line) {
 				internalLine.setLines(newValue);
 				break;
 			}
 		}
 		updateScrollState();
+		linesLock.readLock().unlock();
 		needsUpdate();
 	}
 	
@@ -156,8 +159,8 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 				}else condition.await();
 				updateScoreboard();
 			} catch (InterruptedException e) {
-				//OlympaCore.getInstance().sendMessage("Boucle du scoreboard de " + p.getName() + " interrompue.");
-				return;
+				interrupt();
+				break;
 			} finally {
 				lock.unlock();
 			}
@@ -194,20 +197,20 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		interrupt();
 		if (sb != null) sb.delete();
 		manager.getPlugin().sendMessage("Déchargement de §6%d lignes §epour le joueur §6%s", lines.size(), p.getName());
-		updateLock.lock();
+		linesLock.writeLock().lock();
 		for (Iterator<Scoreboard<T>.Line> iterator = lines.iterator(); iterator.hasNext();) {
 			iterator.next().line.removeHolder(this);
 			iterator.remove();
 		}
-		updateLock.unlock();
+		linesLock.writeLock().unlock();
 	}
 	
 	private void updateScoreboard() {
 		if (sb == null || sb.isDeleted()) return;
 		
-		updateLock.lock();
+		linesLock.readLock().lock();
 		List<String> rawLines = getRawLines();
-		updateLock.unlock();
+		linesLock.readLock().unlock();
 		
 		sb.updateLines(rawLines);
 	}
@@ -222,7 +225,6 @@ public class Scoreboard<T extends OlympaPlayer> extends Thread implements LinesH
 		
 		public void updateLines(T player) {
 			setLines(line.getValue(Scoreboard.this));
-			//return ChatPaginator.wordWrap(text, 48);
 		}
 		
 		public void setLines(String text) {
