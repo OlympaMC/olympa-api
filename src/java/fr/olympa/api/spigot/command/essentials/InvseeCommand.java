@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -34,19 +36,23 @@ public class InvseeCommand extends OlympaCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		String targetName;
 		Player target = Bukkit.getPlayer(args[0]);
 		Inventory inventory = null;
 		if (target == null) {
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-			if (offlinePlayer == null) {
+			inventory = getOfflinePlayerInventory(offlinePlayer);
+			if (inventory == null) {
 				sendUnknownPlayer(args[0]);
 				return false;
 			}
-			inventory = getOfflinePlayerInventory(target);
-		} else
+			targetName = offlinePlayer.getName();
+		} else {
+			targetName = target.getName();
 			inventory = target.getInventory();
+		}
 		player.openInventory(inventory);
-		Prefix.DEFAULT_GOOD.sendMessage(player, "&aOuverture de l'inventaire de &2%s&a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(player, "&aOuverture de l'inventaire de &2%s&a.", targetName);
 		return false;
 	}
 
@@ -55,10 +61,13 @@ public class InvseeCommand extends OlympaCommand {
 		return null;
 	}
 
+	@Nullable
 	public Inventory getOfflinePlayerInventory(OfflinePlayer target) {
 		Inventory inv = null;
 		Server server = Bukkit.getServer();
 		File inventoryFile = new File(server.getWorldContainer() + server.getWorlds().get(0).getName() + File.separator + "playerdata", target.getUniqueId().toString() + ".dat");
+		if (!inventoryFile.exists())
+			return null;
 		try {
 			NBTTagCompound nbt = NBTCompressedStreamTools.a(new FileInputStream(inventoryFile));
 			NBTTagList inventory = (NBTTagList) nbt.get("Inventory");

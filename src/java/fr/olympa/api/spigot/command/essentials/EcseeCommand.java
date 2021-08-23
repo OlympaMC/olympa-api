@@ -27,7 +27,7 @@ public class EcseeCommand extends OlympaCommand {
 			return false;
 		}
 		player.openInventory(target.getEnderChest());
-		Prefix.DEFAULT_GOOD.sendMessage(target, "&aOuverture de l'enderchest de &2%s&a.", target.getName());
+		Prefix.DEFAULT_GOOD.sendMessage(player, "&aOuverture de l'enderchest de &2%s&a.", target.getName());
 		return false;
 	}
 
