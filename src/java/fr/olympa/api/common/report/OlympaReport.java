@@ -52,7 +52,10 @@ public class OlympaReport {
 		time = Utils.getCurrentTimeInSeconds();
 		if (note != null && !note.isEmpty())
 			this.note = note;
-		addStatusInfo(new ReportStatusInfo(ReportStatus.OPEN, null));
+		if (authorId == 0l)
+			addStatusInfo(new ReportStatusInfo(ReportStatus.AUTO, null));
+		else
+			addStatusInfo(new ReportStatusInfo(ReportStatus.OPEN, null));
 	}
 
 	public OlympaReport(ResultSet resultSet) throws SQLException {
