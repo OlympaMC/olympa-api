@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -51,7 +52,10 @@ public class OlympaReport {
 		time = Utils.getCurrentTimeInSeconds();
 		if (note != null && !note.isEmpty())
 			this.note = note;
-		addStatusInfo(new ReportStatusInfo(ReportStatus.OPEN, null));
+		if (authorId == 0l)
+			addStatusInfo(new ReportStatusInfo(ReportStatus.AUTO, null));
+		else
+			addStatusInfo(new ReportStatusInfo(ReportStatus.OPEN, null));
 	}
 
 	public OlympaReport(ResultSet resultSet) throws SQLException {
@@ -68,6 +72,10 @@ public class OlympaReport {
 		}
 		if (resultSet.getString("note") != null && !resultSet.getString("note").isEmpty())
 			note = resultSet.getString("note");
+	}
+
+	public boolean isFromConsole() {
+		return authorId == 0;
 	}
 
 	public void resolveAll() {
@@ -197,13 +205,14 @@ public class OlympaReport {
 		OlympaPlayerInformations opAuthor = AccountProviderAPI.getter().getPlayerInformations(authorId);
 		lore.add(String.format("&2%s &a->&2 %s", opAuthor.getName(), opTarget.getName()));
 		lore.add(String.format("&aServeur %s", serverName));
-		lore.add(String.format("&aStatus %s", getStatus().getNameColored()));
+		lore.add(String.format("&aStatut %s", getStatus().getNameColored()));
 		lore.add(String.format("&aRaison &2%s", reasonName));
 		if (note != null && !note.isBlank())
 			lore.add(String.format("&aNote &2%s", note));
 		lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));
 		if (statusInfo.size() > 1)
-			lore.add(String.format("&aDerniers statuts &2%s", statusInfo.stream().skip(1).map(rsi -> rsi.getStatus() + " &a(" + Utils.timestampToDuration(rsi.getTime()) + ")").collect(Collectors.joining("&a, &2"))));
+			lore.add(String.format("&aStatuts précédent &2%s", statusInfo.stream().limit(statusInfo.size() - 1l)
+					.map(rsi -> rsi.getStatus().getNameColored() + (!Objects.isNull(rsi.getTime()) ? " &a(" + Utils.timestampToDuration(rsi.getTime()) + ")" : "")).collect(Collectors.joining("&a, &2"))));
 		return lore;
 	}
 }

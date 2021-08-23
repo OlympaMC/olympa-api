@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 public class FakeTeam {
 
-	//	private static long MAX_ID = 99_999_999_999L;
 	private static final long MAX_ID = 10_000_000_000L;
 	private static long nextId = 1L;
 	private static final List<Long> ALL_IDS = new ArrayList<>();

@@ -45,10 +45,11 @@ public class ReportStatusInfo {
 		List<String> lore = new ArrayList<>();
 		if (idAuthor != null)
 			lore.add(String.format("&aChangement de &2%s", AccountProviderAPI.getter().getPlayerInformations(idAuthor).getName()));
-		lore.add(String.format("&aStatus %s", status.getNameColored()));
+		lore.add(String.format("&aStatut %s", status.getNameColored()));
 		if (note != null && !note.isBlank())
 			lore.add(String.format("&aNote &2%s", note));
-		lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));
+		if (time != null)
+			lore.add(String.format("&aDate &2%s &a(%s)", Utils.timestampToDateAndHour(time), Utils.timestampToDuration(time)));
 		return lore;
 	}
 }
