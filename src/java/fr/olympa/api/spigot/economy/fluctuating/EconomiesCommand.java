@@ -60,7 +60,7 @@ public class EconomiesCommand extends ComplexCommand {
 		sendComponents(paginator.getPage(cmd.getArgument(0, 1)));
 	}
 	
-	@Cmd (args = { "INTEGER", "DOUBLE" }, syntax = "<id> <valeur>")
+	@Cmd (args = { "ECONOMY", "DOUBLE" }, syntax = "<id> <valeur>")
 	public void set(CommandContext cmd) {
 		FluctuatingEconomy eco = cmd.getArgument(0);
 		double value = cmd.getArgument(1);

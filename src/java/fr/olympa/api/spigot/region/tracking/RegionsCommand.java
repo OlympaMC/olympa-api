@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Shulker;
@@ -54,16 +53,14 @@ public class RegionsCommand extends ComplexCommand {
 		sendInfo("Différences entre les régions en cache et les régions calculées : §l%s", Sets.symmetricDifference(playerRegions, applicable).stream().map(x -> x.getID()).collect(Collectors.joining(", ", "[", "]")));
 	}
 	
-	@Cmd (min = 4, args = { "", "INTEGER", "INTEGER", "INTEGER" })
+	@Cmd (min = 4, args = { "WORLD", "INTEGER", "INTEGER", "INTEGER" })
 	public void testRegion(CommandContext cmd) {
-		World world = Bukkit.getWorld((String) cmd.getArgument(0));
+		World world = cmd.getArgument(0);
 		int x = cmd.getArgument(1);
 		int y = cmd.getArgument(2);
 		int z = cmd.getArgument(3);
 		for (TrackedRegion trackedRegion : OlympaCore.getInstance().getRegionManager().getTrackedRegions().values()) if (trackedRegion.getRegion().isIn(world, x, y, z))
 			sendInfo("Is in " + trackedRegion.getID());
-		else
-			sendInfo("Not in " + trackedRegion.getID());
 	}
 	
 	@Cmd (min = 1, args = "REGION", syntax = "<region id>")

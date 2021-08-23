@@ -66,7 +66,7 @@ public enum Prefix {
 	}
 
 	public BaseComponent[] formatMessageB(String msg, Object... args) {
-		return TextComponent.fromLegacyText(ColorUtils.color(String.format(prefix + msg, args)));
+		return TextComponent.fromLegacyText(formatMessage(msg, args));
 	}
 
 	@Override
