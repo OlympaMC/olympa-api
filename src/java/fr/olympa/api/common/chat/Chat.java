@@ -8,16 +8,16 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.ChatColor;
 
 /**
-*
-* Created by SirSpoodles
-* Modified by ZombieHDGaming for MotD Usage
-* Edit by Olympa Dev Team
-*
-* https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
-*
-* Contains original method, method MK.2, and MotD method
-*
-*/
+ *
+ * Created by SirSpoodles
+ * Modified by ZombieHDGaming for MotD Usage
+ * Edit by Olympa Dev Team
+ *
+ * https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
+ *
+ * Contains original method, method MK.2, and MotD method
+ *
+ */
 public enum Chat {
 	A('A', 5),
 	LOWER_A('a', 5),
@@ -123,7 +123,8 @@ public enum Chat {
 	private int length;
 
 	private final static int CENTER_PX = 120;
-	private final static int MAX_PX = 240;
+	//	private final static int MAX_PX = 240;
+	private final static int MAX_PX = 300;
 
 	private final static int CENTER_CHAT_PX = 154;
 	private final static int MAX_CHAT_PX = 250;
@@ -251,7 +252,7 @@ public enum Chat {
 		int messagePxSize = 0;
 		boolean previousCode = false;
 		boolean isBold = false;
-		for (char c : message.toCharArray()) {
+		for (char c : message.toCharArray())
 			if (c == '§') {
 				previousCode = true;
 				continue;
@@ -271,7 +272,6 @@ public enum Chat {
 				messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
 				messagePxSize++;
 			}
-		}
 		return messagePxSize;
 	}
 
