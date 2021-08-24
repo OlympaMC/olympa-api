@@ -23,9 +23,9 @@ public class OlympaAPIPermissionsSpigot {
 	public static final OlympaSpigotPermission GAMEMODE_COMMAND_OTHER = new OlympaSpigotPermission(OlympaGroup.MODP, new OlympaGroup[] { OlympaGroup.DEVP });
 	public static final OlympaSpigotPermission FLY_COMMAND = new OlympaSpigotPermission(OlympaGroup.GRAPHISTE);
 	public static final OlympaSpigotPermission KILL_SEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
-	public static final OlympaSpigotPermission INVSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission INVSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	public static final OlympaSpigotPermission INVSEE_COMMAND_INTERACT = new OlympaSpigotPermission(OlympaGroup.MODP);
-	public static final OlympaSpigotPermission ECSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.ASSISTANT);
+	public static final OlympaSpigotPermission ECSEE_COMMAND = new OlympaSpigotPermission(OlympaGroup.MOD);
 	public static final OlympaSpigotPermission ECSEE_COMMAND_INTERACT = new OlympaSpigotPermission(OlympaGroup.MODP);
 	public static final OlympaSpigotPermission ERRORS_COMMAND = new OlympaSpigotPermission(OlympaGroup.RESP_TECH);
 	public static final OlympaSpigotPermission PING_COMMAND = new OlympaSpigotPermission(OlympaGroup.PLAYER);

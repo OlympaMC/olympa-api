@@ -101,7 +101,7 @@ public class Utils {
 		jsonObject.isJsonObject();
 		new JSONParser().parse("your string");
 	}
-	
+
 	public static String durationToString(NumberFormat numberFormat, long time) {
 		return durationToString(numberFormat, time, true);
 	}
@@ -553,13 +553,20 @@ public class Utils {
 			return min;
 		return random.nextInt(max - min + 1) + min;
 	}
-	
+
 	public static <T> T getRandomFrom(Random random, List<T> list) {
 		return list.isEmpty() ? null : list.get(random.nextInt(list.size()));
 	}
-	
+
 	public static <T> T getRandomFrom(Random random, T[] array) {
 		return array.length == 0 ? null : array[random.nextInt(array.length)];
+	}
+
+	public static String[] fillArray(String string, int size) {
+		List<String> list = new ArrayList<>();
+		while (size-- > 0)
+			list.add(string);
+		return list.toArray(String[]::new);
 	}
 
 }
