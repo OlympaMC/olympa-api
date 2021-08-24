@@ -35,9 +35,9 @@ public class StaffChatHandler {
 				sender = player;
 		}
 		if (sender == null)
-			senderName = "Discord " + olympaPlayer.getGroupNameColored() + " " + olympaPlayer.getName();
-		else if (sender instanceof ProxiedPlayer)
-			senderName = Utils.capitalize(((ProxiedPlayer) sender).getServer().getInfo().getName()) + " " + olympaPlayer.getGroupNameColored() + " " + sender.getName();
+			senderName = "Discord " + olympaPlayer.getName();
+		else if (sender instanceof ProxiedPlayer p)
+			senderName = Utils.capitalize(p.getServer().getInfo().getName()) + " " + sender.getName();
 		else
 			senderName = "§e" + sender.getName();
 

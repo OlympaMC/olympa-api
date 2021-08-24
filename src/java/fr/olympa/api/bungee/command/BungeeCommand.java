@@ -111,8 +111,8 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 	public void execute(CommandSender sender, String[] args) {
 		ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
 			this.sender = sender;
-			if (sender instanceof ProxiedPlayer) {
-				proxiedPlayer = (ProxiedPlayer) sender;
+			if (sender instanceof ProxiedPlayer proxiedPlayer) {
+				this.proxiedPlayer = proxiedPlayer;
 				try {
 					olympaPlayer = new AccountProviderAPI(proxiedPlayer.getUniqueId()).get();
 				} catch (SQLException e) {
@@ -378,7 +378,8 @@ public abstract class BungeeCommand extends Command implements IOlympaCommand, T
 				List<CommandArgument> ca = entry.getKey();
 				return (isMandatory ? "<" : "[") + ca.stream().map(c -> c.getArgName()).collect(Collectors.joining("|")) + (isMandatory ? ">" : "]");
 			}).collect(Collectors.joining(" "));
-		if (minArg == 0)
-			minArg = (int) args.entrySet().stream().count();
+		if (minArg == 0) {
+			minArg = (int) args.entrySet().stream().filter(entry -> entry.getValue()).count();
+		}
 	}
 }

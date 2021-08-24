@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,8 +64,8 @@ public class Inventories implements Listener {
 		if (inv == null)
 			return null;
 		InventoryHolder holder = inv.getHolder();
-		if (holder != null && holder instanceof OlympaGUI) // TODO CHECK
-			return (OlympaGUI) holder;
+		if (holder != null && holder instanceof OlympaGUI gui) // TODO CHECK
+			return gui;
 		if (notHoldable.contains(inv.getType()))
 			for (OlympaGUI gui : g.values())
 				if (gui.getInventory().equals(inv))
@@ -77,41 +79,78 @@ public class Inventories implements Listener {
 
 	@EventHandler
 	public synchronized void onClick(InventoryClickEvent event) {
+		if (!(event.getWhoClicked() instanceof Player)) {
+			event.setCancelled(true);
+			return;
+		}
 		Player p = (Player) event.getWhoClicked();
+		@Nullable
+		Inventory inv = event.getClickedInventory();
+		@Nullable
+		ItemStack current = event.getCurrentItem();
+		@Nullable
+		ItemStack cursor = event.getCursor();
 		try {
-			Inventory inv = event.getClickedInventory();
-			ItemStack current = event.getCurrentItem();
-
 			OlympaGUI gui = getGUI(event.getView().getTopInventory());
 			if (gui == null)
 				return;
 
 			event.setCancelled(false);
-
+			if (event.getClick() == ClickType.DOUBLE_CLICK && gui.noDoubleClick()) {
+				event.setCancelled(true);
+				return;
+			}
 			if (inv == p.getInventory()) {
-				if ((event.isShiftClick() || event.getClick() == ClickType.DOUBLE_CLICK) && current != null && current.getType() != Material.AIR)
-					event.setCancelled(gui.onMoveItem(p, current));
+				if (event.isShiftClick() && current != null && current.getType() != Material.AIR)
+					event.setCancelled(gui.onMoveItem(p, current, true));
 				return;
 			}
-			if (gui.noDoubleClick() && event.getClick() == ClickType.DOUBLE_CLICK) {
+			if (event.isShiftClick() && current != null && current.getType() != Material.AIR && gui.onMoveItem(p, current, false)) {
 				event.setCancelled(true);
 				return;
 			}
-			if (gui.noNumberKey() && event.getClick() == ClickType.NUMBER_KEY) {
-				event.setCancelled(true);
-				return;
-			}
-
-			if (event.getCursor().getType() == Material.AIR) {
-				if (current == null || current.getType() == Material.AIR)
+			switch (event.getClick()) {
+			case LEFT:
+				if (gui.noLeftClick()) {
+					event.setCancelled(true);
 					return;
+				}
+				break;
+			case MIDDLE:
+				if (gui.noMiddleClick()) {
+					event.setCancelled(true);
+					return;
+				}
+				break;
+			case NUMBER_KEY:
+				if (gui.noNumberKey()) {
+					event.setCancelled(true);
+					return;
+				}
+				break;
+			case RIGHT:
+				if (gui.noRightClick()) {
+					event.setCancelled(true);
+					return;
+				}
+				break;
+			default:
+				break;
+			}
+			if (cursor == null || cursor.getType() == Material.AIR) {
+				if (current == null || current.getType() == Material.AIR) {
+					event.setCancelled(true);
+					return;
+				}
 				event.setCancelled(gui.onClick(p, current, event.getSlot(), event.getClick()));
 			} else
-				event.setCancelled(gui.onClickCursor(p, current, event.getCursor(), event.getSlot()));
+				event.setCancelled(gui.onClickCursor(p, current, cursor, event.getSlot()));
 		} catch (Exception | NoClassDefFoundError e) {
 			event.setCancelled(true);
 			closeAndExit(p);
 			p.sendMessage(Prefix.ERROR.formatMessage("Une erreur est survenue : &4%s&c.", e.getMessage() == null ? e.getClass().getName() : e.getMessage()));
+			System.err.print(String.format("Debug Info Gui Error : player > %s current > %s cursor > %s click > %s action > %s isFromInv > %s", p.getName(),
+					current != null ? current.getType().name() : "null",current != null ? current.getType().name() : "null",  event.getClick().name(), event.getAction().name(), inv == p.getInventory()));
 			e.printStackTrace();
 		}
 	}

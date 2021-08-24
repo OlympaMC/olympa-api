@@ -38,7 +38,7 @@ public class SanctionUtils {
 
 	public static long toTimeStamp(int time, String unit) {
 		for (List<String> u : units)
-			if (u.stream().filter(s -> s.equalsIgnoreCase(unit)).findFirst().isPresent()) {
+			if (u.stream().anyMatch(s -> s.equalsIgnoreCase(unit))) {
 				Calendar calendar = Calendar.getInstance();
 				switch (u.get(0)) {
 				case "year":

@@ -62,7 +62,22 @@ public abstract class OlympaGUI implements InventoryHolder {
 	 * @param moved Item déplacé
 	 * @return true si le déplacement est annulé
 	 */
+	@Deprecated(forRemoval = true)
 	public boolean onMoveItem(Player p, ItemStack moved) {
+		return true;
+	}
+
+	/**
+	 * Appelé lors d'un shift-click
+	 * @param p Joueur qui a bougé l'item
+	 * @param moved Item déplacé
+	 * @param isFromPlayerInv Si l'item vient de l'inventaire du joueur
+	 * @return true si le déplacement est annulé
+	 */
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv) {
+		if (isFromPlayerInv) {
+			return onMoveItem(p, moved);
+		}
 		return true;
 	}
 
@@ -83,6 +98,18 @@ public abstract class OlympaGUI implements InventoryHolder {
 		return true;
 	}
 
+	public boolean noMiddleClick() {
+		return true;
+	}
+
+	public boolean noRightClick() {
+		return false;
+	}
+	
+	public boolean noLeftClick() {
+		return false;
+	}
+	
 	/**
 	 * Opens the inventory to the player. Direct reference to {@link Inventories#create(Player, OlympaGUI)}
 	 * @param p Player
@@ -91,5 +118,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public final void create(Player p) {
 		Inventories.create(p, this);
 	}
+
+
 
 }
