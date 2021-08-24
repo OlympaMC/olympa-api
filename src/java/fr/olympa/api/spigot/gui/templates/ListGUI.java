@@ -45,6 +45,11 @@ public abstract class ListGUI<T> extends OlympaGUI {
 		}
 	}
 
+	@Override
+	public boolean noMiddleClick() {
+		return false;
+	}
+	
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		if (slot == size - 1){
 			finish();

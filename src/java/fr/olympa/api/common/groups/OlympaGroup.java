@@ -63,7 +63,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 
 	PVPKIT_CHAMPION(25, 28, OlympaServer.PVPKIT, "Champion", "Championne", "&6%s ", ":&r", false),
 
-	FRIEND(16, 0, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
+	FRIEND(16, 1, OlympaServer.ALL, "Ami", "Amie", "&7", ":", false),
 	PLAYER(20, 0, OlympaServer.ALL, "Joueur", "Joueuse", "&7", ":", false);
 
 	static {

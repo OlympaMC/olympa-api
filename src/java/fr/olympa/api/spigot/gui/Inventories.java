@@ -64,7 +64,7 @@ public class Inventories implements Listener {
 		if (inv == null)
 			return null;
 		InventoryHolder holder = inv.getHolder();
-		if (holder != null && holder instanceof OlympaGUI gui) // TODO CHECK
+		if (holder != null && holder instanceof OlympaGUI gui)
 			return gui;
 		if (notHoldable.contains(inv.getType()))
 			for (OlympaGUI gui : g.values())
