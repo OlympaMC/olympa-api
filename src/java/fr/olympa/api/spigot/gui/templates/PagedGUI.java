@@ -149,6 +149,11 @@ public abstract class PagedGUI<T> extends OlympaGUI {
 		inv = null;
 		return true;
 	}
+	
+	@Override
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
+		return isFromPlayerInv;
+	}
 
 	protected boolean onBarItemClick(Player p, ItemStack current, int barSlot, ClickType click) {
 		return true;
