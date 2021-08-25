@@ -27,7 +27,7 @@ public class EnderChestGUI extends OlympaGUI {
 	}
 	
 	@Override
-	public boolean onMoveItem(Player p, ItemStack moved) {
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
 		return false;
 	}
 	
@@ -38,6 +38,11 @@ public class EnderChestGUI extends OlympaGUI {
 	
 	@Override
 	public boolean noNumberKey() {
+		return false;
+	}
+	
+	@Override
+	public boolean noMiddleClick() {
 		return false;
 	}
 	
