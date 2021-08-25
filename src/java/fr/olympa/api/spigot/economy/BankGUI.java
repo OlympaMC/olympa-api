@@ -62,7 +62,7 @@ public abstract class BankGUI<T extends MoneyPlayerInterface> extends OlympaGUI 
 	}
 
 	@Override
-	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromInv) {
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromInv, int slot) {
 		change = true;
 		return false;
 	}

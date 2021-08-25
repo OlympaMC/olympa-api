@@ -72,9 +72,10 @@ public abstract class OlympaGUI implements InventoryHolder {
 	 * @param p Joueur qui a bougé l'item
 	 * @param moved Item déplacé
 	 * @param isFromPlayerInv Si l'item vient de l'inventaire du joueur
+	 * @param i 
 	 * @return true si le déplacement est annulé
 	 */
-	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv) {
+	public boolean onMoveItem(Player p, ItemStack moved, boolean isFromPlayerInv, int slot) {
 		if (isFromPlayerInv) {
 			return onMoveItem(p, moved);
 		}
@@ -107,6 +108,10 @@ public abstract class OlympaGUI implements InventoryHolder {
 	}
 	
 	public boolean noLeftClick() {
+		return false;
+	}
+
+	public boolean noDropClick() {
 		return false;
 	}
 	

@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
@@ -94,18 +95,16 @@ public class Inventories implements Listener {
 			OlympaGUI gui = getGUI(event.getView().getTopInventory());
 			if (gui == null)
 				return;
-
-			event.setCancelled(false);
 			if (event.getClick() == ClickType.DOUBLE_CLICK && gui.noDoubleClick()) {
 				event.setCancelled(true);
 				return;
 			}
 			if (inv == p.getInventory()) {
 				if (event.isShiftClick() && current != null && current.getType() != Material.AIR)
-					event.setCancelled(gui.onMoveItem(p, current, true));
+					event.setCancelled(gui.onMoveItem(p, current, true, event.getSlot()));
 				return;
 			}
-			if (event.isShiftClick() && current != null && current.getType() != Material.AIR && gui.onMoveItem(p, current, false)) {
+			if (event.isShiftClick() && current != null && current.getType() != Material.AIR && gui.onMoveItem(p, current, false, event.getSlot())) {
 				event.setCancelled(true);
 				return;
 			}
@@ -118,6 +117,12 @@ public class Inventories implements Listener {
 				break;
 			case MIDDLE:
 				if (gui.noMiddleClick()) {
+					event.setCancelled(true);
+					return;
+				}
+				break;
+			case DROP:
+				if (gui.noDropClick()) {
 					event.setCancelled(true);
 					return;
 				}
