@@ -335,7 +335,7 @@ public class ServerInfoAdvanced extends JavaInstanceInfo {
 	}
 
 	public boolean isUsualError() {
-		return status == ServerStatus.CLOSE && (error == null || error.isEmpty());
+		return status == ServerStatus.CLOSE && (error == null || error.isEmpty()) && !hasMinimalInfo();
 	}
 
 	public boolean isDefaultError() {

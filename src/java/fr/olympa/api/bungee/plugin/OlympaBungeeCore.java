@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 
 import fr.olympa.api.LinkSpigotBungee;
 import fr.olympa.api.bungee.config.BungeeCustomConfig;
+import fr.olympa.api.bungee.servers.BungeeMonitoring;
 import fr.olympa.api.bungee.task.BungeeTaskManager;
 import fr.olympa.api.bungee.version.BungeeProtocol;
 import fr.olympa.api.common.chat.ColorUtils;
@@ -54,7 +55,16 @@ public abstract class OlympaBungeeCore extends Plugin implements LinkSpigotBunge
 	protected BungeeProtocol versionHandler;
 	protected RedisConnection redisAccess;
 	protected DatabaseConnection database;
+	protected BungeeMonitoring monitoring;
 	protected boolean isEnable = false;
+
+	public BungeeMonitoring getMonitoring() {
+		return monitoring;
+	}
+
+	public void setMonitoring(BungeeMonitoring monitoring) {
+		this.monitoring = monitoring;
+	}
 
 	@Override
 	public void onDisable() {
