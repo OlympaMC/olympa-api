@@ -110,9 +110,13 @@ public abstract class OlympaGUI implements InventoryHolder {
 	public boolean noLeftClick() {
 		return false;
 	}
-
+	
 	public boolean noDropClick() {
 		return false;
+	}
+
+	public boolean noDragClick() {
+		return true;
 	}
 	
 	/**

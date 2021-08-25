@@ -42,6 +42,11 @@ public class EnderChestGUI extends OlympaGUI {
 	}
 	
 	@Override
+	public boolean noDragClick() {
+		return false;
+	}
+	
+	@Override
 	public boolean noMiddleClick() {
 		return false;
 	}
