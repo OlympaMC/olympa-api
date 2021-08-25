@@ -204,17 +204,16 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 		Player p = e.getPlayer();
 		Set<TrackedRegion> regions = getApplicableRegions(p.getLocation());
 		inRegions.put(p, regions);
-		if (!p.hasPlayedBefore()) {
-			EntryEvent event = new EntryEvent(p, regions, RegionEventReason.JOIN);
-			for (TrackedRegion enter : regions)
-				try {
-					for (Flag flag : enter.getFlags())
-						if (flag.enters(event) == ActionResult.DENY)
-							OlympaCore.getInstance().getLogger().warning("Entry cancelled when first join - ignored.");
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-		}
+		
+		EntryEvent event = new EntryEvent(p, regions, RegionEventReason.JOIN);
+		for (TrackedRegion enter : regions)
+			try {
+				for (Flag flag : enter.getFlags())
+					if (flag.enters(event) == ActionResult.DENY)
+						OlympaCore.getInstance().getLogger().warning("Entry cancelled on join - ignored.");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 	}
 
 	@EventHandler
@@ -244,14 +243,6 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 
 				ActionResult result = ActionResult.ALLOW;
 
-				EntryEvent entryEvent = new EntryEvent(player, applicable, RegionEventReason.MOVE);
-				for (TrackedRegion enter : entered)
-					try {
-						for (Flag flag : enter.getFlags())
-							result = result.or(flag.enters(entryEvent));
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
 				ExitEvent exitEvent = new ExitEvent(player, applicable, RegionEventReason.MOVE);
 				for (TrackedRegion exit : exited)
 					try {
@@ -260,7 +251,16 @@ public class RegionManager implements Listener, ModuleApi<OlympaCore> {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
+				EntryEvent entryEvent = new EntryEvent(player, applicable, RegionEventReason.MOVE);
+				for (TrackedRegion enter : entered)
+					try {
+						for (Flag flag : enter.getFlags())
+							result = result.or(flag.enters(entryEvent));
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 
+				// TODO if DENY mid-way, re-execute back
 				if (result == ActionResult.DENY)
 					break;
 				if (result == ActionResult.TELEPORT_ELSEWHERE)
