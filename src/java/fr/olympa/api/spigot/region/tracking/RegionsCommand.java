@@ -87,7 +87,7 @@ public class RegionsCommand extends ComplexCommand {
 		sendSuccess("Min: §e%s §a| Max: §e%s", SpigotUtils.convertLocationToHumanString(region.getMin()), SpigotUtils.convertLocationToHumanString(region.getMax()));
 		if (cmd.getArgument(1, Boolean.FALSE)) {
 			sendSuccess("%d points:", region.getLocations().size());
-			for (Location location : region.getLocations()) sendMessage(Prefix.DEFAULT, "- " + SpigotUtils.convertLocationToHumanString(location));
+			for (Location location : region.getLocations()) sendMessage(Prefix.SYMBOLE, SpigotUtils.convertLocationToHumanString(location));
 		}else {
 			sendSuccess("%d points §7(ajouter §otrue§7 pour les voir)", region.getLocations().size());
 		}

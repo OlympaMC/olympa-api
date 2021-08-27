@@ -175,12 +175,13 @@ public class RegionEditor extends InventoryClear {
 	}
 
 	private MinMax getMinMax() {
-		int minY = 0;
-		int maxY = 256;
+		int minY = 256;
+		int maxY = 0;
 		if (!expanded) {
 			for (Location loc : locations) {
-				if (loc.getBlockY() < minY) minY = loc.getBlockY();
-				if (loc.getBlockY() > maxY) maxY = loc.getBlockY();
+				int y = loc.getBlockY();
+				if (y < minY) minY = y;
+				if (y > maxY) maxY = y;
 			}
 		}
 		return new MinMax(minY, maxY);
@@ -215,14 +216,6 @@ public class RegionEditor extends InventoryClear {
 		}
 	}
 
-	private class MinMax {
-		public final int min;
-		public final int max;
-
-		public MinMax(int min, int max) {
-			this.min = min;
-			this.max = max;
-		}
-	}
+	private record MinMax(int min, int max) {}
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.event.EventPriority;
 
 import fr.olympa.api.spigot.region.Region;
@@ -29,6 +30,7 @@ public class TrackedRegion {
 	}
 	
 	public void updateRegion(Region region) {
+		Validate.notNull(region);
 		if (this.region.equals(region)) return;
 		OlympaCore.getInstance().getRegionManager().updateRegion(this, this.region, region);
 		this.region = region;
