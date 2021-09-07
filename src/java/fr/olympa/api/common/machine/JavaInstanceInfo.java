@@ -1,6 +1,7 @@
 package fr.olympa.api.common.machine;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadMXBean;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
@@ -20,7 +21,7 @@ import fr.olympa.api.spigot.utils.TPSUtils;
 public class JavaInstanceInfo implements JsonDeserializer<Object> {
 
 	@Expose
-	private Long memFree, memUsed, memeTotal, allThreadsCreated, cpuProcTime;
+	private Long memFree, memUsed, memCommited, memeTotal, allThreadsCreated, cpuProcTime;
 	@Expose
 	private Double cpuProcUsage, cpuSysUsage, memUsage;
 	@Expose
@@ -33,12 +34,13 @@ public class JavaInstanceInfo implements JsonDeserializer<Object> {
 	public JavaInstanceInfo(Long time) {
 		this.time = time;
 		Runtime r = Runtime.getRuntime();
-		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
-		ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted();
-		memUsed = r.totalMemory() / 1048576L;
+		
+		MemoryUsage heapMemoryUsage = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
+		memUsed = heapMemoryUsage.getUsed() / 1048576L;
 		memFree = r.freeMemory() / 1048576L;
-		memeTotal = r.maxMemory() / 1048576L;
+		memeTotal = heapMemoryUsage.getMax() / 1048576L;
 		memUsage = (double) memUsed / (double) memeTotal * 100.0;
+		memCommited = heapMemoryUsage.getCommitted();
 
 		OperatingSystemMXBean osMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 		//		cpuSysUsage = osMXBean.getSystemLoadAverage();
