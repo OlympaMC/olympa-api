@@ -146,10 +146,10 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 			itemMeta.addItemFlags(itemFlags);
 		if (unbreakable != null)
 			itemMeta.setUnbreakable(true);
-		if (player != null)
-			ItemUtils.skull(newItemMeta -> {
-				itemStack.setItemMeta(newItemMeta);
-			}, itemStack, player);
+//		if (player != null)
+//			ItemUtils.skull(newItemMeta -> {
+//				itemStack.setItemMeta(newItemMeta);
+//			}, itemStack, player);
 
 		//			((SkullMeta) itemMeta).setOwningPlayer(player);
 		itemStack.setItemMeta(itemMeta);
