@@ -93,14 +93,14 @@ public class TeleportationManager implements Listener {
 			return true;
 		}
 
-		Teleportation teleportation = teleportations.remove(p);
-		if (teleportation != null) {
-			if (teleportation.taskId != 0)
-				taskManager.cancelTaskById(teleportation.taskId);
-			if (teleportation.request != null) {
-				Prefix.DEFAULT_BAD.sendMessage(request.from, "La téléportation précédente vers &4%s&c a été annulée.", request.to.getName());
-				Prefix.DEFAULT_BAD.sendMessage(request.to, "Téléportation de &4%s&c &lVERS&c toi annulée.", request.from);
-				teleportation.request.invalidate();
+		Teleportation teleportationFromBefore = teleportations.remove(p);
+		if (teleportationFromBefore != null) {
+			if (teleportationFromBefore.taskId != 0)
+				taskManager.cancelTaskById(teleportationFromBefore.taskId);
+			if (teleportationFromBefore.request != null) {
+				Prefix.DEFAULT_BAD.sendMessage(teleportationFromBefore.request.from, "La téléportation vers &4%s&c a été annulée.", request.to.getName());
+				Prefix.DEFAULT_BAD.sendMessage(teleportationFromBefore.request.to, "Téléportation de &4%s&c &lVERS&c toi annulée.", request.from);
+				teleportationFromBefore.request.invalidate();
 			} else
 				Prefix.INFO.sendMessage(p, "La téléportation précédente a été annulée.");
 		}

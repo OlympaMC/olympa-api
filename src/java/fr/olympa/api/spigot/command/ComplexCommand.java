@@ -250,6 +250,7 @@ public class ComplexCommand extends OlympaCommand implements IComplexCommand<Com
 			internal.method.invoke(internal.commands, new CommandContext(sender, this, newArgs, label, methodName));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sendError("Une erreur est survenue.");
+			System.err.printf("Error in ComplexCommand '%s %s' for sender %s %n", label, buildText(0, rawArgs), sender.getName());
 			e.printStackTrace();
 		}
 

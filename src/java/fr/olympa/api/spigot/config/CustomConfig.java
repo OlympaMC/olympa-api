@@ -116,6 +116,7 @@ public class CustomConfig extends YamlConfiguration {
 			Files.delete(configFile.toPath());
 			return configFile.createNewFile();
 		} catch (IOException e) {
+			System.err.printf("Error while erasing file %s in %s (is file loaded %s, plugin %s)%n", fileName, configFile.getPath(), isLoaded, plugin.getName());
 			e.printStackTrace();
 		}
 		return false;
@@ -197,6 +198,7 @@ public class CustomConfig extends YamlConfiguration {
 			loadUnSafe();
 		} catch (IOException | InvalidConfigurationException e) {
 			plugin.sendMessage("§cImpossible de charger la configuration %s", fileName);
+			System.err.printf("Error while loading file %s in %s (is file loaded %s, plugin %s)%n", fileName, configFile.getPath(), isLoaded, plugin.getName());
 			e.printStackTrace();
 		}
 	}
@@ -210,6 +212,7 @@ public class CustomConfig extends YamlConfiguration {
 			saveUnSafe();
 		} catch (IOException e) {
 			e.initCause(new IllegalAccessError("Unable to save config: " + fileName));
+			System.err.printf("Error while saving file %s in %s (is file loaded %s, plugin %s)%n", fileName, configFile.getPath(), isLoaded, plugin.getName());
 			e.printStackTrace();
 		}
 	}

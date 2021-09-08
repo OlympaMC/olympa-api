@@ -199,7 +199,7 @@ public class Inventories implements Listener {
 			event.setCancelled(true);
 			closeAndExit(p);
 			p.sendMessage(Prefix.ERROR.formatMessage("Une erreur est survenue : &4%s&c.", e.getMessage() == null ? e.getClass().getName() : e.getMessage()));
-			System.err.print(String.format("Debug Info Gui Error : player > %s current > %s cursor > %s click > %s action > %s isFromInv > %s", p.getName(),
+			System.err.print(String.format("Debug Info Gui Error : player > %s current > %s cursor > %s click > %s action > %s isFromInv > %s\n", p.getName(),
 					current != null ? current.getType().name() : "null",current != null ? current.getType().name() : "null",  event.getClick().name(), event.getAction().name(), inv == p.getInventory()));
 			e.printStackTrace();
 		}
