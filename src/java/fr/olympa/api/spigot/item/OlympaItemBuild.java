@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -103,6 +104,17 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 		return this;
 	}
 
+	public void buildPlayerHead(Consumer<ItemStack> callback) {
+		ItemStack itemStack = build();
+		if (player != null)
+			ItemUtils.skull(newItemMeta -> {
+				itemStack.setItemMeta(newItemMeta);
+				callback.accept(itemStack);
+			}, itemStack, player);
+		else
+			callback.accept(itemStack);
+	}
+	
 	@SuppressWarnings("deprecation")
 	public ItemStack build() {
 		//		if (cache != null)
@@ -138,6 +150,7 @@ public class OlympaItemBuild implements Cloneable, OlympaItemStack {
 			ItemUtils.skull(newItemMeta -> {
 				itemStack.setItemMeta(newItemMeta);
 			}, itemStack, player);
+
 		//			((SkullMeta) itemMeta).setOwningPlayer(player);
 		itemStack.setItemMeta(itemMeta);
 		//		cache = itemStack;
