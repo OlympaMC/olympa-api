@@ -19,7 +19,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	}
 
 	public OlympaGUI(int placeNeeded, String name) {
-		inv = Bukkit.createInventory(this, (int) Math.ceil(placeNeeded / 9d) * 9, ColorUtils.color(name));
+		inv = Bukkit.createInventory(this, placeNeeded <= 0 ? 9 : (int) Math.ceil(placeNeeded / 9d) * 9, ColorUtils.color(name));
 	}
 
 	public OlympaGUI(String name, InventoryType type) {

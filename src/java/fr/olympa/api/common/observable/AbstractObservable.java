@@ -30,7 +30,7 @@ public abstract class AbstractObservable implements Observable {
 			try {
 				entry.getValue().changed();
 			}catch (Exception e) {
-				OlympaCore.getInstance().getLogger().severe("Une erreur est survenue lors de la mise à jour de l'observateur " + entry.getKey() + ".");
+				System.err.printf("Une erreur est survenue lors de la mise à jour de l'observateur %s.%n", entry.getKey());
 				e.printStackTrace();
 				success = false;
 			}
