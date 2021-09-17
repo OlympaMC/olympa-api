@@ -168,7 +168,7 @@ public class PluginInfoAdvanced {
 		}
 		if (authors != null && !authors.isEmpty())
 			sj.add("Auteur" + Utils.withOrWithoutS(authors.size()) + " &a" + String.join("&7, &a", authors));
-		if (contributors != null && contributors.isEmpty())
+		if (contributors != null && !contributors.isEmpty())
 			sj.add("Contributeur" + Utils.withOrWithoutS(contributors.size()) + " &a" + String.join("&7, &a", contributors));
 		if (description != null && !description.isBlank())
 			sj.add("Description " + description);
