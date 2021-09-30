@@ -6,7 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.olympa.api.common.randomized.RandomizedPickerBase.*;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalContext;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.ConditionalPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.Conditioned;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedMultiPicker;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedMultiPickerBase;
+import fr.olympa.api.common.randomized.RandomizedPickerBase.RandomizedPicker;
 
 public class RandomizedPickerBuilder {
 	
@@ -20,7 +26,13 @@ public class RandomizedPickerBuilder {
 		return new ConditionalPickerBuilder<>();
 	}
 	
-	public static interface IBuilder<T> {}
+	public static interface IBuilder<T> {
+		
+		RandomizedFactory getFactory();
+		
+		void setFactory(RandomizedFactory factory);
+		
+	}
 
 	public static interface IBuilderBase<T> extends IBuilder<T> {
 		
@@ -156,7 +168,22 @@ public class RandomizedPickerBuilder {
 		
 	}
 
-	public abstract static class PickerBuilderBase<T> implements INormalBuilderBase<T> {
+	public abstract static class AbstractBuilder<T> implements IBuilder<T> {
+		
+		protected RandomizedFactory factory = RandomizedFactory.getDefaultFactory();
+		
+		@Override
+		public RandomizedFactory getFactory() {
+			return factory;
+		}
+		
+		@Override
+		public void setFactory(RandomizedFactory factory) {
+			this.factory = factory;
+		}
+	}
+	
+	public abstract static class PickerBuilderBase<T> extends AbstractBuilder<T> implements INormalBuilderBase<T> {
 		
 		protected Map<T, Double> values = new HashMap<>();
 		
@@ -211,12 +238,12 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public RandomizedPicker<T> build(double emptyChance) {
-			return new FixedPicker<>(values, emptyChance);
+			return factory.newPicker(values, emptyChance);
 		}
 		
 		@Override
 		public RandomizedPicker<T> build() {
-			return new FixedPicker<>(values, 0);
+			return build(0);
 		}
 		
 		@Override
@@ -231,7 +258,7 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
-			return new FixedMultiPicker<>(values, Collections.emptyList(), amountProvider, emptyChance);
+			return factory.newMultiPicker(values, Collections.emptyList(), amountProvider, emptyChance);
 		}
 		
 		@Override
@@ -280,7 +307,7 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public RandomizedMultiPicker<T> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
-			return new FixedMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+			return factory.newMultiPicker(values, valuesAlways, amountProvider, emptyChance);
 		}
 		
 		@Override
@@ -295,7 +322,7 @@ public class RandomizedPickerBuilder {
 		
 	}
 
-	public abstract static class ConditionalPickerBuilderBase<T, C extends ConditionalContext<T>> implements IConditionalBuilderBase<T, C> {
+	public abstract static class ConditionalPickerBuilderBase<T, C extends ConditionalContext<T>> extends AbstractBuilder<T> implements IConditionalBuilderBase<T, C> {
 		
 		protected Map<Conditioned<T, C>, Double> values = new HashMap<>();
 		
@@ -352,12 +379,12 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public ConditionalPicker<T, C> build(double emptyChance) {
-			return new FixedConditionalPicker<>(values, emptyChance);
+			return factory.newConditionalPicker(values, emptyChance);
 		}
 		
 		@Override
 		public ConditionalPicker<T, C> build() {
-			return new FixedConditionalPicker<>(values, 0);
+			return build(0);
 		}
 		
 		@Override
@@ -372,7 +399,7 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
-			return new FixedConditionalMultiPicker<>(values, Collections.emptyList(), amountProvider, emptyChance);
+			return factory.newConditionalMultiPicker(values, Collections.emptyList(), amountProvider, emptyChance);
 		}
 		
 		@Override
@@ -432,7 +459,7 @@ public class RandomizedPickerBuilder {
 		
 		@Override
 		public ConditionalMultiPicker<T, C> build(RandomValueProvider<Integer> amountProvider, double emptyChance) {
-			return new FixedConditionalMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+			return factory.newConditionalMultiPicker(values, valuesAlways, amountProvider, emptyChance);
 		}
 		
 		@Override

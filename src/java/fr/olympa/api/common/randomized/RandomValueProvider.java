@@ -6,8 +6,6 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.IntFunction;
 
-import fr.olympa.api.utils.Utils;
-
 public interface RandomValueProvider<T> {
 	
 	public T pickOne(Random random);
@@ -23,7 +21,9 @@ public interface RandomValueProvider<T> {
 		
 		@Override
 		public Integer pickOne(Random random) {
-			return Utils.getRandomAmount(random, min, max);
+			if (min == max)
+				return min;
+			return random.nextInt(max - min + 1) + min;
 		}
 	}
 	
