@@ -29,9 +29,37 @@ public interface RandomizedFactory {
 	}
 	
 	static final class DefaultFactoryProvider {
-		public static RandomizedFactory FACTORY;
+		public static RandomizedFactory FACTORY = DefaultFactoryImplementation.INSTANCE;
 		
 		private DefaultFactoryProvider() {}
+	}
+	
+	static final class DefaultFactoryImplementation implements RandomizedFactory {
+		
+		public static final DefaultFactoryImplementation INSTANCE = new DefaultFactoryImplementation();
+		
+		private DefaultFactoryImplementation() {}
+		
+		@Override
+		public <T> RandomizedPicker<T> newPicker(Map<T, Double> values, double emptyChance) {
+			return new RandomizedPickerBase.FixedPicker<>(values, emptyChance);
+		}
+		
+		@Override
+		public <T> RandomizedMultiPicker<T> newMultiPicker(Map<T, Double> values, List<T> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new RandomizedPickerBase.FixedMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+		}
+		
+		@Override
+		public <T, C extends ConditionalContext<T>> ConditionalPicker<T, C> newConditionalPicker(Map<Conditioned<T, C>, Double> values, double emptyChance) {
+			return new RandomizedPickerBase.FixedConditionalPicker<>(values, emptyChance);
+		}
+		
+		@Override
+		public <T, C extends ConditionalContext<T>> ConditionalMultiPicker<T, C> newConditionalMultiPicker(Map<Conditioned<T, C>, Double> values, List<Conditioned<T, C>> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
+			return new RandomizedPickerBase.FixedConditionalMultiPicker<>(values, valuesAlways, amountProvider, emptyChance);
+		}
+		
 	}
 	
 }

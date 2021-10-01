@@ -278,8 +278,8 @@ public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 	
 	public class FixedPicker<T> implements RandomizedPicker<T> {
 		
-		private Map<T, Double> values;
-		private double emptyChance;
+		protected Map<T, Double> values;
+		protected double emptyChance;
 		
 		public FixedPicker(Map<T, Double> values, double emptyChance) {
 			this.values = values;
@@ -300,8 +300,8 @@ public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 	
 	public class FixedMultiPicker<T> extends FixedPicker<T> implements RandomizedMultiPicker<T> {
 		
-		private List<T> valuesAlways;
-		private RandomValueProvider<Integer> amountProvider;
+		protected List<T> valuesAlways;
+		protected RandomValueProvider<Integer> amountProvider;
 		
 		public FixedMultiPicker(Map<T, Double> values, List<T> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
 			super(values, emptyChance);
@@ -323,8 +323,8 @@ public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 	
 	public class FixedConditionalPicker<T, C extends ConditionalContext<T>> implements ConditionalPicker<T, C> {
 		
-		private Map<Conditioned<T, C>, Double> values;
-		private double emptyChance;
+		protected Map<Conditioned<T, C>, Double> values;
+		protected double emptyChance;
 		
 		public FixedConditionalPicker(Map<Conditioned<T, C>, Double> values, double emptyChance) {
 			this.values = values;
@@ -345,8 +345,8 @@ public interface RandomizedPickerBase<T> extends RandomValueProvider<T> {
 	
 	public class FixedConditionalMultiPicker<T, C extends ConditionalContext<T>> extends FixedConditionalPicker<T, C> implements ConditionalMultiPicker<T, C> {
 		
-		private List<Conditioned<T, C>> valuesAlways;
-		private RandomValueProvider<Integer> amountProvider;
+		protected List<Conditioned<T, C>> valuesAlways;
+		protected RandomValueProvider<Integer> amountProvider;
 		
 		public FixedConditionalMultiPicker(Map<Conditioned<T, C>, Double> values, List<Conditioned<T, C>> valuesAlways, RandomValueProvider<Integer> amountProvider, double emptyChance) {
 			super(values, emptyChance);
