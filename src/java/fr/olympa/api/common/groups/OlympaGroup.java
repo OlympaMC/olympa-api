@@ -34,7 +34,7 @@ public enum OlympaGroup implements Comparable<OlympaGroup> {
 	DEVP(26, 45, OlympaServer.ALL, "Développeur+", "Développeuse+", "&b%s ", ":&r", false),
 	DEV(12, 43, OlympaServer.ALL, "Développeur", "Développeuse", "&b%s ", ":&r", false),
 	BUILDER(14, 40, OlympaServer.ALL, "Buildeur", "Buildeuse", "&a%s ", ":&r", false),
-	GAMEMASTER(4, 39, OlympaServer.ALL, "GameMaster", "GameMaster", "&0%s ", ":&r", true),
+	GAMEDESIGNER(4, 39, OlympaServer.ALL, "GameDesigner", "GameDesigner", "&6%s ", ":&r", true),
 	ANIMATOR(13, 38, OlympaServer.ALL, "Animateur", "Animatrice", "&d%s ", ":&r", false),
 	GRAPHISTE(15, 36, OlympaServer.ALL, "Graphiste", "Graphiste", "&a%s ", ":&r", false),
 	PARTENER(21, 35, OlympaServer.LOBBY, "Partenaire", "Partenaire", "&d%s ", ":&r", false),
