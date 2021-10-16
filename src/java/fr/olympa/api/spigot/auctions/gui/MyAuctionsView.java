@@ -13,23 +13,29 @@ import fr.olympa.api.spigot.auctions.Auction;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
 import fr.olympa.api.spigot.economy.OlympaMoney;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.OlympaGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.spigot.utils.SpigotUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 
-public class MyAuctionsGUI extends PagedGUI<Auction> {
+public class MyAuctionsView extends PagedView<Auction> {
 
 	private MoneyPlayerInterface player;
 	private AuctionsManager manager;
 
-	public MyAuctionsGUI(AuctionsManager manager, MoneyPlayerInterface player) {
-		super("Mes articles", DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()), 4);
-		super.setBarItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes", "§8> §7" + Utils.withOrWithoutS(manager.getOngoingAuctions().size(), "enchère") + " en cours"));
-		super.setBarItem(2, ItemUtils.item(Material.DIAMOND, "§b✦ Vendre un objet", "§8> §7" + Utils.withOrWithoutS(manager.getMaxAuctions(player) - objects.size(), "enchère") + " restantes"));
+	public MyAuctionsView(AuctionsManager manager, MoneyPlayerInterface player) {
+		super(DyeColor.LIGHT_BLUE, manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList()));
 		this.manager = manager;
 		this.player = player;
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		right.setItem(1, ItemUtils.item(Material.CHEST, "§a← Revenir aux ventes", "§8> §7" + Utils.withOrWithoutS(manager.getOngoingAuctions().size(), "enchère") + " en cours"));
+		right.setItem(2, ItemUtils.item(Material.DIAMOND, "§b✦ Vendre un objet", "§8> §7" + Utils.withOrWithoutS(manager.getMaxAuctions(player) - objects.size(), "enchère") + " restantes"));
 	}
 
 	@Override
@@ -79,6 +85,10 @@ public class MyAuctionsGUI extends PagedGUI<Auction> {
 			}else manager.openAuctionCreationGUI(p);
 		}
 		return true;
+	}
+	
+	public OlympaGUI toGUI() {
+		return super.toGUI("Mes articles", 4);
 	}
 
 }

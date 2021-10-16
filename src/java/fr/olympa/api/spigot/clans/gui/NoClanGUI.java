@@ -30,6 +30,7 @@ public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> ext
 		inv.setItem(3, ItemUtils.item(Material.PAPER, "§aVoir mes invitations", "§7§o" + manager.getPlayerInvitations(p).size() + " invitations en attente"));
 	}
 
+	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		switch (slot) {
 		case 1:
@@ -53,7 +54,7 @@ public class NoClanGUI<T extends Clan<T, D>, D extends ClanPlayerData<T, D>> ext
 			}).enterOrLeave();
 			break;
 		case 3:
-			new InvitationsGUI<>(p, manager).create(p);
+			new InvitationsView<>(p, manager).toGUI().create(p);
 			break;
 		}
 		return true;

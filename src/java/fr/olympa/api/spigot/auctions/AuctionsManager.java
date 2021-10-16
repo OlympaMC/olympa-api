@@ -17,9 +17,9 @@ import fr.olympa.api.common.observable.ObservableList;
 import fr.olympa.api.common.player.OlympaPlayerInformations;
 import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.common.sql.statement.OlympaStatement;
-import fr.olympa.api.spigot.auctions.gui.AuctionsGUI;
+import fr.olympa.api.spigot.auctions.gui.AuctionsView;
 import fr.olympa.api.spigot.auctions.gui.CreateAuctionGUI;
-import fr.olympa.api.spigot.auctions.gui.MyAuctionsGUI;
+import fr.olympa.api.spigot.auctions.gui.MyAuctionsView;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
 import fr.olympa.api.spigot.economy.tax.TaxManager;
 import fr.olympa.api.spigot.utils.SpigotUtils;
@@ -137,7 +137,7 @@ public class AuctionsManager {
 	}
 	
 	public <T extends MoneyPlayerInterface> void openAuctionsGUI(Player p) {
-		new AuctionsGUI<T>(this, AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
+		new AuctionsView<T>(this, AccountProviderAPI.getter().get(p.getUniqueId())).toGUI().create(p);
 	}
 	
 	public void openAuctionCreationGUI(Player p) {
@@ -145,7 +145,7 @@ public class AuctionsManager {
 	}
 	
 	public void openMyAuctionsGUI(Player p) {
-		new MyAuctionsGUI(this, AccountProviderAPI.getter().get(p.getUniqueId())).create(p);
+		new MyAuctionsView(this, AccountProviderAPI.getter().get(p.getUniqueId())).toGUI().create(p);
 	}
 	
 }

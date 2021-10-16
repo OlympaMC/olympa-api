@@ -16,28 +16,36 @@ import fr.olympa.api.common.provider.AccountProviderAPI;
 import fr.olympa.api.spigot.auctions.Auction;
 import fr.olympa.api.spigot.auctions.AuctionsManager;
 import fr.olympa.api.spigot.economy.MoneyPlayerInterface;
+import fr.olympa.api.spigot.gui.OlympaGUI;
 import fr.olympa.api.spigot.gui.templates.ConfirmGUI;
-import fr.olympa.api.spigot.gui.templates.PagedGUI;
+import fr.olympa.api.spigot.gui.templates.PagedView;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Prefix;
 import fr.olympa.api.utils.Utils;
 import fr.olympa.core.spigot.OlympaCore;
 
-public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auction> {
+public class AuctionsView<T extends MoneyPlayerInterface> extends PagedView<Auction> {
 
 	public static DyeColor[] PRETTY_COLORS = { DyeColor.BLUE, DyeColor.LIME, DyeColor.ORANGE, DyeColor.YELLOW, DyeColor.LIGHT_BLUE, DyeColor.MAGENTA, DyeColor.PINK, DyeColor.RED };
 	
 	private AuctionsManager manager;
+	private T player;
 	
 	private Random random = new Random();
 	private BukkitTask colorTask;
 	
-	public AuctionsGUI(AuctionsManager manager, T player) {
-		super("Hôtel des Ventes", DyeColor.CYAN, manager.getOngoingAuctions(), 5);
+	public AuctionsView(AuctionsManager manager, T player) {
+		super(DyeColor.CYAN, manager.getOngoingAuctions());
 		this.manager = manager;
+		this.player = player;
+	}
+	
+	@Override
+	public void init() {
+		super.init();
 		List<Auction> myAuctions = manager.getAllAuctions().stream().filter(x -> x.player.equals(player.getInformation())).collect(Collectors.toList());
 		long ongoing = myAuctions.stream().filter(Auction::isOngoing).count();
-		setBarItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets", 
+		right.setItem(2, ItemUtils.item(Material.CHEST, "§a→ Mes objets", 
 				"§8> §7" + Utils.withOrWithoutS(ongoing, "enchère") + " en cours",
 				"§8> §7" + Utils.withOrWithoutS(myAuctions.size() - ongoing, "enchère") + " terminées"
 				));
@@ -76,6 +84,10 @@ public class AuctionsGUI<T extends MoneyPlayerInterface> extends PagedGUI<Auctio
 		super.onClose(p);
 		colorTask.cancel();
 		return true;
+	}
+	
+	public OlympaGUI toGUI() {
+		return super.toGUI("Hôtel des Ventes", 5);
 	}
 
 }

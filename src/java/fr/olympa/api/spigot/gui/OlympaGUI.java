@@ -10,25 +10,60 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.olympa.api.common.chat.ColorUtils;
 
-public abstract class OlympaGUI implements InventoryHolder {
+public abstract class OlympaGUI extends GUIView implements InventoryHolder, GUIChanger {
 
 	protected Inventory inv;
+	private int rows;
 
 	public OlympaGUI(String name, int rows) {
-		inv = Bukkit.createInventory(this, 9 * rows, ColorUtils.color(name));
+		this(rows);
+		inv = Bukkit.createInventory(this, 9 * getRows(), ColorUtils.color(name));
 	}
 
 	public OlympaGUI(int placeNeeded, String name) {
-		inv = Bukkit.createInventory(this, placeNeeded <= 0 ? 9 : (int) Math.ceil(placeNeeded / 9d) * 9, ColorUtils.color(name));
+		this(placeNeeded <= 0 ? 9 : (int) Math.ceil(placeNeeded / 9d));
+		inv = Bukkit.createInventory(this, getRows() * 9, ColorUtils.color(name));
 	}
 
 	public OlympaGUI(String name, InventoryType type) {
-		inv = Bukkit.createInventory(this, type,ColorUtils.color(name));
+		this(type.getDefaultSize() % 9 == 0 ? type.getDefaultSize() / 9 : -1);
+		inv = Bukkit.createInventory(this, type, ColorUtils.color(name));
+	}
+	
+	private OlympaGUI(int rows) {
+		this.rows = rows;
+		setGUI(this);
 	}
 
 	@Override
 	public Inventory getInventory() {
 		return inv;
+	}
+	
+	@Override
+	public void setItem(int slot, ItemStack item) {
+		inv.setItem(slot, item);
+	}
+	
+	@Override
+	public ItemStack getItem(int slot) {
+		return inv.getItem(slot);
+	}
+	
+	@Override
+	public void clear() {
+		inv.clear();
+	}
+	
+	@Override
+	public int getRows() {
+		return rows;
+	}
+	
+	@Override
+	public int getColumns() {
+		if (rows == -1) throw new IllegalArgumentException("This GUI is not a chest GUI");
+		return 9;
 	}
 
 	/**
@@ -40,6 +75,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	 * @param click Type of click
 	 * @return Cancel click
 	 */
+	@Override
 	public boolean onClick(Player p, ItemStack current, int slot, ClickType click) {
 		return true;
 	}
@@ -87,6 +123,7 @@ public abstract class OlympaGUI implements InventoryHolder {
 	 * @param p Player who has the inventory opened
 	 * @return Remove player from inventories system
 	 */
+	@Override
 	public boolean onClose(Player p) {
 		return true;
 	}

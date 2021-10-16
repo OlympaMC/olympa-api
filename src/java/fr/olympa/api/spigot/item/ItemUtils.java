@@ -96,6 +96,25 @@ public class ItemUtils {
 		});
 	}
 
+	/**
+	 * Create an ItemStack instance of a skull item
+	 * @param name name of the item
+	 * @param skull skull's owner name
+	 * @param lore lore of the item, formatted as a String array
+	 */
+	public static ItemStack skull(String name, String skull, String... lore) {
+		ItemStack item = item(Material.PLAYER_HEAD, name, lore);
+		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
+			String value = textures.get(skull);
+			if (value == null) {
+				value = getHeadValue(skull);
+				textures.put(skull, value);
+			}
+			item.setItemMeta(skullCustom((SkullMeta) item.getItemMeta(), value));
+		});
+		return item;
+	}
+	
 	public static void skull(Consumer<SkullMeta> callback, ItemStack item, String skull) {
 		Bukkit.getScheduler().runTaskAsynchronously(OlympaCore.getInstance(), () -> {
 			String value = textures.get(skull);
