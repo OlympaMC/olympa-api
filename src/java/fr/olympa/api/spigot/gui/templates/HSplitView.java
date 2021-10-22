@@ -9,7 +9,7 @@ import fr.olympa.api.spigot.gui.GUIChanger;
 import fr.olympa.api.spigot.gui.GUIView;
 import fr.olympa.api.spigot.item.ItemUtils;
 
-public class SplitView extends GUIView {
+public class HSplitView extends GUIView {
 	
 	protected final int barRightOffset;
 	
@@ -21,7 +21,11 @@ public class SplitView extends GUIView {
 	protected GUIView right;
 	protected int rightItems;
 	
-	protected SplitView(DyeColor barColor, int barRightOffset) {
+	protected HSplitView(int barRightWidth) {
+		
+	}
+	
+	protected HSplitView(DyeColor barColor, int barRightOffset) {
 		this.barColor = barColor;
 		this.barRightOffset = barRightOffset;
 	}

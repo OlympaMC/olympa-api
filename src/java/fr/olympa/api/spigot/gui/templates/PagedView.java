@@ -18,7 +18,7 @@ import fr.olympa.api.spigot.item.ItemUtils;
  *
  * @param <T> type of objects stocked in the inventory
  */
-public abstract class PagedView<T> extends SplitView {
+public abstract class PagedView<T> extends HSplitView {
 
 	private static final int BAR_RIGHT_OFFSET = 2;
 	

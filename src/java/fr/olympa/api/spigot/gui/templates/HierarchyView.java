@@ -13,7 +13,7 @@ import fr.olympa.api.spigot.gui.GUIView;
 import fr.olympa.api.spigot.item.ItemUtils;
 import fr.olympa.api.utils.Hierarchy;
 
-public abstract class HierarchyView<T> extends SplitView {
+public abstract class HierarchyView<T> extends HSplitView {
 	
 	//private static final int ROWS = 5;
 	private static final int BAR_RIGHT_OFFSET = 2;
