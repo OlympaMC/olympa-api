@@ -21,9 +21,9 @@ public class HSplitView extends GUIView {
 	protected GUIView right;
 	protected int rightItems;
 	
-	protected HSplitView(int barRightWidth) {
-		
-	}
+//	protected HSplitView(int barRightWidth) {
+//		
+//	}
 	
 	protected HSplitView(DyeColor barColor, int barRightOffset) {
 		this.barColor = barColor;

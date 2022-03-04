@@ -1,13 +1,10 @@
-
-  
-
 # OlympaAPI
 ## Olympa
 
 Olympa was a Minecraft server. The full development took 2 years. The server closed in October 2021 and this is one of the archives of these many plugins. This repo is licensed under the GNU GPLv3.
 More info about Olympa [here](https://github.com/OlympaMC/.github/blob/main/profile/README.md).
 
-  
+
 ## Info
 Internal API that contains the minimum for the project developers to interact with the environment. OlympaAPI needs OlympaCore to work properly in production. OlympaAPI contains code that runs on Spigot or Bungeecord or both.
 
@@ -37,20 +34,11 @@ The API contains, among others :
 
 The OlympaAPI JAR is used for experimental testing purposes locally.
 
-  
-
 ## Dependencies
 
-  
-
-- Gradle
-
-- Java JDK 16
-
+- [Gradle](https://github.com/gradle/gradle) (Compilator)
+- [Java JDK 16](https://github.com/openjdk/jdk16)
 - [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse) 1.16
-
 - [PaperSpigot](https://github.com/PaperMC/Paper) 1.16
-
 - [Waterfall](https://github.com/PaperMC/Waterfall) 1.17
-
 - [Jedis](https://github.com/redis/jedis) (Redis client for Java)
