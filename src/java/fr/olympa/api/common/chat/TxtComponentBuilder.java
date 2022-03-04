@@ -1,13 +1,18 @@
 package fr.olympa.api.common.chat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
+import com.google.common.annotations.Beta;
 
 import fr.olympa.api.common.match.RegexMatcher;
 import fr.olympa.api.utils.Prefix;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -214,7 +219,7 @@ public class TxtComponentBuilder {
 		extrasSeparator = new TxtComponentBuilder("\n");
 		return this;
 	}
-
+	
 	public TextComponent build() {
 		TextComponent text;
 		StringBuilder txtBuilder = new StringBuilder();
@@ -264,7 +269,7 @@ public class TxtComponentBuilder {
 		}
 		return text;
 	}
-
+	
 	public String toLegacyText() {
 		TextComponent text = build();
 		return text.toLegacyText();
@@ -293,5 +298,85 @@ public class TxtComponentBuilder {
 			}
 		}
 		return size;
+	}
+	
+	@Beta
+	public Component buildBook() {
+		Component text;
+		StringBuilder txtBuilder = new StringBuilder();
+		if (prefix != null)
+			txtBuilder.append(prefix);
+		if (msg != null && !msg.isEmpty()) {
+			if (color != null)
+				txtBuilder.append(color);
+			txtBuilder.append(msg);
+		}
+		String s = txtBuilder.toString();
+		if (!s.isEmpty())
+			text = Component.text(getStringColored(s));
+		else
+			text = Component.text("");
+		Component extrasSeparatorBuild = null;
+		if (extras != null) {
+			if (extrasSeparator != null && !extrasSeparator.isEmpty()) {
+				extrasSeparatorBuild = extrasSeparator.buildBook();
+				if (msg != null && !msg.isEmpty())
+					text.append(extrasSeparatorBuild);
+			}
+			for (int i = 0; i < extras.size(); i++) {
+				text.append(extras.get(i).buildBook());
+				if (extrasSeparatorBuild != null && i < extras.size() - 1)
+					text.append(extrasSeparatorBuild);
+			}
+		}
+		if (isConsole) {
+			if (contents != null && contents.length != 0 && contents[0] instanceof Text) {
+				String extraHoverText = ((String) ((Text) contents[0]).getValue()).replace("\n", " &f&l| ");
+				int size = extraHoverText.length();
+				if (size > 100) {
+					if (extraHoverText.startsWith(msg))
+						extraHoverText = extraHoverText.replaceFirst(msg, "");
+					extraHoverText = extraHoverText.substring(0, 100) + " &c&l" + (size - 100) + " caratères de plus ...";
+				}
+				text.append(Component.text(format("&r(%s&r) ", extraHoverText)));
+			}
+			if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank())
+				text.append(Component.text(format("&r(CLICK %s&r) ", clickActionValue)));
+		} else {
+			if (hoverAction != null && contents != null && contents.length > 0)
+//				text.setHoverEvent(new HoverEvent(hoverAction, contents));
+				switch (hoverAction) {
+				case SHOW_ACHIEVEMENT:
+					// TODO
+					break;
+				case SHOW_ENTITY:
+					// TODO
+					break;
+				case SHOW_ITEM:
+					// TODO
+//					text.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showItem(text));
+					break;
+				case SHOW_TEXT:
+					Text[] m = ((Text[]) contents);
+					StringJoiner sj = new StringJoiner("\n");
+					for (Text txt : m) {
+						Object value = txt.getValue();
+						if (value instanceof BaseComponent[] bcs) {
+							Arrays.stream(bcs).forEach(bc -> sj.add(bc.toLegacyText()));
+						} else if (value instanceof String string) {
+							sj.add(string);
+						}
+					}
+					text.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text(sj.toString())));
+					break;
+				default:
+					break;
+				}
+			if (clickAction != null && clickActionValue != null && !clickActionValue.isBlank()) {
+				// TODO
+//				text.setClickEvent(new ClickEvent(clickAction, clickActionValue));
+			}
+		}
+		return text;
 	}
 }
