@@ -22,6 +22,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import fr.olympa.api.utils.CacheStats;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Reflection {
 

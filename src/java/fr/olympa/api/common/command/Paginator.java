@@ -4,10 +4,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.common.annotations.Beta;
+
 import fr.olympa.api.common.chat.Chat;
 import fr.olympa.api.common.command.complex.ArgumentParser;
 import fr.olympa.api.common.match.RegexMatcher;
 import fr.olympa.api.utils.Prefix;
+import fr.olympa.core.spigot.OlympaCore;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -41,6 +49,9 @@ public abstract class Paginator<T> {
 	}
 
 	public BaseComponent getPageDidntExist(int page) {
+		if (page <= 1) {
+			return new TextComponent(Prefix.DEFAULT_BAD.formatMessage("Il n'y a aucun résultat."));
+		}
 		return new TextComponent(Prefix.DEFAULT_BAD.formatMessage("La page §4%d §cn'existe pas.", page));
 	}
 
@@ -62,7 +73,7 @@ public abstract class Paginator<T> {
 		int maxPage = Math.max(1, (int) Math.ceil(objects.size() * 1D / pageSize));
 		return getTemplatePage(page, pageObjects, maxPage);
 	}
-
+	
 	protected BaseComponent getTemplatePage(int page, List<T> objects, int maxPage) {
 		if (page < 1 || maxPage != 0 && maxPage < page || objects == null || objects.isEmpty())
 			return getPageDidntExist(page);
