@@ -25,7 +25,11 @@ jobs:
       with:
         java-version: '16'
         distribution: 'temurin'
+    - name: Install Dep
+      run: |
+        curl https://hub.spigotmc.org/jenkins/job/BuildTools/lastStableBuild/artifact/target/BuildTools.jar --output BuildTools.jar
+        java -jar BuildTools.jar --rev 1.16.5
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: build
